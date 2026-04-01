@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 
 const CH = [
-  { day:1,t:"An Chéad Lá",e:"First Step",cat:"greetings",d:1,ch:"Say 'Dia dhuit' to someone today — a shop worker, neighbour, or colleague.",p:"Dia dhuit!",pr:"DEE-ah gwit",m:"Hello (God be with you)",tip:"If they reply 'Dia is Muire dhuit' — they know Irish! You've found a fellow Gaeilgeoir.",b:"Try it with 3 different people"},
+  { day:1,t:"An Chéad Lá",e:"First Step",cat:"greetings",d:1,ch:"Say 'Dia dhuit' to someone today — a shop worker, neighbour, or colleague.",p:"Dia dhuit!",pr:"DEE-ah gwit",m:"Hello",tip:"If they reply 'Dia is Muire dhuit' — they know Irish! You've found a fellow Gaeilgeoir.",b:"Try it with 3 different people"},
   { day:2,t:"Go Raibh Maith Agat",e:"Gratitude",cat:"greetings",d:1,ch:"Replace every 'thank you' today with 'Go raibh maith agat'.",p:"Go raibh maith agat!",pr:"Guh rev mah ah-gut",m:"Thank you",tip:"In a shop, after paying — just say it with a smile. Most Irish people will light up.",b:"Use it at least 5 times today"},
   { day:3,t:"Slán Go Fóill",e:"Farewell",cat:"greetings",d:1,ch:"End every conversation today with 'Slán' or 'Slán go fóill'.",p:"Slán go fóill!",pr:"Slawn guh FOHL",m:"Goodbye for now",tip:"'Slán' alone works too. Short, warm, memorable.",b:"Wave and say it to your postman or delivery driver"},
   { day:4,t:"Conas Atá Tú?",e:"How Are You?",cat:"greetings",d:1,ch:"Ask someone 'Conas atá tú?' and see if they respond in Irish.",p:"Conas atá tú?",pr:"KUN-us ah-TAW too",m:"How are you?",tip:"If they look puzzled, smile and translate. You're planting seeds.",b:"Learn the reply: 'Tá mé go maith' — TAW may guh mah"},
@@ -34,7 +34,12 @@ const CH = [
 ];
 
 const CATS = { greetings:"👋", review:"🔄", food:"☕", shopping:"🛍️", opinions:"💬", social:"🤝", directions:"🧭", vocabulary:"📚", culture:"🎭", immersion:"🔥" };
-const WK = ["Fáilte","Bia & Siopa","Daoine & Áit","Tumadh Iomlán"];
+const WK = [
+  { name: "Fáilte", en: "Greetings & Basics", start: 0, end: 7 },
+  { name: "Bia & Siopadóireacht", en: "Food & Shopping", start: 7, end: 14 },
+  { name: "Daoine & Áiteanna", en: "People & Places", start: 14, end: 21 },
+  { name: "Tumadh Iomlán", en: "Full Immersion", start: 21, end: 30 },
+];
 
 const T = {
   light: {
@@ -293,27 +298,74 @@ html{-webkit-font-smoothing:antialiased}`;
   // MAP VIEW (all 30 days)
   // ═══════════════════════════════
   if(view==="map"){
-    return(
+    return (
       <div style={{minHeight:"100vh",background:c.bg,color:c.tx,transition:"background 0.4s"}}>
         <style>{css}</style>
-        <div style={{padding:"16px 20px",display:"flex",justifyContent:"space-between",alignItems:"center",borderBottom:`1px solid ${c.bd}`}}>
-          <button onClick={()=>setView("home")} style={{background:"none",border:"none",color:c.acc,...hd,fontSize:"0.9rem",cursor:"pointer"}}>← Back</button>
-          <span style={{...bd,fontSize:"0.82rem",color:c.tx3}}>{total}/30 days</span>
+
+        {/* Header with branding */}
+        <div style={{padding:"20px 22px 16px",borderBottom:`1px solid ${c.bd}`,maxWidth:900,margin:"0 auto"}}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+            <button onClick={()=>setView("home")} style={{background:"none",border:"none",color:c.acc,...hd,fontSize:"0.9rem",cursor:"pointer"}}>← Back</button>
+            <div style={{display:"flex",alignItems:"center",gap:6}}>
+              <span style={{fontSize:"0.85rem"}}>☘️</span>
+              <span style={{...hd,fontSize:"0.68rem",fontWeight:600,color:c.acc,letterSpacing:"0.05em"}}>GAELTACHT CONNECT</span>
+            </div>
+            <button onClick={toggle} style={{background:c.card,border:`1px solid ${c.bd}`,borderRadius:12,width:30,height:30,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"0.75rem"}}>{dk?"☀️":"🌙"}</button>
+          </div>
         </div>
-        <div style={{padding:"20px 16px 80px"}}>
-          {[0,1,2,3].map(w=>(
-            <div key={w} style={{marginBottom:28}}>
+
+        <div style={{maxWidth:900,margin:"0 auto",padding:"0 18px"}}>
+          {/* Stats bar */}
+          <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:20,padding:"24px 0 8px",flexWrap:"wrap"}}>
+            <div style={{textAlign:"center"}}>
+              <div style={{...hd,fontSize:"1.8rem",fontWeight:800,color:c.acc}}>{total}</div>
+              <div style={{...bd,fontSize:"0.68rem",color:c.tx3}}>completed</div>
+            </div>
+            <div style={{width:1,height:28,background:c.bd}}/>
+            <div style={{textAlign:"center"}}>
+              <div style={{...hd,fontSize:"1.8rem",fontWeight:800,color:c.gold}}>{st.bonus.length}</div>
+              <div style={{...bd,fontSize:"0.68rem",color:c.tx3}}>bonus</div>
+            </div>
+            {st.streak>=2&&<>
+              <div style={{width:1,height:28,background:c.bd}}/>
+              <div style={{display:"flex",alignItems:"center",gap:5,background:`${c.gold}12`,border:`1px solid ${c.gold}28`,borderRadius:16,padding:"5px 14px"}}>
+                <span style={{fontSize:"0.85rem"}}>🔥</span>
+                <span style={{...hd,fontSize:"0.78rem",fontWeight:600,color:c.gold}}>{st.streak}</span>
+              </div>
+            </>}
+          </div>
+
+          {/* Progress bar */}
+          <div style={{margin:"8px auto 28px",maxWidth:400,height:5,borderRadius:3,background:c.progBg,overflow:"hidden"}}>
+            <div style={{width:`${pct*100}%`,height:"100%",borderRadius:3,background:c.progFill,transition:"width 0.6s ease"}}/>
+          </div>
+
+          {/* Motivation quote */}
+          <div style={{textAlign:"center",marginBottom:28}}>
+            <p style={{...bd,fontSize:"0.88rem",fontStyle:"italic",color:c.tx3}}>
+              {total===0?"Your journey begins with a single word."
+              :total<10?"Every word you speak makes the language stronger."
+              :total<20?"You're not just learning — you're reviving."
+              :total<30?"Almost there. The old words are proud of you."
+              :"Tá Gaeilge agat. You did it."}
+            </p>
+          </div>
+
+          {/* Weeks */}
+          {WK.map((w,wi)=>(
+            <div key={wi} style={{marginBottom:28}}>
               <div style={{display:"flex",alignItems:"baseline",gap:8,marginBottom:10,padding:"0 4px"}}>
-                <span style={{...hd,fontSize:"0.8rem",fontWeight:700,color:c.acc}}>Week {w+1}</span>
-                <span style={{...bd,fontSize:"0.75rem",color:c.tx3}}>{WK[w]}</span>
+                <span style={{...hd,fontSize:"0.8rem",fontWeight:700,color:c.acc}}>Week {wi+1}</span>
+                <span style={{...bd,fontSize:"0.72rem",color:c.tx3}}>{w.name}</span>
                 <div style={{flex:1,height:1,background:c.bd}}/>
+                <span style={{...bd,fontSize:"0.6rem",color:c.tx3}}>{st.done.filter(d=>d>w.start&&d<=w.end).length}/{w.end-w.start}</span>
               </div>
               <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(140px,1fr))",gap:8}}>
-                {CH.slice(w*7,w*7+7).map(ch=>{
+                {CH.slice(w.start,w.end).map(ch=>{
                   const dn=st.done.includes(ch.day);const bn=st.bonus.includes(ch.day);
                   const lk=ch.day>1&&!st.done.includes(ch.day-1)&&!dn;
                   const nx=!dn&&!lk;
-                  return(
+                  return (
                     <button key={ch.day} onClick={()=>{setSelDay(ch.day);setView("day")}} style={{
                       background:dn?c.doneBg:nx?c.card:c.cardAlt,
                       border:`1.5px solid ${dn?c.doneBd:nx?c.nextBd:c.bd}`,
@@ -333,9 +385,23 @@ html{-webkit-font-smoothing:antialiased}`;
               </div>
             </div>
           ))}
-          <div style={{textAlign:"center",paddingTop:20,borderTop:`1px solid ${c.bd}`}}>
-            <button onClick={doReset} style={{background:"none",border:`1px solid #cc444422`,borderRadius:9,padding:"8px 20px",color:dk?"#8a5555":"#b06060",...bd,fontSize:"0.78rem",cursor:"pointer"}}>Tosaigh Arís (Reset)</button>
+
+          {/* Footer */}
+          <div style={{textAlign:"center",padding:"20px 0 16px",borderTop:`1px solid ${c.bd}`}}>
+            <p style={{...bd,fontSize:"0.82rem",fontStyle:"italic",color:c.tx3,lineHeight:1.5,marginBottom:12}}>
+              "Is fearr Gaeilge briste ná Béarla cliste"
+            </p>
+            <div style={{...bd,fontSize:"0.7rem",color:c.tx3,opacity:0.5,marginBottom:16}}>
+              ☘️ Gaeltacht Connect — Built in Ireland
+            </div>
+            <div style={{display:"flex",justifyContent:"center",gap:16,alignItems:"center",flexWrap:"wrap"}}>
+              <span style={{...bd,fontSize:"0.68rem",color:c.tx3,opacity:0.4}}>hello@gaeltachtconnect.ie</span>
+              <span style={{...bd,fontSize:"0.68rem",color:c.tx3,opacity:0.4}}>•</span>
+              <button onClick={doReset} style={{background:"none",border:"none",color:c.tx3,...bd,fontSize:"0.65rem",cursor:"pointer",opacity:0.3,textDecoration:"underline"}}>Reset progress</button>
+            </div>
           </div>
+
+          <div style={{height:40}}/>
         </div>
       </div>
     );
@@ -451,11 +517,11 @@ html{-webkit-font-smoothing:antialiased}`;
               <span style={{...bd,fontSize:"0.72rem",color:c.acc}}>View all →</span>
             </div>
             <div style={{display:"flex",flexDirection:"column",gap:10}}>
-              {[0,1,2,3].map(w=>(
-                <div key={w} style={{display:"flex",alignItems:"center",gap:10}}>
-                  <span style={{...bd,fontSize:"0.65rem",color:c.tx3,width:22,textAlign:"right"}}>{w+1}</span>
+              {WK.map((w,wi)=>(
+                <div key={wi} style={{display:"flex",alignItems:"center",gap:10}}>
+                  <span style={{...bd,fontSize:"0.65rem",color:c.tx3,width:22,textAlign:"right"}}>{wi+1}</span>
                   <div style={{display:"flex",gap:4,flex:1}}>
-                    {CH.slice(w*7,w*7+7).map(ch=>{
+                    {CH.slice(w.start,w.end).map(ch=>{
                       const dn=st.done.includes(ch.day);
                       const nx=ch.day===nextDay;
                       return <div key={ch.day} style={{
@@ -467,7 +533,7 @@ html{-webkit-font-smoothing:antialiased}`;
                       }}/>;
                     })}
                   </div>
-                  <span style={{...bd,fontSize:"0.6rem",color:c.tx3,width:28}}>{st.done.filter(d=>d>w*7&&d<=w*7+7).length}/7</span>
+                  <span style={{...bd,fontSize:"0.6rem",color:c.tx3,width:28}}>{st.done.filter(d=>d>w.start&&d<=w.end).length}/{w.end-w.start}</span>
                 </div>
               ))}
             </div>
