@@ -124,6 +124,19 @@ const shareProgress = async (day, total, streak) => {
   const a=document.createElement("a"); a.href=img; a.download=`gaeltacht-day-${day}.png`; a.click();
 };
 
+const speak = (text) => {
+  if (!window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.rate = 0.8;
+  // Try Irish voice first, fall back to default
+  const voices = window.speechSynthesis.getVoices();
+  const gaVoice = voices.find(v => v.lang.startsWith('ga'));
+  if (gaVoice) u.voice = gaVoice;
+  else u.lang = 'ga-IE';
+  window.speechSynthesis.speak(u);
+};
+
 export default function App() {
   const [st,setSt]=useState(null);
   const [loading,setLoading]=useState(true);
@@ -131,6 +144,7 @@ export default function App() {
   const [selDay,setSelDay]=useState(null);
   const [celeb,setCeleb]=useState(null);
   const [dk,setDk]=useState(false);
+  const [speaking,setSpeaking]=useState(false);
   const c = dk ? T.dark : T.light;
 
   useEffect(()=>{(async()=>{
@@ -234,7 +248,29 @@ html{-webkit-font-smoothing:antialiased}`;
             <div style={{background:c.phrase,border:`1.5px solid ${c.phraseBd}`,borderRadius:16,padding:"28px 22px",marginBottom:16,textAlign:"center",animation:done?"none":"breathe 4s ease-in-out infinite"}}>
               <div style={{...hd,fontSize:"1.65rem",fontWeight:700,color:c.acc,lineHeight:1.3,marginBottom:10}}>{ch.p}</div>
               <div style={{...bd,fontSize:"0.95rem",color:c.tx3,fontStyle:"italic",marginBottom:5}}>/{ch.pr}/</div>
-              <div style={{...bd,fontSize:"0.9rem",color:c.tx2}}>{ch.m}</div>
+              <div style={{...bd,fontSize:"0.9rem",color:c.tx2,marginBottom:16}}>{ch.m}</div>
+              <button
+                onClick={()=>{
+                  setSpeaking(true);
+                  speak(ch.p);
+                  setTimeout(()=>setSpeaking(false),2000);
+                }}
+                style={{
+                  display:"inline-flex",alignItems:"center",gap:7,
+                  background:speaking?c.acc:"none",
+                  border:`1.5px solid ${c.phraseBd}`,
+                  borderRadius:20,padding:"8px 18px",
+                  color:speaking?c.btnTx:c.acc,
+                  ...bd,fontSize:"0.85rem",cursor:"pointer",
+                  transition:"all 0.2s",
+                }}
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M11 5L6 9H2v6h4l5 4V5z"/>
+                  <path d="M15.54 8.46a5 5 0 010 7.07M19.07 4.93a10 10 0 010 14.14" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round"/>
+                </svg>
+                {speaking ? "Ag caint..." : "Éist"}
+              </button>
             </div>
 
             {/* Tip */}
