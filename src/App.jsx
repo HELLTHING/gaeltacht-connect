@@ -129,7 +129,6 @@ const speak = (text) => {
   window.speechSynthesis.cancel();
   const u = new SpeechSynthesisUtterance(text);
   u.rate = 0.8;
-  // Try Irish voice first, fall back to default
   const voices = window.speechSynthesis.getVoices();
   const gaVoice = voices.find(v => v.lang.startsWith('ga'));
   if (gaVoice) u.voice = gaVoice;
@@ -137,20 +136,63 @@ const speak = (text) => {
   window.speechSynthesis.speak(u);
 };
 
+// Generate quiz questions from completed days
+const makeQuiz = (done) => {
+  const pool = done.map(d => CH[d-1]).filter(Boolean);
+  if (pool.length < 2) return [];
+  const shuffled = [...pool].sort(() => Math.random()-0.5).slice(0,3);
+  return shuffled.map(ch => {
+    const wrong = CH.filter(x=>x.day!==ch.day).sort(()=>Math.random()-0.5).slice(0,3).map(x=>x.m);
+    const opts = [...wrong, ch.m].sort(()=>Math.random()-0.5);
+    return { phrase: ch.p, answer: ch.m, opts };
+  });
+};
+
+// Confetti component
+const Confetti = () => {
+  const pieces = Array.from({length:50},(_,i)=>({
+    id:i,
+    left:Math.random()*100,
+    delay:Math.random()*1.2,
+    dur:1.8+Math.random()*0.8,
+    color:['#2D6A4F','#40916C','#A67C2E','#D4A843','#6FCF97','#ffffff','#B7E4C7'][Math.floor(Math.random()*7)],
+    size:6+Math.random()*8,
+    round:Math.random()>0.5,
+  }));
+  return (
+    <div style={{position:'fixed',inset:0,pointerEvents:'none',zIndex:98,overflow:'hidden'}}>
+      {pieces.map(p=>(
+        <div key={p.id} style={{
+          position:'absolute',left:`${p.left}%`,top:-20,
+          width:p.size,height:p.size,
+          borderRadius:p.round?'50%':2,
+          background:p.color,
+          animation:`confetti-fall ${p.dur}s ${p.delay}s ease-in forwards`,
+        }}/>
+      ))}
+    </div>
+  );
+};
+
 export default function App() {
   const [st,setSt]=useState(null);
   const [loading,setLoading]=useState(true);
-  const [view,setView]=useState("home"); // home | day | map
+  const [view,setView]=useState("home"); // home | day | map | quiz
   const [selDay,setSelDay]=useState(null);
   const [celeb,setCeleb]=useState(null);
   const [dk,setDk]=useState(false);
   const [speaking,setSpeaking]=useState(false);
+  const [quiz,setQuiz]=useState(null);   // array of questions
+  const [quizIdx,setQuizIdx]=useState(0);
+  const [quizScore,setQuizScore]=useState(0);
+  const [quizPicked,setQuizPicked]=useState(null);
+  const [quizDone,setQuizDone]=useState(false);
   const c = dk ? T.dark : T.light;
 
   useEffect(()=>{(async()=>{
     const s=await loadS();
     if(s){setSt(s);if(s.dk)setDk(true)}
-    else{const i={done:[],bonus:[],streak:0,best:0,dk:false,started:new Date().toISOString()};await saveS(i);setSt(i)}
+    else{const i={done:[],bonus:[],streak:0,best:0,dk:false,onboarded:false,started:new Date().toISOString()};await saveS(i);setSt(i)}
     setLoading(false);
   })()},[]);
 
@@ -163,7 +205,18 @@ export default function App() {
     if(!st||st.done.includes(d))return;
     const nd=[...st.done,d];const k=calcStreak(nd);
     await save({...st,done:nd,streak:k,best:Math.max(k,st.best)});
-    setCeleb("day");setTimeout(()=>setCeleb(null),2200);
+    setCeleb("day");
+    // Trigger quiz after completing weeks 1, 2, 3
+    if([7,14,21].includes(d)){
+      setTimeout(()=>{
+        setCeleb(null);
+        setQuiz(makeQuiz(nd));
+        setQuizIdx(0);setQuizScore(0);setQuizPicked(null);setQuizDone(false);
+        setView("quiz");
+      },2400);
+    } else {
+      setTimeout(()=>setCeleb(null),2200);
+    }
   };
   const doBonus=async(d)=>{
     if(!st||st.bonus.includes(d))return;
@@ -172,7 +225,7 @@ export default function App() {
   };
   const doReset=async()=>{
     if(!confirm("Reset all progress? Cannot undo."))return;
-    await save({done:[],bonus:[],streak:0,best:0,dk,started:new Date().toISOString()});
+    await save({done:[],bonus:[],streak:0,best:0,dk,onboarded:true,started:new Date().toISOString()});
     setView("home");setSelDay(null);
   };
 
@@ -188,15 +241,159 @@ export default function App() {
   const css=`@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;1,400;1,600&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,500;1,8..60,300;1,8..60,400&display=swap');
 *{margin:0;padding:0;box-sizing:border-box}
 @keyframes rise{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+@keyframes riseStrong{from{opacity:0;transform:translateY(50px) scale(0.96)}to{opacity:1;transform:translateY(0) scale(1)}}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-@keyframes pop{0%{transform:scale(0);opacity:0}60%{transform:scale(1.1)}100%{transform:scale(1);opacity:1}}
+@keyframes pop{0%{transform:scale(0);opacity:0}60%{transform:scale(1.15)}100%{transform:scale(1);opacity:1}}
 @keyframes shimmer{0%,100%{opacity:0.3}50%{opacity:0.7}}
 @keyframes breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.02)}}
 @keyframes glow{0%,100%{box-shadow:0 0 0 0 ${c.acc}00}50%{box-shadow:0 0 30px 2px ${c.acc}18}}
+@keyframes confetti-fall{from{transform:translateY(0) rotate(0deg);opacity:1}to{transform:translateY(110vh) rotate(720deg);opacity:0}}
+@keyframes shamrock-spin{0%{transform:scale(0) rotate(-30deg)}60%{transform:scale(1.2) rotate(8deg)}100%{transform:scale(1) rotate(0deg)}}
+@keyframes slide-up{from{opacity:0;transform:translateY(60px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse-ring{0%{transform:scale(1);opacity:0.6}100%{transform:scale(1.5);opacity:0}}
 html{-webkit-font-smoothing:antialiased}`;
 
   const hd = {fontFamily:"'Playfair Display',serif"};
   const bd = {fontFamily:"'Source Serif 4',serif"};
+
+  // ═══════════════════════════════
+  // ONBOARDING
+  // ═══════════════════════════════
+  if(!st.onboarded){
+    const features=[
+      {icon:"🎯",title:"One challenge per day",desc:"Real actions in real places — not flashcards"},
+      {icon:"🔊",title:"Hear how it sounds",desc:"Native pronunciation for every phrase"},
+      {icon:"🔥",title:"Build a streak",desc:"30 days. One word at a time."},
+    ];
+    return(
+      <div style={{minHeight:"100vh",background:c.bg,color:c.tx,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"32px 24px",textAlign:"center"}}>
+        <style>{css}</style>
+        <div style={{maxWidth:400,width:"100%"}}>
+          {/* Animated shamrock */}
+          <div style={{fontSize:"5rem",marginBottom:24,display:"inline-block",animation:"shamrock-spin 0.8s cubic-bezier(0.34,1.56,0.64,1) both"}}>☘️</div>
+
+          <h1 style={{...hd,fontSize:"2rem",fontWeight:800,color:c.tx,marginBottom:8,animation:"riseStrong 0.7s 0.2s ease both"}}>Gaeltacht Connect</h1>
+          <p style={{...bd,fontSize:"1.1rem",fontStyle:"italic",color:c.tx2,marginBottom:8,animation:"riseStrong 0.7s 0.35s ease both"}}>The old words are listening.</p>
+          <p style={{...bd,fontSize:"0.95rem",color:c.tx3,marginBottom:36,animation:"riseStrong 0.7s 0.45s ease both"}}>30 real challenges to bring Irish<br/>into your daily life.</p>
+
+          {/* Features */}
+          <div style={{display:"flex",flexDirection:"column",gap:12,marginBottom:40,animation:"riseStrong 0.7s 0.55s ease both"}}>
+            {features.map((f,i)=>(
+              <div key={i} style={{display:"flex",alignItems:"center",gap:14,background:c.card,border:`1px solid ${c.bd}`,borderRadius:14,padding:"14px 18px",textAlign:"left",boxShadow:c.shadow}}>
+                <span style={{fontSize:"1.4rem",flexShrink:0}}>{f.icon}</span>
+                <div>
+                  <div style={{...hd,fontSize:"0.9rem",fontWeight:600,color:c.tx,marginBottom:2}}>{f.title}</div>
+                  <div style={{...bd,fontSize:"0.78rem",color:c.tx3}}>{f.desc}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* CTA */}
+          <div style={{animation:"riseStrong 0.7s 0.7s ease both"}}>
+            <button
+              onClick={async()=>await save({...st,onboarded:true})}
+              style={{width:"100%",padding:"18px",borderRadius:16,background:c.btn,border:"none",color:c.btnTx,...hd,fontSize:"1.1rem",fontWeight:700,cursor:"pointer",boxShadow:"0 6px 20px rgba(45,106,79,0.3)",marginBottom:16,position:"relative",overflow:"hidden"}}
+            >
+              Tosaigh! — Let's go →
+            </button>
+            <p style={{...bd,fontSize:"0.78rem",fontStyle:"italic",color:c.tx3,lineHeight:1.6}}>
+              "Is fearr Gaeilge briste ná Béarla cliste"<br/>
+              <span style={{opacity:0.6}}>Broken Irish is better than clever English</span>
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ═══════════════════════════════
+  // QUIZ VIEW
+  // ═══════════════════════════════
+  if(view==="quiz"&&quiz){
+    const q=quiz[quizIdx];
+    const weekNum=Math.ceil(total/7);
+    return(
+      <div style={{minHeight:"100vh",background:c.bg,color:c.tx,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"32px 24px"}}>
+        <style>{css}</style>
+        <div style={{maxWidth:420,width:"100%"}}>
+          {!quizDone?(
+            <>
+              {/* Header */}
+              <div style={{textAlign:"center",marginBottom:28,animation:"rise 0.5s ease"}}>
+                <div style={{...bd,fontSize:"0.7rem",color:c.tx3,letterSpacing:"0.14em",textTransform:"uppercase",marginBottom:8}}>
+                  Week {weekNum} Quiz · {quizIdx+1} of {quiz.length}
+                </div>
+                <h2 style={{...hd,fontSize:"1.3rem",fontWeight:700,color:c.tx}}>What does this mean?</h2>
+              </div>
+
+              {/* Progress dots */}
+              <div style={{display:"flex",justifyContent:"center",gap:6,marginBottom:28}}>
+                {quiz.map((_,i)=>(
+                  <div key={i} style={{width:8,height:8,borderRadius:"50%",background:i<quizIdx?c.acc:i===quizIdx?c.acc:c.bd,opacity:i===quizIdx?1:i<quizIdx?0.8:0.3}}/>
+                ))}
+              </div>
+
+              {/* Phrase card */}
+              <div style={{background:c.phrase,border:`1.5px solid ${c.phraseBd}`,borderRadius:16,padding:"32px 24px",marginBottom:20,textAlign:"center",animation:"pop 0.4s ease"}}>
+                <div style={{...hd,fontSize:"1.8rem",fontWeight:700,color:c.acc,marginBottom:8}}>{q.phrase}</div>
+                <button onClick={()=>speak(q.phrase)} style={{background:"none",border:`1px solid ${c.phraseBd}`,borderRadius:20,padding:"5px 14px",color:c.acc,...bd,fontSize:"0.8rem",cursor:"pointer",display:"inline-flex",alignItems:"center",gap:6}}>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M15.54 8.46a5 5 0 010 7.07" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round"/></svg>
+                  Éist
+                </button>
+              </div>
+
+              {/* Options */}
+              <div style={{display:"flex",flexDirection:"column",gap:10,marginBottom:24}}>
+                {q.opts.map((opt,i)=>{
+                  const picked=quizPicked!==null;
+                  const correct=opt===q.answer;
+                  const chosen=opt===quizPicked;
+                  let bg=c.card,border=`1.5px solid ${c.bd}`,txColor=c.tx;
+                  if(picked&&correct){bg=c.doneBg;border=`1.5px solid ${c.doneBd}`;txColor=c.doneTx;}
+                  else if(picked&&chosen&&!correct){bg="#FEE2E2";border="1.5px solid #FCA5A5";txColor="#991B1B";}
+                  return(
+                    <button key={i} onClick={()=>{
+                      if(quizPicked!==null)return;
+                      setQuizPicked(opt);
+                      if(opt===q.answer)setQuizScore(s=>s+1);
+                      setTimeout(()=>{
+                        if(quizIdx+1<quiz.length){setQuizIdx(i=>i+1);setQuizPicked(null);}
+                        else setQuizDone(true);
+                      },1000);
+                    }} style={{
+                      background:bg,border,borderRadius:12,padding:"14px 18px",
+                      color:txColor,...bd,fontSize:"0.95rem",cursor:picked?"default":"pointer",
+                      textAlign:"left",transition:"all 0.2s",fontWeight:chosen||correct&&picked?600:400,
+                    }}>
+                      {opt}{picked&&correct?" ✓":""}{picked&&chosen&&!correct?" ✗":""}
+                    </button>
+                  );
+                })}
+              </div>
+            </>
+          ):(
+            /* Quiz results */
+            <div style={{textAlign:"center",animation:"pop 0.5s ease"}}>
+              <div style={{fontSize:"3.5rem",marginBottom:16}}>{quizScore===quiz.length?"🏆":quizScore>=2?"🌟":"💪"}</div>
+              <h2 style={{...hd,fontSize:"1.8rem",fontWeight:700,color:c.acc,marginBottom:8}}>
+                {quizScore}/{quiz.length}
+              </h2>
+              <p style={{...bd,fontSize:"1rem",color:c.tx2,marginBottom:6}}>
+                {quizScore===quiz.length?"Ar fheabhas! Perfect score!":quizScore>=2?"Maith go leor! Well done!":"Coinnigh ort! Keep going!"}
+              </p>
+              <p style={{...bd,fontSize:"0.85rem",color:c.tx3,fontStyle:"italic",marginBottom:32}}>
+                {quizScore===quiz.length?"You really know your Irish!":"Practice makes perfect — keep speaking!"}
+              </p>
+              <button onClick={()=>{setView("home");setQuiz(null);}} style={{width:"100%",padding:"16px",borderRadius:14,background:c.btn,border:"none",color:c.btnTx,...hd,fontSize:"1rem",fontWeight:700,cursor:"pointer"}}>
+                Ar aghaidh! — Continue →
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
 
   // ═══════════════════════════════
   // DAY DETAIL
@@ -315,13 +512,22 @@ html{-webkit-font-smoothing:antialiased}`;
 
         {/* Celebrations */}
         {celeb==="day"&&(
-          <div onClick={()=>setCeleb(null)} style={{position:"fixed",inset:0,display:"flex",alignItems:"center",justifyContent:"center",background:c.celebBg,zIndex:100}}>
-            <div style={{textAlign:"center",animation:"pop 0.5s ease"}}>
-              <div style={{fontSize:"4rem",marginBottom:14}}>🎉</div>
-              <div style={{...hd,fontSize:"1.8rem",fontWeight:700,color:c.acc}}>Maith thú!</div>
-              <div style={{...bd,fontSize:"1rem",color:c.tx3,marginTop:6}}>Well done — Day {selDay} complete</div>
+          <>
+            <Confetti/>
+            <div onClick={()=>setCeleb(null)} style={{position:"fixed",inset:0,display:"flex",alignItems:"center",justifyContent:"center",background:c.celebBg,zIndex:100}}>
+              <div style={{textAlign:"center",animation:"pop 0.5s ease",position:"relative"}}>
+                {/* Pulse ring */}
+                <div style={{position:"absolute",inset:-20,borderRadius:"50%",border:`3px solid ${c.acc}`,animation:"pulse-ring 1s ease-out infinite"}}/>
+                <div style={{fontSize:"4rem",marginBottom:14}}>🎉</div>
+                <div style={{...hd,fontSize:"2rem",fontWeight:800,color:c.acc}}>Maith thú!</div>
+                <div style={{...bd,fontSize:"1rem",color:c.tx2,marginTop:8}}>Day {selDay} complete</div>
+                {[7,14,21].includes(selDay)&&(
+                  <div style={{...bd,fontSize:"0.82rem",color:c.gold,marginTop:10,fontStyle:"italic"}}>Week {selDay/7} done — quiz incoming! ✨</div>
+                )}
+                <div style={{...bd,fontSize:"0.75rem",color:c.tx3,marginTop:16,opacity:0.6}}>tap to continue</div>
+              </div>
             </div>
-          </div>
+          </>
         )}
         {celeb==="bonus"&&(
           <div style={{position:"fixed",top:16,left:"50%",transform:"translateX(-50%)",zIndex:100,background:c.card,border:`1px solid ${c.gold}44`,borderRadius:12,padding:"10px 22px",...hd,fontSize:"0.85rem",color:c.gold,animation:"pop 0.3s",boxShadow:c.shadow}}>⭐ Bonus!</div>
