@@ -43,32 +43,36 @@ const WK = [
 
 const T = {
   light: {
-    bg:"#FAFAF5",bg2:"#F2EFE6",card:"#FFFFFF",cardAlt:"#F8F6F0",
+    bg:"#F4F0E8",bg2:"#EDE9E0",card:"#FFFFFF",cardAlt:"#F8F6F0",
     phrase:"#F0F5EE",phraseBd:"#C2D4BE",
     tx:"#1a1e18",tx2:"#4a5244",tx3:"#8a9082",
-    acc:"#2D6A4F",acc2:"#1B4332",gold:"#A67C2E",
-    bd:"#E2DED4",shadow:"0 4px 24px rgba(0,0,0,0.04)",
-    doneBg:"#EDF5EB",doneBd:"#B8D4B2",doneTx:"#2D6A4F",
-    nextBd:"#2D6A4F",
+    acc:"#1A5C3E",acc2:"#0D3524",gold:"#B8860B",
+    bd:"#E8E4DC",shadow:"0 4px 20px rgba(0,0,0,0.10)",
+    doneBg:"#EDF5EB",doneBd:"#B8D4B2",doneTx:"#1A5C3E",
+    nextBd:"#1A5C3E",
     tipBg:"#F5F0E8",tipBd:"#E2D8C4",tipTx:"#6B5D3E",
-    btn:"linear-gradient(135deg,#2D6A4F 0%,#1B4332 100%)",btnTx:"#fff",
-    progBg:"#E8E4DA",progFill:"linear-gradient(90deg,#2D6A4F,#40916C)",
+    btn:"linear-gradient(135deg,#1A5C3E 0%,#0D3524 100%)",btnTx:"#fff",
+    progBg:"#E8E4DA",progFill:"linear-gradient(90deg,#1A5C3E,#40916C)",
     celebBg:"rgba(255,255,255,0.92)",
-    dotOn:"#2D6A4F",dotOff:"#D4D0C6",dotDone:"#40916C",
+    dotOn:"#1A5C3E",dotOff:"#D4D0C6",dotDone:"#40916C",
+    nav:"#FFFFFF",navBd:"#E8E4DC",
+    hero:"linear-gradient(160deg,#1B4332 0%,#0D3524 100%)",
   },
   dark: {
-    bg:"#0F1210",bg2:"#161A17",card:"#1C211E",cardAlt:"#212823",
+    bg:"#0A0F0C",bg2:"#111510",card:"#1C211E",cardAlt:"#212823",
     phrase:"#1A2418",phraseBd:"#2D4A2A",
     tx:"#E4E2D8",tx2:"#A0A498",tx3:"#5E6258",
-    acc:"#6FCF97",acc2:"#40916C",gold:"#D4A843",
-    bd:"#2A2E28",shadow:"0 4px 24px rgba(0,0,0,0.3)",
-    doneBg:"#1A2E1A",doneBd:"#2D5A2D",doneTx:"#6FCF97",
-    nextBd:"#6FCF97",
+    acc:"#52C47A",acc2:"#40916C",gold:"#D4A843",
+    bd:"#242C24",shadow:"0 4px 20px rgba(0,0,0,0.35)",
+    doneBg:"#1A2E1A",doneBd:"#2D5A2D",doneTx:"#52C47A",
+    nextBd:"#52C47A",
     tipBg:"#1E1C16",tipBd:"#3A3422",tipTx:"#C4A86A",
-    btn:"linear-gradient(135deg,#6FCF97 0%,#40916C 100%)",btnTx:"#0F1210",
-    progBg:"#1E221E",progFill:"linear-gradient(90deg,#6FCF97,#D4A843)",
-    celebBg:"rgba(15,18,16,0.92)",
-    dotOn:"#6FCF97",dotOff:"#2E322E",dotDone:"#40916C",
+    btn:"linear-gradient(135deg,#52C47A 0%,#40916C 100%)",btnTx:"#0A0F0C",
+    progBg:"#1E221E",progFill:"linear-gradient(90deg,#52C47A,#D4A843)",
+    celebBg:"rgba(10,15,12,0.92)",
+    dotOn:"#52C47A",dotOff:"#2E322E",dotDone:"#40916C",
+    nav:"#161E18",navBd:"#242C24",
+    hero:"linear-gradient(160deg,#0D2818 0%,#0A1210 100%)",
   },
 };
 
@@ -124,16 +128,37 @@ const shareProgress = async (day, total, streak) => {
   const a=document.createElement("a"); a.href=img; a.download=`gaeltacht-day-${day}.png`; a.click();
 };
 
-const speak = (text) => {
+const speak = (phrase, pr) => {
   if (!window.speechSynthesis) return;
   window.speechSynthesis.cancel();
+  const text = pr && pr !== "Full conversation flow" && pr !== "Full immersion run" && pr !== "Your choice" ? pr : phrase;
   const u = new SpeechSynthesisUtterance(text);
-  u.rate = 0.8;
-  const voices = window.speechSynthesis.getVoices();
-  const gaVoice = voices.find(v => v.lang.startsWith('ga'));
-  if (gaVoice) u.voice = gaVoice;
-  else u.lang = 'ga-IE';
+  u.rate = 0.75;
+  u.lang = 'en-IE';
   window.speechSynthesis.speak(u);
+};
+
+// Category color map
+const CAT_CLR = {
+  greetings:"#2D6A4F", review:"#6B4C9A", food:"#C2541A", shopping:"#1A5FA0",
+  opinions:"#8A3A8A", social:"#2D7A6A", directions:"#1A6A8A", vocabulary:"#4A6A1A",
+  culture:"#8A6A1A", immersion:"#C23A1A"
+};
+
+// Bottom navigation component
+const BottomNav = ({view,setView,c,hd,bd}) => {
+  const tabs=[{id:"home",icon:"🏠",label:"Baile"},{id:"map",icon:"☘️",label:"30 Lá"},{id:"dict",icon:"📖",label:"Foclóir"},{id:"stats",icon:"📊",label:"Staitisticí"}];
+  return(
+    <div style={{position:"fixed",bottom:0,left:0,right:0,background:c.nav,borderTop:`1px solid ${c.navBd}`,display:"flex",zIndex:50,paddingBottom:"env(safe-area-inset-bottom)"}}>
+      {tabs.map(t=>(
+        <button key={t.id} onClick={()=>setView(t.id)} style={{flex:1,padding:"10px 4px 8px",background:"none",border:"none",cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",gap:3,opacity:view===t.id?1:0.45,transition:"opacity 0.2s"}}>
+          <span style={{fontSize:"1.2rem",lineHeight:1}}>{t.icon}</span>
+          <span style={{...hd,fontSize:"0.6rem",fontWeight:view===t.id?700:400,color:view===t.id?c.acc:c.tx3,letterSpacing:"0.04em"}}>{t.label}</span>
+          {view===t.id&&<div style={{width:20,height:2,borderRadius:1,background:c.acc,marginTop:1}}/>}
+        </button>
+      ))}
+    </div>
+  );
 };
 
 // Generate quiz questions from completed days
@@ -187,6 +212,8 @@ export default function App() {
   const [quizScore,setQuizScore]=useState(0);
   const [quizPicked,setQuizPicked]=useState(null);
   const [quizDone,setQuizDone]=useState(false);
+  const [search,setSearch]=useState("");
+  const [filterCat,setFilterCat]=useState("all");
   const c = dk ? T.dark : T.light;
 
   useEffect(()=>{(async()=>{
@@ -537,6 +564,124 @@ html{-webkit-font-smoothing:antialiased}`;
   }
 
   // ═══════════════════════════════
+  // DICTIONARY VIEW
+  // ═══════════════════════════════
+  if(view==="dict"){
+    const cats=["all",...Object.keys(CATS)];
+    const filtered=CH.filter(ch=>{
+      const matchCat=filterCat==="all"||ch.cat===filterCat;
+      const q=search.toLowerCase();
+      const matchSearch=!q||ch.p.toLowerCase().includes(q)||ch.m.toLowerCase().includes(q)||ch.t.toLowerCase().includes(q)||ch.pr.toLowerCase().includes(q);
+      return matchCat&&matchSearch;
+    });
+    return(
+      <div style={{minHeight:"100vh",background:c.bg,color:c.tx,animation:"fadeIn 0.25s ease",paddingBottom:80}}>
+        <style>{css}</style>
+        <div style={{background:c.hero,padding:"24px 20px 20px"}}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
+            <h1 style={{...hd,fontSize:"1.5rem",fontWeight:800,color:"#fff"}}>📖 Foclóir</h1>
+            <button onClick={toggle} style={{background:"rgba(255,255,255,0.15)",border:"none",borderRadius:10,width:32,height:32,cursor:"pointer",color:"#fff",fontSize:"0.85rem"}}>{dk?"☀️":"🌙"}</button>
+          </div>
+          <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Cuardach... / Search phrases" style={{width:"100%",padding:"10px 14px",borderRadius:10,border:"none",background:"rgba(255,255,255,0.18)",color:"#fff",fontSize:"0.9rem",fontFamily:"'Source Serif 4',serif",outline:"none",boxSizing:"border-box"}}/>
+        </div>
+        <div style={{display:"flex",gap:8,padding:"12px 16px",overflowX:"auto",borderBottom:`1px solid ${c.bd}`}}>
+          {cats.map(cat=>(
+            <button key={cat} onClick={()=>setFilterCat(cat)} style={{flexShrink:0,padding:"5px 12px",borderRadius:20,border:`1.5px solid ${filterCat===cat?(CAT_CLR[cat]||c.acc):c.bd}`,background:filterCat===cat?(CAT_CLR[cat]||c.acc):c.card,color:filterCat===cat?"#fff":c.tx3,...bd,fontSize:"0.72rem",cursor:"pointer",whiteSpace:"nowrap"}}>
+              {cat==="all"?"🌍 All":CATS[cat]+" "+cat}
+            </button>
+          ))}
+        </div>
+        <div style={{padding:"8px 20px 0",...bd,fontSize:"0.7rem",color:c.tx3}}>{filtered.length} phrases</div>
+        <div style={{padding:"0 16px"}}>
+          {filtered.map((ch,i)=>(
+            <div key={ch.day} style={{display:"flex",alignItems:"center",gap:12,padding:"14px 4px",borderBottom:`1px solid ${c.bd}`,animation:`rise 0.3s ${Math.min(i*0.02,0.3)}s ease both`}}>
+              <div style={{width:36,height:36,borderRadius:10,background:CAT_CLR[ch.cat]+"22",border:`2px solid ${CAT_CLR[ch.cat]}55`,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+                <span style={{...hd,fontSize:"0.65rem",fontWeight:700,color:CAT_CLR[ch.cat]}}>{ch.day}</span>
+              </div>
+              <div style={{flex:1,minWidth:0}}>
+                <div style={{...hd,fontSize:"1rem",fontWeight:700,color:c.acc,marginBottom:1}}>{ch.p}</div>
+                <div style={{...bd,fontSize:"0.7rem",color:c.tx3,fontStyle:"italic",marginBottom:1}}>/{ch.pr}/</div>
+                <div style={{...bd,fontSize:"0.8rem",color:c.tx2}}>{ch.m}</div>
+              </div>
+              <button onClick={()=>speak(ch.p,ch.pr)} style={{background:c.cardAlt,border:`1px solid ${c.bd}`,borderRadius:10,width:36,height:36,cursor:"pointer",flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center",color:c.acc}}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M15.54 8.46a5 5 0 010 7.07" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round"/></svg>
+              </button>
+            </div>
+          ))}
+          {filtered.length===0&&<div style={{textAlign:"center",padding:"40px",...bd,color:c.tx3,fontStyle:"italic"}}>Níor aimsíodh aon rud — Nothing found</div>}
+        </div>
+        <BottomNav view={view} setView={setView} c={c} hd={hd} bd={bd}/>
+      </div>
+    );
+  }
+
+  // ═══════════════════════════════
+  // STATS VIEW
+  // ═══════════════════════════════
+  if(view==="stats"){
+    const daysSince=st.started?Math.floor((Date.now()-new Date(st.started).getTime())/(1000*60*60*24)):0;
+    const wkColors=["#2D6A4F","#1A5FA0","#8A3A8A","#C2541A"];
+    return(
+      <div style={{minHeight:"100vh",background:c.bg,color:c.tx,animation:"fadeIn 0.25s ease",paddingBottom:80}}>
+        <style>{css}</style>
+        <div style={{background:c.hero,padding:"24px 20px 32px",textAlign:"center"}}>
+          <h1 style={{...hd,fontSize:"1.4rem",fontWeight:800,color:"#fff",marginBottom:4}}>Mo Dhul Chun Cinn</h1>
+          <p style={{...bd,fontSize:"0.82rem",color:"rgba(255,255,255,0.65)",marginBottom:20}}>My Progress</p>
+          <div style={{position:"relative",width:120,height:120,margin:"0 auto"}}>
+            <svg width="120" height="120" viewBox="0 0 120 120" style={{transform:"rotate(-90deg)"}}>
+              <circle cx="60" cy="60" r="50" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="8"/>
+              <circle cx="60" cy="60" r="50" fill="none" stroke="#fff" strokeWidth="8" strokeDasharray={`${(total/30)*314} 314`} strokeLinecap="round" style={{transition:"stroke-dasharray 1s ease"}}/>
+            </svg>
+            <div style={{position:"absolute",inset:0,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center"}}>
+              <span style={{...hd,fontSize:"2rem",fontWeight:800,color:"#fff",lineHeight:1}}>{total}</span>
+              <span style={{...bd,fontSize:"0.6rem",color:"rgba(255,255,255,0.65)"}}>of 30</span>
+            </div>
+          </div>
+        </div>
+        <div style={{padding:"20px",maxWidth:500,margin:"0 auto"}}>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:24}}>
+            {[{label:"Days done",val:total,icon:"✅"},{label:"Bonus done",val:st.bonus.length,icon:"⭐"},{label:"Best streak",val:st.best,icon:"🏆"},{label:"Current streak",val:st.streak,icon:"🔥"},{label:"Days since start",val:daysSince,icon:"📅"},{label:"Complete",val:Math.round(total/30*100)+"%",icon:"📊"}].map((s,i)=>(
+              <div key={i} style={{background:c.card,border:`1px solid ${c.bd}`,borderRadius:14,padding:"14px 16px",boxShadow:c.shadow,animation:`rise 0.4s ${i*0.05}s ease both`}}>
+                <div style={{fontSize:"1.1rem",marginBottom:5}}>{s.icon}</div>
+                <div style={{...hd,fontSize:"1.6rem",fontWeight:800,color:c.acc}}>{s.val}</div>
+                <div style={{...bd,fontSize:"0.68rem",color:c.tx3,marginTop:2}}>{s.label}</div>
+              </div>
+            ))}
+          </div>
+          <div style={{...hd,fontSize:"0.82rem",fontWeight:700,color:c.tx,marginBottom:12}}>Week by week</div>
+          {WK.map((w,wi)=>{
+            const dn=st.done.filter(d=>d>w.start&&d<=w.end).length;
+            return(
+              <div key={wi} style={{marginBottom:14,animation:`rise 0.4s ${wi*0.08}s ease both`}}>
+                <div style={{display:"flex",justifyContent:"space-between",marginBottom:5}}>
+                  <span style={{...bd,fontSize:"0.78rem",color:c.tx2}}>Week {wi+1} — {w.en}</span>
+                  <span style={{...hd,fontSize:"0.72rem",fontWeight:700,color:wkColors[wi]}}>{dn}/{w.end-w.start}</span>
+                </div>
+                <div style={{height:8,borderRadius:4,background:c.progBg,overflow:"hidden"}}>
+                  <div style={{width:`${(dn/(w.end-w.start))*100}%`,height:"100%",borderRadius:4,background:wkColors[wi],transition:"width 0.8s ease"}}/>
+                </div>
+              </div>
+            );
+          })}
+          <div style={{marginTop:20,padding:"16px",background:c.cardAlt,border:`1px solid ${c.bd}`,borderRadius:14,textAlign:"center"}}>
+            <p style={{...bd,fontSize:"0.85rem",fontStyle:"italic",color:c.tx3,lineHeight:1.6}}>
+              {total===0?"Every journey begins with one word."
+              :total<10?"You've started. That's more than most."
+              :total<20?"You're not just learning — you're reviving."
+              :total<30?"Almost there. The language is proud of you."
+              :"Tá Gaeilge agat. You did it. 🏆"}
+            </p>
+          </div>
+          <div style={{textAlign:"center",marginTop:20}}>
+            <button onClick={doReset} style={{background:"none",border:`1px solid ${c.bd}`,borderRadius:8,padding:"8px 20px",color:c.tx3,...bd,fontSize:"0.72rem",cursor:"pointer"}}>Reset progress</button>
+          </div>
+        </div>
+        <BottomNav view={view} setView={setView} c={c} hd={hd} bd={bd}/>
+      </div>
+    );
+  }
+
+  // ═══════════════════════════════
   // MAP VIEW (all 30 days)
   // ═══════════════════════════════
   if(view==="map"){
@@ -611,16 +756,19 @@ html{-webkit-font-smoothing:antialiased}`;
                     <button key={ch.day} onClick={()=>{setSelDay(ch.day);setView("day")}} style={{
                       background:dn?c.doneBg:nx?c.card:c.cardAlt,
                       border:`1.5px solid ${dn?c.doneBd:nx?c.nextBd:c.bd}`,
-                      borderRadius:12,padding:"14px 12px",cursor:lk?"not-allowed":"pointer",
+                      borderRadius:12,padding:"0",cursor:lk?"not-allowed":"pointer",
                       opacity:lk?0.25:1,textAlign:"left",width:"100%",transition:"all 0.2s",
-                      boxShadow:nx?c.shadow:"none",
+                      boxShadow:nx?c.shadow:"none",overflow:"hidden",
                     }}>
+                      <div style={{height:4,background:dn?"#40916C":lk?"transparent":CAT_CLR[ch.cat],borderRadius:"12px 12px 0 0"}}/>
+                      <div style={{padding:"10px 12px"}}>
                       <div style={{display:"flex",justifyContent:"space-between",marginBottom:6}}>
                         <span style={{...hd,fontSize:"0.6rem",color:c.tx3,fontWeight:600}}>LÁ {ch.day}</span>
                         <span style={{fontSize:"0.65rem"}}>{dn?"✅":lk?"🔒":CATS[ch.cat]}{bn?" ⭐":""}</span>
                       </div>
                       <div style={{...hd,fontSize:"0.82rem",fontWeight:600,color:dn?c.doneTx:nx?c.tx:c.tx3,lineHeight:1.25,marginBottom:2}}>{ch.t}</div>
                       <div style={{...bd,fontSize:"0.7rem",color:c.tx3,fontStyle:"italic"}}>{ch.e}</div>
+                      </div>
                     </button>
                   );
                 })}
@@ -645,6 +793,7 @@ html{-webkit-font-smoothing:antialiased}`;
 
           <div style={{height:40}}/>
         </div>
+        <BottomNav view={view} setView={setView} c={c} hd={hd} bd={bd}/>
       </div>
     );
   }
@@ -653,7 +802,7 @@ html{-webkit-font-smoothing:antialiased}`;
   // HOME — ONE DAY IN FOCUS
   // ═══════════════════════════════
   return(
-    <div style={{minHeight:"100vh",background:c.bg,color:c.tx,transition:"background 0.4s, color 0.4s"}}>
+    <div style={{minHeight:"100vh",background:c.bg,color:c.tx,transition:"background 0.4s, color 0.4s",paddingBottom:80}}>
       <style>{css}</style>
 
       <div style={{maxWidth:520,margin:"0 auto",padding:"0 22px"}}>
@@ -790,6 +939,7 @@ html{-webkit-font-smoothing:antialiased}`;
           <p style={{...bd,fontSize:"0.7rem",color:c.tx3,marginTop:6,opacity:0.6}}>Broken Irish is better than clever English</p>
         </div>
       </div>
+      <BottomNav view={view} setView={setView} c={c} hd={hd} bd={bd}/>
     </div>
   );
 }
