@@ -169,7 +169,7 @@ const makeQuiz = (done) => {
   return shuffled.map(ch => {
     const wrong = CH.filter(x=>x.day!==ch.day).sort(()=>Math.random()-0.5).slice(0,3).map(x=>x.m);
     const opts = [...wrong, ch.m].sort(()=>Math.random()-0.5);
-    return { phrase: ch.p, answer: ch.m, opts };
+    return { phrase: ch.p, answer: ch.m, opts, pr: ch.pr };
   });
 };
 
@@ -276,8 +276,8 @@ export default function App() {
 @keyframes glow{0%,100%{box-shadow:0 0 0 0 ${c.acc}00}50%{box-shadow:0 0 30px 2px ${c.acc}18}}
 @keyframes confetti-fall{from{transform:translateY(0) rotate(0deg);opacity:1}to{transform:translateY(110vh) rotate(720deg);opacity:0}}
 @keyframes shamrock-spin{0%{transform:scale(0) rotate(-30deg)}60%{transform:scale(1.2) rotate(8deg)}100%{transform:scale(1) rotate(0deg)}}
-@keyframes slide-up{from{opacity:0;transform:translateY(60px)}to{opacity:1;transform:translateY(0)}}
-@keyframes pulse-ring{0%{transform:scale(1);opacity:0.6}100%{transform:scale(1.5);opacity:0}}
+@keyframes slide-up{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse-ring{0%{transform:scale(1);opacity:0.6}100%{transform:scale(1.6);opacity:0}}
 html{-webkit-font-smoothing:antialiased}`;
 
   const hd = {fontFamily:"'Playfair Display',serif"};
@@ -322,7 +322,7 @@ html{-webkit-font-smoothing:antialiased}`;
               onClick={async()=>await save({...st,onboarded:true})}
               style={{width:"100%",padding:"18px",borderRadius:16,background:c.btn,border:"none",color:c.btnTx,...hd,fontSize:"1.1rem",fontWeight:700,cursor:"pointer",boxShadow:"0 6px 20px rgba(45,106,79,0.3)",marginBottom:16,position:"relative",overflow:"hidden"}}
             >
-              Tosaigh! — Let's go →
+              Tosaigh! — Let's start →
             </button>
             <p style={{...bd,fontSize:"0.78rem",fontStyle:"italic",color:c.tx3,lineHeight:1.6}}>
               "Is fearr Gaeilge briste ná Béarla cliste"<br/>
@@ -364,7 +364,7 @@ html{-webkit-font-smoothing:antialiased}`;
               {/* Phrase card */}
               <div style={{background:c.phrase,border:`1.5px solid ${c.phraseBd}`,borderRadius:16,padding:"32px 24px",marginBottom:20,textAlign:"center",animation:"pop 0.4s ease"}}>
                 <div style={{...hd,fontSize:"1.8rem",fontWeight:700,color:c.acc,marginBottom:8}}>{q.phrase}</div>
-                <button onClick={()=>speak(q.phrase)} style={{background:"none",border:`1px solid ${c.phraseBd}`,borderRadius:20,padding:"5px 14px",color:c.acc,...bd,fontSize:"0.8rem",cursor:"pointer",display:"inline-flex",alignItems:"center",gap:6}}>
+                <button onClick={()=>speak(q.phrase,q.pr)} style={{background:"none",border:`1px solid ${c.phraseBd}`,borderRadius:20,padding:"5px 14px",color:c.acc,...bd,fontSize:"0.8rem",cursor:"pointer",display:"inline-flex",alignItems:"center",gap:6}}>
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M15.54 8.46a5 5 0 010 7.07" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round"/></svg>
                   Éist
                 </button>
@@ -434,6 +434,8 @@ html{-webkit-font-smoothing:antialiased}`;
     return(
       <div style={{minHeight:"100vh",background:c.bg,color:c.tx,transition:"background 0.4s"}}>
         <style>{css}</style>
+        {/* Colored accent bar */}
+        <div style={{height:4,background:CAT_CLR[ch.cat]||c.acc}}/>
         {/* Nav */}
         <div style={{padding:"16px 20px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
           <button onClick={()=>{setView("home");setSelDay(null)}} style={{background:"none",border:"none",color:c.acc,...hd,fontSize:"0.9rem",cursor:"pointer",letterSpacing:"0.02em"}}>← Back</button>
@@ -476,7 +478,7 @@ html{-webkit-font-smoothing:antialiased}`;
               <button
                 onClick={()=>{
                   setSpeaking(true);
-                  speak(ch.p);
+                  speak(ch.p, ch.pr);
                   setTimeout(()=>setSpeaking(false),2000);
                 }}
                 style={{
@@ -686,18 +688,14 @@ html{-webkit-font-smoothing:antialiased}`;
   // ═══════════════════════════════
   if(view==="map"){
     return (
-      <div style={{minHeight:"100vh",background:c.bg,color:c.tx,transition:"background 0.4s"}}>
+      <div style={{minHeight:"100vh",background:c.bg,color:c.tx,transition:"background 0.4s",paddingBottom:80,animation:"rise 0.3s ease"}}>
         <style>{css}</style>
 
-        {/* Header with branding */}
-        <div style={{padding:"20px 22px 16px",borderBottom:`1px solid ${c.bd}`,maxWidth:900,margin:"0 auto"}}>
+        {/* Hero header */}
+        <div style={{background:c.hero,padding:"24px 20px 20px"}}>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-            <button onClick={()=>setView("home")} style={{background:"none",border:"none",color:c.acc,...hd,fontSize:"0.9rem",cursor:"pointer"}}>← Back</button>
-            <div style={{display:"flex",alignItems:"center",gap:6}}>
-              <span style={{fontSize:"0.85rem"}}>☘️</span>
-              <span style={{...hd,fontSize:"0.68rem",fontWeight:600,color:c.acc,letterSpacing:"0.05em"}}>GAELTACHT CONNECT</span>
-            </div>
-            <button onClick={toggle} style={{background:c.card,border:`1px solid ${c.bd}`,borderRadius:12,width:30,height:30,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"0.75rem"}}>{dk?"☀️":"🌙"}</button>
+            <h1 style={{...hd,fontSize:"1.5rem",fontWeight:800,color:"#fff"}}>☘️ 30 Lá</h1>
+            <button onClick={toggle} style={{background:"rgba(255,255,255,0.15)",border:"none",borderRadius:10,width:32,height:32,cursor:"pointer",color:"#fff",fontSize:"0.85rem"}}>{dk?"☀️":"🌙"}</button>
           </div>
         </div>
 
@@ -801,89 +799,94 @@ html{-webkit-font-smoothing:antialiased}`;
   // ═══════════════════════════════
   // HOME — ONE DAY IN FOCUS
   // ═══════════════════════════════
+  // HOME VIEW
+  // ═══════════════════════════════
   return(
-    <div style={{minHeight:"100vh",background:c.bg,color:c.tx,transition:"background 0.4s, color 0.4s",paddingBottom:80}}>
+    <div style={{minHeight:"100vh",background:c.bg,color:c.tx,transition:"background 0.4s, color 0.4s",paddingBottom:80,animation:"rise 0.3s ease"}}>
       <style>{css}</style>
 
-      <div style={{maxWidth:520,margin:"0 auto",padding:"0 22px"}}>
-        {/* Top bar */}
-        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"18px 0 0"}}>
-          <div style={{display:"flex",alignItems:"center",gap:6}}>
-            <span style={{fontSize:"1rem"}}>☘️</span>
-            <span style={{...hd,fontSize:"0.72rem",fontWeight:600,color:c.acc,letterSpacing:"0.06em"}}>GAELTACHT CONNECT</span>
-          </div>
-          <button onClick={toggle} style={{background:c.card,border:`1px solid ${c.bd}`,borderRadius:14,width:32,height:32,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",boxShadow:c.shadow}}>
-            <span style={{fontSize:"0.8rem"}}>{dk?"☀️":"🌙"}</span>
-          </button>
-        </div>
-
-        {/* Emotional headline */}
-        <div style={{padding:"48px 0 36px",textAlign:"center",animation:"rise 0.8s ease"}}>
-          <h1 style={{...hd,fontSize:"clamp(1.4rem, 5vw, 1.8rem)",fontWeight:400,fontStyle:"italic",color:c.tx2,lineHeight:1.45,marginBottom:20}}>
-            The old words are listening.<br/>
-            <span style={{fontWeight:700,fontStyle:"normal",color:c.tx}}>Will you speak?</span>
-          </h1>
-
-          {/* Progress ring */}
-          <div style={{position:"relative",width:130,height:130,margin:"0 auto 20px"}}>
-            <svg width="130" height="130" viewBox="0 0 130 130" style={{transform:"rotate(-90deg)"}}>
-              <circle cx="65" cy="65" r="56" fill="none" stroke={c.progBg} strokeWidth="6"/>
-              <circle cx="65" cy="65" r="56" fill="none" stroke={c.acc} strokeWidth="6"
-                strokeDasharray={`${pct*352} 352`} strokeLinecap="round"
-                style={{transition:"stroke-dasharray 0.8s ease"}}/>
-            </svg>
-            <div style={{position:"absolute",inset:0,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center"}}>
-              <span style={{...hd,fontSize:"2.2rem",fontWeight:800,color:c.acc,lineHeight:1}}>{total}</span>
-              <span style={{...bd,fontSize:"0.68rem",color:c.tx3}}>of 30 days</span>
+      {/* Hero section */}
+      <div style={{background:c.hero,padding:"28px 22px 32px",position:"relative",overflow:"hidden"}}>
+        {/* Decorative circles */}
+        <div style={{position:"absolute",top:-40,right:-40,width:160,height:160,borderRadius:"50%",background:"rgba(255,255,255,0.04)",pointerEvents:"none"}}/>
+        <div style={{position:"absolute",bottom:-20,left:-20,width:100,height:100,borderRadius:"50%",background:"rgba(255,255,255,0.03)",pointerEvents:"none"}}/>
+        <div style={{position:"relative"}}>
+          {/* Top bar */}
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:28}}>
+            <div style={{display:"flex",alignItems:"center",gap:6}}>
+              <span style={{fontSize:"1rem"}}>☘️</span>
+              <span style={{...hd,fontSize:"0.7rem",fontWeight:700,color:"rgba(255,255,255,0.8)",letterSpacing:"0.07em"}}>GAELTACHT CONNECT</span>
             </div>
+            <button onClick={toggle} style={{background:"rgba(255,255,255,0.15)",border:"1px solid rgba(255,255,255,0.2)",borderRadius:12,width:32,height:32,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}>
+              <span style={{fontSize:"0.8rem"}}>{dk?"☀️":"🌙"}</span>
+            </button>
           </div>
-
-          {/* Streak */}
-          {st.streak>=2&&(
-            <div style={{display:"inline-flex",alignItems:"center",gap:5,background:`${c.gold}12`,border:`1px solid ${c.gold}28`,borderRadius:16,padding:"5px 14px",animation:"fadeIn 0.5s"}}>
-              <span style={{fontSize:"0.85rem"}}>🔥</span>
-              <span style={{...hd,fontSize:"0.78rem",fontWeight:600,color:c.gold}}>{st.streak} day streak</span>
+          {/* Title + ring */}
+          <div style={{textAlign:"center"}}>
+            <h1 style={{...hd,fontSize:"clamp(1.2rem,5vw,1.5rem)",fontWeight:400,fontStyle:"italic",color:"rgba(255,255,255,0.75)",lineHeight:1.35,marginBottom:4}}>The old words are listening.</h1>
+            <p style={{...hd,fontSize:"clamp(1.4rem,6vw,1.75rem)",fontWeight:800,color:"#fff",marginBottom:20}}>Will you speak?</p>
+            {/* Progress ring */}
+            <div style={{position:"relative",width:110,height:110,margin:"0 auto 14px"}}>
+              <svg width="110" height="110" viewBox="0 0 110 110" style={{transform:"rotate(-90deg)"}}>
+                <circle cx="55" cy="55" r="46" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="7"/>
+                <circle cx="55" cy="55" r="46" fill="none" stroke="#fff" strokeWidth="7"
+                  strokeDasharray={`${pct*289} 289`} strokeLinecap="round"
+                  style={{transition:"stroke-dasharray 0.8s ease"}}/>
+              </svg>
+              <div style={{position:"absolute",inset:0,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center"}}>
+                <span style={{...hd,fontSize:"2rem",fontWeight:800,color:"#fff",lineHeight:1}}>{total}</span>
+                <span style={{...bd,fontSize:"0.6rem",color:"rgba(255,255,255,0.6)"}}>of 30</span>
+              </div>
             </div>
-          )}
+            {/* Streak badge */}
+            {st.streak>=2&&(
+              <div style={{display:"inline-flex",alignItems:"center",gap:5,background:"rgba(255,255,255,0.14)",border:"1px solid rgba(255,255,255,0.2)",borderRadius:16,padding:"5px 14px",animation:"fadeIn 0.5s"}}>
+                <span style={{fontSize:"0.85rem"}}>🔥</span>
+                <span style={{...hd,fontSize:"0.78rem",fontWeight:600,color:"#fff"}}>{st.streak} day streak</span>
+              </div>
+            )}
+          </div>
         </div>
+      </div>
 
+      <div style={{maxWidth:520,margin:"0 auto",padding:"0 20px"}}>
         {/* Today's challenge card */}
         {!allDone?(
-          <div style={{animation:"rise 0.8s ease 0.2s both"}}>
-            <div style={{...bd,fontSize:"0.7rem",color:c.tx3,letterSpacing:"0.14em",textTransform:"uppercase",marginBottom:10,paddingLeft:4}}>
+          <div style={{marginTop:24,animation:"rise 0.5s ease 0.1s both"}}>
+            <div style={{...bd,fontSize:"0.68rem",color:c.tx3,letterSpacing:"0.14em",textTransform:"uppercase",marginBottom:10,paddingLeft:2}}>
               {st.done.includes(nextDay)?"✅ Today — completed":"☘ Today's challenge"}
             </div>
             <button onClick={()=>{setSelDay(nextDay);setView("day")}} style={{
-              width:"100%",background:c.card,border:`2px solid ${c.nextBd}`,borderRadius:20,
-              padding:"28px 24px",cursor:"pointer",textAlign:"left",boxShadow:c.shadow,
-              transition:"all 0.3s",animation:"glow 3s ease-in-out infinite",position:"relative",overflow:"hidden",
+              width:"100%",background:c.card,border:`2px solid ${c.nextBd}`,borderRadius:18,
+              padding:"0",cursor:"pointer",textAlign:"left",boxShadow:c.shadow,
+              transition:"all 0.3s",animation:"glow 3s ease-in-out infinite",overflow:"hidden",
             }}>
-              {/* Decorative */}
-              <div style={{position:"absolute",top:-30,right:-30,width:100,height:100,borderRadius:"50%",background:`${c.acc}06`}}/>
-              <div style={{position:"relative"}}>
-                <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:14}}>
-                  <div>
-                    <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:6}}>
-                      <span style={{...hd,fontSize:"0.7rem",fontWeight:600,color:c.acc,letterSpacing:"0.05em"}}>LÁ {nextDay}</span>
-                      <span style={{fontSize:"0.8rem"}}>{CATS[currentCh.cat]}</span>
+              {/* Colored top border by category */}
+              <div style={{height:4,background:CAT_CLR[currentCh.cat]||c.acc}}/>
+              <div style={{padding:"22px 20px",position:"relative"}}>
+                <div style={{position:"absolute",top:-25,right:-25,width:90,height:90,borderRadius:"50%",background:`${c.acc}05`}}/>
+                <div style={{position:"relative"}}>
+                  <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:12}}>
+                    <div>
+                      <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:5}}>
+                        <span style={{...hd,fontSize:"0.68rem",fontWeight:700,color:CAT_CLR[currentCh.cat]||c.acc,letterSpacing:"0.05em"}}>LÁ {nextDay}</span>
+                        <span style={{fontSize:"0.8rem"}}>{CATS[currentCh.cat]}</span>
+                      </div>
+                      <h2 style={{...hd,fontSize:"1.4rem",fontWeight:700,color:c.tx,marginBottom:2}}>{currentCh.t}</h2>
+                      <p style={{...bd,fontSize:"0.85rem",color:c.tx3,fontStyle:"italic"}}>{currentCh.e}</p>
                     </div>
-                    <h2 style={{...hd,fontSize:"1.5rem",fontWeight:700,color:c.tx,marginBottom:3}}>{currentCh.t}</h2>
-                    <p style={{...bd,fontSize:"0.88rem",color:c.tx3,fontStyle:"italic"}}>{currentCh.e}</p>
+                    <div style={{...hd,fontSize:"1.6rem",color:c.acc,opacity:0.15,fontWeight:800,lineHeight:1,paddingTop:2}}>{nextDay}</div>
                   </div>
-                  <div style={{...hd,fontSize:"1.8rem",color:c.acc,opacity:0.2,fontWeight:800}}>{nextDay}</div>
-                </div>
-
-                {/* Phrase preview */}
-                <div style={{background:c.phrase,border:`1px solid ${c.phraseBd}`,borderRadius:12,padding:"16px 18px",marginBottom:14,textAlign:"center"}}>
-                  <div style={{...hd,fontSize:"1.25rem",fontWeight:700,color:c.acc,marginBottom:4}}>{currentCh.p}</div>
-                  <div style={{...bd,fontSize:"0.82rem",color:c.tx3,fontStyle:"italic"}}>/{currentCh.pr}/</div>
-                </div>
-
-                <p style={{...bd,fontSize:"0.95rem",color:c.tx2,lineHeight:1.55}}>{currentCh.ch}</p>
-
-                <div style={{marginTop:16,display:"flex",alignItems:"center",justifyContent:"center",gap:6,color:c.acc,...hd,fontSize:"0.85rem",fontWeight:600}}>
-                  Open challenge
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  {/* Phrase preview */}
+                  <div style={{background:c.phrase,border:`1px solid ${c.phraseBd}`,borderRadius:10,padding:"13px 16px",marginBottom:12,textAlign:"center"}}>
+                    <div style={{...hd,fontSize:"1.15rem",fontWeight:700,color:c.acc,marginBottom:3}}>{currentCh.p}</div>
+                    <div style={{...bd,fontSize:"0.78rem",color:c.tx3,fontStyle:"italic"}}>/{currentCh.pr}/</div>
+                  </div>
+                  <p style={{...bd,fontSize:"0.9rem",color:c.tx2,lineHeight:1.5}}>{currentCh.ch}</p>
+                  <div style={{marginTop:14,display:"flex",alignItems:"center",justifyContent:"center",gap:6,color:c.acc,...hd,fontSize:"0.82rem",fontWeight:600}}>
+                    Open challenge
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  </div>
                 </div>
               </div>
             </button>
@@ -897,34 +900,52 @@ html{-webkit-font-smoothing:antialiased}`;
           </div>
         )}
 
-        {/* Week progress dots */}
-        <div style={{marginTop:36,animation:"rise 0.8s ease 0.4s both"}}>
+        {/* Week progress widget */}
+        <div style={{marginTop:20,animation:"rise 0.5s ease 0.2s both"}}>
           <button onClick={()=>setView("map")} style={{
             width:"100%",background:c.cardAlt,border:`1px solid ${c.bd}`,borderRadius:16,
-            padding:"20px",cursor:"pointer",transition:"all 0.3s",
+            padding:"18px",cursor:"pointer",transition:"all 0.3s",textAlign:"left",
           }}>
-            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
-              <span style={{...hd,fontSize:"0.75rem",fontWeight:600,color:c.tx2}}>Your journey</span>
-              <span style={{...bd,fontSize:"0.72rem",color:c.acc}}>View all →</span>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
+              <span style={{...hd,fontSize:"0.78rem",fontWeight:700,color:c.tx2}}>Week progress</span>
+              <span style={{...bd,fontSize:"0.72rem",color:c.acc}}>30 Lá →</span>
             </div>
-            <div style={{display:"flex",flexDirection:"column",gap:10}}>
+            {/* Current week progress bar */}
+            {(()=>{
+              const cWeek=WK.findIndex(w=>nextDay>w.start&&nextDay<=w.end);
+              const w=WK[Math.max(0,cWeek)];
+              const wDone=st.done.filter(d=>d>w.start&&d<=w.end).length;
+              const wTotal=w.end-w.start;
+              return(
+                <div>
+                  <div style={{display:"flex",justifyContent:"space-between",marginBottom:5}}>
+                    <span style={{...bd,fontSize:"0.72rem",color:c.tx2}}>Week {Math.max(1,cWeek+1)} — {w.en}</span>
+                    <span style={{...hd,fontSize:"0.7rem",fontWeight:700,color:c.acc}}>{wDone}/{wTotal}</span>
+                  </div>
+                  <div style={{height:6,borderRadius:3,background:c.progBg,overflow:"hidden"}}>
+                    <div style={{width:`${(wDone/wTotal)*100}%`,height:"100%",borderRadius:3,background:c.progFill,transition:"width 0.6s ease"}}/>
+                  </div>
+                </div>
+              );
+            })()}
+            <div style={{display:"flex",flexDirection:"column",gap:8,marginTop:12}}>
               {WK.map((w,wi)=>(
-                <div key={wi} style={{display:"flex",alignItems:"center",gap:10}}>
-                  <span style={{...bd,fontSize:"0.65rem",color:c.tx3,width:22,textAlign:"right"}}>{wi+1}</span>
-                  <div style={{display:"flex",gap:4,flex:1}}>
+                <div key={wi} style={{display:"flex",alignItems:"center",gap:8}}>
+                  <span style={{...bd,fontSize:"0.6rem",color:c.tx3,width:18,textAlign:"right",flexShrink:0}}>{wi+1}</span>
+                  <div style={{display:"flex",gap:3,flex:1,flexWrap:"nowrap"}}>
                     {CH.slice(w.start,w.end).map(ch=>{
                       const dn=st.done.includes(ch.day);
                       const nx=ch.day===nextDay;
                       return <div key={ch.day} style={{
-                        width:nx?14:10,height:nx?14:10,borderRadius:"50%",
+                        width:nx?12:8,height:nx?12:8,borderRadius:"50%",flexShrink:0,
                         background:dn?c.dotDone:nx?c.dotOn:"transparent",
                         border:`2px solid ${dn?c.dotDone:nx?c.dotOn:c.dotOff}`,
                         transition:"all 0.3s",
-                        boxShadow:nx?`0 0 8px ${c.acc}44`:"none",
+                        boxShadow:nx?`0 0 6px ${c.acc}55`:"none",
                       }}/>;
                     })}
                   </div>
-                  <span style={{...bd,fontSize:"0.6rem",color:c.tx3,width:28}}>{st.done.filter(d=>d>w.start&&d<=w.end).length}/{w.end-w.start}</span>
+                  <span style={{...bd,fontSize:"0.58rem",color:c.tx3,width:24,textAlign:"right",flexShrink:0}}>{st.done.filter(d=>d>w.start&&d<=w.end).length}/{w.end-w.start}</span>
                 </div>
               ))}
             </div>
@@ -932,11 +953,11 @@ html{-webkit-font-smoothing:antialiased}`;
         </div>
 
         {/* Proverb footer */}
-        <div style={{textAlign:"center",padding:"36px 0 48px",animation:"fadeIn 1s ease 0.6s both"}}>
-          <p style={{...bd,fontSize:"0.85rem",fontStyle:"italic",color:c.tx3,lineHeight:1.6}}>
-            "Is fearr Gaeilge briste<br/>ná Béarla cliste"
+        <div style={{textAlign:"center",padding:"28px 0 16px",animation:"fadeIn 1s ease 0.6s both"}}>
+          <p style={{...bd,fontSize:"0.82rem",fontStyle:"italic",color:c.tx3,lineHeight:1.6}}>
+            "Is fearr Gaeilge briste ná Béarla cliste"
           </p>
-          <p style={{...bd,fontSize:"0.7rem",color:c.tx3,marginTop:6,opacity:0.6}}>Broken Irish is better than clever English</p>
+          <p style={{...bd,fontSize:"0.68rem",color:c.tx3,marginTop:4,opacity:0.5}}>Broken Irish is better than clever English</p>
         </div>
       </div>
       <BottomNav view={view} setView={setView} c={c} hd={hd} bd={bd}/>
