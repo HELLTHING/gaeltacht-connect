@@ -963,7 +963,7 @@ html{-webkit-font-smoothing:antialiased}`;
               total>0 ? "Back again? Good. I was gettin' lonely." :
               "Dia dhuit! I'm Fionn. Let's speak Irish!"
             }
-            size={120}
+            size={90}
             align="right"
           />
         </div>

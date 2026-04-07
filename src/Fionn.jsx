@@ -53,13 +53,6 @@ export default function Fionn({ mood = "idle", size = 160, style = {} }) {
         {/* Upper eyelid */}
         <path d={`M${cx-16},${cy-1} Q${cx},${cy-e.ry-3} ${cx+16},${cy-1}`}
           fill="none" stroke={INK} strokeWidth={3.5} strokeLinecap="round"/>
-        {/* Lashes */}
-        {[-10,-4,4,10].map((dx,i)=>(
-          <line key={i}
-            x1={cx+dx} y1={cy-e.ry+1}
-            x2={cx+dx*1.25} y2={cy-e.ry-5}
-            stroke={INK} strokeWidth={2} strokeLinecap="round"/>
-        ))}
       </g>
     );
   };
@@ -118,15 +111,15 @@ export default function Fionn({ mood = "idle", size = 160, style = {} }) {
       <path d="M91,202 L100,207 L109,202 L100,199 Z"
         fill="#FFD700" stroke={INK} strokeWidth={1.5}/>
 
-      {/* ── EARS ─────────────────────────────────────── */}
-      <ellipse cx={28} cy={152} rx={16} ry={20}
+      {/* ── EARS — leprechaun slightly pointed ───────── */}
+      <path d="M30,132 Q12,142 14,160 Q16,174 32,176 Q46,174 48,160 Q50,143 36,128 Z"
         fill={`url(#ear${si})`} stroke={INK} strokeWidth={2.8}/>
-      <ellipse cx={28} cy={152} rx={9} ry={13}
-        fill="#E8A050" stroke="none"/>
-      <ellipse cx={172} cy={152} rx={16} ry={20}
+      <path d="M30,138 Q20,148 22,160 Q24,168 34,170"
+        fill="none" stroke="#D08848" strokeWidth={2} strokeLinecap="round" opacity={0.55}/>
+      <path d="M170,132 Q188,142 186,160 Q184,174 168,176 Q154,174 152,160 Q150,143 164,128 Z"
         fill={`url(#ear${si})`} stroke={INK} strokeWidth={2.8}/>
-      <ellipse cx={172} cy={152} rx={9} ry={13}
-        fill="#E8A050" stroke="none"/>
+      <path d="M170,138 Q180,148 178,160 Q176,168 166,170"
+        fill="none" stroke="#D08848" strokeWidth={2} strokeLinecap="round" opacity={0.55}/>
 
       {/* ── HEAD ─────────────────────────────────────── */}
       <circle cx={100} cy={148} r={74}
@@ -161,8 +154,8 @@ export default function Fionn({ mood = "idle", size = 160, style = {} }) {
       <rect x={88} y={84} width={24} height={5} rx={1.5}
         fill="#C9A800" stroke={INK} strokeWidth={1.2}/>
 
-      {/* ── SHAMROCK ─────────────────────────────────── */}
-      <text x={52} y={68} fontSize={24} textAnchor="middle" style={{userSelect:"none"}}>☘️</text>
+      {/* ── SHAMROCK on band ─────────────────────────── */}
+      <text x={58} y={91} fontSize={15} textAnchor="middle" style={{userSelect:"none"}}>☘️</text>
 
       {/* ── CHEEKS ───────────────────────────────────── */}
       <ellipse cx={62} cy={165} rx={20} ry={16} fill={`url(#cheek${si})`}/>
@@ -188,13 +181,11 @@ export default function Fionn({ mood = "idle", size = 160, style = {} }) {
       <DisneyEye cx={72} cy={138} open={e.lOpen}/>
       <DisneyEye cx={128} cy={138} open={e.rOpen}/>
 
-      {/* ── NOSE ─────────────────────────────────────── */}
-      <ellipse cx={100} cy={158} rx={9} ry={7}
-        fill="#E8A050" stroke={INK} strokeWidth={2} opacity={0.8}/>
-      <ellipse cx={96} cy={157} rx={3} ry={2.5}
-        fill="#C07838" stroke="none" opacity={0.6}/>
-      <ellipse cx={104} cy={157} rx={3} ry={2.5}
-        fill="#C07838" stroke="none" opacity={0.6}/>
+      {/* ── NOSE — round ball ────────────────────────── */}
+      <circle cx={100} cy={157} r={8}
+        fill="#E89A58" stroke={INK} strokeWidth={2}/>
+      <circle cx={97} cy={154} r={2.5}
+        fill={WHITE} opacity={0.45}/>
 
       {/* ── BEARD ────────────────────────────────────── */}
       <path d="M42,178 Q38,204 58,218 Q80,230 100,232 Q120,230 142,218 Q162,204 158,178 Q144,188 100,191 Q56,188 42,178 Z"
