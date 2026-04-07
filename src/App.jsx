@@ -970,10 +970,6 @@ html{-webkit-font-smoothing:antialiased}`;
           />
         </div>
 
-        {/* Harp showcase */}
-        <div style={{display:"flex",justifyContent:"center",padding:"8px 0 4px"}}>
-          <Harp size={160}/>
-        </div>
 
         {/* Proverb footer */}
         <div style={{textAlign:"center",padding:"16px 0 16px",animation:"fadeIn 1s ease 0.6s both"}}>
