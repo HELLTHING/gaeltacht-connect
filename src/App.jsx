@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from "react";
+import { FionnSays } from "./Fionn";
 
 const CH = [
   { day:1,t:"An Chéad Lá",e:"First Step",cat:"greetings",d:1,ch:"Say 'Dia dhuit' to someone today — a shop worker, neighbour, or colleague.",p:"Dia dhuit!",pr:"DEE-ah gwit",m:"Hello",tip:"If they reply 'Dia is Muire dhuit' — they know Irish! You've found a fellow Gaeilgeoir.",b:"Try it with 3 different people"},
@@ -952,8 +953,23 @@ html{-webkit-font-smoothing:antialiased}`;
           </button>
         </div>
 
+        {/* Fionn preview */}
+        <div style={{display:"flex",justifyContent:"center",padding:"16px 0 8px",animation:"rise 0.6s ease 0.4s both"}}>
+          <FionnSays
+            mood={st.streak>=5?"excited":st.streak>=2?"happy":total>0?"wink":"idle"}
+            text={
+              st.streak>=5 ? "5 days?! You're basically Irish now! 🔥" :
+              st.streak>=2 ? `${st.streak} days straight! Fionn is proud!` :
+              total>0 ? "Back again? Good. I was gettin' lonely." :
+              "Dia dhuit! I'm Fionn. Let's speak Irish!"
+            }
+            size={120}
+            align="right"
+          />
+        </div>
+
         {/* Proverb footer */}
-        <div style={{textAlign:"center",padding:"28px 0 16px",animation:"fadeIn 1s ease 0.6s both"}}>
+        <div style={{textAlign:"center",padding:"16px 0 16px",animation:"fadeIn 1s ease 0.6s both"}}>
           <p style={{...bd,fontSize:"0.82rem",fontStyle:"italic",color:c.tx3,lineHeight:1.6}}>
             "Is fearr Gaeilge briste ná Béarla cliste"
           </p>
