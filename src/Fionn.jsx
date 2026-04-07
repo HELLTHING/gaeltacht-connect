@@ -48,7 +48,7 @@ const Brow = ({ x1, y1, x2, y2, angry }) => (
 
 const MOOD_CFG = {
   idle: {
-    mouthD: "M63,158 Q80,170 97,158",
+    mouthD: "M75,163 Q100,177 125,163",
     mouthOpen: false,
     bigEyes: false,
     browAngry: false,
@@ -57,7 +57,7 @@ const MOOD_CFG = {
     stars: false,
   },
   happy: {
-    mouthD: "M58,156 Q80,178 102,156",
+    mouthD: "M65,160 Q100,180 135,160",
     mouthOpen: true,
     bigEyes: false,
     browAngry: false,
@@ -66,7 +66,7 @@ const MOOD_CFG = {
     stars: true,
   },
   excited: {
-    mouthD: "M62,155 Q80,180 98,155",
+    mouthD: "M60,158 Q100,184 140,158",
     mouthOpen: true,
     bigEyes: true,
     browAngry: false,
@@ -75,7 +75,7 @@ const MOOD_CFG = {
     stars: true,
   },
   wink: {
-    mouthD: "M65,158 Q80,170 95,160",
+    mouthD: "M75,163 Q102,175 122,162",
     mouthOpen: false,
     bigEyes: false,
     browAngry: false,
