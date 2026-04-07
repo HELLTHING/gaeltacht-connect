@@ -970,23 +970,9 @@ html{-webkit-font-smoothing:antialiased}`;
           />
         </div>
 
-        {/* Character variant comparison */}
-        <div style={{margin:"12px 16px 0",borderRadius:14,border:`2px solid ${c.bd}`,background:c.card,padding:"16px 8px 12px",boxShadow:c.shadow}}>
-          <p style={{...hd,fontSize:"0.65rem",color:c.tx3,textAlign:"center",letterSpacing:"0.08em",marginBottom:12}}>MASCOT VARIANTS — PICK YOUR FAVOURITE</p>
-          <div style={{display:"flex",justifyContent:"space-around",alignItems:"flex-end",flexWrap:"wrap",gap:8}}>
-            <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:6}}>
-              <HarpChar size={100} mood="happy"/>
-              <span style={{...bd,fontSize:"0.62rem",color:c.tx2,textAlign:"center"}}>A — Harp with face</span>
-            </div>
-            <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:6}}>
-              <Harp size={80}/>
-              <span style={{...bd,fontSize:"0.62rem",color:c.tx2,textAlign:"center"}}>B — Detailed harp</span>
-            </div>
-            <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:6}}>
-              <HarpWithFionn size={120}/>
-              <span style={{...bd,fontSize:"0.62rem",color:c.tx2,textAlign:"center"}}>C — Harp + Fionn</span>
-            </div>
-          </div>
+        {/* Harp showcase */}
+        <div style={{display:"flex",justifyContent:"center",padding:"8px 0 4px"}}>
+          <Harp size={160}/>
         </div>
 
         {/* Proverb footer */}
