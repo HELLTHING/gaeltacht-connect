@@ -68,10 +68,11 @@ export default function Fionn({ mood = "idle", size = 160, style = {} }) {
           <stop offset="60%"  stopColor="#FFCA80"/>
           <stop offset="100%" stopColor="#E8A050"/>
         </radialGradient>
-        {/* Iris gradient */}
-        <radialGradient id={`iris${si}`} cx="35%" cy="35%" r="65%">
-          <stop offset="0%"   stopColor="#7B4A20"/>
-          <stop offset="100%" stopColor="#3A1A04"/>
+        {/* Iris gradient — Irish blue */}
+        <radialGradient id={`iris${si}`} cx="35%" cy="30%" r="70%">
+          <stop offset="0%"   stopColor="#7BBFE8"/>
+          <stop offset="45%"  stopColor="#3A8DC4"/>
+          <stop offset="100%" stopColor="#1A5A8A"/>
         </radialGradient>
         {/* Hat gradient */}
         <linearGradient id={`hat${si}`} x1="0" y1="0" x2="0" y2="1">
