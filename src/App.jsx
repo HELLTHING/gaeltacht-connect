@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { FionnSays } from "./Fionn";
+import { HarpChar, HarpLogo, HarpWithFionn } from "./CharVariants";
 
 const CH = [
   { day:1,t:"An Chéad Lá",e:"First Step",cat:"greetings",d:1,ch:"Say 'Dia dhuit' to someone today — a shop worker, neighbour, or colleague.",p:"Dia dhuit!",pr:"DEE-ah gwit",m:"Hello",tip:"If they reply 'Dia is Muire dhuit' — they know Irish! You've found a fellow Gaeilgeoir.",b:"Try it with 3 different people"},
@@ -966,6 +967,25 @@ html{-webkit-font-smoothing:antialiased}`;
             size={90}
             align="right"
           />
+        </div>
+
+        {/* Character variant comparison */}
+        <div style={{margin:"12px 16px 0",borderRadius:14,border:`2px solid ${c.bd}`,background:c.card,padding:"16px 8px 12px",boxShadow:c.shadow}}>
+          <p style={{...hd,fontSize:"0.65rem",color:c.tx3,textAlign:"center",letterSpacing:"0.08em",marginBottom:12}}>MASCOT VARIANTS — PICK YOUR FAVOURITE</p>
+          <div style={{display:"flex",justifyContent:"space-around",alignItems:"flex-end",flexWrap:"wrap",gap:8}}>
+            <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:6}}>
+              <HarpChar size={110} mood="happy"/>
+              <span style={{...bd,fontSize:"0.62rem",color:c.tx2,textAlign:"center"}}>A — Harp with face</span>
+            </div>
+            <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:6}}>
+              <HarpLogo size={90}/>
+              <span style={{...bd,fontSize:"0.62rem",color:c.tx2,textAlign:"center"}}>B — Elegant logo</span>
+            </div>
+            <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:6}}>
+              <HarpWithFionn size={130}/>
+              <span style={{...bd,fontSize:"0.62rem",color:c.tx2,textAlign:"center"}}>C — Harp + Fionn</span>
+            </div>
+          </div>
         </div>
 
         {/* Proverb footer */}
