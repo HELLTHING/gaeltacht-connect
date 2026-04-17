@@ -481,31 +481,9 @@ html{-webkit-font-smoothing:antialiased}`;
 
             {/* Phrase */}
             <div style={{background:c.phrase,border:`1.5px solid ${c.phraseBd}`,borderRadius:16,padding:"28px 22px",marginBottom:16,textAlign:"center",animation:done?"none":"breathe 4s ease-in-out infinite"}}>
-              <div style={{...hd,fontSize:"1.65rem",fontWeight:700,color:c.acc,lineHeight:1.3,marginBottom:10}}>{ch.p}</div>
-              <div style={{...bd,fontSize:"0.95rem",color:c.tx3,fontStyle:"italic",marginBottom:5}}>/{ch.pr}/</div>
-              <div style={{...bd,fontSize:"0.9rem",color:c.tx2,marginBottom:16}}>{ch.m}</div>
-              <button
-                onClick={()=>{
-                  setSpeaking(true);
-                  speak(ch.p, ch.pr);
-                  setTimeout(()=>setSpeaking(false),2000);
-                }}
-                style={{
-                  display:"inline-flex",alignItems:"center",gap:7,
-                  background:speaking?c.acc:"none",
-                  border:`1.5px solid ${c.phraseBd}`,
-                  borderRadius:20,padding:"8px 18px",
-                  color:speaking?c.btnTx:c.acc,
-                  ...bd,fontSize:"0.85rem",cursor:"pointer",
-                  transition:"all 0.2s",
-                }}
-              >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M11 5L6 9H2v6h4l5 4V5z"/>
-                  <path d="M15.54 8.46a5 5 0 010 7.07M19.07 4.93a10 10 0 010 14.14" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round"/>
-                </svg>
-                {speaking ? "Ag caint..." : "Éist"}
-              </button>
+              <div style={{...hd,fontSize:"1.65rem",fontWeight:700,color:c.acc,lineHeight:1.3,marginBottom:12}}>{ch.p}</div>
+              <div style={{...bd,fontSize:"1.05rem",color:c.tx2,letterSpacing:"0.04em",marginBottom:6}}>{ch.pr}</div>
+              <div style={{...bd,fontSize:"0.88rem",color:c.tx3,fontStyle:"italic"}}>{ch.m}</div>
             </div>
 
             {/* Tip */}
