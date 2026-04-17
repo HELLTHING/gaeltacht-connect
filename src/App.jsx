@@ -46,36 +46,38 @@ const WK = [
 
 const T = {
   light: {
-    bg:"#F4F0E8",bg2:"#EDE9E0",card:"#FFFFFF",cardAlt:"#F8F6F0",
-    phrase:"#F0F5EE",phraseBd:"#C2D4BE",
-    tx:"#1a1e18",tx2:"#4a5244",tx3:"#8a9082",
-    acc:"#1A5C3E",acc2:"#0D3524",gold:"#B8860B",
-    bd:"#E8E4DC",shadow:"0 4px 20px rgba(0,0,0,0.10)",
-    doneBg:"#EDF5EB",doneBd:"#B8D4B2",doneTx:"#1A5C3E",
-    nextBd:"#1A5C3E",
-    tipBg:"#F5F0E8",tipBd:"#E2D8C4",tipTx:"#6B5D3E",
-    btn:"linear-gradient(135deg,#1A5C3E 0%,#0D3524 100%)",btnTx:"#fff",
-    progBg:"#E8E4DA",progFill:"linear-gradient(90deg,#1A5C3E,#40916C)",
-    celebBg:"rgba(255,255,255,0.92)",
-    dotOn:"#1A5C3E",dotOff:"#D4D0C6",dotDone:"#40916C",
-    nav:"#FFFFFF",navBd:"#E8E4DC",
-    hero:"linear-gradient(160deg,#1B4332 0%,#0D3524 100%)",
+    bg:"#FFFBF0",bg2:"#FFF5DC",card:"#FFFFFF",cardAlt:"#FFF8EC",
+    phrase:"#F0FAF2",phraseBd:"#111111",
+    tx:"#111111",tx2:"#333333",tx3:"#666666",
+    acc:"#1A7A3E",acc2:"#0D5228",gold:"#F5A000",
+    bd:"#111111",shadow:"4px 4px 0 #111111",
+    doneBg:"#E8F8EC",doneBd:"#111111",doneTx:"#1A7A3E",
+    nextBd:"#111111",
+    tipBg:"#FFFBE0",tipBd:"#111111",tipTx:"#5A4A00",
+    btn:"#1A7A3E",btnTx:"#fff",
+    progBg:"#E8E0D0",progFill:"linear-gradient(90deg,#1A7A3E,#F5A000)",
+    celebBg:"rgba(255,251,240,0.95)",
+    dotOn:"#1A7A3E",dotOff:"#CCCCCC",dotDone:"#1A7A3E",
+    nav:"#FFFFFF",navBd:"#111111",
+    hero:"#1A7A3E",
+    ink:"#111111",
   },
   dark: {
-    bg:"#0A0F0C",bg2:"#111510",card:"#1C211E",cardAlt:"#212823",
-    phrase:"#1A2418",phraseBd:"#2D4A2A",
-    tx:"#E4E2D8",tx2:"#A0A498",tx3:"#5E6258",
-    acc:"#52C47A",acc2:"#40916C",gold:"#D4A843",
-    bd:"#242C24",shadow:"0 4px 20px rgba(0,0,0,0.35)",
-    doneBg:"#1A2E1A",doneBd:"#2D5A2D",doneTx:"#52C47A",
-    nextBd:"#52C47A",
-    tipBg:"#1E1C16",tipBd:"#3A3422",tipTx:"#C4A86A",
-    btn:"linear-gradient(135deg,#52C47A 0%,#40916C 100%)",btnTx:"#0A0F0C",
-    progBg:"#1E221E",progFill:"linear-gradient(90deg,#52C47A,#D4A843)",
-    celebBg:"rgba(10,15,12,0.92)",
-    dotOn:"#52C47A",dotOff:"#2E322E",dotDone:"#40916C",
-    nav:"#161E18",navBd:"#242C24",
-    hero:"linear-gradient(160deg,#0D2818 0%,#0A1210 100%)",
+    bg:"#1A1A2E",bg2:"#16213E",card:"#252538",cardAlt:"#2D2D45",
+    phrase:"#1E2E22",phraseBd:"#555555",
+    tx:"#F0EEE8",tx2:"#C8C4B8",tx3:"#888888",
+    acc:"#4AE078",acc2:"#2ECC60",gold:"#FFD600",
+    bd:"#555555",shadow:"4px 4px 0 #000000",
+    doneBg:"#1A2E1A",doneBd:"#555555",doneTx:"#4AE078",
+    nextBd:"#4AE078",
+    tipBg:"#22201A",tipBd:"#555555",tipTx:"#D4B86A",
+    btn:"#4AE078",btnTx:"#111111",
+    progBg:"#2A2A3E",progFill:"linear-gradient(90deg,#4AE078,#FFD600)",
+    celebBg:"rgba(26,26,46,0.95)",
+    dotOn:"#4AE078",dotOff:"#444444",dotDone:"#4AE078",
+    nav:"#1A1A2E",navBd:"#555555",
+    hero:"#0D5228",
+    ink:"#000000",
   },
 };
 
@@ -274,23 +276,27 @@ export default function App() {
   const currentCh=CH[nextDay-1];
   const allDone=total===30;
 
-  const css=`@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;1,400;1,600&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,500;1,8..60,300;1,8..60,400&display=swap');
+  const css=`
 *{margin:0;padding:0;box-sizing:border-box}
 @keyframes rise{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
 @keyframes riseStrong{from{opacity:0;transform:translateY(50px) scale(0.96)}to{opacity:1;transform:translateY(0) scale(1)}}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-@keyframes pop{0%{transform:scale(0);opacity:0}60%{transform:scale(1.15)}100%{transform:scale(1);opacity:1}}
+@keyframes pop{0%{transform:scale(0);opacity:0}60%{transform:scale(1.18)}100%{transform:scale(1);opacity:1}}
+@keyframes stamp{0%{transform:scale(2) rotate(-15deg);opacity:0}60%{transform:scale(0.9) rotate(3deg);opacity:1}100%{transform:scale(1) rotate(0deg);opacity:1}}
+@keyframes wiggle{0%,100%{transform:rotate(0deg)}25%{transform:rotate(-3deg)}75%{transform:rotate(3deg)}}
 @keyframes shimmer{0%,100%{opacity:0.3}50%{opacity:0.7}}
 @keyframes breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.02)}}
-@keyframes glow{0%,100%{box-shadow:0 0 0 0 ${c.acc}00}50%{box-shadow:0 0 30px 2px ${c.acc}18}}
+@keyframes glow{0%,100%{box-shadow:4px 4px 0 ${c.ink}}50%{box-shadow:6px 6px 0 ${c.ink}}}
 @keyframes confetti-fall{from{transform:translateY(0) rotate(0deg);opacity:1}to{transform:translateY(110vh) rotate(720deg);opacity:0}}
 @keyframes shamrock-spin{0%{transform:scale(0) rotate(-30deg)}60%{transform:scale(1.2) rotate(8deg)}100%{transform:scale(1) rotate(0deg)}}
 @keyframes slide-up{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
 @keyframes pulse-ring{0%{transform:scale(1);opacity:0.6}100%{transform:scale(1.6);opacity:0}}
-html{-webkit-font-smoothing:antialiased}`;
+html{-webkit-font-smoothing:antialiased}
+button:active{transform:translate(2px,2px)!important;box-shadow:2px 2px 0 ${c.ink}!important}
+`;
 
-  const hd = {fontFamily:"'Playfair Display',serif"};
-  const bd = {fontFamily:"'Source Serif 4',serif"};
+  const hd = {fontFamily:"'Bangers',cursive",letterSpacing:"0.04em"};
+  const bd = {fontFamily:"'Comic Neue',cursive"};
 
   // ═══════════════════════════════
   // ONBOARDING
@@ -855,35 +861,32 @@ html{-webkit-font-smoothing:antialiased}`;
         {/* ── TODAY CARD ── */}
         {!allDone?(
           <button onClick={()=>{setSelDay(nextDay);setView("day")}} style={{
-            width:"100%",background:c.card,border:`2px solid ${c.acc}`,borderRadius:18,
+            width:"100%",background:c.card,border:`3px solid ${c.ink}`,borderRadius:12,
             padding:0,cursor:"pointer",textAlign:"left",boxShadow:c.shadow,
-            marginBottom:12,overflow:"hidden",animation:"glow 3s ease-in-out infinite",
+            marginBottom:14,overflow:"hidden",transition:"all 0.1s",
           }}>
-            <div style={{height:5,background:CAT_CLR[currentCh.cat]||c.acc}}/>
-            <div style={{padding:"18px 20px"}}>
-              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
-                <div style={{display:"flex",alignItems:"center",gap:8}}>
-                  <span style={{...hd,fontSize:"0.6rem",fontWeight:800,color:c.acc,letterSpacing:"0.1em",background:`${c.acc}18`,padding:"3px 10px",borderRadius:20}}>LÁ {nextDay} — INNIU</span>
-                  <span>{CATS[currentCh.cat]}</span>
-                </div>
-                {st.done.includes(nextDay)&&<span style={{fontSize:"1.1rem"}}>✅</span>}
+            <div style={{height:6,background:CAT_CLR[currentCh.cat]||c.acc,borderBottom:`3px solid ${c.ink}`}}/>
+            <div style={{padding:"16px 18px"}}>
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
+                <span style={{...hd,fontSize:"1rem",color:c.acc,background:`${c.acc}18`,border:`2px solid ${c.acc}`,borderRadius:20,padding:"2px 12px"}}>LÁ {nextDay} — INNIU</span>
+                {st.done.includes(nextDay)&&<span style={{fontSize:"1.2rem"}}>✅</span>}
               </div>
-              <div style={{...hd,fontSize:"1.3rem",fontWeight:700,color:c.tx,marginBottom:2}}>{currentCh.t}</div>
-              <div style={{...bd,fontSize:"0.82rem",color:c.tx3,fontStyle:"italic",marginBottom:12}}>{currentCh.e}</div>
-              <div style={{background:c.phrase,border:`1px solid ${c.phraseBd}`,borderRadius:10,padding:"10px 14px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+              <div style={{...hd,fontSize:"1.6rem",color:c.tx,marginBottom:2}}>{currentCh.t}</div>
+              <div style={{...bd,fontSize:"0.85rem",color:c.tx3,marginBottom:12}}>{currentCh.e}</div>
+              <div style={{background:c.phrase,border:`2px solid ${c.ink}`,borderRadius:8,padding:"10px 14px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
                 <div>
-                  <div style={{...hd,fontSize:"1.05rem",fontWeight:700,color:c.acc}}>{currentCh.p}</div>
-                  <div style={{...bd,fontSize:"0.72rem",color:c.tx3,fontStyle:"italic"}}>/{currentCh.pr}/</div>
+                  <div style={{...hd,fontSize:"1.2rem",color:c.acc}}>{currentCh.p}</div>
+                  <div style={{...bd,fontSize:"0.75rem",color:c.tx3}}>/{currentCh.pr}/</div>
                 </div>
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={c.acc} strokeWidth="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
               </div>
             </div>
           </button>
         ):(
-          <div style={{background:c.card,border:`2px solid ${c.acc}`,borderRadius:18,padding:"24px",textAlign:"center",marginBottom:12,boxShadow:c.shadow}}>
+          <div style={{background:c.card,border:`3px solid ${c.ink}`,borderRadius:12,padding:"24px",textAlign:"center",marginBottom:14,boxShadow:c.shadow}}>
             <div style={{fontSize:"2.5rem",marginBottom:10}}>🏆</div>
-            <div style={{...hd,fontSize:"1.3rem",fontWeight:700,color:c.acc}}>30 Lá — Déanta!</div>
-            <button onClick={()=>shareProgress(30,30,st.streak)} style={{marginTop:14,background:c.btn,border:"none",borderRadius:10,padding:"10px 22px",color:c.btnTx,...hd,fontSize:"0.85rem",fontWeight:700,cursor:"pointer"}}>Share achievement</button>
+            <div style={{...hd,fontSize:"1.8rem",color:c.acc}}>30 Lá — Déanta!</div>
+            <button onClick={()=>shareProgress(30,30,st.streak)} style={{marginTop:14,background:c.btn,border:`3px solid ${c.ink}`,borderRadius:8,padding:"10px 22px",color:c.btnTx,...hd,fontSize:"1rem",cursor:"pointer",boxShadow:c.shadow}}>Share achievement</button>
           </div>
         )}
 
@@ -891,150 +894,64 @@ html{-webkit-font-smoothing:antialiased}`;
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:12}}>
 
           {/* Map / 30 days */}
-          <button onClick={()=>setView("map")} style={{background:c.card,border:`1px solid ${c.bd}`,borderRadius:16,padding:"18px 16px",cursor:"pointer",textAlign:"left",boxShadow:c.shadow,transition:"all 0.2s"}}>
-            <div style={{fontSize:"1.6rem",marginBottom:8}}>☘️</div>
-            <div style={{...hd,fontSize:"0.9rem",fontWeight:700,color:c.tx,marginBottom:3}}>30 Lá</div>
-            <div style={{...bd,fontSize:"0.72rem",color:c.tx3,marginBottom:10}}>All challenges map</div>
-            {/* Mini dots */}
+          {/* 30 Lá */}
+          <button onClick={()=>setView("map")} style={{background:"#E8F8EC",border:`3px solid ${c.ink}`,borderRadius:12,padding:"18px 14px",cursor:"pointer",textAlign:"left",boxShadow:c.shadow,transition:"all 0.1s"}}>
+            <div style={{fontSize:"1.8rem",marginBottom:6}}>☘️</div>
+            <div style={{...hd,fontSize:"1.3rem",color:c.tx}}>30 Lá</div>
+            <div style={{...bd,fontSize:"0.72rem",color:c.tx3,marginBottom:10}}>All challenges</div>
             <div style={{display:"flex",flexWrap:"wrap",gap:3}}>
               {CH.slice(0,15).map(ch=>(
-                <div key={ch.day} style={{width:7,height:7,borderRadius:"50%",background:st.done.includes(ch.day)?c.acc:c.dotOff}}/>
+                <div key={ch.day} style={{width:7,height:7,borderRadius:"50%",background:st.done.includes(ch.day)?c.acc:c.dotOff,border:`1px solid ${c.ink}`}}/>
               ))}
             </div>
           </button>
 
           {/* Dictionary */}
-          <button onClick={()=>setView("dict")} style={{background:c.card,border:`1px solid ${c.bd}`,borderRadius:16,padding:"18px 16px",cursor:"pointer",textAlign:"left",boxShadow:c.shadow,transition:"all 0.2s"}}>
-            <div style={{fontSize:"1.6rem",marginBottom:8}}>📖</div>
-            <div style={{...hd,fontSize:"0.9rem",fontWeight:700,color:c.tx,marginBottom:3}}>Foclóir</div>
-            <div style={{...bd,fontSize:"0.72rem",color:c.tx3,marginBottom:10}}>Dictionary of phrases</div>
-            <div style={{...bd,fontSize:"0.68rem",color:c.acc,fontWeight:600}}>30 phrases →</div>
+          <button onClick={()=>setView("dict")} style={{background:"#FFF8E0",border:`3px solid ${c.ink}`,borderRadius:12,padding:"18px 14px",cursor:"pointer",textAlign:"left",boxShadow:c.shadow,transition:"all 0.1s"}}>
+            <div style={{fontSize:"1.8rem",marginBottom:6}}>📖</div>
+            <div style={{...hd,fontSize:"1.3rem",color:c.tx}}>Foclóir</div>
+            <div style={{...bd,fontSize:"0.72rem",color:c.tx3,marginBottom:10}}>Dictionary</div>
+            <div style={{...hd,fontSize:"1rem",color:c.acc}}>30 phrases →</div>
           </button>
 
           {/* Stats */}
-          <button onClick={()=>setView("stats")} style={{background:c.card,border:`1px solid ${c.bd}`,borderRadius:16,padding:"18px 16px",cursor:"pointer",textAlign:"left",boxShadow:c.shadow,transition:"all 0.2s"}}>
-            <div style={{fontSize:"1.6rem",marginBottom:8}}>📊</div>
-            <div style={{...hd,fontSize:"0.9rem",fontWeight:700,color:c.tx,marginBottom:3}}>Staitisticí</div>
-            <div style={{...bd,fontSize:"0.72rem",color:c.tx3,marginBottom:10}}>Your progress stats</div>
+          <button onClick={()=>setView("stats")} style={{background:"#EEF0FF",border:`3px solid ${c.ink}`,borderRadius:12,padding:"18px 14px",cursor:"pointer",textAlign:"left",boxShadow:c.shadow,transition:"all 0.1s"}}>
+            <div style={{fontSize:"1.8rem",marginBottom:6}}>📊</div>
+            <div style={{...hd,fontSize:"1.3rem",color:c.tx}}>Stats</div>
+            <div style={{...bd,fontSize:"0.72rem",color:c.tx3,marginBottom:8}}>Your progress</div>
             <div style={{display:"flex",gap:10}}>
-              <div style={{textAlign:"center"}}>
-                <div style={{...hd,fontSize:"1.1rem",fontWeight:800,color:c.acc}}>{total}</div>
-                <div style={{...bd,fontSize:"0.58rem",color:c.tx3}}>done</div>
-              </div>
-              <div style={{textAlign:"center"}}>
-                <div style={{...hd,fontSize:"1.1rem",fontWeight:800,color:c.gold}}>🔥{st.streak}</div>
-                <div style={{...bd,fontSize:"0.58rem",color:c.tx3}}>streak</div>
-              </div>
+              <div><div style={{...hd,fontSize:"1.4rem",color:c.acc}}>{total}</div><div style={{...bd,fontSize:"0.6rem",color:c.tx3}}>done</div></div>
+              <div><div style={{...hd,fontSize:"1.4rem",color:"#E53935"}}>🔥{st.streak}</div><div style={{...bd,fontSize:"0.6rem",color:c.tx3}}>streak</div></div>
             </div>
           </button>
 
-          {/* Week progress */}
-          <button onClick={()=>setView("map")} style={{background:c.card,border:`1px solid ${c.bd}`,borderRadius:16,padding:"18px 16px",cursor:"pointer",textAlign:"left",boxShadow:c.shadow,transition:"all 0.2s"}}>
-            <div style={{fontSize:"1.6rem",marginBottom:8}}>📅</div>
-            <div style={{...hd,fontSize:"0.9rem",fontWeight:700,color:c.tx,marginBottom:3}}>Seachtain</div>
-            <div style={{...bd,fontSize:"0.72rem",color:c.tx3,marginBottom:10}}>Week progress</div>
+          {/* Week */}
+          <button onClick={()=>setView("map")} style={{background:"#FFE8E8",border:`3px solid ${c.ink}`,borderRadius:12,padding:"18px 14px",cursor:"pointer",textAlign:"left",boxShadow:c.shadow,transition:"all 0.1s"}}>
+            <div style={{fontSize:"1.8rem",marginBottom:6}}>📅</div>
+            <div style={{...hd,fontSize:"1.3rem",color:c.tx}}>Seachtain</div>
+            <div style={{...bd,fontSize:"0.72rem",color:c.tx3,marginBottom:8}}>Week progress</div>
             {(()=>{
               const wk=WK.find(w=>nextDay>w.start&&nextDay<=w.end)||WK[3];
               const wDone=st.done.filter(d=>d>wk.start&&d<=wk.end).length;
               const wTotal=wk.end-wk.start;
-              return(
-                <>
-                  <div style={{...bd,fontSize:"0.7rem",color:c.tx3,marginBottom:4}}>{wk.name} — {wDone}/{wTotal}</div>
-                  <div style={{background:c.progBg,borderRadius:4,height:6,overflow:"hidden"}}>
-                    <div style={{height:"100%",borderRadius:4,background:c.progFill,width:`${(wDone/wTotal)*100}%`,transition:"width 0.5s"}}/>
-                  </div>
-                </>
-              );
+              return(<>
+                <div style={{...bd,fontSize:"0.7rem",color:c.tx3,marginBottom:4}}>{wDone}/{wTotal}</div>
+                <div style={{background:"rgba(0,0,0,0.1)",border:`2px solid ${c.ink}`,borderRadius:4,height:8,overflow:"hidden"}}>
+                  <div style={{height:"100%",background:c.acc,width:`${(wDone/wTotal)*100}%`,transition:"width 0.5s"}}/>
+                </div>
+              </>);
             })()}
           </button>
         </div>
 
         {/* ── PROVERB ── */}
         <div style={{textAlign:"center",padding:"12px 0 8px"}}>
-          <p style={{...bd,fontSize:"0.8rem",fontStyle:"italic",color:c.tx3,lineHeight:1.6}}>"Is fearr Gaeilge briste ná Béarla cliste"</p>
+          <p style={{...bd,fontSize:"0.82rem",fontStyle:"italic",color:c.tx3,lineHeight:1.6}}>"Is fearr Gaeilge briste ná Béarla cliste"</p>
           <p style={{...bd,fontSize:"0.65rem",color:c.tx3,marginTop:3,opacity:0.5}}>Broken Irish is better than clever English</p>
         </div>
 
       </div>
-
-      {/* ── OLD WEEK WIDGET (hidden, replaced above) ── */}
-      <div style={{display:"none"}}>
-        {/* Week progress widget */}
-        <div style={{marginTop:20,animation:"rise 0.5s ease 0.2s both"}}>
-          <button onClick={()=>setView("map")} style={{
-            width:"100%",background:c.cardAlt,border:`1px solid ${c.bd}`,borderRadius:16,
-            padding:"18px",cursor:"pointer",transition:"all 0.3s",textAlign:"left",
-          }}>
-            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
-              <span style={{...hd,fontSize:"0.78rem",fontWeight:700,color:c.tx2}}>Week progress</span>
-              <span style={{...bd,fontSize:"0.72rem",color:c.acc}}>30 Lá →</span>
-            </div>
-            {/* Current week progress bar */}
-            {(()=>{
-              const cWeek=WK.findIndex(w=>nextDay>w.start&&nextDay<=w.end);
-              const w=WK[Math.max(0,cWeek)];
-              const wDone=st.done.filter(d=>d>w.start&&d<=w.end).length;
-              const wTotal=w.end-w.start;
-              return(
-                <div>
-                  <div style={{display:"flex",justifyContent:"space-between",marginBottom:5}}>
-                    <span style={{...bd,fontSize:"0.72rem",color:c.tx2}}>Week {Math.max(1,cWeek+1)} — {w.en}</span>
-                    <span style={{...hd,fontSize:"0.7rem",fontWeight:700,color:c.acc}}>{wDone}/{wTotal}</span>
-                  </div>
-                  <div style={{height:6,borderRadius:3,background:c.progBg,overflow:"hidden"}}>
-                    <div style={{width:`${(wDone/wTotal)*100}%`,height:"100%",borderRadius:3,background:c.progFill,transition:"width 0.6s ease"}}/>
-                  </div>
-                </div>
-              );
-            })()}
-            <div style={{display:"flex",flexDirection:"column",gap:8,marginTop:12}}>
-              {WK.map((w,wi)=>(
-                <div key={wi} style={{display:"flex",alignItems:"center",gap:8}}>
-                  <span style={{...bd,fontSize:"0.6rem",color:c.tx3,width:18,textAlign:"right",flexShrink:0}}>{wi+1}</span>
-                  <div style={{display:"flex",gap:3,flex:1,flexWrap:"nowrap"}}>
-                    {CH.slice(w.start,w.end).map(ch=>{
-                      const dn=st.done.includes(ch.day);
-                      const nx=ch.day===nextDay;
-                      return <div key={ch.day} style={{
-                        width:nx?12:8,height:nx?12:8,borderRadius:"50%",flexShrink:0,
-                        background:dn?c.dotDone:nx?c.dotOn:"transparent",
-                        border:`2px solid ${dn?c.dotDone:nx?c.dotOn:c.dotOff}`,
-                        transition:"all 0.3s",
-                        boxShadow:nx?`0 0 6px ${c.acc}55`:"none",
-                      }}/>;
-                    })}
-                  </div>
-                  <span style={{...bd,fontSize:"0.58rem",color:c.tx3,width:24,textAlign:"right",flexShrink:0}}>{st.done.filter(d=>d>w.start&&d<=w.end).length}/{w.end-w.start}</span>
-                </div>
-              ))}
-            </div>
-          </button>
-        </div>
-
-        {/* Fionn preview */}
-        <div style={{display:"flex",justifyContent:"center",padding:"16px 0 8px",animation:"rise 0.6s ease 0.4s both"}}>
-          <FionnSays
-            mood={st.streak>=5?"excited":st.streak>=2?"happy":total>0?"wink":"idle"}
-            text={
-              st.streak>=5 ? "5 days?! You're basically Irish now! 🔥" :
-              st.streak>=2 ? `${st.streak} days straight! Fionn is proud!` :
-              total>0 ? "Back again? Good. I was gettin' lonely." :
-              "Dia dhuit! I'm Fionn. Let's speak Irish!"
-            }
-            size={90}
-            align="right"
-          />
-        </div>
-
-
-        {/* Proverb footer */}
-        <div style={{textAlign:"center",padding:"16px 0 16px",animation:"fadeIn 1s ease 0.6s both"}}>
-          <p style={{...bd,fontSize:"0.82rem",fontStyle:"italic",color:c.tx3,lineHeight:1.6}}>
-            "Is fearr Gaeilge briste ná Béarla cliste"
-          </p>
-          <p style={{...bd,fontSize:"0.68rem",color:c.tx3,marginTop:4,opacity:0.5}}>Broken Irish is better than clever English</p>
-        </div>
-      </div>
+      {/* placeholder to close JSX — Fionn preview was here but moved to header */}
       <BottomNav view={view} setView={setView} c={c} hd={hd} bd={bd}/>
     </div>
   );
