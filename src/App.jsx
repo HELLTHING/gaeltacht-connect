@@ -36,7 +36,26 @@ const CH = [
   { day:30,t:"Lá na Gaeilge",e:"Your Irish Day",cat:"immersion",d:5,ch:"Live one full day using as much Irish as possible.",p:"Tá Gaeilge agam. Tá mé bródúil.",pr:"Taw GAYL-geh ah-GUM. Taw may BROH-dool.",m:"I have Irish. I am proud.",tip:"You started with 'Dia dhuit'. Look how far you've come.",b:"Write a reflection. Share it. Inspire the next person.",tasks:[{icon:"🗣️",text:"Speak Irish in every situation possible today — even one word counts"},{icon:"✍️",text:"Write a short reflection: what changed for you this month?"},{icon:"📱",text:"Share your achievement with #GaeltachtConnect — inspire the next person"}]},
 ];
 
-const CATS = { greetings:"👋", review:"🔄", food:"☕", shopping:"🛍️", opinions:"💬", social:"🤝", directions:"🧭", vocabulary:"📚", culture:"🎭", immersion:"🔥" };
+const VOCAB = [
+  // Days
+  {p:"Luan",pr:"LOO-un",m:"Monday",cat:"days"},{p:"Máirt",pr:"MAR-tch",m:"Tuesday",cat:"days"},{p:"Céadaoin",pr:"KAY-deen",m:"Wednesday",cat:"days"},{p:"Déardaoin",pr:"JAIR-deen",m:"Thursday",cat:"days"},{p:"Aoine",pr:"EE-nyeh",m:"Friday",cat:"days"},{p:"Satharn",pr:"SAH-hurn",m:"Saturday",cat:"days"},{p:"Domhnach",pr:"DOW-nukh",m:"Sunday",cat:"days"},
+  // Numbers
+  {p:"A haon",pr:"ah HAYN",m:"1",cat:"numbers"},{p:"A dó",pr:"ah DOH",m:"2",cat:"numbers"},{p:"A trí",pr:"ah TREE",m:"3",cat:"numbers"},{p:"A ceathair",pr:"ah KAH-her",m:"4",cat:"numbers"},{p:"A cúig",pr:"ah KOO-ig",m:"5",cat:"numbers"},{p:"A sé",pr:"ah SHAY",m:"6",cat:"numbers"},{p:"A seacht",pr:"ah SHOKHT",m:"7",cat:"numbers"},{p:"A hocht",pr:"ah UKHT",m:"8",cat:"numbers"},{p:"A naoi",pr:"ah NEE",m:"9",cat:"numbers"},{p:"A deich",pr:"ah JEH",m:"10",cat:"numbers"},{p:"Fiche",pr:"FIH-heh",m:"20",cat:"numbers"},{p:"Caoga",pr:"KWEE-gah",m:"50",cat:"numbers"},{p:"Céad",pr:"kayd",m:"100",cat:"numbers"},
+  // Months
+  {p:"Eanáir",pr:"AN-ar",m:"January",cat:"months"},{p:"Feabhra",pr:"FOW-rah",m:"February",cat:"months"},{p:"Márta",pr:"MAR-tah",m:"March",cat:"months"},{p:"Aibreán",pr:"AB-rawn",m:"April",cat:"months"},{p:"Bealtaine",pr:"BYAL-tin-eh",m:"May",cat:"months"},{p:"Meitheamh",pr:"MEH-uv",m:"June",cat:"months"},{p:"Iúil",pr:"EW-il",m:"July",cat:"months"},{p:"Lúnasa",pr:"LOO-nah-sah",m:"August",cat:"months"},{p:"Meán Fómhair",pr:"myan FOH-ir",m:"September",cat:"months"},{p:"Deireadh Fómhair",pr:"JEH-ruh FOH-ir",m:"October",cat:"months"},{p:"Samhain",pr:"SOW-in",m:"November",cat:"months"},{p:"Nollaig",pr:"NUL-ig",m:"December",cat:"months"},
+  // Colors
+  {p:"Dearg",pr:"JAR-ug",m:"Red",cat:"colors"},{p:"Gorm",pr:"GUR-um",m:"Blue",cat:"colors"},{p:"Glas",pr:"glass",m:"Green / Grey",cat:"colors"},{p:"Bán",pr:"bawn",m:"White",cat:"colors"},{p:"Dubh",pr:"duv",m:"Black",cat:"colors"},{p:"Buí",pr:"bwee",m:"Yellow",cat:"colors"},{p:"Oráiste",pr:"OR-awsh-teh",m:"Orange",cat:"colors"},{p:"Corcra",pr:"KUR-kra",m:"Purple",cat:"colors"},{p:"Donn",pr:"down",m:"Brown",cat:"colors"},{p:"Liath",pr:"LEE-ah",m:"Grey",cat:"colors"},
+  // Family
+  {p:"Máthair",pr:"MAH-her",m:"Mother",cat:"family"},{p:"Athair",pr:"AH-her",m:"Father",cat:"family"},{p:"Deartháir",pr:"JAR-haw-er",m:"Brother",cat:"family"},{p:"Deirfiúr",pr:"JER-fyoor",m:"Sister",cat:"family"},{p:"Mac",pr:"mok",m:"Son",cat:"family"},{p:"Iníon",pr:"ih-NYEEN",m:"Daughter",cat:"family"},{p:"Seanmháthair",pr:"SHAN-wah-her",m:"Grandmother",cat:"family"},{p:"Seanathair",pr:"SHAN-ah-her",m:"Grandfather",cat:"family"},{p:"Uncail",pr:"UN-kul",m:"Uncle",cat:"family"},{p:"Aintín",pr:"AN-teen",m:"Aunt",cat:"family"},
+  // Food
+  {p:"Arán",pr:"AH-rawn",m:"Bread",cat:"food"},{p:"Im",pr:"im",m:"Butter",cat:"food"},{p:"Bainne",pr:"BAN-yeh",m:"Milk",cat:"food"},{p:"Ubh",pr:"uv",m:"Egg",cat:"food"},{p:"Feoil",pr:"FYOHL",m:"Meat",cat:"food"},{p:"Iasc",pr:"ee-USK",m:"Fish",cat:"food"},{p:"Práta",pr:"PRAW-tah",m:"Potato",cat:"food"},{p:"Siúcra",pr:"SHOO-krah",m:"Sugar",cat:"food"},{p:"Úll",pr:"ool",m:"Apple",cat:"food"},{p:"Uisce",pr:"ISH-keh",m:"Water",cat:"food"},{p:"Tae",pr:"tay",m:"Tea",cat:"food"},{p:"Fíon",pr:"FEE-un",m:"Wine",cat:"food"},
+  // Animals
+  {p:"Madra",pr:"MAD-rah",m:"Dog",cat:"animals"},{p:"Cat",pr:"kot",m:"Cat",cat:"animals"},{p:"Capall",pr:"KAP-ul",m:"Horse",cat:"animals"},{p:"Bó",pr:"boh",m:"Cow",cat:"animals"},{p:"Caora",pr:"KWEE-rah",m:"Sheep",cat:"animals"},{p:"Éan",pr:"AY-un",m:"Bird",cat:"animals"},{p:"Coinín",pr:"KUN-yeen",m:"Rabbit",cat:"animals"},{p:"Muc",pr:"muk",m:"Pig",cat:"animals"},
+  // Useful phrases
+  {p:"Go n-éirí leat",pr:"guh NYE-ree lat",m:"Good luck",cat:"phrases"},{p:"Ceart go leor",pr:"kart guh LOR",m:"Alright / OK",cat:"phrases"},{p:"Gabh mo leithscéal",pr:"gov muh LEH-shkyal",m:"Excuse me",cat:"phrases"},{p:"Tá brón orm",pr:"taw bron ur-um",m:"I'm sorry",cat:"phrases"},{p:"Níl a fhios agam",pr:"neel iss AH-gum",m:"I don't know",cat:"phrases"},{p:"Ar mhaith leat?",pr:"er wah lat",m:"Would you like?",cat:"phrases"},{p:"Cén t-am é?",pr:"kayn tom ay",m:"What time is it?",cat:"phrases"},{p:"Tá mé tuirseach",pr:"taw may TEER-shukh",m:"I'm tired",cat:"phrases"},{p:"Tá áthas orm",pr:"taw AW-hus ur-um",m:"I'm happy",cat:"phrases"},{p:"Is breá liom",pr:"iss braw lyum",m:"I love",cat:"phrases"},
+];
+
+const CATS = { greetings:"👋", review:"🔄", food:"☕", shopping:"🛍️", opinions:"💬", social:"🤝", directions:"🧭", vocabulary:"📚", culture:"🎭", immersion:"🔥", days:"📆", numbers:"🔢", months:"🗓️", colors:"🎨", family:"👨‍👩‍👧", animals:"🐾", phrases:"💬" };
 const WK = [
   { name: "Fáilte", en: "Greetings & Basics", start: 0, end: 7 },
   { name: "Bia & Siopadóireacht", en: "Food & Shopping", start: 7, end: 14 },
@@ -578,45 +597,50 @@ button:active{transform:translate(2px,2px)!important;box-shadow:2px 2px 0 ${c.in
   // DICTIONARY VIEW
   // ═══════════════════════════════
   if(view==="dict"){
-    const cats=["all",...Object.keys(CATS)];
-    const filtered=CH.filter(ch=>{
-      const matchCat=filterCat==="all"||ch.cat===filterCat;
-      const q=search.toLowerCase();
-      const matchSearch=!q||ch.p.toLowerCase().includes(q)||ch.m.toLowerCase().includes(q)||ch.t.toLowerCase().includes(q)||ch.pr.toLowerCase().includes(q);
+    const allWords=[
+      ...CH.map(ch=>({p:ch.p,pr:ch.pr,m:ch.m,cat:ch.cat,day:ch.day})),
+      ...VOCAB.map(v=>({...v,day:null})),
+    ];
+    const dictCats=["all",...[...new Set(allWords.map(w=>w.cat))]];
+    const q=search.toLowerCase();
+    const filtered=allWords.filter(w=>{
+      const matchCat=filterCat==="all"||w.cat===filterCat;
+      const matchSearch=!q||w.p.toLowerCase().includes(q)||w.m.toLowerCase().includes(q)||w.pr.toLowerCase().includes(q);
       return matchCat&&matchSearch;
     });
+    const forvoUrl=(word)=>`https://forvo.com/search/${encodeURIComponent(word.split(/[\s,!?]/)[0])}/ga/`;
     return(
       <div style={{minHeight:"100vh",background:c.bg,color:c.tx,animation:"fadeIn 0.25s ease",paddingBottom:80}}>
         <style>{css}</style>
-        <div style={{background:c.hero,padding:"24px 20px 20px"}}>
+        <div style={{background:c.hero,padding:"24px 20px 20px",borderBottom:`3px solid ${c.ink}`}}>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
-            <h1 style={{...hd,fontSize:"1.5rem",fontWeight:800,color:"#fff"}}>📖 Foclóir</h1>
-            <button onClick={toggle} style={{background:"rgba(255,255,255,0.15)",border:"none",borderRadius:10,width:32,height:32,cursor:"pointer",color:"#fff",fontSize:"0.85rem"}}>{dk?"☀️":"🌙"}</button>
+            <h1 style={{...hd,fontSize:"2rem",color:"#fff"}}>📖 Foclóir</h1>
+            <button onClick={toggle} style={{background:"rgba(255,255,255,0.15)",border:"2px solid rgba(255,255,255,0.4)",borderRadius:10,width:36,height:36,cursor:"pointer",color:"#fff",fontSize:"0.9rem"}}>{dk?"☀️":"🌙"}</button>
           </div>
-          <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Cuardach... / Search phrases" style={{width:"100%",padding:"10px 14px",borderRadius:10,border:"none",background:"rgba(255,255,255,0.18)",color:"#fff",fontSize:"0.9rem",fontFamily:"'Source Serif 4',serif",outline:"none",boxSizing:"border-box"}}/>
+          <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Cuardach... / Search" style={{width:"100%",padding:"10px 14px",borderRadius:8,border:`2px solid ${c.ink}`,background:"#fff",color:c.ink,fontSize:"0.9rem",fontFamily:"'Comic Neue',cursive",outline:"none",boxSizing:"border-box"}}/>
         </div>
-        <div style={{display:"flex",gap:8,padding:"12px 16px",overflowX:"auto",borderBottom:`1px solid ${c.bd}`}}>
-          {cats.map(cat=>(
-            <button key={cat} onClick={()=>setFilterCat(cat)} style={{flexShrink:0,padding:"5px 12px",borderRadius:20,border:`1.5px solid ${filterCat===cat?(CAT_CLR[cat]||c.acc):c.bd}`,background:filterCat===cat?(CAT_CLR[cat]||c.acc):c.card,color:filterCat===cat?"#fff":c.tx3,...bd,fontSize:"0.72rem",cursor:"pointer",whiteSpace:"nowrap"}}>
-              {cat==="all"?"🌍 All":CATS[cat]+" "+cat}
+        <div style={{display:"flex",gap:8,padding:"10px 12px",overflowX:"auto",borderBottom:`2px solid ${c.ink}`}}>
+          {dictCats.map(cat=>(
+            <button key={cat} onClick={()=>setFilterCat(cat)} style={{flexShrink:0,padding:"4px 12px",borderRadius:20,border:`2px solid ${c.ink}`,background:filterCat===cat?(CAT_CLR[cat]||c.acc):"#fff",color:filterCat===cat?"#fff":c.ink,...bd,fontSize:"0.72rem",cursor:"pointer",whiteSpace:"nowrap",boxShadow:filterCat===cat?"2px 2px 0 "+c.ink:"none",fontWeight:filterCat===cat?700:400}}>
+              {cat==="all"?"🌍 All":(CATS[cat]||"")+" "+cat}
             </button>
           ))}
         </div>
-        <div style={{padding:"8px 20px 0",...bd,fontSize:"0.7rem",color:c.tx3}}>{filtered.length} phrases</div>
+        <div style={{padding:"8px 20px",...bd,fontSize:"0.72rem",color:c.tx3}}>{filtered.length} words · <a href="https://forvo.com/languages/ga/" target="_blank" rel="noopener" style={{color:c.acc}}>Forvo Irish →</a></div>
         <div style={{padding:"0 16px"}}>
-          {filtered.map((ch,i)=>(
-            <div key={ch.day} style={{display:"flex",alignItems:"center",gap:12,padding:"14px 4px",borderBottom:`1px solid ${c.bd}`,animation:`rise 0.3s ${Math.min(i*0.02,0.3)}s ease both`}}>
-              <div style={{width:36,height:36,borderRadius:10,background:CAT_CLR[ch.cat]+"22",border:`2px solid ${CAT_CLR[ch.cat]}55`,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
-                <span style={{...hd,fontSize:"0.65rem",fontWeight:700,color:CAT_CLR[ch.cat]}}>{ch.day}</span>
+          {filtered.map((w,i)=>(
+            <div key={i} style={{display:"flex",alignItems:"center",gap:12,padding:"12px 4px",borderBottom:`2px solid ${c.bd}`,animation:`rise 0.3s ${Math.min(i*0.015,0.25)}s ease both`}}>
+              <div style={{width:38,height:38,borderRadius:8,background:CAT_CLR[w.cat]||c.acc,border:`2px solid ${c.ink}`,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,boxShadow:"2px 2px 0 "+c.ink}}>
+                <span style={{fontSize:"0.9rem"}}>{CATS[w.cat]||"📝"}</span>
               </div>
               <div style={{flex:1,minWidth:0}}>
-                <div style={{...hd,fontSize:"1rem",fontWeight:700,color:c.acc,marginBottom:1}}>{ch.p}</div>
-                <div style={{...bd,fontSize:"0.7rem",color:c.tx3,fontStyle:"italic",marginBottom:1}}>/{ch.pr}/</div>
-                <div style={{...bd,fontSize:"0.8rem",color:c.tx2}}>{ch.m}</div>
+                <div style={{...hd,fontSize:"1.1rem",color:c.acc}}>{w.p}</div>
+                <div style={{...bd,fontSize:"0.72rem",color:c.tx3}}>/{w.pr}/</div>
+                <div style={{...bd,fontSize:"0.82rem",color:c.tx2}}>{w.m}</div>
               </div>
-              <button onClick={()=>speak(ch.p,ch.pr)} style={{background:c.cardAlt,border:`1px solid ${c.bd}`,borderRadius:10,width:36,height:36,cursor:"pointer",flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center",color:c.acc}}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M15.54 8.46a5 5 0 010 7.07" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round"/></svg>
-              </button>
+              <a href={forvoUrl(w.p)} target="_blank" rel="noopener" style={{background:"#fff",border:`2px solid ${c.ink}`,borderRadius:8,width:36,height:36,flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"2px 2px 0 "+c.ink,textDecoration:"none",fontSize:"1rem"}}>
+                🔊
+              </a>
             </div>
           ))}
           {filtered.length===0&&<div style={{textAlign:"center",padding:"40px",...bd,color:c.tx3,fontStyle:"italic"}}>Níor aimsíodh aon rud — Nothing found</div>}
