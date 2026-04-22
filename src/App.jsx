@@ -63,38 +63,38 @@ const WK = [
 
 const T = {
   light: {
-    bg:"#FFFBF0",bg2:"#FFF5DC",card:"#FFFFFF",cardAlt:"#FFF8EC",
-    phrase:"#F0FAF2",phraseBd:"#111111",
-    tx:"#111111",tx2:"#333333",tx3:"#666666",
-    acc:"#1A7A3E",acc2:"#0D5228",gold:"#F5A000",
-    bd:"#111111",shadow:"4px 4px 0 #111111",
-    doneBg:"#E8F8EC",doneBd:"#111111",doneTx:"#1A7A3E",
-    nextBd:"#111111",
-    tipBg:"#FFFBE0",tipBd:"#111111",tipTx:"#5A4A00",
-    btn:"#1A7A3E",btnTx:"#fff",
-    progBg:"#E8E0D0",progFill:"linear-gradient(90deg,#1A7A3E,#F5A000)",
-    celebBg:"rgba(255,251,240,0.95)",
-    dotOn:"#1A7A3E",dotOff:"#CCCCCC",dotDone:"#1A7A3E",
-    nav:"#FFFFFF",navBd:"#111111",
-    hero:"#1A7A3E",
-    ink:"#111111",
+    bg:"#FDFAF4",bg2:"#F5EFE0",card:"#FFFFFF",cardAlt:"#FAF6EE",
+    phrase:"#EEF7F1",phraseBd:"#C9DDD1",
+    tx:"#1A1A18",tx2:"#3D3D38",tx3:"#7A7A70",
+    acc:"#1B4332",acc2:"#0D2E1F",gold:"#C9A227",
+    bd:"#D8D0C0",shadow:"0 2px 12px rgba(27,67,50,0.08)",
+    doneBg:"#EAF4EE",doneBd:"#A8CCBA",doneTx:"#1B4332",
+    nextBd:"#1B4332",
+    tipBg:"#FBF7EC",tipBd:"#E8DDB8",tipTx:"#4A3B00",
+    btn:"#1B4332",btnTx:"#fff",
+    progBg:"#E5DFD0",progFill:"linear-gradient(90deg,#1B4332,#C9A227)",
+    celebBg:"rgba(253,250,244,0.96)",
+    dotOn:"#1B4332",dotOff:"#D8D0C0",dotDone:"#1B4332",
+    nav:"#FFFFFF",navBd:"#E8E0D0",
+    hero:"#1B4332",
+    ink:"#1B4332",
   },
   dark: {
-    bg:"#1A1A2E",bg2:"#16213E",card:"#252538",cardAlt:"#2D2D45",
-    phrase:"#1E2E22",phraseBd:"#555555",
-    tx:"#F0EEE8",tx2:"#C8C4B8",tx3:"#888888",
-    acc:"#4AE078",acc2:"#2ECC60",gold:"#FFD600",
-    bd:"#555555",shadow:"4px 4px 0 #000000",
-    doneBg:"#1A2E1A",doneBd:"#555555",doneTx:"#4AE078",
-    nextBd:"#4AE078",
-    tipBg:"#22201A",tipBd:"#555555",tipTx:"#D4B86A",
-    btn:"#4AE078",btnTx:"#111111",
-    progBg:"#2A2A3E",progFill:"linear-gradient(90deg,#4AE078,#FFD600)",
-    celebBg:"rgba(26,26,46,0.95)",
-    dotOn:"#4AE078",dotOff:"#444444",dotDone:"#4AE078",
-    nav:"#1A1A2E",navBd:"#555555",
-    hero:"#0D5228",
-    ink:"#333333",
+    bg:"#141A14",bg2:"#1A221A",card:"#1E281E",cardAlt:"#222E22",
+    phrase:"#1A2E20",phraseBd:"#2E4A38",
+    tx:"#F0EDE4",tx2:"#C8C4B4",tx3:"#7A7A68",
+    acc:"#6FCF97",acc2:"#4AB87A",gold:"#D4AA30",
+    bd:"#2E3E2E",shadow:"0 2px 12px rgba(0,0,0,0.3)",
+    doneBg:"#1A2E20",doneBd:"#2E4A38",doneTx:"#6FCF97",
+    nextBd:"#6FCF97",
+    tipBg:"#1E1E14",tipBd:"#3A3520",tipTx:"#C8B870",
+    btn:"#2D6A4F",btnTx:"#fff",
+    progBg:"#1A2A1A",progFill:"linear-gradient(90deg,#2D6A4F,#D4AA30)",
+    celebBg:"rgba(20,26,20,0.96)",
+    dotOn:"#6FCF97",dotOff:"#2E3E2E",dotDone:"#6FCF97",
+    nav:"#1E281E",navBd:"#2E3E2E",
+    hero:"#0D2E1F",
+    ink:"#2E3E2E",
   },
 };
 
@@ -310,11 +310,11 @@ export default function App() {
 @keyframes slide-up{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
 @keyframes pulse-ring{0%{transform:scale(1);opacity:0.6}100%{transform:scale(1.6);opacity:0}}
 html{-webkit-font-smoothing:antialiased}
-button:active{transform:translate(2px,2px)!important;box-shadow:2px 2px 0 ${c.ink}!important}
+button:active{opacity:0.85;transform:scale(0.98)!important}
 `;
 
-  const hd = {fontFamily:"'Bangers',cursive",letterSpacing:"0.04em"};
-  const bd = {fontFamily:"'Comic Neue',cursive"};
+  const hd = {fontFamily:"'Playfair Display',Georgia,serif",letterSpacing:"0.01em"};
+  const bd = {fontFamily:"'Lato',system-ui,sans-serif"};
 
   // ═══════════════════════════════
   // ONBOARDING
