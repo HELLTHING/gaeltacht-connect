@@ -226,11 +226,12 @@ const Confetti = () => {
 export default function App() {
   const [st,setSt]=useState(null);
   const [loading,setLoading]=useState(true);
+  const [splash,setSplash]=useState(true);
   const [view,setView]=useState("home"); // home | day | map | quiz
   const [selDay,setSelDay]=useState(null);
   const [celeb,setCeleb]=useState(null);
   const [dk,setDk]=useState(false);
-  const [quiz,setQuiz]=useState(null);   // array of questions
+  const [quiz,setQuiz]=useState(null);
   const [quizIdx,setQuizIdx]=useState(0);
   const [quizScore,setQuizScore]=useState(0);
   const [quizPicked,setQuizPicked]=useState(null);
@@ -245,6 +246,11 @@ export default function App() {
     else{const i={done:[],bonus:[],tasksDone:[],streak:0,best:0,dk:false,onboarded:false,started:new Date().toISOString()};await saveS(i);setSt(i)}
     setLoading(false);
   })()},[]);
+
+  useEffect(()=>{
+    const t=setTimeout(()=>setSplash(false),4000);
+    return()=>clearTimeout(t);
+  },[]);
 
   const save=useCallback(async(ns)=>{setSt(ns);await saveS(ns)},[]);
   const toggle=async()=>{const n=!dk;setDk(n);if(st)await save({...st,dk:n})};
@@ -285,7 +291,54 @@ export default function App() {
     setView("home");setSelDay(null);
   };
 
-  if(loading) return (<div style={{minHeight:"100vh",background:c.bg,display:"flex",alignItems:"center",justifyContent:"center"}}><span style={{fontFamily:"'Playfair Display',serif",color:c.acc,fontSize:"1.1rem",letterSpacing:"0.05em"}}>Ag lódáil...</span></div>);
+  if(splash) return (
+    <div style={{
+      minHeight:"100vh",background:"#1B4332",display:"flex",flexDirection:"column",
+      alignItems:"center",justifyContent:"center",padding:"40px 32px",
+      animation:"splashFadeOut 0.6s 3.5s ease forwards",
+    }}>
+      <style>{`
+        @keyframes splashRise{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+        @keyframes splashSpin{0%{transform:scale(0) rotate(-40deg);opacity:0}60%{transform:scale(1.15) rotate(6deg);opacity:1}100%{transform:scale(1) rotate(0deg);opacity:1}}
+        @keyframes splashFadeOut{from{opacity:1}to{opacity:0;pointer-events:none}}
+        @keyframes loadFill{from{width:0%}to{width:100%}}
+        @keyframes splashDot{0%,80%,100%{opacity:0.3;transform:scale(0.8)}40%{opacity:1;transform:scale(1)}}
+      `}</style>
+
+      {/* Shamrock */}
+      <div style={{fontSize:"5.5rem",marginBottom:32,animation:"splashSpin 0.9s cubic-bezier(0.34,1.56,0.64,1) 0.2s both"}}>
+        ☘️
+      </div>
+
+      {/* Title */}
+      <div style={{textAlign:"center",marginBottom:16,animation:"splashRise 0.7s 0.7s ease both"}}>
+        <div style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:"2.4rem",fontWeight:700,color:"#fff",letterSpacing:"0.02em",lineHeight:1.2,marginBottom:10}}>
+          Gaeltacht Connect
+        </div>
+        <div style={{fontFamily:"'Lato',sans-serif",fontSize:"1rem",color:"rgba(255,255,255,0.55)",fontStyle:"italic",letterSpacing:"0.04em"}}>
+          The old words are listening.
+        </div>
+      </div>
+
+      {/* Tagline */}
+      <div style={{animation:"splashRise 0.7s 1.1s ease both",textAlign:"center",marginBottom:64}}>
+        <div style={{fontFamily:"'Lato',sans-serif",fontSize:"0.78rem",color:"rgba(255,255,255,0.35)",letterSpacing:"0.1em",textTransform:"uppercase"}}>
+          30 real challenges · Built in Ireland
+        </div>
+      </div>
+
+      {/* Loading bar */}
+      <div style={{position:"absolute",bottom:0,left:0,right:0,height:3,background:"rgba(255,255,255,0.1)"}}>
+        <div style={{
+          height:"100%",background:"rgba(255,255,255,0.6)",
+          animation:"loadFill 3.8s cubic-bezier(0.4,0,0.2,1) 0.2s both",
+          borderRadius:"0 2px 2px 0",
+        }}/>
+      </div>
+    </div>
+  );
+
+  if(loading) return (<div style={{minHeight:"100vh",background:"#1B4332"}}/>);
   if(!st)return null;
 
   const total=st.done.length;
