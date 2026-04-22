@@ -1,7 +1,5 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { FionnSays } from "./Fionn";
-import { HarpChar, HarpLogo, HarpWithFionn } from "./CharVariants";
-import Harp from "./Harp";
 
 const CH = [
   { day:1,t:"An Chéad Lá",e:"First Step",cat:"greetings",d:1,ch:"Say 'Dia dhuit' to someone today — a shop worker, neighbour, or colleague.",p:"Dia dhuit!",pr:"DEE-ah gwit",m:"Hello",tip:"If they reply 'Dia is Muire dhuit' — they know Irish! You've found a fellow Gaeilgeoir.",b:"Try it with 3 different people",tasks:[{icon:"🗣️",text:"Say 'Dia dhuit' to your reflection in the mirror"},{icon:"✍️",text:"Write 'Dia dhuit' on a sticky note and put it on your door"},{icon:"📱",text:"Text a friend 'Dia dhuit!' and see what they say"}]},
@@ -55,7 +53,7 @@ const VOCAB = [
   {p:"Go n-éirí leat",pr:"guh NYE-ree lat",m:"Good luck",cat:"phrases"},{p:"Ceart go leor",pr:"kart guh LOR",m:"Alright / OK",cat:"phrases"},{p:"Gabh mo leithscéal",pr:"gov muh LEH-shkyal",m:"Excuse me",cat:"phrases"},{p:"Tá brón orm",pr:"taw bron ur-um",m:"I'm sorry",cat:"phrases"},{p:"Níl a fhios agam",pr:"neel iss AH-gum",m:"I don't know",cat:"phrases"},{p:"Ar mhaith leat?",pr:"er wah lat",m:"Would you like?",cat:"phrases"},{p:"Cén t-am é?",pr:"kayn tom ay",m:"What time is it?",cat:"phrases"},{p:"Tá mé tuirseach",pr:"taw may TEER-shukh",m:"I'm tired",cat:"phrases"},{p:"Tá áthas orm",pr:"taw AW-hus ur-um",m:"I'm happy",cat:"phrases"},{p:"Is breá liom",pr:"iss braw lyum",m:"I love",cat:"phrases"},
 ];
 
-const CATS = { greetings:"👋", review:"🔄", food:"☕", shopping:"🛍️", opinions:"💬", social:"🤝", directions:"🧭", vocabulary:"📚", culture:"🎭", immersion:"🔥", days:"📆", numbers:"🔢", months:"🗓️", colors:"🎨", family:"👨‍👩‍👧", animals:"🐾", phrases:"💬" };
+const CATS = { greetings:"👋", review:"🔄", food:"☕", shopping:"🛍️", opinions:"💬", social:"🤝", directions:"🧭", vocabulary:"📚", culture:"🎭", immersion:"🔥", days:"📆", numbers:"🔢", months:"🗓️", colors:"🎨", family:"👨‍👩‍👧", animals:"🐾", phrases:"🗣️" };
 const WK = [
   { name: "Fáilte", en: "Greetings & Basics", start: 0, end: 7 },
   { name: "Bia & Siopadóireacht", en: "Food & Shopping", start: 7, end: 14 },
@@ -96,7 +94,7 @@ const T = {
     dotOn:"#4AE078",dotOff:"#444444",dotDone:"#4AE078",
     nav:"#1A1A2E",navBd:"#555555",
     hero:"#0D5228",
-    ink:"#000000",
+    ink:"#333333",
   },
 };
 
@@ -166,14 +164,16 @@ const speak = (phrase, pr) => {
 const CAT_CLR = {
   greetings:"#2D6A4F", review:"#6B4C9A", food:"#C2541A", shopping:"#1A5FA0",
   opinions:"#8A3A8A", social:"#2D7A6A", directions:"#1A6A8A", vocabulary:"#4A6A1A",
-  culture:"#8A6A1A", immersion:"#C23A1A"
+  culture:"#8A6A1A", immersion:"#C23A1A",
+  days:"#1A6A8A", numbers:"#2D6A4F", months:"#6B4C9A", colors:"#C2541A",
+  family:"#8A3A8A", animals:"#4A6A1A", phrases:"#2D7A6A",
 };
 
 // Bottom navigation component
 const BottomNav = ({view,setView,c,hd,bd}) => {
   const tabs=[{id:"home",icon:"🏠",label:"Baile"},{id:"map",icon:"☘️",label:"30 Lá"},{id:"dict",icon:"📖",label:"Foclóir"},{id:"stats",icon:"📊",label:"Staitisticí"}];
   return(
-    <div style={{position:"fixed",bottom:0,left:0,right:0,background:c.nav,borderTop:`1px solid ${c.navBd}`,display:"flex",zIndex:50,paddingBottom:"env(safe-area-inset-bottom)"}}>
+    <div style={{position:"fixed",bottom:0,left:0,right:0,background:c.nav,borderTop:`3px solid ${c.ink}`,display:"flex",zIndex:50,paddingBottom:"env(safe-area-inset-bottom)"}}>
       {tabs.map(t=>(
         <button key={t.id} onClick={()=>setView(t.id)} style={{flex:1,padding:"10px 4px 8px",background:"none",border:"none",cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",gap:3,opacity:view===t.id?1:0.45,transition:"opacity 0.2s"}}>
           <span style={{fontSize:"1.2rem",lineHeight:1}}>{t.icon}</span>
@@ -230,7 +230,6 @@ export default function App() {
   const [selDay,setSelDay]=useState(null);
   const [celeb,setCeleb]=useState(null);
   const [dk,setDk]=useState(false);
-  const [speaking,setSpeaking]=useState(false);
   const [quiz,setQuiz]=useState(null);   // array of questions
   const [quizIdx,setQuizIdx]=useState(0);
   const [quizScore,setQuizScore]=useState(0);
@@ -354,7 +353,7 @@ button:active{transform:translate(2px,2px)!important;box-shadow:2px 2px 0 ${c.in
           <div style={{animation:"riseStrong 0.7s 0.7s ease both"}}>
             <button
               onClick={async()=>await save({...st,onboarded:true})}
-              style={{width:"100%",padding:"18px",borderRadius:16,background:c.btn,border:"none",color:c.btnTx,...hd,fontSize:"1.1rem",fontWeight:700,cursor:"pointer",boxShadow:"0 6px 20px rgba(45,106,79,0.3)",marginBottom:16,position:"relative",overflow:"hidden"}}
+              style={{width:"100%",padding:"18px",borderRadius:12,background:c.btn,border:`3px solid ${c.ink}`,color:c.btnTx,...hd,fontSize:"1.3rem",cursor:"pointer",boxShadow:"4px 4px 0 "+c.ink,marginBottom:16}}
             >
               Tosaigh! — Let's start →
             </button>
@@ -466,13 +465,13 @@ button:active{transform:translate(2px,2px)!important;box-shadow:2px 2px 0 ${c.in
     const locked=ch.day>1&&!st.done.includes(ch.day-1)&&!done;
 
     return(
-      <div style={{minHeight:"100vh",background:c.bg,color:c.tx,transition:"background 0.4s"}}>
+      <div style={{minHeight:"100vh",background:c.bg,color:c.tx,transition:"background 0.4s",paddingBottom:40}}>
         <style>{css}</style>
         {/* Colored accent bar */}
-        <div style={{height:4,background:CAT_CLR[ch.cat]||c.acc}}/>
+        <div style={{height:6,background:CAT_CLR[ch.cat]||c.acc,borderBottom:`3px solid ${c.ink}`}}/>
         {/* Nav */}
-        <div style={{padding:"16px 20px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-          <button onClick={()=>{setView("home");setSelDay(null)}} style={{background:"none",border:"none",color:c.acc,...hd,fontSize:"0.9rem",cursor:"pointer",letterSpacing:"0.02em"}}>← Back</button>
+        <div style={{padding:"14px 20px",display:"flex",justifyContent:"space-between",alignItems:"center",borderBottom:`2px solid ${c.bd}`}}>
+          <button onClick={()=>{setView("home");setSelDay(null)}} style={{background:"none",border:`2px solid ${c.ink}`,borderRadius:8,padding:"6px 14px",color:c.acc,...hd,fontSize:"1rem",cursor:"pointer",boxShadow:"2px 2px 0 "+c.ink}}>← Back</button>
           <div style={{display:"flex",alignItems:"center",gap:8}}>
             <span style={{...bd,fontSize:"0.78rem",color:c.tx3}}>Day {ch.day} of 30</span>
             <div style={{display:"flex",gap:2}}>{[1,2,3,4,5].map(i=><div key={i} style={{width:4,height:4,borderRadius:2,background:i<=ch.d?c.acc:c.bd}}/>)}</div>
@@ -500,7 +499,7 @@ button:active{transform:translate(2px,2px)!important;box-shadow:2px 2px 0 ${c.in
             <p style={{...bd,fontSize:"1rem",color:c.tx3,fontStyle:"italic",marginBottom:28}}>{ch.e}</p>
 
             {/* Challenge */}
-            <div style={{background:c.card,border:`1px solid ${c.bd}`,borderRadius:16,padding:"22px 20px",marginBottom:16,boxShadow:c.shadow}}>
+            <div style={{background:c.card,border:`3px solid ${c.ink}`,borderRadius:12,padding:"20px",marginBottom:14,boxShadow:c.shadow}}>
               <p style={{...bd,fontSize:"1.1rem",color:c.tx2,lineHeight:1.65}}>{ch.ch}</p>
             </div>
 
@@ -512,13 +511,13 @@ button:active{transform:translate(2px,2px)!important;box-shadow:2px 2px 0 ${c.in
             </div>
 
             {/* Tip */}
-            <div style={{background:c.tipBg,border:`1px solid ${c.tipBd}`,borderRadius:12,padding:"14px 18px",marginBottom:16,display:"flex",gap:12,alignItems:"flex-start"}}>
+            <div style={{background:c.tipBg,border:`3px solid ${c.ink}`,borderRadius:12,padding:"14px 18px",marginBottom:14,display:"flex",gap:12,alignItems:"flex-start",boxShadow:"3px 3px 0 "+c.ink}}>
               <span style={{fontSize:"0.85rem",marginTop:2,flexShrink:0}}>💡</span>
               <p style={{...bd,fontSize:"0.9rem",color:c.tipTx,lineHeight:1.55,margin:0}}>{ch.tip}</p>
             </div>
 
             {/* Bonus */}
-            <div style={{background:bDone?c.doneBg:c.cardAlt,border:`1px solid ${bDone?c.doneBd:c.bd}`,borderRadius:12,padding:"14px 18px",marginBottom:28,display:"flex",alignItems:"center",gap:12}}>
+            <div style={{background:bDone?c.doneBg:c.cardAlt,border:`3px solid ${c.ink}`,borderRadius:12,padding:"14px 18px",marginBottom:20,display:"flex",alignItems:"center",gap:12,boxShadow:"3px 3px 0 "+c.ink}}>
               <span style={{fontSize:"0.8rem"}}>⭐</span>
               <div style={{flex:1}}>
                 <div style={{...hd,fontSize:"0.65rem",color:c.gold,letterSpacing:"0.12em",textTransform:"uppercase",marginBottom:2}}>Bonus challenge</div>
@@ -546,12 +545,12 @@ button:active{transform:translate(2px,2px)!important;box-shadow:2px 2px 0 ${c.in
 
             {/* Action */}
             {!done?(
-              <button onClick={()=>doComplete(ch.day)} style={{width:"100%",padding:"18px",borderRadius:14,background:c.btn,border:"none",color:c.btnTx,...hd,fontSize:"1rem",fontWeight:700,letterSpacing:"0.04em",cursor:"pointer",boxShadow:"0 4px 16px rgba(45,106,79,0.25)"}}>
+              <button onClick={()=>doComplete(ch.day)} style={{width:"100%",padding:"18px",borderRadius:12,background:c.btn,border:`3px solid ${c.ink}`,color:c.btnTx,...hd,fontSize:"1.2rem",cursor:"pointer",boxShadow:"4px 4px 0 "+c.ink}}>
                 Déanta ✓
               </button>
             ):(
               <div style={{textAlign:"center"}}>
-                <div style={{width:"100%",padding:"16px",borderRadius:14,background:c.doneBg,border:`1px solid ${c.doneBd}`,...hd,fontSize:"0.95rem",color:c.doneTx,fontWeight:700,marginBottom:14}}>✅ Completed</div>
+                <div style={{width:"100%",padding:"16px",borderRadius:12,background:c.doneBg,border:`3px solid ${c.ink}`,...hd,fontSize:"1.1rem",color:c.doneTx,marginBottom:14,boxShadow:"4px 4px 0 "+c.ink}}>✅ Completed!</div>
                 <button onClick={()=>shareProgress(ch.day,total,st.streak)} style={{background:"none",border:`1.5px solid ${c.bd}`,borderRadius:10,padding:"10px 22px",color:c.tx2,...bd,fontSize:"0.85rem",cursor:"pointer",display:"inline-flex",alignItems:"center",gap:8}}>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
                   Share progress
@@ -676,7 +675,7 @@ button:active{transform:translate(2px,2px)!important;box-shadow:2px 2px 0 ${c.in
         <div style={{padding:"20px",maxWidth:500,margin:"0 auto"}}>
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:24}}>
             {[{label:"Days done",val:total,icon:"✅"},{label:"Bonus done",val:st.bonus.length,icon:"⭐"},{label:"Best streak",val:st.best,icon:"🏆"},{label:"Current streak",val:st.streak,icon:"🔥"},{label:"Days since start",val:daysSince,icon:"📅"},{label:"Complete",val:Math.round(total/30*100)+"%",icon:"📊"}].map((s,i)=>(
-              <div key={i} style={{background:c.card,border:`1px solid ${c.bd}`,borderRadius:14,padding:"14px 16px",boxShadow:c.shadow,animation:`rise 0.4s ${i*0.05}s ease both`}}>
+              <div key={i} style={{background:c.card,border:`3px solid ${c.ink}`,borderRadius:12,padding:"14px 16px",boxShadow:c.shadow,animation:`rise 0.4s ${i*0.05}s ease both`}}>
                 <div style={{fontSize:"1.1rem",marginBottom:5}}>{s.icon}</div>
                 <div style={{...hd,fontSize:"1.6rem",fontWeight:800,color:c.acc}}>{s.val}</div>
                 <div style={{...bd,fontSize:"0.68rem",color:c.tx3,marginTop:2}}>{s.label}</div>
@@ -786,7 +785,7 @@ button:active{transform:translate(2px,2px)!important;box-shadow:2px 2px 0 ${c.in
                   return (
                     <button key={ch.day} onClick={()=>{setSelDay(ch.day);setView("day")}} style={{
                       background:dn?c.doneBg:nx?c.card:c.cardAlt,
-                      border:`1.5px solid ${dn?c.doneBd:nx?c.nextBd:c.bd}`,
+                      border:`3px solid ${c.ink}`,
                       borderRadius:12,padding:"0",cursor:lk?"not-allowed":"pointer",
                       opacity:lk?0.25:1,textAlign:"left",width:"100%",transition:"all 0.2s",
                       boxShadow:nx?c.shadow:"none",overflow:"hidden",
