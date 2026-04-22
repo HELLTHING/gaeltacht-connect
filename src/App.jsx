@@ -716,6 +716,108 @@ button:active{transform:translate(2px,2px)!important;box-shadow:2px 2px 0 ${c.in
   }
 
   // ═══════════════════════════════
+  // ═══════════════════════════════
+  // SETTINGS VIEW
+  // ═══════════════════════════════
+  if(view==="settings"){
+    const RESOURCES=[
+      {name:"Duolingo Irish",url:"https://www.duolingo.com/course/ga/en/Learn-Irish",desc:"Daily bite-sized lessons"},
+      {name:"Raidió na Gaeltachta",url:"https://www.rte.ie/rnag/",desc:"Irish-language radio — live + podcasts"},
+      {name:"Tuairisc.ie",url:"https://tuairisc.ie/",desc:"Irish-language news"},
+      {name:"Teanglann.ie",url:"https://www.teanglann.ie/",desc:"Official Irish dictionary"},
+      {name:"Forvo Irish",url:"https://forvo.com/languages/ga/",desc:"Native speaker pronunciation"},
+      {name:"r/gaeilge",url:"https://www.reddit.com/r/gaeilge/",desc:"Irish language community on Reddit"},
+    ];
+    const taskCount=st.tasksDone?st.tasksDone.length:0;
+    return(
+      <div style={{minHeight:"100vh",background:c.bg,color:c.tx,paddingBottom:80,animation:"fadeIn 0.25s ease"}}>
+        <style>{css}</style>
+        <div style={{background:c.hero,padding:"24px 20px 20px",borderBottom:`3px solid ${c.ink}`}}>
+          <h1 style={{...hd,fontSize:"2rem",color:"#fff"}}>⚙️ Socruithe</h1>
+          <p style={{...bd,fontSize:"0.78rem",color:"rgba(255,255,255,0.6)",marginTop:4}}>Settings</p>
+        </div>
+        <div style={{maxWidth:500,margin:"0 auto",padding:"20px 16px"}}>
+
+          {/* APPEARANCE */}
+          <div style={{...hd,fontSize:"0.65rem",color:c.tx3,letterSpacing:"0.12em",marginBottom:10}}>APPEARANCE</div>
+          <div style={{background:c.card,border:`3px solid ${c.ink}`,borderRadius:12,marginBottom:20,overflow:"hidden",boxShadow:c.shadow}}>
+            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"16px 18px"}}>
+              <div style={{display:"flex",alignItems:"center",gap:12}}>
+                <span style={{fontSize:"1.2rem"}}>{dk?"🌙":"☀️"}</span>
+                <div>
+                  <div style={{...hd,fontSize:"1rem",color:c.tx}}>Dark Mode</div>
+                  <div style={{...bd,fontSize:"0.72rem",color:c.tx3}}>Mód dorcha</div>
+                </div>
+              </div>
+              <button onClick={toggle} style={{width:52,height:28,borderRadius:14,background:dk?c.acc:"#ccc",border:`2px solid ${c.ink}`,position:"relative",cursor:"pointer",transition:"background 0.3s",padding:0,boxShadow:"2px 2px 0 "+c.ink}}>
+                <div style={{width:20,height:20,borderRadius:"50%",background:"#fff",border:`1.5px solid ${c.ink}`,position:"absolute",top:2,left:dk?28:2,transition:"left 0.3s"}}/>
+              </button>
+            </div>
+          </div>
+
+          {/* PROGRESS SUMMARY */}
+          <div style={{...hd,fontSize:"0.65rem",color:c.tx3,letterSpacing:"0.12em",marginBottom:10}}>YOUR PROGRESS</div>
+          <div style={{background:c.card,border:`3px solid ${c.ink}`,borderRadius:12,marginBottom:20,overflow:"hidden",boxShadow:c.shadow}}>
+            {[
+              {icon:"✅",label:"Days completed",val:`${st.done.length} / 30`},
+              {icon:"⭐",label:"Bonus challenges",val:`${st.bonus.length}`},
+              {icon:"🎯",label:"Mini tasks done",val:`${taskCount}`},
+              {icon:"🔥",label:"Best streak",val:`${st.best} days`},
+              {icon:"📅",label:"Days since start",val:`${st.started?Math.floor((Date.now()-new Date(st.started).getTime())/(864e5)):0}`},
+            ].map((row,i,arr)=>(
+              <div key={i} style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"13px 18px",borderBottom:i<arr.length-1?`2px solid ${c.bd}`:"none"}}>
+                <div style={{display:"flex",alignItems:"center",gap:10}}>
+                  <span style={{fontSize:"1rem"}}>{row.icon}</span>
+                  <span style={{...bd,fontSize:"0.88rem",color:c.tx2}}>{row.label}</span>
+                </div>
+                <span style={{...hd,fontSize:"1rem",color:c.acc}}>{row.val}</span>
+              </div>
+            ))}
+          </div>
+
+          {/* RESOURCES */}
+          <div style={{...hd,fontSize:"0.65rem",color:c.tx3,letterSpacing:"0.12em",marginBottom:10}}>IRISH LANGUAGE RESOURCES</div>
+          <div style={{background:c.card,border:`3px solid ${c.ink}`,borderRadius:12,marginBottom:20,overflow:"hidden",boxShadow:c.shadow}}>
+            {RESOURCES.map((r,i)=>(
+              <a key={i} href={r.url} target="_blank" rel="noopener noreferrer" style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"13px 18px",borderBottom:i<RESOURCES.length-1?`2px solid ${c.bd}`:"none",textDecoration:"none",color:"inherit"}}>
+                <div>
+                  <div style={{...hd,fontSize:"0.92rem",color:c.acc}}>{r.name}</div>
+                  <div style={{...bd,fontSize:"0.72rem",color:c.tx3}}>{r.desc}</div>
+                </div>
+                <span style={{color:c.tx3,fontSize:"0.9rem",flexShrink:0}}>→</span>
+              </a>
+            ))}
+          </div>
+
+          {/* ABOUT */}
+          <div style={{...hd,fontSize:"0.65rem",color:c.tx3,letterSpacing:"0.12em",marginBottom:10}}>ABOUT</div>
+          <div style={{background:c.card,border:`3px solid ${c.ink}`,borderRadius:12,marginBottom:20,padding:"18px",boxShadow:c.shadow,textAlign:"center"}}>
+            <div style={{fontSize:"2.5rem",marginBottom:8}}>☘️</div>
+            <div style={{...hd,fontSize:"1.3rem",color:c.tx,marginBottom:4}}>Gaeltacht Connect</div>
+            <div style={{...bd,fontSize:"0.78rem",color:c.tx3,lineHeight:1.6,marginBottom:12}}>
+              30 real-world challenges to bring Irish into your daily life.<br/>Built in Ireland. For Ireland.
+            </div>
+            <div style={{...bd,fontSize:"0.72rem",fontStyle:"italic",color:c.tx3,opacity:0.7}}>"Is fearr Gaeilge briste ná Béarla cliste"</div>
+          </div>
+
+          {/* DANGER ZONE */}
+          <div style={{...hd,fontSize:"0.65rem",color:"#CC3333",letterSpacing:"0.12em",marginBottom:10}}>DANGER ZONE</div>
+          <div style={{background:c.card,border:`3px solid #CC3333`,borderRadius:12,marginBottom:20,overflow:"hidden",boxShadow:"3px 3px 0 #CC333344"}}>
+            <button onClick={doReset} style={{width:"100%",padding:"16px 18px",background:"none",border:"none",cursor:"pointer",display:"flex",alignItems:"center",gap:12,textAlign:"left"}}>
+              <span style={{fontSize:"1.1rem"}}>🗑️</span>
+              <div>
+                <div style={{...hd,fontSize:"0.95rem",color:"#CC3333"}}>Reset all progress</div>
+                <div style={{...bd,fontSize:"0.72rem",color:c.tx3}}>Clears all completed days, streaks, and tasks</div>
+              </div>
+            </button>
+          </div>
+
+        </div>
+        <BottomNav view={view} setView={setView} c={c} hd={hd} bd={bd}/>
+      </div>
+    );
+  }
+
   // MAP VIEW (all 30 days)
   // ═══════════════════════════════
   if(view==="map"){
