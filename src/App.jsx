@@ -247,10 +247,6 @@ export default function App() {
     setLoading(false);
   })()},[]);
 
-  useEffect(()=>{
-    const t=setTimeout(()=>setSplash(false),4000);
-    return()=>clearTimeout(t);
-  },[]);
 
   const save=useCallback(async(ns)=>{setSt(ns);await saveS(ns)},[]);
   const toggle=async()=>{const n=!dk;setDk(n);if(st)await save({...st,dk:n})};
@@ -295,7 +291,7 @@ export default function App() {
     <div style={{
       minHeight:"100vh",background:"#1B4332",display:"flex",flexDirection:"column",
       alignItems:"center",justifyContent:"center",padding:"40px 32px",
-      animation:"splashFadeOut 0.6s 3.5s ease forwards",
+      animation:"splashRise 0.4s ease both",
     }}>
       <style>{`
         @keyframes splashRise{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
@@ -321,19 +317,34 @@ export default function App() {
       </div>
 
       {/* Tagline */}
-      <div style={{animation:"splashRise 0.7s 1.1s ease both",textAlign:"center",marginBottom:64}}>
+      <div style={{animation:"splashRise 0.7s 1.1s ease both",textAlign:"center",marginBottom:48}}>
         <div style={{fontFamily:"'Lato',sans-serif",fontSize:"0.78rem",color:"rgba(255,255,255,0.35)",letterSpacing:"0.1em",textTransform:"uppercase"}}>
           30 real challenges · Built in Ireland
         </div>
       </div>
 
-      {/* Loading bar */}
-      <div style={{position:"absolute",bottom:0,left:0,right:0,height:3,background:"rgba(255,255,255,0.1)"}}>
-        <div style={{
-          height:"100%",background:"rgba(255,255,255,0.6)",
-          animation:"loadFill 3.8s cubic-bezier(0.4,0,0.2,1) 0.2s both",
-          borderRadius:"0 2px 2px 0",
-        }}/>
+      {/* Button */}
+      <div style={{animation:"splashRise 0.7s 1.6s ease both",width:"100%",maxWidth:320}}>
+        <button
+          onClick={()=>setSplash(false)}
+          style={{
+            width:"100%",padding:"18px",
+            background:"rgba(255,255,255,0.12)",
+            border:"1.5px solid rgba(255,255,255,0.35)",
+            borderRadius:14,cursor:"pointer",
+            fontFamily:"'Playfair Display',Georgia,serif",
+            fontSize:"1.4rem",fontWeight:700,
+            color:"#fff",letterSpacing:"0.04em",
+            transition:"background 0.2s, border-color 0.2s",
+          }}
+          onMouseEnter={e=>{e.currentTarget.style.background="rgba(255,255,255,0.2)";e.currentTarget.style.borderColor="rgba(255,255,255,0.6)"}}
+          onMouseLeave={e=>{e.currentTarget.style.background="rgba(255,255,255,0.12)";e.currentTarget.style.borderColor="rgba(255,255,255,0.35)"}}
+        >
+          Tosaigh!
+        </button>
+        <div style={{fontFamily:"'Lato',sans-serif",fontSize:"0.72rem",color:"rgba(255,255,255,0.3)",textAlign:"center",marginTop:10,letterSpacing:"0.06em"}}>
+          Let's begin
+        </div>
       </div>
     </div>
   );
