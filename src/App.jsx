@@ -527,131 +527,156 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
     const done=st.done.includes(ch.day);
     const bDone=st.bonus.includes(ch.day);
     const locked=ch.day>1&&!st.done.includes(ch.day-1)&&!done;
+    const dayColor=CAT_CLR[ch.cat]||c.acc;
 
     return(
-      <div style={{minHeight:"100vh",background:c.bg,color:c.tx,transition:"background 0.4s",paddingBottom:40}}>
+      <div style={{minHeight:"100vh",background:c.bg,color:c.tx,paddingBottom:90}}>
         <style>{css}</style>
-        {/* Colored accent bar */}
-        <div style={{height:6,background:CAT_CLR[ch.cat]||c.acc,borderBottom:`3px solid ${c.ink}`}}/>
-        {/* Nav */}
-        <div style={{padding:"14px 20px",display:"flex",justifyContent:"space-between",alignItems:"center",borderBottom:`2px solid ${c.bd}`}}>
-          <button onClick={()=>{setView("home");setSelDay(null)}} style={{background:"none",border:`2px solid ${c.ink}`,borderRadius:8,padding:"6px 14px",color:c.acc,...hd,fontSize:"1rem",cursor:"pointer",boxShadow:"2px 2px 0 "+c.ink}}>← Back</button>
-          <div style={{display:"flex",alignItems:"center",gap:8}}>
-            <span style={{...bd,fontSize:"0.78rem",color:c.tx3}}>Day {ch.day} of 30</span>
-            <div style={{display:"flex",gap:2}}>{[1,2,3,4,5].map(i=><div key={i} style={{width:4,height:4,borderRadius:2,background:i<=ch.d?c.acc:c.bd}}/>)}</div>
+
+        {/* ── TOP NAV ── */}
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"16px 20px"}}>
+          <button onClick={()=>{setView("home");setSelDay(null)}} style={{display:"flex",alignItems:"center",gap:6,background:"none",border:"none",cursor:"pointer",color:c.tx3,...bd,fontSize:"0.9rem",padding:"4px 0"}}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+            Ar ais
+          </button>
+          <div style={{display:"flex",alignItems:"center",gap:6}}>
+            <span style={{...bd,fontSize:"0.72rem",color:c.tx3}}>Lá {ch.day} / 30</span>
+            <div style={{display:"flex",gap:3}}>
+              {[1,2,3,4,5].map(i=>(
+                <div key={i} style={{width:5,height:5,borderRadius:"50%",background:i<=ch.d?dayColor:c.bd}}/>
+              ))}
+            </div>
           </div>
         </div>
 
         {locked?(
-          <div style={{padding:"120px 32px",textAlign:"center",animation:"rise 0.5s ease"}}>
-            <div style={{fontSize:"3.5rem",marginBottom:20,filter:"grayscale(0.5)"}}>🔒</div>
-            <h2 style={{...hd,color:c.tx3,fontSize:"1.3rem",fontWeight:600}}>Glasáilte</h2>
-            <p style={{...bd,color:c.tx3,marginTop:10}}>Complete Day {ch.day-1} first.</p>
+          <div style={{padding:"100px 32px",textAlign:"center",animation:"rise 0.5s ease"}}>
+            <div style={{fontSize:"3rem",marginBottom:16,opacity:0.4}}>🔒</div>
+            <div style={{...hd,fontSize:"1.3rem",color:c.tx3,marginBottom:8}}>Glasáilte</div>
+            <p style={{...bd,fontSize:"0.9rem",color:c.tx3}}>Complete Lá {ch.day-1} first.</p>
           </div>
         ):(
-          <div style={{padding:"12px 22px 40px",maxWidth:520,margin:"0 auto",animation:"rise 0.5s ease"}}>
-            {/* Category pill */}
-            <div style={{marginBottom:20}}>
-              <span style={{display:"inline-flex",alignItems:"center",gap:6,background:c.cardAlt,border:`1px solid ${c.bd}`,borderRadius:20,padding:"5px 14px 5px 10px"}}>
-                <span style={{fontSize:"0.9rem"}}>{CATS[ch.cat]}</span>
-                <span style={{...bd,fontSize:"0.72rem",color:c.tx3,letterSpacing:"0.08em",textTransform:"uppercase"}}>{ch.cat}</span>
-              </span>
-            </div>
+          <div style={{maxWidth:520,margin:"0 auto",padding:"0 20px 20px",animation:"rise 0.4s ease"}}>
 
-            {/* Title */}
-            <h1 style={{...hd,fontSize:"2rem",fontWeight:700,color:c.tx,lineHeight:1.15,marginBottom:3}}>{ch.t}</h1>
-            <p style={{...bd,fontSize:"1rem",color:c.tx3,fontStyle:"italic",marginBottom:28}}>{ch.e}</p>
+            {/* ── PHRASE HERO ── */}
+            <div style={{background:c.card,border:`1px solid ${c.bd}`,borderRadius:20,overflow:"hidden",boxShadow:c.shadow,marginBottom:16}}>
+              <div style={{height:4,background:dayColor}}/>
+              <div style={{padding:"24px 22px 28px"}}>
+                {/* Category + title */}
+                <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:16}}>
+                  <span style={{fontSize:"1rem"}}>{CATS[ch.cat]}</span>
+                  <div>
+                    <div style={{...hd,fontSize:"1.6rem",fontWeight:700,color:c.tx,lineHeight:1.2}}>{ch.t}</div>
+                    <div style={{...bd,fontSize:"0.82rem",color:c.tx3,fontStyle:"italic"}}>{ch.e}</div>
+                  </div>
+                </div>
 
-            {/* Challenge */}
-            <div style={{background:c.card,border:`3px solid ${c.ink}`,borderRadius:12,padding:"20px",marginBottom:14,boxShadow:c.shadow}}>
-              <p style={{...bd,fontSize:"1.1rem",color:c.tx2,lineHeight:1.65}}>{ch.ch}</p>
-            </div>
+                {/* Big phrase */}
+                <div style={{textAlign:"center",borderTop:`1px solid ${c.bd}`,borderBottom:`1px solid ${c.bd}`,padding:"24px 8px",margin:"0 0 20px"}}>
+                  <div style={{...hd,fontSize:"2.4rem",fontWeight:700,fontStyle:"italic",color:c.acc,lineHeight:1.2,marginBottom:10}}>
+                    {ch.p}
+                  </div>
+                  <div style={{...bd,fontSize:"0.88rem",color:c.tx3,letterSpacing:"0.05em",marginBottom:6}}>{ch.pr}</div>
+                  <div style={{...bd,fontSize:"0.95rem",color:c.tx2,fontStyle:"italic"}}>"{ch.m}"</div>
+                </div>
 
-            {/* Phrase */}
-            <div style={{background:c.phrase,border:`1.5px solid ${c.phraseBd}`,borderRadius:16,padding:"28px 22px",marginBottom:16,textAlign:"center",animation:done?"none":"breathe 4s ease-in-out infinite"}}>
-              <div style={{...hd,fontSize:"1.65rem",fontWeight:700,color:c.acc,lineHeight:1.3,marginBottom:12}}>{ch.p}</div>
-              <div style={{...bd,fontSize:"1.05rem",color:c.tx2,letterSpacing:"0.04em",marginBottom:6}}>{ch.pr}</div>
-              <div style={{...bd,fontSize:"0.88rem",color:c.tx3,fontStyle:"italic"}}>{ch.m}</div>
-            </div>
-
-            {/* Tip */}
-            <div style={{background:c.tipBg,border:`3px solid ${c.ink}`,borderRadius:12,padding:"14px 18px",marginBottom:14,display:"flex",gap:12,alignItems:"flex-start",boxShadow:"3px 3px 0 "+c.ink}}>
-              <span style={{fontSize:"0.85rem",marginTop:2,flexShrink:0}}>💡</span>
-              <p style={{...bd,fontSize:"0.9rem",color:c.tipTx,lineHeight:1.55,margin:0}}>{ch.tip}</p>
-            </div>
-
-            {/* Bonus */}
-            <div style={{background:bDone?c.doneBg:c.cardAlt,border:`3px solid ${c.ink}`,borderRadius:12,padding:"14px 18px",marginBottom:20,display:"flex",alignItems:"center",gap:12,boxShadow:"3px 3px 0 "+c.ink}}>
-              <span style={{fontSize:"0.8rem"}}>⭐</span>
-              <div style={{flex:1}}>
-                <div style={{...hd,fontSize:"0.65rem",color:c.gold,letterSpacing:"0.12em",textTransform:"uppercase",marginBottom:2}}>Bonus challenge</div>
-                <p style={{...bd,fontSize:"0.88rem",color:c.tx2,margin:0,lineHeight:1.45}}>{ch.b}</p>
+                {/* Challenge */}
+                <p style={{...bd,fontSize:"0.95rem",color:c.tx2,lineHeight:1.75,margin:0}}>{ch.ch}</p>
               </div>
-              {done&&!bDone&&<button onClick={()=>doBonus(ch.day)} style={{background:"none",border:`1.5px solid ${c.gold}66`,borderRadius:8,padding:"6px 14px",color:c.gold,...hd,fontSize:"0.7rem",fontWeight:600,cursor:"pointer"}}>Done</button>}
-              {bDone&&<span>✅</span>}
             </div>
 
-            {/* Mini tasks */}
+            {/* ── TIP ── */}
+            <div style={{background:c.tipBg,border:`1px solid ${c.tipBd}`,borderRadius:14,padding:"14px 18px",marginBottom:12,display:"flex",gap:12,alignItems:"flex-start"}}>
+              <span style={{fontSize:"1rem",flexShrink:0,marginTop:1}}>💡</span>
+              <p style={{...bd,fontSize:"0.88rem",color:c.tipTx,lineHeight:1.65,margin:0}}>{ch.tip}</p>
+            </div>
+
+            {/* ── BONUS ── */}
+            <div style={{background:bDone?c.doneBg:c.cardAlt,border:`1px solid ${bDone?c.doneBd:c.bd}`,borderRadius:14,padding:"14px 18px",marginBottom:16,display:"flex",alignItems:"center",gap:12}}>
+              <span style={{fontSize:"1rem",flexShrink:0}}>⭐</span>
+              <div style={{flex:1}}>
+                <div style={{...bd,fontSize:"0.65rem",color:c.gold,letterSpacing:"0.1em",textTransform:"uppercase",fontWeight:700,marginBottom:3}}>Bonus</div>
+                <p style={{...bd,fontSize:"0.88rem",color:c.tx2,margin:0,lineHeight:1.5}}>{ch.b}</p>
+              </div>
+              {done&&!bDone&&(
+                <button onClick={()=>doBonus(ch.day)} style={{background:"none",border:`1px solid ${c.gold}88`,borderRadius:8,padding:"6px 14px",color:c.gold,...bd,fontSize:"0.78rem",fontWeight:700,cursor:"pointer",flexShrink:0}}>
+                  Déanta
+                </button>
+              )}
+              {bDone&&<span style={{fontSize:"1.1rem"}}>✅</span>}
+            </div>
+
+            {/* ── MINI TASKS ── */}
             <div style={{marginBottom:20}}>
-              <div style={{...hd,fontSize:"0.65rem",color:c.tx3,letterSpacing:"0.1em",marginBottom:10}}>MINI CHALLENGES</div>
+              <div style={{...bd,fontSize:"0.65rem",color:c.tx3,letterSpacing:"0.1em",textTransform:"uppercase",fontWeight:700,marginBottom:10}}>Mini challenges</div>
               {ch.tasks&&ch.tasks.map((task,i)=>{
                 const key=`${ch.day}-${i}`;
                 const isDone=st.tasksDone&&st.tasksDone.includes(key);
                 return(
-                  <div key={i} onClick={()=>doTask(ch.day,i)} style={{display:"flex",alignItems:"center",gap:12,background:isDone?c.doneBg:c.card,border:`1px solid ${isDone?c.doneBd:c.bd}`,borderRadius:10,padding:"11px 14px",marginBottom:8,cursor:"pointer",transition:"all 0.2s",opacity:isDone?0.8:1}}>
+                  <div key={i} onClick={()=>doTask(ch.day,i)}
+                    style={{display:"flex",alignItems:"center",gap:12,background:isDone?c.doneBg:c.card,border:`1px solid ${isDone?c.doneBd:c.bd}`,borderRadius:12,padding:"13px 16px",marginBottom:8,cursor:"pointer",transition:"all 0.2s"}}>
                     <span style={{fontSize:"1.1rem",flexShrink:0}}>{task.icon}</span>
-                    <span style={{...bd,fontSize:"0.88rem",color:isDone?c.doneTx:c.tx2,flex:1,lineHeight:1.4,textDecoration:isDone?"line-through":"none"}}>{task.text}</span>
-                    <span style={{fontSize:"1rem",flexShrink:0}}>{isDone?"✅":"⬜"}</span>
+                    <span style={{...bd,fontSize:"0.88rem",color:isDone?c.doneTx:c.tx2,flex:1,lineHeight:1.45,textDecoration:isDone?"line-through":"none"}}>{task.text}</span>
+                    <div style={{width:20,height:20,borderRadius:"50%",border:`1.5px solid ${isDone?c.doneTx:c.bd}`,background:isDone?c.doneTx:"none",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+                      {isDone&&<svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#fff" strokeWidth="1.8" strokeLinecap="round"/></svg>}
+                    </div>
                   </div>
                 );
               })}
             </div>
 
-            {/* Action */}
+            {/* ── ACTION ── */}
             {!done?(
-              <button onClick={()=>doComplete(ch.day)} style={{width:"100%",padding:"18px",borderRadius:12,background:c.btn,border:`3px solid ${c.ink}`,color:c.btnTx,...hd,fontSize:"1.2rem",cursor:"pointer",boxShadow:"4px 4px 0 "+c.ink}}>
-                Déanta ✓
+              <button onClick={()=>doComplete(ch.day)} style={{width:"100%",padding:"17px",borderRadius:14,background:c.btn,border:"none",color:c.btnTx,...hd,fontSize:"1.2rem",letterSpacing:"0.02em",cursor:"pointer"}}>
+                Déanta — Mark complete ✓
               </button>
             ):(
-              <div style={{textAlign:"center"}}>
-                <div style={{width:"100%",padding:"16px",borderRadius:12,background:c.doneBg,border:`3px solid ${c.ink}`,...hd,fontSize:"1.1rem",color:c.doneTx,marginBottom:14,boxShadow:"4px 4px 0 "+c.ink}}>✅ Completed!</div>
-                <button onClick={()=>shareProgress(ch.day,total,st.streak)} style={{background:"none",border:`1.5px solid ${c.bd}`,borderRadius:10,padding:"10px 22px",color:c.tx2,...bd,fontSize:"0.85rem",cursor:"pointer",display:"inline-flex",alignItems:"center",gap:8}}>
+              <div>
+                <div style={{width:"100%",padding:"15px",borderRadius:14,background:c.doneBg,border:`1px solid ${c.doneBd}`,textAlign:"center",...hd,fontSize:"1rem",color:c.doneTx,marginBottom:12}}>
+                  ✅ Lá {ch.day} completed!
+                </div>
+                <button onClick={()=>shareProgress(ch.day,total,st.streak)} style={{width:"100%",background:"none",border:`1px solid ${c.bd}`,borderRadius:12,padding:"12px",color:c.tx3,...bd,fontSize:"0.85rem",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:8}}>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
                   Share progress
                 </button>
               </div>
             )}
 
-            {/* Nav arrows */}
-            <div style={{display:"flex",justifyContent:"space-between",marginTop:20}}>
-              {ch.day>1?<button onClick={()=>setSelDay(ch.day-1)} style={{background:"none",border:`1px solid ${c.bd}`,borderRadius:10,padding:"9px 18px",color:c.tx3,...hd,fontSize:"0.78rem",cursor:"pointer"}}>← Lá {ch.day-1}</button>:<div/>}
-              {ch.day<30&&<button onClick={()=>setSelDay(ch.day+1)} style={{background:"none",border:`1px solid ${c.bd}`,borderRadius:10,padding:"9px 18px",color:c.tx3,...hd,fontSize:"0.78rem",cursor:"pointer"}}>Lá {ch.day+1} →</button>}
+            {/* ── NAV ARROWS ── */}
+            <div style={{display:"flex",justifyContent:"space-between",marginTop:16}}>
+              {ch.day>1
+                ?<button onClick={()=>setSelDay(ch.day-1)} style={{background:"none",border:`1px solid ${c.bd}`,borderRadius:10,padding:"9px 16px",color:c.tx3,...bd,fontSize:"0.82rem",cursor:"pointer"}}>← Lá {ch.day-1}</button>
+                :<div/>}
+              {ch.day<30&&(
+                <button onClick={()=>setSelDay(ch.day+1)} style={{background:"none",border:`1px solid ${c.bd}`,borderRadius:10,padding:"9px 16px",color:c.tx3,...bd,fontSize:"0.82rem",cursor:"pointer"}}>Lá {ch.day+1} →</button>
+              )}
             </div>
           </div>
         )}
 
-        {/* Celebrations */}
+        {/* ── CELEBRATIONS ── */}
         {celeb==="day"&&(
           <>
             <Confetti/>
-            <div onClick={()=>setCeleb(null)} style={{position:"fixed",inset:0,display:"flex",alignItems:"center",justifyContent:"center",background:c.celebBg,zIndex:100}}>
-              <div style={{textAlign:"center",animation:"pop 0.5s ease",position:"relative"}}>
-                {/* Pulse ring */}
-                <div style={{position:"absolute",inset:-20,borderRadius:"50%",border:`3px solid ${c.acc}`,animation:"pulse-ring 1s ease-out infinite"}}/>
-                <div style={{fontSize:"4rem",marginBottom:14}}>🎉</div>
-                <div style={{...hd,fontSize:"2rem",fontWeight:800,color:c.acc}}>Maith thú!</div>
-                <div style={{...bd,fontSize:"1rem",color:c.tx2,marginTop:8}}>Day {selDay} complete</div>
+            <div onClick={()=>setCeleb(null)} style={{position:"fixed",inset:0,display:"flex",alignItems:"center",justifyContent:"center",background:c.celebBg,zIndex:100,backdropFilter:"blur(4px)"}}>
+              <div style={{textAlign:"center",animation:"pop 0.5s ease",padding:"0 32px"}}>
+                <div style={{fontSize:"4rem",marginBottom:16}}>🎉</div>
+                <div style={{...hd,fontSize:"2.2rem",color:c.acc,marginBottom:8}}>Maith thú!</div>
+                <div style={{...bd,fontSize:"1rem",color:c.tx2,marginBottom:6}}>Lá {selDay} complete</div>
                 {[7,14,21].includes(selDay)&&(
-                  <div style={{...bd,fontSize:"0.82rem",color:c.gold,marginTop:10,fontStyle:"italic"}}>Week {selDay/7} done — quiz incoming! ✨</div>
+                  <div style={{...bd,fontSize:"0.85rem",color:c.gold,marginTop:8,fontStyle:"italic"}}>Week {selDay/7} done — quiz time! ✨</div>
                 )}
-                <div style={{...bd,fontSize:"0.75rem",color:c.tx3,marginTop:16,opacity:0.6}}>tap to continue</div>
+                <div style={{...bd,fontSize:"0.72rem",color:c.tx3,marginTop:20,opacity:0.5}}>tap to continue</div>
               </div>
             </div>
           </>
         )}
         {celeb==="bonus"&&(
-          <div style={{position:"fixed",top:16,left:"50%",transform:"translateX(-50%)",zIndex:100,background:c.card,border:`1px solid ${c.gold}44`,borderRadius:12,padding:"10px 22px",...hd,fontSize:"0.85rem",color:c.gold,animation:"pop 0.3s",boxShadow:c.shadow}}>⭐ Bonus!</div>
+          <div style={{position:"fixed",top:20,left:"50%",transform:"translateX(-50%)",zIndex:100,background:c.card,border:`1px solid ${c.gold}44`,borderRadius:12,padding:"10px 24px",...hd,fontSize:"0.9rem",color:c.gold,animation:"pop 0.3s",boxShadow:c.shadow}}>
+            ⭐ Bonus déanta!
+          </div>
         )}
+        <BottomNav view="day" setView={(v)=>{setView(v);setSelDay(null);}} c={c} hd={hd} bd={bd}/>
       </div>
     );
   }
