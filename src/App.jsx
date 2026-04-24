@@ -696,15 +696,50 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
         {celeb==="day"&&(
           <>
             <Confetti/>
-            <div onClick={()=>setCeleb(null)} style={{position:"fixed",inset:0,display:"flex",alignItems:"center",justifyContent:"center",background:c.celebBg,zIndex:100,backdropFilter:"blur(4px)"}}>
-              <div style={{textAlign:"center",animation:"pop 0.5s ease",padding:"0 32px"}}>
-                <div style={{fontSize:"4rem",marginBottom:16}}>🎉</div>
-                <div style={{...hd,fontSize:"2.2rem",color:c.acc,marginBottom:8}}>Maith thú!</div>
-                <div style={{...bd,fontSize:"1rem",color:c.tx2,marginBottom:6}}>Lá {selDay} complete</div>
-                {[7,14,21].includes(selDay)&&(
-                  <div style={{...bd,fontSize:"0.85rem",color:c.gold,marginTop:8,fontStyle:"italic"}}>Week {selDay/7} done — quiz time! ✨</div>
+            <div onClick={()=>setCeleb(null)} style={{position:"fixed",inset:0,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",background:"rgba(27,67,50,0.96)",zIndex:100,backdropFilter:"blur(8px)"}}>
+              {/* Radiating rings */}
+              <div style={{position:"absolute",width:260,height:260,borderRadius:"50%",border:"1px solid rgba(255,255,255,0.08)",animation:"pulse-ring 2s ease-out infinite"}}/>
+              <div style={{position:"absolute",width:200,height:200,borderRadius:"50%",border:"1px solid rgba(255,255,255,0.12)",animation:"pulse-ring 2s 0.4s ease-out infinite"}}/>
+              <div style={{position:"absolute",width:140,height:140,borderRadius:"50%",border:"1px solid rgba(255,255,255,0.18)",animation:"pulse-ring 2s 0.8s ease-out infinite"}}/>
+
+              <div style={{textAlign:"center",animation:"pop 0.6s cubic-bezier(0.34,1.56,0.64,1)",padding:"0 32px",position:"relative"}}>
+                {/* Big shamrock */}
+                <div style={{fontSize:"5rem",marginBottom:8,animation:"shamrock-spin 0.8s cubic-bezier(0.34,1.56,0.64,1) both"}}>☘️</div>
+
+                {/* Main title */}
+                <div style={{...hd,fontSize:"3rem",color:"#fff",marginBottom:6,letterSpacing:"0.02em"}}>Maith thú!</div>
+                <div style={{...bd,fontSize:"0.88rem",color:"rgba(255,255,255,0.55)",fontStyle:"italic",marginBottom:20}}>Well done!</div>
+
+                {/* Day pill */}
+                <div style={{display:"inline-block",background:"rgba(255,255,255,0.12)",border:"1px solid rgba(255,255,255,0.2)",borderRadius:20,padding:"8px 24px",marginBottom:16}}>
+                  <span style={{...hd,fontSize:"1.1rem",color:"#fff"}}>Lá {selDay}</span>
+                  <span style={{...bd,fontSize:"0.82rem",color:"rgba(255,255,255,0.55)",marginLeft:8}}>of 30</span>
+                </div>
+
+                {/* Streak bonus */}
+                {st.streak>=2&&(
+                  <div style={{...bd,fontSize:"0.88rem",color:c.gold,marginBottom:12}}>
+                    🔥 {st.streak} day streak!
+                  </div>
                 )}
-                <div style={{...bd,fontSize:"0.72rem",color:c.tx3,marginTop:20,opacity:0.5}}>tap to continue</div>
+
+                {/* Week milestone */}
+                {[7,14,21].includes(selDay)&&(
+                  <div style={{background:"rgba(201,162,39,0.15)",border:"1px solid rgba(201,162,39,0.3)",borderRadius:12,padding:"10px 20px",marginBottom:12}}>
+                    <div style={{...hd,fontSize:"1rem",color:c.gold}}>Week {selDay/7} complete! 🏆</div>
+                    <div style={{...bd,fontSize:"0.75rem",color:"rgba(255,255,255,0.5)",marginTop:4}}>Quiz coming up…</div>
+                  </div>
+                )}
+
+                {/* 30 days! */}
+                {selDay===30&&(
+                  <div style={{background:"rgba(201,162,39,0.2)",border:"1px solid rgba(201,162,39,0.4)",borderRadius:12,padding:"12px 20px",marginBottom:12}}>
+                    <div style={{...hd,fontSize:"1.2rem",color:c.gold}}>Tá Gaeilge agat! 🎊</div>
+                    <div style={{...bd,fontSize:"0.78rem",color:"rgba(255,255,255,0.6)",marginTop:4}}>You have Irish. All 30 days done.</div>
+                  </div>
+                )}
+
+                <div style={{...bd,fontSize:"0.7rem",color:"rgba(255,255,255,0.3)",marginTop:24}}>tap to continue</div>
               </div>
             </div>
           </>
