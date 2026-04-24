@@ -863,6 +863,23 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
               :"Tá Gaeilge agat. You did it. 🏆"}
             </p>
           </div>
+          {/* ── QUIZ BUTTON ── */}
+          {total>=5&&(
+            <button onClick={()=>{
+              setQuiz(makeQuiz(st.done));
+              setQuizIdx(0);setQuizScore(0);setQuizPicked(null);setQuizDone(false);
+              setView("quiz");
+            }} style={{
+              width:"100%",padding:"15px",borderRadius:14,
+              background:c.card,border:`1px solid ${c.bd}`,
+              color:c.acc,...hd,fontSize:"1rem",letterSpacing:"0.02em",
+              cursor:"pointer",boxShadow:c.shadow,marginBottom:12,
+              display:"flex",alignItems:"center",justifyContent:"center",gap:10,
+            }}>
+              <span>🧠</span> Practice quiz — test yourself
+            </button>
+          )}
+
           <div style={{textAlign:"center",marginBottom:8}}>
             <button onClick={doReset} style={{background:"none",border:`1px solid ${c.bd}`,borderRadius:8,padding:"8px 20px",color:c.tx3,...bd,fontSize:"0.72rem",cursor:"pointer"}}>Reset progress</button>
           </div>
