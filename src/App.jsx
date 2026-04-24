@@ -385,47 +385,52 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
   // ═══════════════════════════════
   if(!st.onboarded){
     const features=[
-      {icon:"🎯",title:"One challenge per day",desc:"Real actions in real places — not flashcards"},
-      {icon:"🔊",title:"Hear how it sounds",desc:"Native pronunciation for every phrase"},
-      {icon:"🔥",title:"Build a streak",desc:"30 days. One word at a time."},
+      {icon:"🎯",title:"One real challenge per day",desc:"Go out and use the language — not flashcards, not drills"},
+      {icon:"🗣️",title:"Phrases that actually matter",desc:"Order a coffee, greet a neighbour, read a sign"},
+      {icon:"🔥",title:"30 days to make it stick",desc:"A streak, a habit, a connection to something real"},
     ];
     return(
-      <div style={{minHeight:"100vh",background:c.bg,color:c.tx,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"32px 24px",textAlign:"center"}}>
+      <div style={{minHeight:"100vh",background:c.hero,display:"flex",flexDirection:"column",justifyContent:"flex-end",padding:"0 0 40px"}}>
         <style>{css}</style>
-        <div style={{maxWidth:400,width:"100%"}}>
-          {/* Animated shamrock */}
-          <div style={{fontSize:"5rem",marginBottom:24,display:"inline-block",animation:"shamrock-spin 0.8s cubic-bezier(0.34,1.56,0.64,1) both"}}>☘️</div>
 
-          <h1 style={{...hd,fontSize:"2rem",fontWeight:800,color:c.tx,marginBottom:8,animation:"riseStrong 0.7s 0.2s ease both"}}>Gaeltacht Connect</h1>
-          <p style={{...bd,fontSize:"1.1rem",fontStyle:"italic",color:c.tx2,marginBottom:8,animation:"riseStrong 0.7s 0.35s ease both"}}>The old words are listening.</p>
-          <p style={{...bd,fontSize:"0.95rem",color:c.tx3,marginBottom:36,animation:"riseStrong 0.7s 0.45s ease both"}}>30 real challenges to bring Irish<br/>into your daily life.</p>
+        {/* Top decorative area */}
+        <div style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"48px 32px 24px",textAlign:"center"}}>
+          <div style={{fontSize:"4rem",marginBottom:24,animation:"shamrock-spin 0.8s cubic-bezier(0.34,1.56,0.64,1) both"}}>☘️</div>
+          <h1 style={{...hd,fontSize:"2.2rem",color:"#fff",lineHeight:1.2,marginBottom:12,animation:"rise 0.6s 0.3s ease both",opacity:0}}>
+            Bring Irish into<br/>your daily life
+          </h1>
+          <p style={{...bd,fontSize:"0.95rem",color:"rgba(255,255,255,0.6)",lineHeight:1.7,animation:"rise 0.6s 0.55s ease both",opacity:0}}>
+            30 real-world challenges.<br/>One per day. No excuses.
+          </p>
+        </div>
 
-          {/* Features */}
-          <div style={{display:"flex",flexDirection:"column",gap:12,marginBottom:40,animation:"riseStrong 0.7s 0.55s ease both"}}>
+        {/* Bottom sheet */}
+        <div style={{background:c.bg,borderRadius:"24px 24px 0 0",padding:"28px 24px 8px",animation:"rise 0.5s 0.7s ease both",opacity:0}}>
+          <div style={{display:"flex",flexDirection:"column",gap:0,marginBottom:28}}>
             {features.map((f,i)=>(
-              <div key={i} style={{display:"flex",alignItems:"center",gap:14,background:c.card,border:`1px solid ${c.bd}`,borderRadius:14,padding:"14px 18px",textAlign:"left",boxShadow:c.shadow}}>
-                <span style={{fontSize:"1.4rem",flexShrink:0}}>{f.icon}</span>
-                <div>
-                  <div style={{...hd,fontSize:"0.9rem",fontWeight:600,color:c.tx,marginBottom:2}}>{f.title}</div>
-                  <div style={{...bd,fontSize:"0.78rem",color:c.tx3}}>{f.desc}</div>
+              <div key={i} style={{display:"flex",alignItems:"flex-start",gap:16,padding:"16px 0",borderBottom:i<features.length-1?`1px solid ${c.bd}`:"none",animation:`rise 0.5s ${0.8+i*0.1}s ease both`,opacity:0}}>
+                <div style={{width:40,height:40,borderRadius:12,background:c.cardAlt,border:`1px solid ${c.bd}`,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,fontSize:"1.2rem"}}>
+                  {f.icon}
+                </div>
+                <div style={{paddingTop:2}}>
+                  <div style={{...hd,fontSize:"1rem",color:c.tx,marginBottom:3}}>{f.title}</div>
+                  <div style={{...bd,fontSize:"0.82rem",color:c.tx3,lineHeight:1.5}}>{f.desc}</div>
                 </div>
               </div>
             ))}
           </div>
 
-          {/* CTA */}
-          <div style={{animation:"riseStrong 0.7s 0.7s ease both"}}>
-            <button
-              onClick={async()=>await save({...st,onboarded:true})}
-              style={{width:"100%",padding:"18px",borderRadius:12,background:c.btn,border:`3px solid ${c.ink}`,color:c.btnTx,...hd,fontSize:"1.3rem",cursor:"pointer",boxShadow:"4px 4px 0 "+c.ink,marginBottom:16}}
-            >
-              Tosaigh! — Let's start →
-            </button>
-            <p style={{...bd,fontSize:"0.78rem",fontStyle:"italic",color:c.tx3,lineHeight:1.6}}>
-              "Is fearr Gaeilge briste ná Béarla cliste"<br/>
-              <span style={{opacity:0.6}}>Broken Irish is better than clever English</span>
-            </p>
-          </div>
+          <button
+            onClick={async()=>await save({...st,onboarded:true})}
+            style={{width:"100%",padding:"17px",borderRadius:14,background:c.btn,border:"none",color:c.btnTx,...hd,fontSize:"1.2rem",letterSpacing:"0.03em",cursor:"pointer",marginBottom:16,animation:"rise 0.5s 1.1s ease both",opacity:0}}
+          >
+            Tosaigh! — Let's begin
+          </button>
+
+          <p style={{...bd,fontSize:"0.75rem",fontStyle:"italic",color:c.tx3,lineHeight:1.7,textAlign:"center",animation:"rise 0.5s 1.2s ease both",opacity:0}}>
+            "Is fearr Gaeilge briste ná Béarla cliste"<br/>
+            <span style={{opacity:0.55}}>Broken Irish is better than clever English</span>
+          </p>
         </div>
       </div>
     );
