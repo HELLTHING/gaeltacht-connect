@@ -171,16 +171,49 @@ const CAT_CLR = {
 
 // Bottom navigation component
 const BottomNav = ({view,setView,c,hd,bd}) => {
-  const tabs=[{id:"home",icon:"🏠",label:"Baile"},{id:"map",icon:"☘️",label:"30 Lá"},{id:"dict",icon:"📖",label:"Foclóir"},{id:"stats",icon:"📊",label:"Staitisticí"}];
+  const tabs=[
+    {id:"home", icon:"🏠", label:"Baile"},
+    {id:"map",  icon:"☘️", label:"30 Lá"},
+    {id:"dict", icon:"📖", label:"Foclóir"},
+    {id:"stats",icon:"📊", label:"Stats"},
+    {id:"settings",icon:"⚙️",label:"Socruithe"},
+  ];
   return(
-    <div style={{position:"fixed",bottom:0,left:0,right:0,background:c.nav,borderTop:`3px solid ${c.ink}`,display:"flex",zIndex:50,paddingBottom:"env(safe-area-inset-bottom)"}}>
-      {tabs.map(t=>(
-        <button key={t.id} onClick={()=>setView(t.id)} style={{flex:1,padding:"10px 4px 8px",background:"none",border:"none",cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",gap:3,opacity:view===t.id?1:0.45,transition:"opacity 0.2s"}}>
-          <span style={{fontSize:"1.2rem",lineHeight:1}}>{t.icon}</span>
-          <span style={{...hd,fontSize:"0.6rem",fontWeight:view===t.id?700:400,color:view===t.id?c.acc:c.tx3,letterSpacing:"0.04em"}}>{t.label}</span>
-          {view===t.id&&<div style={{width:20,height:2,borderRadius:1,background:c.acc,marginTop:1}}/>}
-        </button>
-      ))}
+    <div style={{
+      position:"fixed",bottom:0,left:0,right:0,
+      background:c.nav,
+      borderTop:`1px solid ${c.bd}`,
+      display:"flex",zIndex:50,
+      paddingBottom:"env(safe-area-inset-bottom)",
+      backdropFilter:"blur(12px)",
+      WebkitBackdropFilter:"blur(12px)",
+    }}>
+      {tabs.map(t=>{
+        const active=view===t.id||( view==="day"&&t.id==="home");
+        return(
+          <button key={t.id} onClick={()=>setView(t.id)} style={{
+            flex:1,padding:"8px 2px 10px",background:"none",border:"none",
+            cursor:"pointer",display:"flex",flexDirection:"column",
+            alignItems:"center",gap:2,transition:"opacity 0.15s",
+          }}>
+            <div style={{
+              width:40,height:32,borderRadius:10,
+              background:active?`${c.acc}18`:"transparent",
+              display:"flex",alignItems:"center",justifyContent:"center",
+              transition:"background 0.2s",
+            }}>
+              <span style={{fontSize:"1.15rem",lineHeight:1}}>{t.icon}</span>
+            </div>
+            <span style={{
+              ...bd,fontSize:"0.6rem",
+              color:active?c.acc:c.tx3,
+              fontWeight:active?700:400,
+              letterSpacing:"0.02em",
+              transition:"color 0.2s",
+            }}>{t.label}</span>
+          </button>
+        );
+      })}
     </div>
   );
 };
