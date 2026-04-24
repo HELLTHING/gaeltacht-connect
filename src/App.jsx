@@ -196,6 +196,117 @@ const CAT_CLR = {
   weather:"#2A5A8A", time:"#4A4A8A", places:"#6A2A4A", sports:"#2A6A4A",
 };
 
+const DAILY_POOL=[
+  // ── SPEAKING ──
+  {tp:"speaking",title:"Maidin Mhaith",ch:"Say 'Maidin mhaith!' to the first person you see today — neighbour, colleague, or your own reflection.",tip:"Most people smile. Some reply in Irish."},
+  {tp:"speaking",title:"Go Raibh Maith Agat",ch:"Replace every 'thank you' today with 'Go raibh maith agat'. In a shop, café, bus — everywhere.",tip:"People in Ireland often recognise this. You'll get a warm reaction."},
+  {tp:"speaking",title:"Slán Go Fóill",ch:"End every conversation today with 'Slán go fóill' instead of bye/goodbye.",tip:"'Slán' alone works too. Short, warm, very Irish."},
+  {tp:"speaking",title:"Conas Atá Tú?",ch:"Ask someone 'Conas atá tú?' today and wait for their reaction. Translate if needed — you're planting seeds.",tip:"Reply: 'Tá mé go maith' — TAW may guh mah."},
+  {tp:"speaking",title:"Pionta, Le Do Thoil",ch:"Order at a pub or café entirely in Irish today. Even just the item name + 'le do thoil' counts.",tip:"'Caife, le do thoil' or 'Pionta, le do thoil' — you'll make someone's night."},
+  {tp:"speaking",title:"Tá Ocras Orm",ch:"Say 'Tá ocras orm' dramatically every time you feel hungry today. Make it theatrical.",tip:"Irish puts hunger ON you — 'ocras is on me'. Beautiful way to see language."},
+  {tp:"speaking",title:"Ainm",ch:"Introduce yourself in Irish to someone: 'Is mise [name]. Is as [town] mé. Conas atá tú?'",tip:"Look up the Irish form of your name — most have one."},
+  {tp:"speaking",title:"Uimhreacha",ch:"Count your stairs, steps, or items in a bag in Irish today. Make numbers automatic.",tip:"A haon, a dó, a trí... try going to 20 without stopping."},
+  {tp:"speaking",title:"Dathanna",ch:"Point at 5 things around you right now and name their colour in Irish out loud.",tip:"Dearg, gorm, glas, bán, dubh, buí — you probably know more than you think."},
+  {tp:"speaking",title:"Oíche Mhaith",ch:"Say 'Oíche mhaith' (EE-heh wah) to everyone you say goodnight to today.",tip:"Works on the phone too. Text it. People love it."},
+  {tp:"speaking",title:"Cé Mhéad?",ch:"Ask 'Cé mhéad?' (how much?) the next time you buy something — even if the price is visible.",tip:"Point at it and ask. It's a totally natural gesture."},
+  {tp:"speaking",title:"Tá Sé Fuar",ch:"Comment on the weather in Irish to at least one person today. In Ireland, weather IS social currency.",tip:"'Tá sé fuar' (cold), 'tá sé fliuch' (wet), 'tá sé go hálainn' (beautiful)."},
+  // ── LISTENING ──
+  {tp:"listening",title:"TG4 Cúig Nóiméad",ch:"Open TG4.ie or the TG4 Player and watch any 5 minutes of Irish-language TV. Count words you recognise.",tip:"Even 3 recognised words is a win. Your brain is tuning in."},
+  {tp:"listening",title:"Raidió na Gaeltachta",ch:"Listen to Raidió na Gaeltachta for 10 minutes. Write down 3 words you hear and can identify.",tip:"Search 'RTÉ Raidió na Gaeltachta' — available online, free."},
+  {tp:"listening",title:"Óró Sé Do Bheatha Bhaile",ch:"Find 'Óró Sé Do Bheatha Bhaile' on YouTube and listen to it fully. This is a song of resistance.",tip:"Written for Gráinne Mhaol — a 16th century pirate queen. Read the story."},
+  {tp:"listening",title:"Kíla",ch:"Find Kíla on Spotify or YouTube. Listen to one full song. Their music is 100% Irish.",tip:"Try 'Lúnasa' or 'Bád go Barra' — ancient sounds, modern energy."},
+  {tp:"listening",title:"Amhrán na bhFiann",ch:"Listen to the Irish national anthem and follow the words. You'll catch more than you expect.",tip:"'Sinne Fianna Fáil' — 'We are the warriors of destiny'."},
+  {tp:"listening",title:"Seo Linn",ch:"Find Seo Linn on YouTube. Secondary school students covering pop songs in Irish. Utterly brilliant.",tip:"Their 'Gleann' will stop you in your tracks."},
+  {tp:"listening",title:"Sean-Nós",ch:"Search 'sean-nós singing Connemara' on YouTube and listen to one video. This is the oldest vocal tradition in Ireland.",tip:"No instruments. Just voice. It's extraordinary."},
+  {tp:"listening",title:"Siúil A Rún",ch:"Find 'Siúil A Rún' (performed by anyone) and read the English translation while listening.",tip:"It means 'Walk, my love' — a song about a soldier leaving for France."},
+  // ── WRITING ──
+  {tp:"writing",title:"Dáta an Lae",ch:"Write today's full date in Irish: the day of the week, day number, month, and year.",tip:"E.g. Déardaoin, an 24ú lá d'Aibreán, 2026."},
+  {tp:"writing",title:"Text i nGaeilge",ch:"Send a text or WhatsApp message entirely in Irish to someone. Even 'Dia dhuit! Conas atá tú?' counts.",tip:"Screenshot their reply — good or confused, both are gold."},
+  {tp:"writing",title:"Instagram i nGaeilge",ch:"Post something on Instagram or any social media with an Irish caption. Use #Gaeilge.",tip:"You don't have to explain it. Let people wonder."},
+  {tp:"writing",title:"Dán Beag",ch:"Write a tiny 2-line poem in Irish about something in your life right now. It doesn't have to rhyme.",tip:"'Tá an ghrian ag soilsiú. Tá mé sásta.' That's a poem."},
+  {tp:"writing",title:"Liosta Siopadóireachta",ch:"Write your next grocery list in Irish — even 5 items. Arán, bainne, im, ubh, caife.",tip:"Stick it on the fridge. Your household will start learning too."},
+  {tp:"writing",title:"Ainm i nGaeilge",ch:"Look up the Irish form of your name and its meaning. Write it and its story.",tip:"Most English names have Irish equivalents. Seán = John, Máire = Mary, Pádraig = Patrick."},
+  {tp:"writing",title:"Stádas WhatsApp",ch:"Change your WhatsApp or iMessage status to an Irish phrase for 24 hours.",tip:"'Ag foghlaim Gaeilge' — learning Irish. Let it start a conversation."},
+  {tp:"writing",title:"Focail sa Teach",ch:"Walk through your home and write the Irish name for every room you enter.",tip:"Cistin (kitchen), seomra folctha (bathroom), seomra leapa (bedroom)."},
+  {tp:"writing",title:"Glao Gutha",ch:"Send a voice note in Irish to a friend today — say anything, even 30 seconds.",tip:"Your voice in Irish is more powerful than text. It's real."},
+  // ── EXPLORE ──
+  {tp:"explore",title:"Comharthaí Dátheangacha",ch:"Find 3 bilingual signs in your town today. Read the Irish version first, before the English.",tip:"They're everywhere — on buses, roads, shops, government buildings. You've been ignoring them."},
+  {tp:"explore",title:"Ainm do Bhaile",ch:"Look up the exact Irish meaning and origin of your town or street's name. Most tell a story.",tip:"Dublin = Dubh Linn (Black Pool). Cork = Corcaigh (marshy place). What's yours?"},
+  {tp:"explore",title:"An Ghaeltacht",ch:"Find your nearest Gaeltacht area on a map. How far away are you? Plan a visit.",tip:"Connemara, Donegal, Kerry, Waterford — communities where Irish is the daily language."},
+  {tp:"explore",title:"Ciorcal Comhrá",ch:"Search 'Ciorcal Comhrá' + your town name. Find a local Irish conversation circle and note when it meets.",tip:"They're free, friendly, and for all levels. You could go this week."},
+  {tp:"explore",title:"Gaelscoil",ch:"Find the nearest Gaelscoil (Irish-language school) to where you live. Look at what they do.",tip:"Over 250 Gaelscoileanna in Ireland. More than ever before."},
+  {tp:"explore",title:"Siopa le Gaeilge",ch:"Find one product in a supermarket today that has Irish text on its label. Read the Irish part.",tip:"Many Irish brands have Irish on packaging. Lyons Tea, Kerrygold, SuperValu own-brand items."},
+  {tp:"explore",title:"Sráid nó Áit",ch:"During your commute today, read every Irish place name on signs before reading the English.",tip:"You'll start to see patterns: 'Baile' = town, 'Cill' = church, 'Dún' = fort."},
+  // ── DIGITAL ──
+  {tp:"digital",title:"Teileafón i nGaeilge",ch:"Change your phone's language to Irish for exactly 1 hour. Survive it.",tip:"Settings → General → Language. You can always change back. Be brave."},
+  {tp:"digital",title:"TG4 ar Instagram",ch:"Follow @TG4TV on Instagram or Twitter/X. Let Irish into your daily scroll.",tip:"Their content is genuinely good — short clips, culture, sport."},
+  {tp:"digital",title:"Raidió na Gaeltachta",ch:"Follow Raidió na Gaeltachta on social media. One Irish account in your feed changes things.",tip:"They post in Irish. Your brain starts absorbing passively."},
+  {tp:"digital",title:"Foclóir App",ch:"Download the 'Foclóir' app — the official Irish-English dictionary. It's free and offline.",tip:"Made by the Irish government. Better than Google Translate for Irish."},
+  {tp:"digital",title:"r/gaeilge",ch:"Go to Reddit's r/gaeilge community. Read 3 posts. There are thousands of learners worldwide.",tip:"People post questions, resources, and encouragement. You're not alone in this."},
+  // ── CULTURE ──
+  {tp:"culture",title:"D'Ainm Féin",ch:"Look up the Irish form of your own first name and its meaning. Most names carry centuries of history.",tip:"Seán = John (God is gracious). Máire = Mary. Caitlín = Kathleen. What does yours mean?"},
+  {tp:"culture",title:"Lúnasa",ch:"Learn what 'Lúnasa' means — August is named after the god Lugh, the harvest festival. Feel that history.",tip:"Lúnasa is one of the 4 great Irish festivals: Imbolc, Bealtaine, Lúnasa, Samhain."},
+  {tp:"culture",title:"Samhain",ch:"Learn what Samhain actually is — Halloween comes from this Irish festival. Ireland gave the world Halloween.",tip:"Samhain (SAH-win) = end of harvest, beginning of dark half of year. October 31st."},
+  {tp:"culture",title:"Imbolc",ch:"Learn about Imbolc — February 1st is now a public holiday in Ireland (since 2023) celebrating St. Brigid.",tip:"Brigid was a goddess before she was a saint. Ireland kept both. That's very Irish."},
+  {tp:"culture",title:"Na Blascaodaí",ch:"Read about the Blasket Islands — the last all-Irish-speaking community, abandoned in 1953. 22 people left.",tip:"'An t-Oileánach' by Tomás Ó Criomhthain tells their story. One of Ireland's greatest books."},
+  {tp:"culture",title:"Craic",ch:"Find out where the word 'craic' actually comes from. It's not originally Irish — but Ireland owns it now.",tip:"It came from Scots English 'crack' meaning news/chat. Irish adopted it and made it their own."},
+  {tp:"culture",title:"An Ghaeilge agus an Gorta",ch:"Learn how the Famine of 1845-52 nearly killed the Irish language. And how it survived anyway.",tip:"Irish speakers fell from 4 million to under 1 million in a decade. Yet the language held on."},
+  {tp:"culture",title:"Conradh na Gaeilge",ch:"Learn about Conradh na Gaeilge — founded 1893 to save the Irish language, still active today.",tip:"Douglas Hyde, its first president, later became Ireland's first President. Language = power."},
+  {tp:"culture",title:"Éire",ch:"Find out what 'Éire' actually means — the origin of the name Ireland itself.",tip:"Named after the goddess Ériu. 'Éire' appears on Irish coins, passports, and stamps."},
+  {tp:"culture",title:"Logainmneacha",ch:"Learn the meanings of 3 place names near you that begin with: Baile, Cill, or Dún.",tip:"Baile = town/homestead. Cill = church. Dún = fort. These are the bones of Ireland's map."},
+  // ── NATURE ──
+  {tp:"nature",title:"Aimsir an Lae",ch:"Describe today's exact weather in Irish — at least 3 words. Say it out loud.",tip:"Tá sé fuar (cold), fliuch (wet), gaofar (windy), grianmhar (sunny), scamallach (cloudy)."},
+  {tp:"nature",title:"Cad É Sin?",ch:"Go outside or look out the window. Name 5 things you can see in Irish — no dictionary.",tip:"Crann (tree), spéir (sky), bóthar (road), éan (bird), teach (house). You know more than you think."},
+  {tp:"nature",title:"Planda",ch:"Find a plant, tree, or flower nearby and look up its Irish name. Say it 3 times.",tip:"Caisearbhán = dandelion. Neantóg = nettle. Ros = rose. Ireland has a name for everything."},
+  {tp:"nature",title:"Éanacha",ch:"Count every bird you see today in Irish. Keep a running total.",tip:"Éan = bird. Lon dubh = blackbird. Dreoilín = wren. The wren has its own festival in December."},
+  {tp:"nature",title:"Séasúir",ch:"Learn the Irish names for all 4 seasons and which one you're in right now. Say them out loud.",tip:"Earrach (spring), Samhradh (summer), Fómhar (autumn), Geimhreadh (winter)."},
+  {tp:"nature",title:"An Ghrian",ch:"Look at the sky for 2 minutes and describe what you see using only Irish words.",tip:"Grian (sun), gealach (moon), réalta (star), scamall (cloud), spéir ghorm (blue sky)."},
+  // ── MUSIC ──
+  {tp:"music",title:"Liam Ó Maonlaí",ch:"Find Liam Ó Maonlaí singing anything on YouTube. Close your eyes. This is what Irish sounds like.",tip:"He's from Hothouse Flowers but his solo Irish work is extraordinary. Try 'An Mhaighdean Mhara'."},
+  {tp:"music",title:"Siúil A Rún",ch:"Find 'Siúil A Rún' — listen to the full song and read the words. It's a farewell song, centuries old.",tip:"'Walk, my love' — written for a soldier leaving for France. You'll feel every word."},
+  {tp:"music",title:"Amhrán Gaeilge",ch:"Search 'amhrán Gaeilge' on Spotify or YouTube and build a playlist of 5 Irish-language songs.",tip:"You now have Irish music for your commute, gym, or cooking. Let it work passively."},
+  {tp:"music",title:"Seisiún Traidisiúnta",ch:"Find a traditional Irish music session happening near you this week. Even just show up to listen.",tip:"Pubs across Ireland host free sessions. No need to play — just sit, listen, and order something."},
+  {tp:"music",title:"Clannad",ch:"Listen to Clannad — they sing in Irish and English. Start with 'Theme from Harry's Game'.",tip:"That song was used in an ad in 1982 and introduced the world to Irish-language music."},
+  // ── GAME ──
+  {tp:"game",title:"Na Laethanta",ch:"Name all 7 days of the week in Irish without looking. Time yourself. Can you do it in 15 seconds?",tip:"Luan, Máirt, Céadaoin, Déardaoin, Aoine, Satharn, Domhnach."},
+  {tp:"game",title:"Na Míonna",ch:"Name all 12 months in Irish from memory. Give yourself 2 minutes — no peeking.",tip:"Eanáir, Feabhra, Márta, Aibreán, Bealtaine, Meitheamh, Iúil, Lúnasa, Meán Fómhair, Deireadh Fómhair, Samhain, Nollaig."},
+  {tp:"game",title:"Uimhreacha go 20",ch:"Count from 1 to 20 in Irish as fast as you can. Try to beat 20 seconds.",tip:"After 10: a haon déag, a dó dhéag... it gets tricky. That's the fun."},
+  {tp:"game",title:"Dúshláin Teanga",ch:"Try this sentence out loud 3 times: 'Tá na ba ag ithe féir sa ghort.' Get faster each time.",tip:"'The cows are eating grass in the field.' Irish tongue-twisters are surprisingly satisfying."},
+  {tp:"game",title:"Bia",ch:"Name 10 food items in Irish from memory — no dictionary, no looking back in the app.",tip:"Arán, im, bainne, ubh, feoil, iasc, práta, úll, caife, tae. Did you get them all?"},
+  {tp:"game",title:"Dath Gach Rud",ch:"Look around you right now. Name the colour of 10 different objects in Irish — out loud.",tip:"Challenge: try to find something corcra (purple) and something donn (brown) near you."},
+  // ── LEARN ──
+  {tp:"learn",title:"Tá vs Is",ch:"Learn the difference between 'tá' and 'is' in Irish. It's not what you'd expect.",tip:"'Tá' = state/condition. 'Is' = classification/identity. 'Tá sé mór' (he is big). 'Is fear é' (he is a man)."},
+  {tp:"learn",title:"Níl Tá/Níl",ch:"Irish has no 'yes' or 'no'. You repeat the verb. 'An bhfuil tú?' — 'Tá' or 'Níl'. Try 5 questions.",tip:"'Are you hungry?' → 'Tá' (I am) or 'Níl' (I am not). No single yes/no word exists."},
+  {tp:"learn",title:"Ag + Briathar",ch:"Learn 'ag' + verb-noun: ag ithe (eating), ag ól (drinking), ag siúl (walking). Say 5 sentences.",tip:"'Tá mé ag ithe' = I am eating. 'Tá sé ag siúl' = He is walking. You're speaking Irish now."},
+  {tp:"learn",title:"Mothúcháin",ch:"Learn 5 emotions using 'tá ___ orm' (emotion is on me). Feel how Irish sees feelings.",tip:"Tá áthas orm (happy), tá brón orm (sad), tá fearg orm (angry), tá eagla orm (scared), tá náire orm (embarrassed)."},
+  {tp:"learn",title:"Dia Dhuit",ch:"Learn what 'Dia dhuit' literally means — and why it's the most profound hello in any language.",tip:"'God be with you'. The reply 'Dia is Muire dhuit' = 'God and Mary be with you'. Two people blessing each other."},
+];
+
+// Daily challenge type colours
+const TYPE_CLR={speaking:"#1B4332",listening:"#1A5A8A",writing:"#B8860B",explore:"#2D6A4F",digital:"#5A4A8A",culture:"#8A3A3A",nature:"#2D6A2A",music:"#8A5A2A",game:"#4A4A8A",learn:"#6A3A6A"};
+const TYPE_ICON={speaking:"🗣️",listening:"👂",writing:"✍️",explore:"📍",digital:"📱",culture:"☘️",nature:"🌿",music:"🎵",game:"🎮",learn:"🧠"};
+
+// Irish season detector
+function getIrishSeason(date){
+  const m=date.getMonth()+1,d=date.getDate();
+  if(m===2&&d<=7)return{name:"Imbolc",en:"St. Brigid's Season",icon:"🌸",color:"#C9A227"};
+  if(m===3&&d>=14&&d<=19)return{name:"Lá Fhéile Pádraig",en:"St. Patrick's Week",icon:"☘️",color:"#1B4332"};
+  if(m===5&&d<=7)return{name:"Bealtaine",en:"May Day Season",icon:"🌸",color:"#2D6A2A"};
+  if(m===8&&d<=7)return{name:"Lúnasa",en:"Harvest Season",icon:"🌾",color:"#C9A227"};
+  if(m===10&&d>=27)return{name:"Samhain",en:"Halloween Season",icon:"🎃",color:"#8A3A3A"};
+  if(m===12&&d>=22)return{name:"Nollaig",en:"Christmas Season",icon:"⭐",color:"#1B4332"};
+  if(m>=3&&m<=5)return{name:"Earrach",en:"Spring",icon:"🌱",color:"#2D6A4F"};
+  if(m>=6&&m<=8)return{name:"Samhradh",en:"Summer",icon:"☀️",color:"#C9A227"};
+  if(m>=9&&m<=11)return{name:"Fómhar",en:"Autumn",icon:"🍂",color:"#8A5A2A"};
+  return{name:"Geimhreadh",en:"Winter",icon:"❄️",color:"#3A5A8A"};
+}
+
+// Day-of-year → deterministic daily pick
+function getDayOfYear(date){const s=new Date(date.getFullYear(),0,0);return Math.floor((date-s)/(1000*60*60*24));}
+function getDailyChallenge(pool,date){return pool[getDayOfYear(date)%pool.length];}
+function getWordOfDay(vocab,date){return vocab[getDayOfYear(date)%vocab.length];}
+function todayKey(){return new Date().toISOString().split("T")[0];}
+
 // Bottom navigation component
 const BottomNav = ({view,setView,c,hd,bd}) => {
   const tabs=[
@@ -303,7 +414,7 @@ export default function App() {
   useEffect(()=>{(async()=>{
     const s=await loadS();
     if(s){setSt(s);if(s.dk)setDk(true)}
-    else{const i={done:[],bonus:[],tasksDone:[],streak:0,best:0,dk:false,onboarded:false,started:new Date().toISOString()};await saveS(i);setSt(i)}
+    else{const i={done:[],bonus:[],tasksDone:[],streak:0,best:0,dk:false,onboarded:false,started:new Date().toISOString(),dailyLog:{}};await saveS(i);setSt(i)}
     setLoading(false);
   })()},[]);
 
@@ -311,6 +422,7 @@ export default function App() {
   const save=useCallback(async(ns)=>{setSt(ns);await saveS(ns)},[]);
   const toggle=async()=>{const n=!dk;setDk(n);if(st)await save({...st,dk:n})};
 
+  const markDailyDone=useCallback(async()=>{if(!st)return;const k=todayKey();const dl={...(st.dailyLog||{}),[k]:true};await save({...st,dailyLog:dl});},[st,save]);
   const calcStreak=(arr)=>{if(!arr.length)return 0;const s=[...arr].sort((a,b)=>a-b);let k=1;for(let i=s.length-1;i>0;i--){if(s[i]-s[i-1]===1)k++;else break}return k};
 
   const doComplete=async(d)=>{
@@ -1171,6 +1283,11 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
   // HOME VIEW
   // ═══════════════════════════════
   const catColor = CAT_CLR[currentCh?.cat] || c.acc;
+  const today = new Date();
+  const season = getIrishSeason(today);
+  const dailyC = getDailyChallenge(DAILY_POOL, today);
+  const wod = getWordOfDay(VOCAB, today);
+  const dailyDoneToday = st?.dailyLog?.[todayKey()] || false;
 
   return(
     <div style={{minHeight:"100vh",background:c.bg,color:c.tx,display:"flex",flexDirection:"column",paddingBottom:72}}>
@@ -1189,6 +1306,19 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
 
       {/* ── MAIN CONTENT ── */}
       <div style={{flex:1,maxWidth:520,width:"100%",margin:"0 auto",padding:"0 18px",display:"flex",flexDirection:"column",gap:14}}>
+
+        {/* ── SEASON + WORD OF DAY ── */}
+        <div style={{display:"flex",gap:8,alignItems:"stretch"}}>
+          <div style={{background:season.color+"18",border:`1px solid ${season.color}30`,borderRadius:14,padding:"10px 14px",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",minWidth:72}}>
+            <div style={{fontSize:"1.4rem",lineHeight:1}}>{season.icon}</div>
+            <div style={{...hd,fontSize:"0.6rem",color:season.color,marginTop:4,fontWeight:700,letterSpacing:"0.04em",textAlign:"center"}}>{season.name}</div>
+          </div>
+          <div style={{flex:1,background:c.card,border:`1px solid ${c.bd}`,borderRadius:14,padding:"10px 16px",boxShadow:c.shadow}}>
+            <div style={{...bd,fontSize:"0.6rem",color:c.tx3,letterSpacing:"0.1em",textTransform:"uppercase",marginBottom:4}}>Focal an Lae</div>
+            <div style={{...hd,fontSize:"1.15rem",fontWeight:700,color:c.acc,fontStyle:"italic"}}>{wod.p}</div>
+            <div style={{...bd,fontSize:"0.72rem",color:c.tx3}}>{wod.m} <span style={{color:c.tx3,opacity:0.6}}>· /{wod.pr}/</span></div>
+          </div>
+        </div>
 
         {allDone ? (
           /* ── ALL DONE ── */
@@ -1294,6 +1424,29 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
               size={56}
               align="left"
             />
+
+            {/* ── DAILY COMMUNITY CHALLENGE ── */}
+            <div style={{background:c.card,border:`1px solid ${c.bd}`,borderRadius:20,overflow:"hidden",boxShadow:c.shadow}}>
+              <div style={{height:4,background:TYPE_CLR[dailyC.tp]||c.acc}}/>
+              <div style={{padding:"20px 20px 18px"}}>
+                <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:14}}>
+                  <span style={{fontSize:"1rem"}}>{TYPE_ICON[dailyC.tp]}</span>
+                  <div>
+                    <div style={{...bd,fontSize:"0.6rem",color:c.tx3,letterSpacing:"0.1em",textTransform:"uppercase"}}>Dúshlán an Lae · Everyone today</div>
+                    <div style={{...hd,fontSize:"0.95rem",fontWeight:700,color:c.tx}}>{dailyC.title}</div>
+                  </div>
+                  {dailyDoneToday&&<span style={{marginLeft:"auto",fontSize:"1.2rem"}}>✅</span>}
+                </div>
+                <p style={{...bd,fontSize:"0.9rem",color:c.tx2,lineHeight:1.7,margin:"0 0 12px"}}>{dailyC.ch}</p>
+                {dailyC.tip&&<div style={{...bd,fontSize:"0.8rem",color:c.tx3,fontStyle:"italic",background:c.cardAlt,borderRadius:10,padding:"8px 12px",marginBottom:14}}>💡 {dailyC.tip}</div>}
+                <button
+                  onClick={()=>{if(!dailyDoneToday)markDailyDone();}}
+                  style={{width:"100%",padding:"13px",borderRadius:12,background:dailyDoneToday?c.cardAlt:TYPE_CLR[dailyC.tp]||c.btn,border:`1px solid ${dailyDoneToday?c.bd:"transparent"}`,color:dailyDoneToday?c.tx3:"#fff",...bd,fontSize:"0.95rem",fontWeight:700,cursor:dailyDoneToday?"default":"pointer",transition:"all 0.2s"}}
+                >
+                  {dailyDoneToday?"✅ Déanta inniu!":"Mark as done"}
+                </button>
+              </div>
+            </div>
           </>
         )}
       </div>
