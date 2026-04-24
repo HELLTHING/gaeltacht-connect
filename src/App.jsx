@@ -782,6 +782,14 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
   if(view==="stats"){
     const daysSince=st.started?Math.floor((Date.now()-new Date(st.started).getTime())/(1000*60*60*24)):0;
     const wkColors=["#2D6A4F","#1A5FA0","#8A3A8A","#C2541A"];
+    const ACHIEVEMENTS=[
+      {id:"first",  icon:"🌱", name:"Céad Lá",     desc:"Completed your first day",        unlocked:total>=1},
+      {id:"week1",  icon:"🔥", name:"Seachtain",   desc:"7-day streak",                    unlocked:st.best>=7},
+      {id:"half",   icon:"⚡", name:"Leath Slí",   desc:"Halfway there — 15 days done",    unlocked:total>=15},
+      {id:"bonus5", icon:"⭐", name:"Díograiseoir", desc:"Completed 5 bonus challenges",    unlocked:st.bonus.length>=5},
+      {id:"tasks",  icon:"🎯", name:"Cúramach",    desc:"Completed 15 mini tasks",         unlocked:(st.tasksDone||[]).length>=15},
+      {id:"done",   icon:"☘️", name:"Gaeilgeoir",  desc:"All 30 days completed",           unlocked:total===30},
+    ];
     return(
       <div style={{minHeight:"100vh",background:c.bg,color:c.tx,animation:"fadeIn 0.25s ease",paddingBottom:80}}>
         <style>{css}</style>
@@ -824,8 +832,30 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
               </div>
             );
           })}
-          <div style={{marginTop:20,padding:"16px",background:c.cardAlt,border:`1px solid ${c.bd}`,borderRadius:14,textAlign:"center"}}>
-            <p style={{...bd,fontSize:"0.85rem",fontStyle:"italic",color:c.tx3,lineHeight:1.6}}>
+          {/* ── ACHIEVEMENTS ── */}
+          <div style={{...bd,fontSize:"0.65rem",color:c.tx3,letterSpacing:"0.1em",textTransform:"uppercase",fontWeight:700,marginTop:28,marginBottom:12}}>Achievements</div>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:24}}>
+            {ACHIEVEMENTS.map((a,i)=>(
+              <div key={a.id} style={{
+                background:a.unlocked?c.card:c.cardAlt,
+                border:`1px solid ${a.unlocked?c.doneBd:c.bd}`,
+                borderRadius:14,padding:"14px 16px",
+                opacity:a.unlocked?1:0.45,
+                transition:"all 0.3s",
+                animation:`rise 0.4s ${i*0.06}s ease both`,
+              }}>
+                <div style={{fontSize:"1.6rem",marginBottom:8,filter:a.unlocked?"none":"grayscale(1)"}}>{a.icon}</div>
+                <div style={{...hd,fontSize:"0.95rem",color:a.unlocked?c.acc:c.tx3,marginBottom:3}}>{a.name}</div>
+                <div style={{...bd,fontSize:"0.7rem",color:c.tx3,lineHeight:1.4}}>{a.desc}</div>
+                {a.unlocked&&(
+                  <div style={{...bd,fontSize:"0.62rem",color:c.doneTx,marginTop:6,fontWeight:700}}>✓ Unlocked</div>
+                )}
+              </div>
+            ))}
+          </div>
+
+          <div style={{padding:"16px",background:c.cardAlt,border:`1px solid ${c.bd}`,borderRadius:14,textAlign:"center",marginBottom:20}}>
+            <p style={{...hd,fontSize:"0.88rem",fontStyle:"italic",color:c.tx3,lineHeight:1.7}}>
               {total===0?"Every journey begins with one word."
               :total<10?"You've started. That's more than most."
               :total<20?"You're not just learning — you're reviving."
@@ -833,7 +863,7 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
               :"Tá Gaeilge agat. You did it. 🏆"}
             </p>
           </div>
-          <div style={{textAlign:"center",marginTop:20}}>
+          <div style={{textAlign:"center",marginBottom:8}}>
             <button onClick={doReset} style={{background:"none",border:`1px solid ${c.bd}`,borderRadius:8,padding:"8px 20px",color:c.tx3,...bd,fontSize:"0.72rem",cursor:"pointer"}}>Reset progress</button>
           </div>
         </div>
