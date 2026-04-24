@@ -783,12 +783,12 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
     const daysSince=st.started?Math.floor((Date.now()-new Date(st.started).getTime())/(1000*60*60*24)):0;
     const wkColors=["#2D6A4F","#1A5FA0","#8A3A8A","#C2541A"];
     const ACHIEVEMENTS=[
-      {id:"first",  icon:"🌱", name:"Céad Lá",     desc:"Completed your first day",        unlocked:total>=1},
-      {id:"week1",  icon:"🔥", name:"Seachtain",   desc:"7-day streak",                    unlocked:st.best>=7},
-      {id:"half",   icon:"⚡", name:"Leath Slí",   desc:"Halfway there — 15 days done",    unlocked:total>=15},
-      {id:"bonus5", icon:"⭐", name:"Díograiseoir", desc:"Completed 5 bonus challenges",    unlocked:st.bonus.length>=5},
-      {id:"tasks",  icon:"🎯", name:"Cúramach",    desc:"Completed 15 mini tasks",         unlocked:(st.tasksDone||[]).length>=15},
-      {id:"done",   icon:"☘️", name:"Gaeilgeoir",  desc:"All 30 days completed",           unlocked:total===30},
+      {id:"first",  icon:"🌱", name:"Céad Lá",      nameEn:"First Day",       desc:"Completed your first day",      unlocked:total>=1},
+      {id:"week1",  icon:"🔥", name:"Seachtain",    nameEn:"One Week",        desc:"7-day streak achieved",         unlocked:st.best>=7},
+      {id:"half",   icon:"⚡", name:"Leath Slí",    nameEn:"Halfway",         desc:"15 days completed",             unlocked:total>=15},
+      {id:"bonus5", icon:"⭐", name:"Díograiseoir", nameEn:"The Eager One",   desc:"5 bonus challenges done",       unlocked:st.bonus.length>=5},
+      {id:"tasks",  icon:"🎯", name:"Cúramach",     nameEn:"The Careful One", desc:"15 mini tasks completed",       unlocked:(st.tasksDone||[]).length>=15},
+      {id:"done",   icon:"☘️", name:"Gaeilgeoir",   nameEn:"Irish Speaker",   desc:"All 30 days completed",         unlocked:total===30},
     ];
     return(
       <div style={{minHeight:"100vh",background:c.bg,color:c.tx,animation:"fadeIn 0.25s ease",paddingBottom:80}}>
@@ -845,7 +845,8 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
                 animation:`rise 0.4s ${i*0.06}s ease both`,
               }}>
                 <div style={{fontSize:"1.6rem",marginBottom:8,filter:a.unlocked?"none":"grayscale(1)"}}>{a.icon}</div>
-                <div style={{...hd,fontSize:"0.95rem",color:a.unlocked?c.acc:c.tx3,marginBottom:3}}>{a.name}</div>
+                <div style={{...hd,fontSize:"0.95rem",color:a.unlocked?c.acc:c.tx3,marginBottom:1}}>{a.name}</div>
+                <div style={{...bd,fontSize:"0.68rem",color:c.tx3,fontStyle:"italic",marginBottom:4}}>{a.nameEn}</div>
                 <div style={{...bd,fontSize:"0.7rem",color:c.tx3,lineHeight:1.4}}>{a.desc}</div>
                 {a.unlocked&&(
                   <div style={{...bd,fontSize:"0.62rem",color:c.doneTx,marginTop:6,fontWeight:700}}>✓ Unlocked</div>
