@@ -700,16 +700,16 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
     return(
       <div style={{minHeight:"100vh",background:c.bg,color:c.tx,animation:"fadeIn 0.25s ease",paddingBottom:80}}>
         <style>{css}</style>
-        <div style={{background:c.hero,padding:"24px 20px 20px",borderBottom:`3px solid ${c.ink}`}}>
+        <div style={{background:c.hero,padding:"24px 20px 20px"}}>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
-            <h1 style={{...hd,fontSize:"2rem",color:"#fff"}}>📖 Foclóir</h1>
-            <button onClick={toggle} style={{background:"rgba(255,255,255,0.15)",border:"2px solid rgba(255,255,255,0.4)",borderRadius:10,width:36,height:36,cursor:"pointer",color:"#fff",fontSize:"0.9rem"}}>{dk?"☀️":"🌙"}</button>
+            <h1 style={{...hd,fontSize:"1.8rem",color:"#fff"}}>📖 Foclóir</h1>
+            <button onClick={toggle} style={{background:"rgba(255,255,255,0.1)",border:"1px solid rgba(255,255,255,0.2)",borderRadius:8,width:34,height:34,cursor:"pointer",color:"#fff",fontSize:"0.9rem"}}>{dk?"☀️":"🌙"}</button>
           </div>
-          <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Cuardach... / Search" style={{width:"100%",padding:"10px 14px",borderRadius:8,border:`2px solid ${c.ink}`,background:"#fff",color:c.ink,fontSize:"0.9rem",fontFamily:"'Comic Neue',cursive",outline:"none",boxSizing:"border-box"}}/>
+          <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Cuardach... / Search" style={{width:"100%",padding:"10px 14px",borderRadius:10,border:"none",background:"rgba(255,255,255,0.15)",color:"#fff",fontSize:"0.9rem",fontFamily:"'Lato',sans-serif",outline:"none",boxSizing:"border-box"}}/>
         </div>
-        <div style={{display:"flex",gap:8,padding:"10px 12px",overflowX:"auto",borderBottom:`2px solid ${c.ink}`}}>
+        <div style={{display:"flex",gap:6,padding:"10px 14px",overflowX:"auto",borderBottom:`1px solid ${c.bd}`}}>
           {dictCats.map(cat=>(
-            <button key={cat} onClick={()=>setFilterCat(cat)} style={{flexShrink:0,padding:"4px 12px",borderRadius:20,border:`2px solid ${c.ink}`,background:filterCat===cat?(CAT_CLR[cat]||c.acc):"#fff",color:filterCat===cat?"#fff":c.ink,...bd,fontSize:"0.72rem",cursor:"pointer",whiteSpace:"nowrap",boxShadow:filterCat===cat?"2px 2px 0 "+c.ink:"none",fontWeight:filterCat===cat?700:400}}>
+            <button key={cat} onClick={()=>setFilterCat(cat)} style={{flexShrink:0,padding:"5px 12px",borderRadius:20,border:`1px solid ${filterCat===cat?(CAT_CLR[cat]||c.acc):c.bd}`,background:filterCat===cat?(CAT_CLR[cat]||c.acc):c.card,color:filterCat===cat?"#fff":c.tx3,...bd,fontSize:"0.72rem",cursor:"pointer",whiteSpace:"nowrap",fontWeight:filterCat===cat?700:400}}>
               {cat==="all"?"🌍 All":(CATS[cat]||"")+" "+cat}
             </button>
           ))}
@@ -717,16 +717,16 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
         <div style={{padding:"8px 20px",...bd,fontSize:"0.72rem",color:c.tx3}}>{filtered.length} words · <a href="https://forvo.com/languages/ga/" target="_blank" rel="noopener" style={{color:c.acc}}>Forvo Irish →</a></div>
         <div style={{padding:"0 16px"}}>
           {filtered.map((w,i)=>(
-            <div key={i} style={{display:"flex",alignItems:"center",gap:12,padding:"12px 4px",borderBottom:`2px solid ${c.bd}`,animation:`rise 0.3s ${Math.min(i*0.015,0.25)}s ease both`}}>
-              <div style={{width:38,height:38,borderRadius:8,background:CAT_CLR[w.cat]||c.acc,border:`2px solid ${c.ink}`,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,boxShadow:"2px 2px 0 "+c.ink}}>
+            <div key={i} style={{display:"flex",alignItems:"center",gap:12,padding:"12px 4px",borderBottom:`1px solid ${c.bd}`,animation:`rise 0.3s ${Math.min(i*0.015,0.25)}s ease both`}}>
+              <div style={{width:36,height:36,borderRadius:8,background:CAT_CLR[w.cat]||c.acc,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,opacity:0.9}}>
                 <span style={{fontSize:"0.9rem"}}>{CATS[w.cat]||"📝"}</span>
               </div>
               <div style={{flex:1,minWidth:0}}>
-                <div style={{...hd,fontSize:"1.1rem",color:c.acc}}>{w.p}</div>
-                <div style={{...bd,fontSize:"0.72rem",color:c.tx3}}>/{w.pr}/</div>
+                <div style={{...hd,fontSize:"1.05rem",color:c.acc}}>{w.p}</div>
+                <div style={{...bd,fontSize:"0.7rem",color:c.tx3}}>/{w.pr}/</div>
                 <div style={{...bd,fontSize:"0.82rem",color:c.tx2}}>{w.m}</div>
               </div>
-              <a href={forvoUrl(w.p)} target="_blank" rel="noopener" style={{background:"#fff",border:`2px solid ${c.ink}`,borderRadius:8,width:36,height:36,flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"2px 2px 0 "+c.ink,textDecoration:"none",fontSize:"1rem"}}>
+              <a href={forvoUrl(w.p)} target="_blank" rel="noopener" style={{background:c.cardAlt,border:`1px solid ${c.bd}`,borderRadius:8,width:34,height:34,flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center",textDecoration:"none",fontSize:"0.95rem"}}>
                 🔊
               </a>
             </div>
@@ -764,7 +764,7 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
         <div style={{padding:"20px",maxWidth:500,margin:"0 auto"}}>
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:24}}>
             {[{label:"Days done",val:total,icon:"✅"},{label:"Bonus done",val:st.bonus.length,icon:"⭐"},{label:"Best streak",val:st.best,icon:"🏆"},{label:"Current streak",val:st.streak,icon:"🔥"},{label:"Days since start",val:daysSince,icon:"📅"},{label:"Complete",val:Math.round(total/30*100)+"%",icon:"📊"}].map((s,i)=>(
-              <div key={i} style={{background:c.card,border:`3px solid ${c.ink}`,borderRadius:12,padding:"14px 16px",boxShadow:c.shadow,animation:`rise 0.4s ${i*0.05}s ease both`}}>
+              <div key={i} style={{background:c.card,border:`1px solid ${c.bd}`,borderRadius:12,padding:"14px 16px",boxShadow:c.shadow,animation:`rise 0.4s ${i*0.05}s ease both`}}>
                 <div style={{fontSize:"1.1rem",marginBottom:5}}>{s.icon}</div>
                 <div style={{...hd,fontSize:"1.6rem",fontWeight:800,color:c.acc}}>{s.val}</div>
                 <div style={{...bd,fontSize:"0.68rem",color:c.tx3,marginTop:2}}>{s.label}</div>
@@ -821,15 +821,15 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
     return(
       <div style={{minHeight:"100vh",background:c.bg,color:c.tx,paddingBottom:80,animation:"fadeIn 0.25s ease"}}>
         <style>{css}</style>
-        <div style={{background:c.hero,padding:"24px 20px 20px",borderBottom:`3px solid ${c.ink}`}}>
-          <h1 style={{...hd,fontSize:"2rem",color:"#fff"}}>⚙️ Socruithe</h1>
+        <div style={{background:c.hero,padding:"24px 20px 20px"}}>
+          <h1 style={{...hd,fontSize:"1.8rem",color:"#fff"}}>⚙️ Socruithe</h1>
           <p style={{...bd,fontSize:"0.78rem",color:"rgba(255,255,255,0.6)",marginTop:4}}>Settings</p>
         </div>
         <div style={{maxWidth:500,margin:"0 auto",padding:"20px 16px"}}>
 
           {/* APPEARANCE */}
           <div style={{...hd,fontSize:"0.65rem",color:c.tx3,letterSpacing:"0.12em",marginBottom:10}}>APPEARANCE</div>
-          <div style={{background:c.card,border:`3px solid ${c.ink}`,borderRadius:12,marginBottom:20,overflow:"hidden",boxShadow:c.shadow}}>
+          <div style={{background:c.card,border:`1px solid ${c.bd}`,borderRadius:12,marginBottom:20,overflow:"hidden",boxShadow:c.shadow}}>
             <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"16px 18px"}}>
               <div style={{display:"flex",alignItems:"center",gap:12}}>
                 <span style={{fontSize:"1.2rem"}}>{dk?"🌙":"☀️"}</span>
@@ -838,15 +838,15 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
                   <div style={{...bd,fontSize:"0.72rem",color:c.tx3}}>Mód dorcha</div>
                 </div>
               </div>
-              <button onClick={toggle} style={{width:52,height:28,borderRadius:14,background:dk?c.acc:"#ccc",border:`2px solid ${c.ink}`,position:"relative",cursor:"pointer",transition:"background 0.3s",padding:0,boxShadow:"2px 2px 0 "+c.ink}}>
-                <div style={{width:20,height:20,borderRadius:"50%",background:"#fff",border:`1.5px solid ${c.ink}`,position:"absolute",top:2,left:dk?28:2,transition:"left 0.3s"}}/>
+              <button onClick={toggle} style={{width:52,height:28,borderRadius:14,background:dk?c.acc:"#ccc",border:"none",position:"relative",cursor:"pointer",transition:"background 0.3s",padding:0}}>
+                <div style={{width:20,height:20,borderRadius:"50%",background:"#fff",position:"absolute",top:2,left:dk?28:2,transition:"left 0.3s",boxShadow:"0 1px 3px rgba(0,0,0,0.2)"}}/>
               </button>
             </div>
           </div>
 
           {/* PROGRESS SUMMARY */}
           <div style={{...hd,fontSize:"0.65rem",color:c.tx3,letterSpacing:"0.12em",marginBottom:10}}>YOUR PROGRESS</div>
-          <div style={{background:c.card,border:`3px solid ${c.ink}`,borderRadius:12,marginBottom:20,overflow:"hidden",boxShadow:c.shadow}}>
+          <div style={{background:c.card,border:`1px solid ${c.bd}`,borderRadius:12,marginBottom:20,overflow:"hidden",boxShadow:c.shadow}}>
             {[
               {icon:"✅",label:"Days completed",val:`${st.done.length} / 30`},
               {icon:"⭐",label:"Bonus challenges",val:`${st.bonus.length}`},
@@ -866,7 +866,7 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
 
           {/* RESOURCES */}
           <div style={{...hd,fontSize:"0.65rem",color:c.tx3,letterSpacing:"0.12em",marginBottom:10}}>IRISH LANGUAGE RESOURCES</div>
-          <div style={{background:c.card,border:`3px solid ${c.ink}`,borderRadius:12,marginBottom:20,overflow:"hidden",boxShadow:c.shadow}}>
+          <div style={{background:c.card,border:`1px solid ${c.bd}`,borderRadius:12,marginBottom:20,overflow:"hidden",boxShadow:c.shadow}}>
             {RESOURCES.map((r,i)=>(
               <a key={i} href={r.url} target="_blank" rel="noopener noreferrer" style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"13px 18px",borderBottom:i<RESOURCES.length-1?`2px solid ${c.bd}`:"none",textDecoration:"none",color:"inherit"}}>
                 <div>
@@ -880,7 +880,7 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
 
           {/* ABOUT */}
           <div style={{...hd,fontSize:"0.65rem",color:c.tx3,letterSpacing:"0.12em",marginBottom:10}}>ABOUT</div>
-          <div style={{background:c.card,border:`3px solid ${c.ink}`,borderRadius:12,marginBottom:20,padding:"18px",boxShadow:c.shadow,textAlign:"center"}}>
+          <div style={{background:c.card,border:`1px solid ${c.bd}`,borderRadius:12,marginBottom:20,padding:"18px",boxShadow:c.shadow,textAlign:"center"}}>
             <div style={{fontSize:"2.5rem",marginBottom:8}}>☘️</div>
             <div style={{...hd,fontSize:"1.3rem",color:c.tx,marginBottom:4}}>Gaeltacht Connect</div>
             <div style={{...bd,fontSize:"0.78rem",color:c.tx3,lineHeight:1.6,marginBottom:12}}>
@@ -891,7 +891,7 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
 
           {/* DANGER ZONE */}
           <div style={{...hd,fontSize:"0.65rem",color:"#CC3333",letterSpacing:"0.12em",marginBottom:10}}>DANGER ZONE</div>
-          <div style={{background:c.card,border:`3px solid #CC3333`,borderRadius:12,marginBottom:20,overflow:"hidden",boxShadow:"3px 3px 0 #CC333344"}}>
+          <div style={{background:c.card,border:`1px solid #CC333366`,borderRadius:12,marginBottom:20,overflow:"hidden"}}>
             <button onClick={doReset} style={{width:"100%",padding:"16px 18px",background:"none",border:"none",cursor:"pointer",display:"flex",alignItems:"center",gap:12,textAlign:"left"}}>
               <span style={{fontSize:"1.1rem"}}>🗑️</span>
               <div>
@@ -976,9 +976,9 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
                   return (
                     <button key={ch.day} onClick={()=>{setSelDay(ch.day);setView("day")}} style={{
                       background:dn?c.doneBg:nx?c.card:c.cardAlt,
-                      border:`3px solid ${c.ink}`,
+                      border:`1px solid ${dn?c.doneBd:c.bd}`,
                       borderRadius:12,padding:"0",cursor:lk?"not-allowed":"pointer",
-                      opacity:lk?0.25:1,textAlign:"left",width:"100%",transition:"all 0.2s",
+                      opacity:lk?0.3:1,textAlign:"left",width:"100%",transition:"opacity 0.2s",
                       boxShadow:nx?c.shadow:"none",overflow:"hidden",
                     }}>
                       <div style={{height:4,background:dn?"#40916C":lk?"transparent":CAT_CLR[ch.cat],borderRadius:"12px 12px 0 0"}}/>
