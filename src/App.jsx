@@ -1170,108 +1170,125 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
   // MAP VIEW (all 30 days)
   // ═══════════════════════════════
   if(view==="map"){
+    const isNext=(day)=>day===nextDay&&!st.done.includes(day);
     return (
-      <div style={{minHeight:"100vh",background:c.bg,color:c.tx,transition:"background 0.4s",paddingBottom:80,animation:"rise 0.3s ease"}}>
+      <div style={{minHeight:"100vh",background:c.bg,color:c.tx,paddingBottom:80,animation:"rise 0.3s ease"}}>
         <style>{css}</style>
 
-        {/* Hero header */}
-        <div style={{background:c.hero,padding:"24px 20px 20px"}}>
-          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-            <h1 style={{...hd,fontSize:"1.5rem",fontWeight:800,color:"#fff"}}>☘️ 30 Lá</h1>
+        {/* ── HERO HEADER ── */}
+        <div style={{background:c.hero,padding:"24px 20px 28px"}}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:18}}>
+            <h1 style={{...hd,fontSize:"1.3rem",fontWeight:800,color:"#fff",margin:0}}>☘️ 30 Lá</h1>
             <button onClick={toggle} style={{background:"rgba(255,255,255,0.15)",border:"none",borderRadius:10,width:32,height:32,cursor:"pointer",color:"#fff",fontSize:"0.85rem"}}>{dk?"☀️":"🌙"}</button>
           </div>
-        </div>
-
-        <div style={{maxWidth:900,margin:"0 auto",padding:"0 18px"}}>
-          {/* Stats bar */}
-          <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:20,padding:"24px 0 8px",flexWrap:"wrap"}}>
-            <div style={{textAlign:"center"}}>
-              <div style={{...hd,fontSize:"1.8rem",fontWeight:800,color:c.acc}}>{total}</div>
-              <div style={{...bd,fontSize:"0.68rem",color:c.tx3}}>completed</div>
+          {/* Big progress number */}
+          <div style={{textAlign:"center",marginBottom:14}}>
+            <div style={{...hd,fontSize:"3.2rem",fontWeight:800,color:"#fff",lineHeight:1}}>
+              {total}<span style={{fontSize:"1.4rem",fontWeight:400,opacity:0.45}}>/30</span>
             </div>
-            <div style={{width:1,height:28,background:c.bd}}/>
-            <div style={{textAlign:"center"}}>
-              <div style={{...hd,fontSize:"1.8rem",fontWeight:800,color:c.gold}}>{st.bonus.length}</div>
-              <div style={{...bd,fontSize:"0.68rem",color:c.tx3}}>bonus</div>
-            </div>
-            {st.streak>=2&&<>
-              <div style={{width:1,height:28,background:c.bd}}/>
-              <div style={{display:"flex",alignItems:"center",gap:5,background:`${c.gold}12`,border:`1px solid ${c.gold}28`,borderRadius:16,padding:"5px 14px"}}>
-                <span style={{fontSize:"0.85rem"}}>🔥</span>
-                <span style={{...hd,fontSize:"0.78rem",fontWeight:600,color:c.gold}}>{st.streak}</span>
-              </div>
-            </>}
-          </div>
-
-          {/* Progress bar */}
-          <div style={{margin:"8px auto 28px",maxWidth:400,height:5,borderRadius:3,background:c.progBg,overflow:"hidden"}}>
-            <div style={{width:`${pct*100}%`,height:"100%",borderRadius:3,background:c.progFill,transition:"width 0.6s ease"}}/>
-          </div>
-
-          {/* Motivation quote */}
-          <div style={{textAlign:"center",marginBottom:28}}>
-            <p style={{...bd,fontSize:"0.88rem",fontStyle:"italic",color:c.tx3}}>
+            <div style={{...bd,fontSize:"0.78rem",color:"rgba(255,255,255,0.55)",marginTop:4,fontStyle:"italic"}}>
               {total===0?"Your journey begins with a single word."
               :total<10?"Every word you speak makes the language stronger."
               :total<20?"You're not just learning — you're reviving."
-              :total<30?"Almost there. The old words are proud of you."
+              :total<30?`${30-total} days to go. The old words are proud of you.`
               :"Tá Gaeilge agat. You did it."}
-            </p>
+            </div>
+          </div>
+          {/* Header progress bar */}
+          <div style={{height:4,borderRadius:2,background:"rgba(255,255,255,0.2)",overflow:"hidden"}}>
+            <div style={{width:`${pct*100}%`,height:"100%",background:"rgba(255,255,255,0.85)",borderRadius:2,transition:"width 0.6s ease"}}/>
+          </div>
+        </div>
+
+        <div style={{maxWidth:900,margin:"0 auto",padding:"16px 16px"}}>
+
+          {/* ── STATS ROW ── */}
+          <div style={{display:"flex",gap:8,marginBottom:20}}>
+            {[
+              {label:"Completed",val:total,icon:"✅",clr:c.acc},
+              {label:"Bonus",val:st.bonus.length,icon:"⭐",clr:c.gold},
+              ...(st.streak>=2?[{label:"Streak",val:`${st.streak} 🔥`,icon:null,clr:c.gold}]:[]),
+            ].map((s,i)=>(
+              <div key={i} style={{flex:1,background:c.card,border:`1px solid ${c.bd}`,borderRadius:12,padding:"10px 8px",textAlign:"center",boxShadow:c.shadow}}>
+                <div style={{...hd,fontSize:"1.3rem",color:s.clr,lineHeight:1}}>{s.val}</div>
+                <div style={{...bd,fontSize:"0.6rem",color:c.tx3,marginTop:3}}>{s.label}</div>
+              </div>
+            ))}
           </div>
 
-          {/* Weeks */}
-          {WK.map((w,wi)=>(
-            <div key={wi} style={{marginBottom:28}}>
-              <div style={{display:"flex",alignItems:"baseline",gap:8,marginBottom:10,padding:"0 4px"}}>
-                <span style={{...hd,fontSize:"0.8rem",fontWeight:700,color:c.acc}}>Week {wi+1}</span>
-                <span style={{...bd,fontSize:"0.72rem",color:c.tx3}}>{w.name}</span>
-                <div style={{flex:1,height:1,background:c.bd}}/>
-                <span style={{...bd,fontSize:"0.6rem",color:c.tx3}}>{st.done.filter(d=>d>w.start&&d<=w.end).length}/{w.end-w.start}</span>
+          {/* ── WEEKS ── */}
+          {WK.map((w,wi)=>{
+            const wDays=CH.slice(w.start,w.end);
+            const wDone=st.done.filter(d=>d>w.start&&d<=w.end).length;
+            const wTotal=w.end-w.start;
+            const wComplete=wDone===wTotal;
+            const wPct=wDone/wTotal;
+            return (
+              <div key={wi} style={{marginBottom:24}}>
+                {/* Week header */}
+                <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:8}}>
+                  <div style={{background:wComplete?c.acc:`${c.acc}15`,border:`1px solid ${wComplete?c.acc:c.bd}`,borderRadius:8,padding:"4px 12px"}}>
+                    <span style={{...hd,fontSize:"0.75rem",fontWeight:700,color:wComplete?"#fff":c.acc}}>Seachtain {wi+1}</span>
+                  </div>
+                  <div style={{lineHeight:1.2}}>
+                    <span style={{...hd,fontSize:"0.78rem",color:c.tx}}>{w.name}</span>
+                    <span style={{...bd,fontSize:"0.65rem",color:c.tx3,opacity:0.7}}> · {w.en}</span>
+                  </div>
+                  {wComplete&&<span style={{fontSize:"0.85rem"}}>🏅</span>}
+                  <div style={{flex:1}}/>
+                  <span style={{...bd,fontSize:"0.65rem",color:wComplete?c.acc:c.tx3,fontWeight:wComplete?700:400}}>{wDone}/{wTotal}</span>
+                </div>
+                {/* Week mini progress */}
+                <div style={{height:3,borderRadius:2,background:c.progBg,overflow:"hidden",marginBottom:10}}>
+                  <div style={{width:`${wPct*100}%`,height:"100%",background:wComplete?c.acc:c.progFill,borderRadius:2,transition:"width 0.4s"}}/>
+                </div>
+                {/* Day cards */}
+                <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(130px,1fr))",gap:8}}>
+                  {wDays.map(ch=>{
+                    const dn=st.done.includes(ch.day);
+                    const bn=st.bonus.includes(ch.day);
+                    const lk=ch.day>1&&!st.done.includes(ch.day-1)&&!dn;
+                    const nx=!dn&&!lk;
+                    const here=isNext(ch.day);
+                    const cc=CAT_CLR[ch.cat]||c.acc;
+                    return (
+                      <button key={ch.day} onClick={()=>{setSelDay(ch.day);setView("day")}} style={{
+                        background:dn?`${c.acc}10`:c.card,
+                        border:here?`2px solid ${cc}`:`1px solid ${dn?c.acc+"28":c.bd}`,
+                        borderRadius:14,padding:0,cursor:lk?"not-allowed":"pointer",
+                        opacity:lk?0.28:1,textAlign:"left",width:"100%",
+                        boxShadow:here?`0 4px 18px ${cc}35`:nx?c.shadow:"none",
+                        overflow:"hidden",transition:"all 0.2s",
+                      }}>
+                        <div style={{height:3,background:dn?c.acc:lk?"transparent":cc}}/>
+                        <div style={{padding:"10px 12px 11px"}}>
+                          <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:7}}>
+                            <span style={{fontSize:"1.05rem"}}>{lk?"🔒":dn?"✅":CATS[ch.cat]}</span>
+                            <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:2}}>
+                              {bn&&<span style={{fontSize:"0.6rem"}}>⭐</span>}
+                              {here&&<span style={{...bd,fontSize:"0.52rem",background:cc,color:"#fff",borderRadius:4,padding:"1px 5px",fontWeight:700,letterSpacing:"0.05em"}}>NEXT</span>}
+                            </div>
+                          </div>
+                          <div style={{...bd,fontSize:"0.58rem",color:c.tx3,letterSpacing:"0.07em",textTransform:"uppercase",marginBottom:3}}>Lá {ch.day}</div>
+                          <div style={{...hd,fontSize:"0.85rem",fontWeight:700,color:dn?c.acc:nx?c.tx:c.tx3,lineHeight:1.2,marginBottom:2}}>{ch.t}</div>
+                          <div style={{...bd,fontSize:"0.67rem",color:c.tx3,fontStyle:"italic"}}>{ch.e}</div>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
-              <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(140px,1fr))",gap:8}}>
-                {CH.slice(w.start,w.end).map(ch=>{
-                  const dn=st.done.includes(ch.day);const bn=st.bonus.includes(ch.day);
-                  const lk=ch.day>1&&!st.done.includes(ch.day-1)&&!dn;
-                  const nx=!dn&&!lk;
-                  return (
-                    <button key={ch.day} onClick={()=>{setSelDay(ch.day);setView("day")}} style={{
-                      background:dn?c.doneBg:nx?c.card:c.cardAlt,
-                      border:`1px solid ${dn?c.doneBd:c.bd}`,
-                      borderRadius:12,padding:"0",cursor:lk?"not-allowed":"pointer",
-                      opacity:lk?0.3:1,textAlign:"left",width:"100%",transition:"opacity 0.2s",
-                      boxShadow:nx?c.shadow:"none",overflow:"hidden",
-                    }}>
-                      <div style={{height:4,background:dn?"#40916C":lk?"transparent":CAT_CLR[ch.cat],borderRadius:"12px 12px 0 0"}}/>
-                      <div style={{padding:"10px 12px"}}>
-                      <div style={{display:"flex",justifyContent:"space-between",marginBottom:6}}>
-                        <span style={{...hd,fontSize:"0.6rem",color:c.tx3,fontWeight:600}}>LÁ {ch.day}</span>
-                        <span style={{fontSize:"0.65rem"}}>{dn?"✅":lk?"🔒":CATS[ch.cat]}{bn?" ⭐":""}</span>
-                      </div>
-                      <div style={{...hd,fontSize:"0.82rem",fontWeight:600,color:dn?c.doneTx:nx?c.tx:c.tx3,lineHeight:1.25,marginBottom:2}}>{ch.t}</div>
-                      <div style={{...bd,fontSize:"0.7rem",color:c.tx3,fontStyle:"italic"}}>{ch.e}</div>
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          ))}
+            );
+          })}
 
-          {/* Footer */}
+          {/* ── FOOTER ── */}
           <div style={{textAlign:"center",padding:"20px 0 16px",borderTop:`1px solid ${c.bd}`}}>
-            <p style={{...bd,fontSize:"0.82rem",fontStyle:"italic",color:c.tx3,lineHeight:1.5,marginBottom:12}}>
+            <p style={{...hd,fontSize:"0.88rem",fontStyle:"italic",color:c.tx3,lineHeight:1.5,marginBottom:8}}>
               "Is fearr Gaeilge briste ná Béarla cliste"
             </p>
-            <div style={{...bd,fontSize:"0.7rem",color:c.tx3,opacity:0.5,marginBottom:16}}>
-              ☘️ Gaeltacht Connect — Built in Ireland
-            </div>
-            <div style={{display:"flex",justifyContent:"center",gap:16,alignItems:"center",flexWrap:"wrap"}}>
-              <span style={{...bd,fontSize:"0.68rem",color:c.tx3,opacity:0.4}}>hello@gaeltachtconnect.ie</span>
-              <span style={{...bd,fontSize:"0.68rem",color:c.tx3,opacity:0.4}}>•</span>
-              <button onClick={doReset} style={{background:"none",border:"none",color:c.tx3,...bd,fontSize:"0.65rem",cursor:"pointer",opacity:0.3,textDecoration:"underline"}}>Reset progress</button>
-            </div>
+            <div style={{...bd,fontSize:"0.68rem",color:c.tx3,opacity:0.45,marginBottom:14}}>☘️ Gaeltacht Connect — Built in Ireland</div>
+            <button onClick={doReset} style={{background:"none",border:"none",color:c.tx3,...bd,fontSize:"0.65rem",cursor:"pointer",opacity:0.3,textDecoration:"underline"}}>Reset progress</button>
           </div>
-
           <div style={{height:40}}/>
         </div>
         <BottomNav view={view} setView={setView} c={c} hd={hd} bd={bd}/>
