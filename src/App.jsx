@@ -592,7 +592,7 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
   // ═══════════════════════════════
   // ONBOARDING
   // ═══════════════════════════════
-  if(!st.onboarded){
+  if(!st.onboarded && obStep===0){
     const features=[
       {icon:"🎯",title:"One real challenge per day",desc:"Go out and use the language — not flashcards, not drills"},
       {icon:"🗣️",title:"Phrases that actually matter",desc:"Order a coffee, greet a neighbour, read a sign"},
