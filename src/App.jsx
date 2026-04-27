@@ -307,6 +307,41 @@ function getDailyChallenge(pool,date){return pool[getDayOfYear(date)%pool.length
 function getWordOfDay(vocab,date){return vocab[getDayOfYear(date)%vocab.length];}
 function todayKey(){return new Date().toISOString().split("T")[0];}
 
+const COUNTIES=[
+  {en:"Antrim",ga:"Aontroim",pr:"AYN-trim",g:false},
+  {en:"Armagh",ga:"Ard Mhacha",pr:"ard WAH-ha",g:false},
+  {en:"Carlow",ga:"Ceatharlach",pr:"KAH-her-lakh",g:false},
+  {en:"Cavan",ga:"An Cabhán",pr:"un KOW-awn",g:false},
+  {en:"Clare",ga:"An Clár",pr:"un klar",g:false},
+  {en:"Cork",ga:"Corcaigh",pr:"KUR-kee",g:true},
+  {en:"Derry",ga:"Doire",pr:"DIR-eh",g:true},
+  {en:"Donegal",ga:"Dún na nGall",pr:"doon nuh nawl",g:true},
+  {en:"Down",ga:"An Dún",pr:"un doon",g:false},
+  {en:"Dublin",ga:"Baile Átha Cliath",pr:"BLAH-klee-uh",g:false},
+  {en:"Fermanagh",ga:"Fear Manach",pr:"far MAN-ukh",g:false},
+  {en:"Galway",ga:"Gaillimh",pr:"GAL-iv",g:true},
+  {en:"Kerry",ga:"Ciarraí",pr:"KEER-ee",g:true},
+  {en:"Kildare",ga:"Cill Dara",pr:"kill DAR-uh",g:false},
+  {en:"Kilkenny",ga:"Cill Chainnigh",pr:"kill KHAN-ee",g:false},
+  {en:"Laois",ga:"Laois",pr:"leesh",g:false},
+  {en:"Leitrim",ga:"Liatroim",pr:"LEE-trim",g:false},
+  {en:"Limerick",ga:"Luimneach",pr:"LIM-nyukh",g:false},
+  {en:"Longford",ga:"An Longfort",pr:"un LONG-fort",g:false},
+  {en:"Louth",ga:"Lú",pr:"loo",g:false},
+  {en:"Mayo",ga:"Maigh Eo",pr:"my OH",g:true},
+  {en:"Meath",ga:"An Mhí",pr:"un vee",g:true},
+  {en:"Monaghan",ga:"Muineachán",pr:"MUN-uh-khawn",g:false},
+  {en:"Offaly",ga:"Uíbh Fhailí",pr:"EEV AL-ee",g:false},
+  {en:"Roscommon",ga:"Ros Comáin",pr:"ros KUH-mawn",g:false},
+  {en:"Sligo",ga:"Sligeach",pr:"SLIG-ukh",g:false},
+  {en:"Tipperary",ga:"Tiobraid Árann",pr:"TIB-rid AW-run",g:false},
+  {en:"Tyrone",ga:"Tír Eoghain",pr:"cheer OH-win",g:false},
+  {en:"Waterford",ga:"Port Láirge",pr:"port LAR-geh",g:true},
+  {en:"Westmeath",ga:"An Iarmhí",pr:"un EER-vee",g:false},
+  {en:"Wexford",ga:"Loch Garman",pr:"lokh GAR-mun",g:false},
+  {en:"Wicklow",ga:"Cill Mhantáin",pr:"kill WAN-tawn",g:false},
+];
+
 // Bottom navigation component
 const BottomNav = ({view,setView,c,hd,bd}) => {
   const tabs=[
@@ -410,12 +445,13 @@ export default function App() {
   const [search,setSearch]=useState("");
   const [filterCat,setFilterCat]=useState("all");
   const [provIdx,setProvIdx]=useState(0);
+  const [obStep,setObStep]=useState(0);
   const c = dk ? T.dark : T.light;
 
   useEffect(()=>{(async()=>{
     const s=await loadS();
     if(s){setSt(s);if(s.dk)setDk(true)}
-    else{const i={done:[],bonus:[],tasksDone:[],streak:0,best:0,dk:false,onboarded:false,started:new Date().toISOString(),dailyLog:{}};await saveS(i);setSt(i)}
+    else{const i={done:[],bonus:[],tasksDone:[],streak:0,best:0,dk:false,onboarded:false,started:new Date().toISOString(),dailyLog:{},county:null};await saveS(i);setSt(i)}
     setLoading(false);
   })()},[]);
 
@@ -594,7 +630,7 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
           </div>
 
           <button
-            onClick={async()=>await save({...st,onboarded:true})}
+            onClick={()=>setObStep(1)}
             style={{width:"100%",padding:"17px",borderRadius:14,background:c.btn,border:"none",color:c.btnTx,...hd,fontSize:"1.2rem",letterSpacing:"0.03em",cursor:"pointer",marginBottom:16,animation:"rise 0.5s 1.1s ease both",opacity:0}}
           >
             Tosaigh! — Let's begin
@@ -604,6 +640,52 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
             "Is fearr Gaeilge briste ná Béarla cliste"<br/>
             <span style={{opacity:0.55}}>Broken Irish is better than clever English</span>
           </p>
+        </div>
+      </div>
+    );
+  }
+
+  // COUNTY PICKER (onboarding step 2)
+  if(!st.onboarded && obStep===1){
+    const pickCounty=async(county)=>{
+      await save({done:[],bonus:[],tasksDone:[],streak:0,best:0,dk,onboarded:true,started:new Date().toISOString(),dailyLog:{},county});
+      setObStep(0);
+    };
+    return(
+      <div style={{minHeight:"100vh",background:c.bg,color:c.tx,display:"flex",flexDirection:"column"}}>
+        <style>{css}</style>
+        {/* Header */}
+        <div style={{background:c.hero,padding:"28px 24px 24px",textAlign:"center"}}>
+          <div style={{...bd,fontSize:"0.7rem",color:"rgba(255,255,255,0.5)",letterSpacing:"0.12em",textTransform:"uppercase",marginBottom:8}}>Cad as tú?</div>
+          <h2 style={{...hd,fontSize:"1.6rem",color:"#fff",marginBottom:6}}>Where are you from?</h2>
+          <p style={{...bd,fontSize:"0.82rem",color:"rgba(255,255,255,0.55)"}}>Pick your county — we'll make it personal</p>
+        </div>
+
+        {/* County grid */}
+        <div style={{flex:1,overflowY:"auto",padding:"16px 16px 100px"}}>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(2,1fr)",gap:8,maxWidth:480,margin:"0 auto"}}>
+            {COUNTIES.map((co,i)=>(
+              <button key={i} onClick={()=>pickCounty(co.en)} style={{
+                background:c.card,border:`1px solid ${c.bd}`,borderRadius:14,
+                padding:"14px 14px 12px",cursor:"pointer",textAlign:"left",
+                boxShadow:c.shadow,transition:"all 0.15s",
+              }}>
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:4}}>
+                  <div style={{...hd,fontSize:"0.95rem",fontWeight:700,color:c.acc,lineHeight:1.2}}>{co.ga}</div>
+                  {co.g&&<span style={{fontSize:"0.7rem",background:`${c.acc}15`,border:`1px solid ${c.acc}30`,borderRadius:6,padding:"1px 5px",color:c.acc,flexShrink:0,marginLeft:4}}>☘️</span>}
+                </div>
+                <div style={{...bd,fontSize:"0.72rem",color:c.tx3}}>{co.en}</div>
+                <div style={{...bd,fontSize:"0.62rem",color:c.tx3,opacity:0.5,marginTop:2}}>/{co.pr}/</div>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Skip button */}
+        <div style={{position:"fixed",bottom:0,left:0,right:0,padding:"16px 24px 32px",background:c.bg,borderTop:`1px solid ${c.bd}`}}>
+          <button onClick={()=>pickCounty(null)} style={{width:"100%",padding:"14px",borderRadius:12,background:"none",border:`1px solid ${c.bd}`,color:c.tx3,...bd,fontSize:"0.9rem",cursor:"pointer"}}>
+            Skip — I'd rather not say
+          </button>
         </div>
       </div>
     );
@@ -1341,7 +1423,14 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"18px 22px 14px"}}>
         <div style={{display:"flex",alignItems:"center",gap:8}}>
           <span style={{fontSize:"1.1rem"}}>☘️</span>
-          <span style={{...hd,fontSize:"1rem",fontWeight:600,color:c.tx,letterSpacing:"0.01em"}}>Gaeltacht Connect</span>
+          <div>
+            <span style={{...hd,fontSize:"1rem",fontWeight:600,color:c.tx,letterSpacing:"0.01em"}}>Gaeltacht Connect</span>
+            {st.county&&(()=>{const co=COUNTIES.find(x=>x.en===st.county);return co?(
+              <div style={{...bd,fontSize:"0.6rem",color:c.tx3,marginTop:1}}>
+                Contae {co.ga}{co.g?" · ☘️ Gaeltacht":""}
+              </div>
+            ):null;})()}
+          </div>
         </div>
         <button onClick={toggle} style={{background:"none",border:`1px solid ${c.bd}`,borderRadius:8,width:34,height:34,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",color:c.tx3,fontSize:"0.9rem"}}>
           {dk?"☀️":"🌙"}
@@ -1464,7 +1553,7 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
             {/* ── FIONN ── */}
             <FionnSays
               mood={st.streak>=5?"excited":st.streak>=2?"happy":total>0?"wink":"idle"}
-              text={st.streak>=5?"You're basically Irish now! 🔥":st.streak>=2?`${st.streak} days straight — keep it up!`:total>0?"Good. I was gettin' lonely.":"Dia dhuit! Ready for today?"}
+              text={st.streak>=5?"You're basically Irish now! 🔥":st.streak>=2?`${st.streak} days straight — keep it up!`:st.county&&total===0?`Dia dhuit ó ${COUNTIES.find(x=>x.en===st.county)?.ga||st.county}! Ready to start?`:total>0?"Good. I was gettin' lonely.":"Dia dhuit! Ready for today?"}
               size={56}
               align="left"
             />
