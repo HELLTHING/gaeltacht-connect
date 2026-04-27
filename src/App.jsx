@@ -496,7 +496,7 @@ export default function App() {
     setView("home");setSelDay(null);
   };
 
-  if(splash) return (
+  if(splash && st?.onboarded) return (
     <div style={{
       minHeight:"100vh",background:"#1B4332",display:"flex",flexDirection:"column",
       alignItems:"center",justifyContent:"center",padding:"40px 32px",
