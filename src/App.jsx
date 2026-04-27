@@ -1247,6 +1247,61 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
             </div>
           </div>
 
+          {/* AN GHAEILGE BEO */}
+          <div style={{...hd,fontSize:"0.65rem",color:c.tx3,letterSpacing:"0.12em",marginBottom:10}}>AN GHAEILGE BEO — THE LIVING IRISH</div>
+
+          {/* Big hero stat */}
+          <div style={{background:c.hero,borderRadius:16,padding:"22px 20px",marginBottom:10,textAlign:"center",position:"relative",overflow:"hidden"}}>
+            <div style={{position:"absolute",top:-10,right:-10,fontSize:"5rem",opacity:0.07,lineHeight:1}}>☘️</div>
+            <div style={{...bd,fontSize:"0.65rem",color:"rgba(255,255,255,0.5)",letterSpacing:"0.1em",textTransform:"uppercase",marginBottom:8}}>Can speak Irish today</div>
+            <div style={{...hd,fontSize:"2.8rem",fontWeight:800,color:"#fff",lineHeight:1,marginBottom:4}}>1,873,997</div>
+            <div style={{...bd,fontSize:"0.72rem",color:"rgba(255,255,255,0.55)"}}>Source: Census Ireland 2022 · ↑ Growing</div>
+          </div>
+
+          {/* Stats grid */}
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:10}}>
+            {[
+              {val:"272",label:"Gaelscoileanna",sub:"Irish-medium primary schools",up:true},
+              {val:"96,090",label:"Gaeltacht",sub:"People in native Irish areas",up:false},
+              {val:"170,000+",label:"Daily speakers",sub:"Use Irish every single day",up:true},
+              {val:"100,000+",label:"In Irish education",sub:"Students learning through Irish",up:true},
+            ].map((s,i)=>(
+              <div key={i} style={{background:c.card,border:`1px solid ${c.bd}`,borderRadius:14,padding:"14px 14px 12px",boxShadow:c.shadow}}>
+                <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",marginBottom:4}}>
+                  <div style={{...hd,fontSize:"1.35rem",fontWeight:800,color:c.acc,lineHeight:1}}>{s.val}</div>
+                  {s.up&&<span style={{...bd,fontSize:"0.6rem",color:"#2D6A4F",background:"#2D6A4F18",borderRadius:6,padding:"2px 5px",fontWeight:700}}>↑</span>}
+                </div>
+                <div style={{...hd,fontSize:"0.78rem",fontWeight:700,color:c.tx,marginBottom:2}}>{s.label}</div>
+                <div style={{...bd,fontSize:"0.65rem",color:c.tx3,lineHeight:1.4}}>{s.sub}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* Milestones timeline */}
+          <div style={{background:c.card,border:`1px solid ${c.bd}`,borderRadius:16,padding:"18px 18px",marginBottom:20,boxShadow:c.shadow}}>
+            <div style={{...hd,fontSize:"0.78rem",fontWeight:700,color:c.tx,marginBottom:14}}>Moments of revival</div>
+            {[
+              {year:"2023",text:"Lá Fhéile Bríde becomes Ireland's newest public holiday — a win for Irish culture",icon:"🌸"},
+              {year:"2022",text:"Irish Language Act passed in Northern Ireland — Irish recognised for the first time",icon:"📜"},
+              {year:"2022",text:"1.87 million people declared Irish language ability in the national census",icon:"📊"},
+              {year:"2020",text:"100,000 students enrolled in Irish-medium education for the first time in history",icon:"🏫"},
+              {year:"2007",text:"Irish becomes a full official working language of the European Union",icon:"🇪🇺"},
+              {year:"1996",text:"TG4 launches — the first Irish-language television channel. Still going strong.",icon:"📺"},
+            ].map((m,i,arr)=>(
+              <div key={i} style={{display:"flex",gap:12,paddingBottom:i<arr.length-1?14:0,marginBottom:i<arr.length-1?14:0,borderBottom:i<arr.length-1?`1px solid ${c.bd}`:"none"}}>
+                <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:4,flexShrink:0}}>
+                  <span style={{fontSize:"1rem"}}>{m.icon}</span>
+                  <div style={{width:1,flex:1,background:c.bd,display:i<arr.length-1?"block":"none"}}/>
+                </div>
+                <div style={{paddingTop:2}}>
+                  <div style={{...hd,fontSize:"0.7rem",fontWeight:700,color:c.gold,marginBottom:3}}>{m.year}</div>
+                  <div style={{...bd,fontSize:"0.78rem",color:c.tx2,lineHeight:1.5}}>{m.text}</div>
+                </div>
+              </div>
+            ))}
+            <div style={{...bd,fontSize:"0.6rem",color:c.tx3,opacity:0.45,marginTop:14,textAlign:"right"}}>Source: Census 2022 · Gaelscoil.ie · Oireachtas.ie</div>
+          </div>
+
           {/* ABOUT */}
           <div style={{...hd,fontSize:"0.65rem",color:c.tx3,letterSpacing:"0.12em",marginBottom:10}}>ABOUT</div>
           <div style={{background:c.card,border:`1px solid ${c.bd}`,borderRadius:12,marginBottom:20,padding:"18px",boxShadow:c.shadow,textAlign:"center"}}>
