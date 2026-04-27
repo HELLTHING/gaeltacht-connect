@@ -409,6 +409,7 @@ export default function App() {
   const [quizDone,setQuizDone]=useState(false);
   const [search,setSearch]=useState("");
   const [filterCat,setFilterCat]=useState("all");
+  const [provIdx,setProvIdx]=useState(0);
   const c = dk ? T.dark : T.light;
 
   useEffect(()=>{(async()=>{
@@ -1069,13 +1070,22 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
   // SETTINGS VIEW
   // ═══════════════════════════════
   if(view==="settings"){
-    const RESOURCES=[
-      {name:"Duolingo Irish",url:"https://www.duolingo.com/course/ga/en/Learn-Irish",desc:"Daily bite-sized lessons"},
-      {name:"Raidió na Gaeltachta",url:"https://www.rte.ie/rnag/",desc:"Irish-language radio — live + podcasts"},
-      {name:"Tuairisc.ie",url:"https://tuairisc.ie/",desc:"Irish-language news"},
-      {name:"Teanglann.ie",url:"https://www.teanglann.ie/",desc:"Official Irish dictionary"},
-      {name:"Forvo Irish",url:"https://forvo.com/languages/ga/",desc:"Native speaker pronunciation"},
-      {name:"r/gaeilge",url:"https://www.reddit.com/r/gaeilge/",desc:"Irish language community on Reddit"},
+    const PROVERBS=[
+      {ga:"Is fearr Gaeilge briste ná Béarla cliste",pr:"iss far GAYL-geh BRISH-teh naw BAYR-lah KLISH-teh",en:"Broken Irish is better than clever English",note:"Your permission to speak imperfectly. Use it."},
+      {ga:"Ní neart go cur le chéile",pr:"nee nyart guh kur leh KHAY-leh",en:"There is no strength without unity",note:"The motto carved into the soul of every Irish community."},
+      {ga:"Mol an óige agus tiocfaidh sí",pr:"mul un OH-igeh AH-gus CHUK-hee shee",en:"Praise the young and they will flourish",note:"Ireland's philosophy on raising children — encouragement over criticism."},
+      {ga:"Ar scáth a chéile a mhaireann na daoine",pr:"er skaw ah KHAY-leh ah WUR-un nuh DEE-neh",en:"People live in one another's shelter",note:"The Irish understanding of community: we survive by sheltering each other."},
+      {ga:"Is maith an scáthán súil carad",pr:"iss mah un SKAW-hawn SOO-il KAR-ud",en:"A friend's eye is a good mirror",note:"True friends reflect who we really are — not who we pretend to be."},
+      {ga:"Níl aon tinteán mar do thinteán féin",pr:"neel AYN CHIN-chawn mar duh HIN-chawn fayn",en:"There's no fireside like your own fireside",note:"Home is home. The Irish felt this most acutely after centuries of exile."},
+      {ga:"Is binn béal ina thost",pr:"iss bin bayl in-uh hust",en:"Silent is the sweetest mouth",note:"Knowing when to stay quiet is wisdom. Not everything needs to be said."},
+      {ga:"Ná déan deifir — déan é ceart",pr:"naw jayn JEH-fir — jayn ay kart",en:"Don't hurry — do it right",note:"Irish craftsmanship and storytelling both understood: rushing ruins everything."},
+      {ga:"Bíonn an rath i measc na mbó",pr:"BEE-un un rah ih mask nuh moh",en:"Good fortune is among the cows",note:"Wealth was counted in cattle in ancient Ireland. This proverb still rings true today."},
+      {ga:"Is minic a bhris béal duine a shrón",pr:"iss MIN-ik ah vrish bayl DIN-eh ah hrohn",en:"Many a time a person's mouth broke their nose",note:"Words have consequences. The Irish knew this better than most."},
+      {ga:"Giorraíonn beirt bóthar",pr:"GUR-ee-un berth BOH-hur",en:"Two people shorten a road",note:"Good company makes any journey shorter. Bring someone with you."},
+      {ga:"Maireann croí éadrom i bhfad",pr:"MUR-un kree AY-drum ih wad",en:"A light heart lives long",note:"Joy and lightness — the Irish cure for a hard life."},
+      {ga:"An rud is annamh is iontach",pr:"un rud iss AN-uv iss UN-tukh",en:"What is rare is wonderful",note:"Scarcity creates wonder. The Irish language itself is proof."},
+      {ga:"Ní bhíonn an rath ach mar a mbíonn an smacht",pr:"nee VEE-un un rah akh mar ah MBEE-un un smakht",en:"There is no luck except where there is discipline",note:"Fortune favours the prepared. Always has."},
+      {ga:"Is treise tuile ná trí rí",pr:"iss TRESH-eh TIL-eh naw tree ree",en:"A flood is stronger than three kings",note:"Nature always wins. The ancient Irish understood they were guests of the land, not its masters."},
     ];
     const taskCount=st.tasksDone?st.tasksDone.length:0;
     return(
@@ -1124,18 +1134,35 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
             ))}
           </div>
 
-          {/* RESOURCES */}
-          <div style={{...hd,fontSize:"0.65rem",color:c.tx3,letterSpacing:"0.12em",marginBottom:10}}>IRISH LANGUAGE RESOURCES</div>
-          <div style={{background:c.card,border:`1px solid ${c.bd}`,borderRadius:12,marginBottom:20,overflow:"hidden",boxShadow:c.shadow}}>
-            {RESOURCES.map((r,i)=>(
-              <a key={i} href={r.url} target="_blank" rel="noopener noreferrer" style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"13px 18px",borderBottom:i<RESOURCES.length-1?`2px solid ${c.bd}`:"none",textDecoration:"none",color:"inherit"}}>
-                <div>
-                  <div style={{...hd,fontSize:"0.92rem",color:c.acc}}>{r.name}</div>
-                  <div style={{...bd,fontSize:"0.72rem",color:c.tx3}}>{r.desc}</div>
+          {/* SEANFHOCAIL */}
+          <div style={{...hd,fontSize:"0.65rem",color:c.tx3,letterSpacing:"0.12em",marginBottom:10}}>SEANFHOCAIL — IRISH PROVERBS</div>
+          <div style={{background:c.card,border:`1px solid ${c.bd}`,borderRadius:16,marginBottom:20,overflow:"hidden",boxShadow:c.shadow}}>
+            <div style={{height:4,background:`linear-gradient(90deg,${c.acc},${c.gold})`}}/>
+            <div style={{padding:"22px 20px 18px"}}>
+              <div style={{...hd,fontSize:"1.35rem",fontWeight:700,color:c.acc,fontStyle:"italic",lineHeight:1.35,marginBottom:10}}>
+                "{PROVERBS[provIdx].ga}"
+              </div>
+              <div style={{...bd,fontSize:"0.75rem",color:c.tx3,letterSpacing:"0.04em",marginBottom:14}}>
+                /{PROVERBS[provIdx].pr}/
+              </div>
+              <div style={{borderTop:`1px solid ${c.bd}`,paddingTop:14,marginBottom:12}}>
+                <div style={{...hd,fontSize:"1rem",color:c.tx,marginBottom:6}}>
+                  {PROVERBS[provIdx].en}
                 </div>
-                <span style={{color:c.tx3,fontSize:"0.9rem",flexShrink:0}}>→</span>
-              </a>
-            ))}
+                <div style={{...bd,fontSize:"0.8rem",color:c.tx3,lineHeight:1.6,fontStyle:"italic"}}>
+                  {PROVERBS[provIdx].note}
+                </div>
+              </div>
+              <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+                <span style={{...bd,fontSize:"0.65rem",color:c.tx3,opacity:0.5}}>{provIdx+1} / {PROVERBS.length}</span>
+                <button
+                  onClick={()=>setProvIdx(i=>(i+1)%PROVERBS.length)}
+                  style={{...bd,fontSize:"0.82rem",fontWeight:700,color:c.acc,background:"none",border:`1px solid ${c.bd}`,borderRadius:8,padding:"7px 16px",cursor:"pointer"}}
+                >
+                  Ceann eile →
+                </button>
+              </div>
+            </div>
           </div>
 
           {/* ABOUT */}
