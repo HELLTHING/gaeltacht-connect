@@ -174,15 +174,47 @@ const shareProgress = async (day, total, streak) => {
   const a=document.createElement("a"); a.href=img; a.download=`gaeltacht-day-${day}.png`; a.click();
 };
 
-const speak = (phrase, pr) => {
-  if (!window.speechSynthesis) return;
-  window.speechSynthesis.cancel();
-  const text = pr && pr !== "Full conversation flow" && pr !== "Full immersion run" && pr !== "Your choice" ? pr : phrase;
-  const u = new SpeechSynthesisUtterance(text);
-  u.rate = 0.75;
-  u.lang = 'en-IE';
-  window.speechSynthesis.speak(u);
-};
+// ── Irish TTS via abair.ie ──────────────────────────────────
+const _audioCache = new Map();
+let _currentAudio = null;
+
+function _pcmToWav(pcm, sr=22050) {
+  const buf = new ArrayBuffer(44 + pcm.length);
+  const v = new DataView(buf);
+  const s = (o, t) => { for(let i=0;i<t.length;i++) v.setUint8(o+i, t.charCodeAt(i)); };
+  s(0,'RIFF'); v.setUint32(4,36+pcm.length,true);
+  s(8,'WAVE'); s(12,'fmt '); v.setUint32(16,16,true);
+  v.setUint16(20,1,true); v.setUint16(22,1,true);
+  v.setUint32(24,sr,true); v.setUint32(28,sr*2,true);
+  v.setUint16(32,2,true); v.setUint16(34,16,true);
+  s(36,'data'); v.setUint32(40,pcm.length,true);
+  new Uint8Array(buf,44).set(pcm);
+  return new Blob([buf],{type:'audio/wav'});
+}
+
+async function speakIrish(text) {
+  if (_currentAudio) { _currentAudio.pause(); _currentAudio.src=''; _currentAudio=null; }
+  if (_audioCache.has(text)) {
+    _currentAudio = new Audio(_audioCache.get(text));
+    return _currentAudio.play().catch(()=>{});
+  }
+  try {
+    const r = await fetch(`https://www.abair.ie/api2/synthesise?input=${encodeURIComponent(text)}&voice=ga_CO_pmg_nnmnkwii&audioEncoding=LINEAR16`);
+    if (!r.ok) throw new Error();
+    const d = await r.json();
+    if (!d.audioContent) throw new Error();
+    const pcm = Uint8Array.from(atob(d.audioContent), c=>c.charCodeAt(0));
+    const url = URL.createObjectURL(_pcmToWav(pcm));
+    _audioCache.set(text, url);
+    _currentAudio = new Audio(url);
+    return _currentAudio.play().catch(()=>{});
+  } catch {
+    window.speechSynthesis?.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'ga-IE'; u.rate = 0.8;
+    window.speechSynthesis?.speak(u);
+  }
+}
 
 // Category color map
 const CAT_CLR = {
@@ -780,7 +812,7 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
               {/* Phrase card */}
               <div style={{background:c.phrase,border:`1.5px solid ${c.phraseBd}`,borderRadius:16,padding:"32px 24px",marginBottom:20,textAlign:"center",animation:"pop 0.4s ease"}}>
                 <div style={{...hd,fontSize:"1.8rem",fontWeight:700,color:c.acc,marginBottom:8}}>{q.phrase}</div>
-                <button onClick={()=>speak(q.phrase,q.pr)} style={{background:"none",border:`1px solid ${c.phraseBd}`,borderRadius:20,padding:"5px 14px",color:c.acc,...bd,fontSize:"0.8rem",cursor:"pointer",display:"inline-flex",alignItems:"center",gap:6}}>
+                <button onClick={()=>speakIrish(q.phrase)} style={{background:"none",border:`1px solid ${c.phraseBd}`,borderRadius:20,padding:"5px 14px",color:c.acc,...bd,fontSize:"0.8rem",cursor:"pointer",display:"inline-flex",alignItems:"center",gap:6}}>
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M15.54 8.46a5 5 0 010 7.07" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round"/></svg>
                   Éist
                 </button>
@@ -902,7 +934,11 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
                   <div style={{...hd,fontSize:"2.4rem",fontWeight:700,fontStyle:"italic",color:c.acc,lineHeight:1.2,marginBottom:10}}>
                     {ch.p}
                   </div>
-                  <div style={{...bd,fontSize:"0.88rem",color:c.tx3,letterSpacing:"0.05em",marginBottom:6}}>{ch.pr}</div>
+                  <div style={{...bd,fontSize:"0.88rem",color:c.tx3,letterSpacing:"0.05em",marginBottom:8}}>{ch.pr}</div>
+                  <button onClick={()=>speakIrish(ch.p)} style={{background:c.phrase,border:`1px solid ${c.phraseBd}`,borderRadius:20,padding:"7px 18px",color:c.acc,...bd,fontSize:"0.85rem",cursor:"pointer",display:"inline-flex",alignItems:"center",gap:7,marginBottom:8}}>
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M15.54 8.46a5 5 0 010 7.07" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round"/></svg>
+                    Éist le fuaim
+                  </button>
                   <div style={{...bd,fontSize:"0.95rem",color:c.tx2,fontStyle:"italic"}}>"{ch.m}"</div>
                 </div>
 
@@ -1087,9 +1123,9 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
                 <div style={{...bd,fontSize:"0.7rem",color:c.tx3}}>/{w.pr}/</div>
                 <div style={{...bd,fontSize:"0.82rem",color:c.tx2}}>{w.m}</div>
               </div>
-              <a href={forvoUrl(w.p)} target="_blank" rel="noopener" style={{background:c.cardAlt,border:`1px solid ${c.bd}`,borderRadius:8,width:34,height:34,flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center",textDecoration:"none",fontSize:"0.95rem"}}>
+              <button onClick={()=>speakIrish(w.p)} style={{background:c.cardAlt,border:`1px solid ${c.bd}`,borderRadius:8,width:34,height:34,flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",fontSize:"0.95rem"}}>
                 🔊
-              </a>
+              </button>
             </div>
           ))}
           {filtered.length===0&&<div style={{textAlign:"center",padding:"40px",...bd,color:c.tx3,fontStyle:"italic"}}>Níor aimsíodh aon rud — Nothing found</div>}
@@ -1598,7 +1634,10 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
             <div style={{...hd,fontSize:"0.6rem",color:season.color,marginTop:4,fontWeight:700,letterSpacing:"0.04em",textAlign:"center"}}>{season.name}</div>
           </div>
           <div style={{flex:1,background:c.card,border:`1px solid ${c.bd}`,borderRadius:14,padding:"10px 16px",boxShadow:c.shadow}}>
-            <div style={{...bd,fontSize:"0.6rem",color:c.tx3,letterSpacing:"0.1em",textTransform:"uppercase",marginBottom:4}}>Focal an Lae</div>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start"}}>
+              <div style={{...bd,fontSize:"0.6rem",color:c.tx3,letterSpacing:"0.1em",textTransform:"uppercase",marginBottom:4}}>Focal an Lae</div>
+              <button onClick={()=>speakIrish(wod.p)} style={{background:"none",border:"none",cursor:"pointer",fontSize:"0.95rem",padding:0,lineHeight:1,marginTop:-2}}>🔊</button>
+            </div>
             <div style={{...hd,fontSize:"1.15rem",fontWeight:700,color:c.acc,fontStyle:"italic"}}>{wod.p}</div>
             <div style={{...bd,fontSize:"0.72rem",color:c.tx3}}>{wod.m} <span style={{color:c.tx3,opacity:0.6}}>· /{wod.pr}/</span></div>
           </div>
