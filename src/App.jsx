@@ -307,6 +307,18 @@ function getDailyChallenge(pool,date){return pool[getDayOfYear(date)%pool.length
 function getWordOfDay(vocab,date){return vocab[getDayOfYear(date)%vocab.length];}
 function todayKey(){return new Date().toISOString().split("T")[0];}
 
+// Seeded daily vocab quiz — same 5 questions for everyone on the same day
+function seedRand(seed){let s=seed|0;return()=>{s=(Math.imul(1664525,s)+1013904223)|0;return(s>>>0)/0xffffffff};}
+function getDailyVocabQuiz(vocab,date){
+  const rand=seedRand(getDayOfYear(date)*31+date.getFullYear());
+  const pool=[...vocab].sort(()=>rand()-0.5).slice(0,5);
+  return pool.map(word=>{
+    const others=vocab.filter(w=>w.m!==word.m).sort(()=>rand()-0.5).slice(0,3);
+    const opts=[...others.map(w=>w.m),word.m].sort(()=>rand()-0.5);
+    return{phrase:word.p,answer:word.m,opts,pr:word.pr};
+  });
+}
+
 const COUNTIES=[
   {en:"Antrim",ga:"Aontroim",pr:"AYN-trim",g:false},
   {en:"Armagh",ga:"Ard Mhacha",pr:"ard WAH-ha",g:false},
@@ -442,6 +454,7 @@ export default function App() {
   const [quizScore,setQuizScore]=useState(0);
   const [quizPicked,setQuizPicked]=useState(null);
   const [quizDone,setQuizDone]=useState(false);
+  const [quizType,setQuizType]=useState("week"); // "week" | "daily"
   const [search,setSearch]=useState("");
   const [filterCat,setFilterCat]=useState("all");
   const [provIdx,setProvIdx]=useState(0);
@@ -460,6 +473,19 @@ export default function App() {
   const toggle=async()=>{const n=!dk;setDk(n);if(st)await save({...st,dk:n})};
 
   const markDailyDone=useCallback(async()=>{if(!st)return;const k=todayKey();const dl={...(st.dailyLog||{}),[k]:true};await save({...st,dailyLog:dl});},[st,save]);
+
+  const startDailyQuiz=useCallback(()=>{
+    const q=getDailyVocabQuiz(VOCAB,new Date());
+    setQuiz(q);setQuizIdx(0);setQuizScore(0);setQuizPicked(null);setQuizDone(false);
+    setQuizType("daily");setView("quiz");
+  },[]);
+
+  const saveDailyQuizScore=useCallback(async(score)=>{
+    if(!st)return;
+    const k=todayKey()+"_vq";
+    const dl={...(st.dailyLog||{}),[k]:score};
+    await save({...st,dailyLog:dl});
+  },[st,save]);
 
   const scheduleNotif=useCallback(()=>{
     if(Notification.permission!=="granted")return;
@@ -776,7 +802,14 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
                       if(opt===q.answer)setQuizScore(s=>s+1);
                       setTimeout(()=>{
                         if(quizIdx+1<quiz.length){setQuizIdx(i=>i+1);setQuizPicked(null);}
-                        else setQuizDone(true);
+                        else{
+                          setQuizDone(true);
+                          // save daily quiz score when the daily quiz finishes
+                          if(quizType==="daily"){
+                            const finalScore=quizScore+(opt===q.answer?1:0);
+                            saveDailyQuizScore(finalScore);
+                          }
+                        }
                       },1000);
                     }} style={{
                       background:bg,border,borderRadius:12,padding:"14px 18px",
@@ -1612,6 +1645,31 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
               size={56}
               align="left"
             />
+
+            {/* ══ CLUICHE AN LAE — Daily vocab quiz ══ */}
+            {(()=>{
+              const vqDoneKey=todayKey()+"_vq";
+              const vqScore=st.dailyLog?.[vqDoneKey];
+              const vqDone=vqScore!==undefined;
+              return(
+                <div style={{background:c.card,border:`1px solid ${c.bd}`,borderRadius:16,padding:"16px 18px",boxShadow:c.shadow,display:"flex",alignItems:"center",justifyContent:"space-between",gap:12}}>
+                  <div style={{flex:1}}>
+                    <div style={{...bd,fontSize:"0.58rem",color:c.tx3,letterSpacing:"0.1em",textTransform:"uppercase",marginBottom:3}}>Cluiche an Lae · Daily Quiz</div>
+                    <div style={{...hd,fontSize:"0.96rem",fontWeight:700,color:c.tx}}>5 focal · ~2 nóiméad</div>
+                    {vqDone&&<div style={{...bd,fontSize:"0.75rem",color:c.acc,marginTop:3}}>Score: {vqScore}/5 {vqScore===5?"🏆":vqScore>=3?"🌟":"💪"}</div>}
+                  </div>
+                  <button onClick={startDailyQuiz} style={{
+                    background:vqDone?c.cardAlt:c.btn,
+                    border:`1px solid ${vqDone?c.bd:"transparent"}`,
+                    borderRadius:12,padding:"10px 16px",
+                    color:vqDone?c.tx3:"#fff",
+                    ...hd,fontSize:"0.85rem",fontWeight:700,cursor:"pointer",whiteSpace:"nowrap",
+                  }}>
+                    {vqDone?"Arís →":"Tosaigh →"}
+                  </button>
+                </div>
+              );
+            })()}
 
             {/* ══ 30-DAY JOURNEY ══ */}
             <div style={{borderTop:`1px solid ${c.bd}`,paddingTop:14}}>
