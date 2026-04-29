@@ -1469,6 +1469,9 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
   const dailyC = getDailyChallenge(DAILY_POOL, today);
   const wod = getWordOfDay(VOCAB, today);
   const dailyDoneToday = st?.dailyLog?.[todayKey()] || false;
+  const daysSinceStart = st.started ? Math.floor((Date.now()-new Date(st.started).getTime())/86400000) : 0;
+  const calendarDay = Math.min(daysSinceStart+1, 30);
+  const journeyAvailable = nextDay <= calendarDay;
 
   return(
     <div style={{minHeight:"100vh",background:c.bg,color:c.tx,display:"flex",flexDirection:"column",paddingBottom:72}}>
@@ -1509,103 +1512,40 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
         </div>
 
         {allDone ? (
-          /* ── ALL DONE ── */
           <div style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",textAlign:"center",padding:"40px 0"}}>
             <div style={{fontSize:"4rem",marginBottom:16}}>🏆</div>
             <div style={{...hd,fontSize:"2.2rem",color:c.acc,marginBottom:8}}>30 Lá — Déanta!</div>
             <div style={{...bd,fontSize:"1rem",color:c.tx3,fontStyle:"italic",marginBottom:28,lineHeight:1.6}}>You did something real.<br/>The language is proud of you.</div>
-            <button onClick={()=>shareProgress(30,30,st.streak)} style={{background:c.btn,border:"none",borderRadius:12,padding:"14px 32px",color:c.btnTx,...hd,fontSize:"1.1rem",cursor:"pointer",letterSpacing:"0.02em"}}>
-              Share achievement →
-            </button>
+            <button onClick={()=>shareProgress(30,30,st.streak)} style={{background:c.btn,border:"none",borderRadius:12,padding:"14px 32px",color:c.btnTx,...hd,fontSize:"1.1rem",cursor:"pointer",letterSpacing:"0.02em"}}>Share achievement →</button>
           </div>
         ) : (
           <>
-            {/* ── DAY LABEL ── */}
-            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-              <div style={{display:"flex",alignItems:"center",gap:10}}>
-                <div style={{width:3,height:28,borderRadius:2,background:catColor}}/>
-                <div>
-                  <div style={{...bd,fontSize:"0.65rem",color:c.tx3,letterSpacing:"0.1em",textTransform:"uppercase"}}>Today's challenge</div>
-                  <div style={{...hd,fontSize:"0.95rem",color:c.tx,fontWeight:600}}>Lá {nextDay} — {currentCh.t}</div>
-                </div>
-              </div>
-              {st.done.includes(nextDay)
-                ? <span style={{fontSize:"1.2rem"}}>✅</span>
-                : <span style={{...bd,fontSize:"0.72rem",color:c.tx3,background:c.cardAlt,border:`1px solid ${c.bd}`,borderRadius:20,padding:"3px 10px"}}>{nextDay}/30</span>
-              }
-            </div>
-
-            {/* ── PHRASE HERO ── */}
+            {/* ══ DÚSHLÁN AN LAE — HERO ══ */}
             <div style={{background:c.card,border:`1px solid ${c.bd}`,borderRadius:20,overflow:"hidden",boxShadow:c.shadow}}>
-              {/* Category color bar */}
-              <div style={{height:5,background:catColor}}/>
-              <div style={{padding:"28px 24px 24px"}}>
-                {/* Category + english */}
-                <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:20}}>
-                  <span style={{fontSize:"0.9rem"}}>{CATS[currentCh.cat]}</span>
-                  <span style={{...bd,fontSize:"0.72rem",color:c.tx3,letterSpacing:"0.08em",textTransform:"uppercase"}}>{currentCh.cat}</span>
-                  <div style={{flex:1}}/>
-                  <span style={{...bd,fontSize:"0.78rem",fontStyle:"italic",color:c.tx3}}>{currentCh.e}</span>
+              <div style={{height:5,background:`linear-gradient(90deg,${TYPE_CLR[dailyC.tp]||c.acc},${TYPE_CLR[dailyC.tp]||c.acc}88)`}}/>
+              <div style={{padding:"20px 20px 18px"}}>
+                <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:14}}>
+                  <div style={{display:"flex",alignItems:"center",gap:8}}>
+                    <span style={{fontSize:"1.1rem"}}>{TYPE_ICON[dailyC.tp]}</span>
+                    <div>
+                      <div style={{...bd,fontSize:"0.58rem",color:c.tx3,letterSpacing:"0.1em",textTransform:"uppercase"}}>Dúshlán an Lae · Everyone today</div>
+                      <div style={{...hd,fontSize:"1rem",fontWeight:700,color:c.tx}}>{dailyC.title}</div>
+                    </div>
+                  </div>
+                  {dailyDoneToday&&<span style={{fontSize:"1.3rem"}}>✅</span>}
                 </div>
-
-                {/* THE BIG PHRASE */}
-                <div style={{textAlign:"center",padding:"20px 0 24px",borderTop:`1px solid ${c.bd}`,borderBottom:`1px solid ${c.bd}`,marginBottom:20}}>
-                  <div style={{...hd,fontSize:"2.6rem",fontWeight:700,color:c.acc,lineHeight:1.15,marginBottom:10,fontStyle:"italic"}}>
-                    {currentCh.p}
-                  </div>
-                  <div style={{...bd,fontSize:"0.9rem",color:c.tx3,letterSpacing:"0.06em",marginBottom:6}}>
-                    /{currentCh.pr}/
-                  </div>
-                  <div style={{...bd,fontSize:"1rem",color:c.tx2,fontStyle:"italic"}}>
-                    "{currentCh.m}"
-                  </div>
-                </div>
-
-                {/* Challenge text */}
-                <p style={{...bd,fontSize:"0.95rem",color:c.tx2,lineHeight:1.7,marginBottom:0}}>
-                  {currentCh.ch}
-                </p>
+                <p style={{...bd,fontSize:"0.93rem",color:c.tx2,lineHeight:1.75,margin:"0 0 12px"}}>{dailyC.ch}</p>
+                {dailyC.tip&&<div style={{...bd,fontSize:"0.78rem",color:c.tx3,fontStyle:"italic",background:c.cardAlt,borderRadius:10,padding:"9px 13px",marginBottom:14}}>💡 {dailyC.tip}</div>}
+                <button
+                  onClick={()=>{if(!dailyDoneToday)markDailyDone();}}
+                  style={{width:"100%",padding:"15px",borderRadius:12,background:dailyDoneToday?c.cardAlt:TYPE_CLR[dailyC.tp]||c.btn,border:`1px solid ${dailyDoneToday?c.bd:"transparent"}`,color:dailyDoneToday?c.tx3:"#fff",...hd,fontSize:"1rem",fontWeight:700,cursor:dailyDoneToday?"default":"pointer",transition:"all 0.2s",letterSpacing:"0.02em"}}
+                >
+                  {dailyDoneToday?"✅ Déanta inniu! Come back tomorrow":"Déanta — Mark as done"}
+                </button>
               </div>
             </div>
 
-            {/* ── CTA BUTTON ── */}
-            <button
-              onClick={()=>{setSelDay(nextDay);setView("day")}}
-              style={{width:"100%",padding:"17px",borderRadius:14,background:c.btn,border:"none",color:c.btnTx,...hd,fontSize:"1.15rem",letterSpacing:"0.03em",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:8}}
-            >
-              {st.done.includes(nextDay) ? "View today's challenge" : "Oscail an dúshlán"} →
-            </button>
-
-            {/* ── STATS ROW ── */}
-            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"8px 4px"}}>
-              <div style={{display:"flex",alignItems:"center",gap:20}}>
-                <div>
-                  <div style={{...hd,fontSize:"1.4rem",color:c.acc,lineHeight:1}}>{total}</div>
-                  <div style={{...bd,fontSize:"0.62rem",color:c.tx3,marginTop:1}}>days done</div>
-                </div>
-                {st.streak>=1&&(
-                  <div>
-                    <div style={{...hd,fontSize:"1.4rem",color:c.gold,lineHeight:1}}>🔥 {st.streak}</div>
-                    <div style={{...bd,fontSize:"0.62rem",color:c.tx3,marginTop:1}}>day streak</div>
-                  </div>
-                )}
-                {st.bonus.length>0&&(
-                  <div>
-                    <div style={{...hd,fontSize:"1.4rem",color:c.tx3,lineHeight:1}}>⭐ {st.bonus.length}</div>
-                    <div style={{...bd,fontSize:"0.62rem",color:c.tx3,marginTop:1}}>bonus</div>
-                  </div>
-                )}
-              </div>
-
-              {/* Progress dots */}
-              <div style={{display:"flex",gap:3,flexWrap:"wrap",maxWidth:120,justifyContent:"flex-end"}}>
-                {CH.map(ch=>(
-                  <div key={ch.day} style={{width:6,height:6,borderRadius:"50%",background:st.done.includes(ch.day)?c.acc:c.dotOff,transition:"background 0.3s"}}/>
-                ))}
-              </div>
-            </div>
-
-            {/* ── FIONN ── */}
+            {/* ══ FIONN ══ */}
             <FionnSays
               mood={st.streak>=5?"excited":st.streak>=2?"happy":total>0?"wink":"idle"}
               text={st.streak>=5?"You're basically Irish now! 🔥":st.streak>=2?`${st.streak} days straight — keep it up!`:st.county&&total===0?`Dia dhuit ó ${COUNTIES.find(x=>x.en===st.county)?.ga||st.county}! Ready to start?`:total>0?"Good. I was gettin' lonely.":"Dia dhuit! Ready for today?"}
@@ -1613,26 +1553,53 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
               align="left"
             />
 
-            {/* ── DAILY COMMUNITY CHALLENGE ── */}
-            <div style={{background:c.card,border:`1px solid ${c.bd}`,borderRadius:20,overflow:"hidden",boxShadow:c.shadow}}>
-              <div style={{height:4,background:TYPE_CLR[dailyC.tp]||c.acc}}/>
-              <div style={{padding:"20px 20px 18px"}}>
-                <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:14}}>
-                  <span style={{fontSize:"1rem"}}>{TYPE_ICON[dailyC.tp]}</span>
+            {/* ══ 30-DAY JOURNEY ══ */}
+            <div style={{borderTop:`1px solid ${c.bd}`,paddingTop:14}}>
+              <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:10}}>
+                <div style={{display:"flex",alignItems:"center",gap:8}}>
+                  <div style={{width:3,height:20,borderRadius:2,background:catColor}}/>
                   <div>
-                    <div style={{...bd,fontSize:"0.6rem",color:c.tx3,letterSpacing:"0.1em",textTransform:"uppercase"}}>Dúshlán an Lae · Everyone today</div>
-                    <div style={{...hd,fontSize:"0.95rem",fontWeight:700,color:c.tx}}>{dailyC.title}</div>
+                    <div style={{...bd,fontSize:"0.58rem",color:c.tx3,letterSpacing:"0.1em",textTransform:"uppercase"}}>Do chuid taistil · Your journey</div>
+                    <div style={{...hd,fontSize:"0.88rem",fontWeight:700,color:c.tx}}>30 Lá Challenge</div>
                   </div>
-                  {dailyDoneToday&&<span style={{marginLeft:"auto",fontSize:"1.2rem"}}>✅</span>}
                 </div>
-                <p style={{...bd,fontSize:"0.9rem",color:c.tx2,lineHeight:1.7,margin:"0 0 12px"}}>{dailyC.ch}</p>
-                {dailyC.tip&&<div style={{...bd,fontSize:"0.8rem",color:c.tx3,fontStyle:"italic",background:c.cardAlt,borderRadius:10,padding:"8px 12px",marginBottom:14}}>💡 {dailyC.tip}</div>}
-                <button
-                  onClick={()=>{if(!dailyDoneToday)markDailyDone();}}
-                  style={{width:"100%",padding:"13px",borderRadius:12,background:dailyDoneToday?c.cardAlt:TYPE_CLR[dailyC.tp]||c.btn,border:`1px solid ${dailyDoneToday?c.bd:"transparent"}`,color:dailyDoneToday?c.tx3:"#fff",...bd,fontSize:"0.95rem",fontWeight:700,cursor:dailyDoneToday?"default":"pointer",transition:"all 0.2s"}}
-                >
-                  {dailyDoneToday?"✅ Déanta inniu!":"Mark as done"}
-                </button>
+                <div style={{display:"flex",alignItems:"center",gap:10}}>
+                  {st.streak>=1&&<span style={{...hd,fontSize:"0.85rem",color:c.gold}}>🔥{st.streak}</span>}
+                  <span style={{...bd,fontSize:"0.72rem",color:c.tx3,background:c.cardAlt,border:`1px solid ${c.bd}`,borderRadius:20,padding:"3px 10px"}}>{total}/30</span>
+                </div>
+              </div>
+
+              {journeyAvailable ? (
+                <div style={{background:c.card,border:`1px solid ${catColor}40`,borderRadius:16,overflow:"hidden",boxShadow:c.shadow}}>
+                  <div style={{height:3,background:catColor}}/>
+                  <div style={{padding:"16px 18px"}}>
+                    <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:12}}>
+                      <span style={{fontSize:"0.85rem"}}>{CATS[currentCh.cat]}</span>
+                      <span style={{...bd,fontSize:"0.65rem",color:c.tx3,letterSpacing:"0.06em",textTransform:"uppercase"}}>{currentCh.cat}</span>
+                      <div style={{flex:1}}/>
+                      <span style={{...hd,fontSize:"0.72rem",color:c.tx3}}>Lá {nextDay}</span>
+                      {st.done.includes(nextDay)&&<span style={{fontSize:"0.95rem"}}>✅</span>}
+                    </div>
+                    <div style={{...hd,fontSize:"1.5rem",fontWeight:700,color:c.acc,fontStyle:"italic",marginBottom:4}}>{currentCh.p}</div>
+                    <div style={{...bd,fontSize:"0.78rem",color:c.tx3,marginBottom:12}}>{currentCh.m} · /{currentCh.pr}/</div>
+                    <button onClick={()=>{setSelDay(nextDay);setView("day")}} style={{width:"100%",padding:"13px",borderRadius:12,background:c.btn,border:"none",color:c.btnTx,...hd,fontSize:"0.95rem",cursor:"pointer",letterSpacing:"0.02em"}}>
+                      {st.done.includes(nextDay)?"View challenge →":"Oscail an dúshlán →"}
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div style={{background:c.cardAlt,border:`1px solid ${c.bd}`,borderRadius:16,padding:"18px 20px",textAlign:"center"}}>
+                  <div style={{fontSize:"1.8rem",marginBottom:8}}>🌙</div>
+                  <div style={{...hd,fontSize:"1rem",color:c.tx,marginBottom:4}}>Ar fheabhas! Great work today.</div>
+                  <div style={{...bd,fontSize:"0.82rem",color:c.tx3,lineHeight:1.6}}>Day {nextDay} unlocks tomorrow.<br/>Come back then to continue your journey.</div>
+                </div>
+              )}
+
+              {/* Progress dots */}
+              <div style={{display:"flex",gap:3,flexWrap:"wrap",marginTop:10,justifyContent:"center"}}>
+                {CH.map(ch=>(
+                  <div key={ch.day} style={{width:6,height:6,borderRadius:"50%",background:st.done.includes(ch.day)?c.acc:ch.day<=calendarDay?c.dotOff+"99":c.dotOff+"33",transition:"background 0.3s"}}/>
+                ))}
               </div>
             </div>
           </>
