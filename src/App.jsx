@@ -451,7 +451,7 @@ export default function App() {
   useEffect(()=>{(async()=>{
     const s=await loadS();
     if(s){setSt(s);if(s.dk)setDk(true)}
-    else{const i={done:[],bonus:[],tasksDone:[],streak:0,best:0,dk:false,onboarded:false,started:new Date().toISOString(),dailyLog:{},county:null};await saveS(i);setSt(i)}
+    else{const i={done:[],bonus:[],tasksDone:[],streak:0,best:0,dk:false,onboarded:false,started:new Date().toISOString(),dailyLog:{},county:null,notifEnabled:false};await saveS(i);setSt(i)}
     setLoading(false);
   })()},[]);
 
@@ -460,6 +460,39 @@ export default function App() {
   const toggle=async()=>{const n=!dk;setDk(n);if(st)await save({...st,dk:n})};
 
   const markDailyDone=useCallback(async()=>{if(!st)return;const k=todayKey();const dl={...(st.dailyLog||{}),[k]:true};await save({...st,dailyLog:dl});},[st,save]);
+
+  const scheduleNotif=useCallback(()=>{
+    if(Notification.permission!=="granted")return;
+    const now=new Date();
+    const target=new Date();
+    target.setHours(9,0,0,0);
+    if(target<=now){target.setDate(target.getDate()+1);}
+    const delay=target-now;
+    setTimeout(()=>{
+      new Notification("☘️ Dúshlán an Lae",{
+        body:"Today's Irish challenge is ready. Everyone's doing it.",
+        icon:"/icons/apple-touch-icon.png",
+        badge:"/icons/apple-touch-icon.png",
+      });
+      scheduleNotif();
+    },delay);
+  },[]);
+
+  useEffect(()=>{
+    if(st&&st.notifEnabled&&Notification.permission==="granted")scheduleNotif();
+  },[st?.notifEnabled,scheduleNotif]);
+
+  const enableNotifs=useCallback(async()=>{
+    const perm=await Notification.requestPermission();
+    if(perm==="granted"){
+      await save({...st,notifEnabled:true});
+      scheduleNotif();
+      new Notification("☘️ Gaeltacht Connect",{body:"You'll get a daily reminder at 9am. Maith thú!",icon:"/icons/apple-touch-icon.png"});
+    } else {
+      await save({...st,notifEnabled:false});
+    }
+  },[st,save,scheduleNotif]);
+
   const calcStreak=(arr)=>{if(!arr.length)return 0;const s=[...arr].sort((a,b)=>a-b);let k=1;for(let i=s.length-1;i>0;i--){if(s[i]-s[i-1]===1)k++;else break}return k};
 
   const doComplete=async(d)=>{
@@ -1194,6 +1227,33 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
                 <div style={{width:20,height:20,borderRadius:"50%",background:"#fff",position:"absolute",top:2,left:dk?28:2,transition:"left 0.3s",boxShadow:"0 1px 3px rgba(0,0,0,0.2)"}}/>
               </button>
             </div>
+          </div>
+
+          {/* NOTIFICATIONS */}
+          <div style={{...hd,fontSize:"0.65rem",color:c.tx3,letterSpacing:"0.12em",marginBottom:10}}>NOTIFICATIONS</div>
+          <div style={{background:c.card,border:`1px solid ${c.bd}`,borderRadius:12,marginBottom:20,overflow:"hidden",boxShadow:c.shadow}}>
+            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"16px 18px"}}>
+              <div style={{display:"flex",alignItems:"center",gap:12}}>
+                <span style={{fontSize:"1.2rem"}}>🔔</span>
+                <div>
+                  <div style={{...hd,fontSize:"1rem",color:c.tx}}>Daily reminder</div>
+                  <div style={{...bd,fontSize:"0.72rem",color:c.tx3}}>{st.notifEnabled&&Notification.permission==="granted"?"Every day at 9am ☘️":"Get reminded at 9am every day"}</div>
+                </div>
+              </div>
+              {st.notifEnabled&&Notification.permission==="granted"
+                ? <div style={{width:52,height:28,borderRadius:14,background:c.acc,position:"relative",cursor:"pointer"}} onClick={async()=>await save({...st,notifEnabled:false})}>
+                    <div style={{width:20,height:20,borderRadius:"50%",background:"#fff",position:"absolute",top:4,left:28,boxShadow:"0 1px 3px rgba(0,0,0,0.2)"}}/>
+                  </div>
+                : <button onClick={enableNotifs} style={{...bd,fontSize:"0.8rem",fontWeight:700,color:"#fff",background:c.acc,border:"none",borderRadius:10,padding:"7px 14px",cursor:"pointer"}}>
+                    Enable
+                  </button>
+              }
+            </div>
+            {Notification.permission==="denied"&&(
+              <div style={{padding:"10px 18px",borderTop:`1px solid ${c.bd}`,background:c.cardAlt}}>
+                <div style={{...bd,fontSize:"0.72rem",color:c.tx3}}>Notifications blocked in browser settings. Enable them there first.</div>
+              </div>
+            )}
           </div>
 
           {/* PROGRESS SUMMARY */}
