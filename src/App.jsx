@@ -215,9 +215,43 @@ const shareProgress = async (day, total, streak) => {
   const a=document.createElement("a"); a.href=img; a.download=`gaeltacht-day-${day}.png`; a.click();
 };
 
-// ── Irish TTS via abair.ie ──────────────────────────────────
-const _audioCache = new Map();
+// ── Irish TTS via abair.ie + IndexedDB offline cache ────────
+const _audioCache = new Map(); // text → object URL (session)
 let _currentAudio = null;
+let _idb = null; // IndexedDB connection
+
+function _openIDB() {
+  if (_idb) return Promise.resolve(_idb);
+  return new Promise((res, rej) => {
+    const req = indexedDB.open("gc-audio", 1);
+    req.onupgradeneeded = e => e.target.result.createObjectStore("wav");
+    req.onsuccess = e => { _idb = e.target.result; res(_idb); };
+    req.onerror = () => rej();
+  });
+}
+
+async function _idbGet(key) {
+  try {
+    const db = await _openIDB();
+    return new Promise(res => {
+      const tx = db.transaction("wav", "readonly");
+      const req = tx.objectStore("wav").get(key);
+      req.onsuccess = () => res(req.result || null);
+      req.onerror = () => res(null);
+    });
+  } catch { return null; }
+}
+
+async function _idbPut(key, blob) {
+  try {
+    const db = await _openIDB();
+    return new Promise(res => {
+      const tx = db.transaction("wav", "readwrite");
+      tx.objectStore("wav").put(blob, key);
+      tx.oncomplete = res; tx.onerror = res;
+    });
+  } catch {}
+}
 
 function _pcmToWav(pcm, sr=22050) {
   const buf = new ArrayBuffer(44 + pcm.length);
@@ -233,6 +267,17 @@ function _pcmToWav(pcm, sr=22050) {
   return new Blob([buf],{type:'audio/wav'});
 }
 
+async function _fetchAndCacheAudio(text) {
+  const r = await fetch(`https://www.abair.ie/api2/synthesise?input=${encodeURIComponent(text)}&voice=ga_CO_pmg_nnmnkwii&audioEncoding=LINEAR16`);
+  if (!r.ok) throw new Error();
+  const d = await r.json();
+  if (!d.audioContent) throw new Error();
+  const pcm = Uint8Array.from(atob(d.audioContent), c=>c.charCodeAt(0));
+  const blob = _pcmToWav(pcm);
+  await _idbPut(text, blob);
+  return blob;
+}
+
 async function speakIrish(text) {
   if (_currentAudio) { _currentAudio.pause(); _currentAudio.src=''; _currentAudio=null; }
   if (_audioCache.has(text)) {
@@ -240,12 +285,10 @@ async function speakIrish(text) {
     return _currentAudio.play().catch(()=>{});
   }
   try {
-    const r = await fetch(`https://www.abair.ie/api2/synthesise?input=${encodeURIComponent(text)}&voice=ga_CO_pmg_nnmnkwii&audioEncoding=LINEAR16`);
-    if (!r.ok) throw new Error();
-    const d = await r.json();
-    if (!d.audioContent) throw new Error();
-    const pcm = Uint8Array.from(atob(d.audioContent), c=>c.charCodeAt(0));
-    const url = URL.createObjectURL(_pcmToWav(pcm));
+    // Check IndexedDB first (offline)
+    let blob = await _idbGet(text);
+    if (!blob) blob = await _fetchAndCacheAudio(text);
+    const url = URL.createObjectURL(blob);
     _audioCache.set(text, url);
     _currentAudio = new Audio(url);
     return _currentAudio.play().catch(()=>{});
@@ -256,6 +299,27 @@ async function speakIrish(text) {
     window.speechSynthesis?.speak(u);
   }
 }
+
+// Pre-warm audio cache for all 30 day phrases in the background
+async function _prewarmAudio() {
+  const CONCURRENCY = 3;
+  const phrases = CH.map(c=>c.p);
+  let i = 0;
+  async function worker() {
+    while (i < phrases.length) {
+      const text = phrases[i++];
+      try {
+        const cached = await _idbGet(text);
+        if (!cached) await _fetchAndCacheAudio(text);
+      } catch {} // silent — best effort
+      await new Promise(r => setTimeout(r, 400)); // throttle
+    }
+  }
+  await Promise.allSettled(Array.from({length:CONCURRENCY}, worker));
+}
+
+// Kick off pre-warm after a short delay so it doesn't block first paint
+setTimeout(_prewarmAudio, 8000);
 
 // Category color map
 const CAT_CLR = {

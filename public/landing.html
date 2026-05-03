@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="Gaeltacht Connect — Learn Irish through culture, stories and daily challenges. 30 days. No textbooks."/>
+  <title>Gaeltacht Connect — Learn Irish the Real Way</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --green: #1B4332;
+      --green-mid: #2D6A4F;
+      --green-light: #40916C;
+      --gold: #D4A853;
+      --cream: #F4EFE6;
+      --white: #FFFFFF;
+      --text: #1a1a1a;
+      --text2: #555;
+      --radius: 20px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--cream);
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    /* ─── HERO ─── */
+    .hero {
+      background: linear-gradient(160deg, var(--green) 0%, var(--green-mid) 55%, var(--green-light) 100%);
+      color: var(--white);
+      text-align: center;
+      padding: 80px 24px 120px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      top: -120px; right: -120px;
+      width: 420px; height: 420px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.04);
+      pointer-events: none;
+    }
+    .hero::after {
+      content: "";
+      position: absolute;
+      bottom: -80px; left: -80px;
+      width: 300px; height: 300px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.03);
+      pointer-events: none;
+    }
+
+    .shamrock {
+      font-size: 3rem;
+      margin-bottom: 16px;
+      display: block;
+      animation: sway 3s ease-in-out infinite;
+    }
+    @keyframes sway {
+      0%, 100% { transform: rotate(-4deg); }
+      50% { transform: rotate(4deg); }
+    }
+
+    .hero h1 {
+      font-size: clamp(2.2rem, 6vw, 3.6rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+      margin-bottom: 12px;
+    }
+    .hero h1 span { color: var(--gold); }
+
+    .hero-sub {
+      font-size: clamp(1rem, 2.5vw, 1.25rem);
+      opacity: 0.85;
+      max-width: 520px;
+      margin: 0 auto 36px;
+      line-height: 1.6;
+    }
+
+    .cta-btn {
+      display: inline-block;
+      background: var(--gold);
+      color: var(--green);
+      font-size: 1.1rem;
+      font-weight: 800;
+      padding: 18px 44px;
+      border-radius: 50px;
+      text-decoration: none;
+      letter-spacing: 0.01em;
+      transition: transform 0.15s, box-shadow 0.15s;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.25);
+    }
+    .cta-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(0,0,0,0.3); }
+    .cta-btn:active { transform: translateY(0); }
+
+    .hero-note {
+      margin-top: 20px;
+      font-size: 0.82rem;
+      opacity: 0.55;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    /* ─── PHONE MOCKUPS ─── */
+    .phones {
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      gap: 20px;
+      margin-top: -70px;
+      padding: 0 16px 60px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .phone {
+      background: var(--green);
+      border-radius: 36px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.22);
+      border: 2px solid rgba(255,255,255,0.08);
+      flex-shrink: 0;
+      position: relative;
+    }
+    .phone.center { transform: scale(1.06); z-index: 3; }
+    .phone.side { transform: scale(0.88) translateY(16px); opacity: 0.85; }
+
+    .phone-inner {
+      padding: 28px 18px 20px;
+      color: white;
+      min-height: 360px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .phone-topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.62rem;
+      opacity: 0.55;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .phone-pill {
+      background: rgba(212,168,83,0.25);
+      border: 1px solid rgba(212,168,83,0.4);
+      border-radius: 20px;
+      padding: 5px 12px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: var(--gold);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      align-self: flex-start;
+    }
+
+    .phone-phrase {
+      font-size: 1.45rem;
+      font-weight: 800;
+      line-height: 1.3;
+      color: #fff;
+      font-style: italic;
+    }
+    .phone-phrase-en {
+      font-size: 0.75rem;
+      opacity: 0.6;
+      margin-top: -4px;
+    }
+
+    .phone-card {
+      background: rgba(255,255,255,0.07);
+      border-radius: 14px;
+      padding: 12px 14px;
+    }
+    .phone-card-label {
+      font-size: 0.55rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      opacity: 0.5;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .phone-card-text {
+      font-size: 0.78rem;
+      line-height: 1.5;
+      opacity: 0.85;
+    }
+
+    .phone-bar {
+      height: 5px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 10px;
+      margin-top: auto;
+    }
+    .phone-bar-fill {
+      height: 100%;
+      border-radius: 10px;
+      background: var(--gold);
+    }
+
+    /* ─── FEATURES ─── */
+    .section {
+      padding: 80px 24px;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .section-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--green-light);
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 12px;
+    }
+
+    .section h2 {
+      font-size: clamp(1.8rem, 4vw, 2.6rem);
+      font-weight: 800;
+      text-align: center;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+      margin-bottom: 52px;
+      color: var(--green);
+    }
+    .section h2 em { font-style: normal; color: var(--green-light); }
+
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 24px;
+    }
+
+    .feature {
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 32px 28px;
+      box-shadow: 0 2px 20px rgba(0,0,0,0.06);
+      border: 1px solid rgba(0,0,0,0.05);
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .feature:hover { transform: translateY(-4px); box-shadow: 0 8px 30px rgba(0,0,0,0.1); }
+
+    .feature-icon {
+      font-size: 2.2rem;
+      margin-bottom: 16px;
+      display: block;
+    }
+
+    .feature h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--green);
+      margin-bottom: 8px;
+    }
+
+    .feature p {
+      font-size: 0.9rem;
+      color: var(--text2);
+      line-height: 1.65;
+    }
+
+    /* ─── HOW IT WORKS ─── */
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .step {
+      display: flex;
+      gap: 24px;
+      align-items: flex-start;
+      position: relative;
+    }
+    .step:not(:last-child)::after {
+      content: "";
+      position: absolute;
+      left: 22px;
+      top: 52px;
+      bottom: -12px;
+      width: 2px;
+      background: linear-gradient(to bottom, var(--green-light), transparent);
+    }
+
+    .step-num {
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      background: var(--green);
+      color: var(--white);
+      font-size: 1rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .step-body { padding-bottom: 44px; }
+    .step-body h3 { font-size: 1.05rem; font-weight: 700; color: var(--green); margin-bottom: 6px; }
+    .step-body p { font-size: 0.88rem; color: var(--text2); line-height: 1.6; }
+
+    /* ─── QUOTE ─── */
+    .quote-section {
+      background: var(--green);
+      color: var(--white);
+      padding: 80px 24px;
+      text-align: center;
+    }
+
+    .quote-section blockquote {
+      font-size: clamp(1.3rem, 3vw, 1.9rem);
+      font-style: italic;
+      font-weight: 600;
+      max-width: 680px;
+      margin: 0 auto 20px;
+      line-height: 1.5;
+      color: var(--cream);
+    }
+
+    .quote-section cite {
+      font-size: 0.85rem;
+      opacity: 0.55;
+      font-style: normal;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    /* ─── BOTTOM CTA ─── */
+    .bottom-cta {
+      padding: 80px 24px 100px;
+      text-align: center;
+      background: var(--cream);
+    }
+
+    .bottom-cta h2 {
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 800;
+      color: var(--green);
+      letter-spacing: -0.02em;
+      margin-bottom: 16px;
+    }
+
+    .bottom-cta p {
+      font-size: 1rem;
+      color: var(--text2);
+      margin-bottom: 36px;
+      max-width: 420px;
+      margin-left: auto;
+      margin-right: auto;
+      line-height: 1.6;
+    }
+
+    .bottom-cta .cta-btn {
+      background: var(--green);
+      color: var(--white);
+      box-shadow: 0 4px 24px rgba(27,67,50,0.35);
+    }
+    .bottom-cta .cta-btn:hover {
+      background: var(--green-mid);
+      box-shadow: 0 8px 32px rgba(27,67,50,0.45);
+    }
+
+    /* ─── FOOTER ─── */
+    footer {
+      background: var(--green);
+      color: rgba(255,255,255,0.4);
+      text-align: center;
+      padding: 28px 24px;
+      font-size: 0.78rem;
+      letter-spacing: 0.03em;
+    }
+    footer span { color: rgba(255,255,255,0.7); }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 600px) {
+      .phone.side { display: none; }
+      .phones { margin-top: -50px; }
+      .phone.center { transform: none; }
+      .hero { padding: 60px 16px 100px; }
+      .section { padding: 60px 16px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- HERO -->
+<section class="hero">
+  <span class="shamrock">☘</span>
+  <h1>Learn Irish<br/><span>the real way.</span></h1>
+  <p class="hero-sub">30 days of culture, stories and daily challenges. Not grammar drills — the living language of Ireland.</p>
+  <a href="/" class="cta-btn">Tosaigh — Let's Begin</a>
+  <p class="hero-note">Free · No account needed · Works offline</p>
+</section>
+
+<!-- PHONE MOCKUPS -->
+<div class="phones">
+  <!-- Left: Story -->
+  <div class="phone side" style="width:200px">
+    <div class="phone-inner">
+      <div class="phone-topbar"><span>Scéal an Lae</span><span>Lá 7</span></div>
+      <div class="phone-card">
+        <div class="phone-card-label">Cultural Story</div>
+        <div class="phone-card-text" style="font-size:0.7rem;opacity:0.7">In 1847, during the Great Famine, the Choctaw Nation sent $170 to help starving Irish families...</div>
+      </div>
+      <div class="phone-phrase" style="font-size:1.1rem">Go raibh maith agat</div>
+      <div class="phone-phrase-en">Thank you</div>
+      <div class="phone-bar"><div class="phone-bar-fill" style="width:23%"></div></div>
+    </div>
+  </div>
+
+  <!-- Center: Home -->
+  <div class="phone center" style="width:230px">
+    <div class="phone-inner">
+      <div class="phone-topbar"><span>☘ Gaeltacht Connect</span><span style="background:rgba(212,168,83,0.3);color:#D4A853;padding:2px 8px;border-radius:10px;font-size:0.6rem">🔥 5</span></div>
+      <div class="phone-pill">Lá 5 · Comhrá</div>
+      <div class="phone-phrase">"Cén chaoi a bhfuil tú?"</div>
+      <div class="phone-phrase-en">How are you?</div>
+      <div class="phone-card">
+        <div class="phone-card-label">Focal an Lae</div>
+        <div class="phone-card-text">craic <span style="opacity:0.5;font-size:0.7rem">· fun, news</span></div>
+      </div>
+      <div class="phone-card">
+        <div class="phone-card-label">Cluiche an Lae</div>
+        <div class="phone-card-text" style="color:#D4A853;font-weight:700">4 / 5 ★</div>
+      </div>
+      <div class="phone-bar"><div class="phone-bar-fill" style="width:16%"></div></div>
+    </div>
+  </div>
+
+  <!-- Right: Quiz -->
+  <div class="phone side" style="width:200px">
+    <div class="phone-inner">
+      <div class="phone-topbar"><span>Cluiche an Lae</span><span>3/5</span></div>
+      <div class="phone-card">
+        <div class="phone-card-label">What does this mean?</div>
+        <div class="phone-card-text" style="font-size:1.1rem;font-weight:700;color:white;margin-top:4px">Slán</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:7px;margin-top:4px">
+        <div style="background:rgba(255,255,255,0.07);border-radius:10px;padding:9px 12px;font-size:0.72rem">Please</div>
+        <div style="background:rgba(64,145,108,0.4);border-radius:10px;padding:9px 12px;font-size:0.72rem;border:1px solid #40916C">Goodbye ✓</div>
+        <div style="background:rgba(255,255,255,0.07);border-radius:10px;padding:9px 12px;font-size:0.72rem">Welcome</div>
+      </div>
+      <div class="phone-bar"><div class="phone-bar-fill" style="width:60%"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<section class="section">
+  <div class="section-label">Why it works</div>
+  <h2>Language lives in <em>stories</em>, not spreadsheets.</h2>
+  <div class="features">
+    <div class="feature">
+      <span class="feature-icon">📖</span>
+      <h3>Scéal an Lae</h3>
+      <p>Every phrase comes with a real cultural story — the Famine, the 1916 Rising, the Gaeltacht villages. You understand <em>why</em> the words matter.</p>
+    </div>
+    <div class="feature">
+      <span class="feature-icon">🎯</span>
+      <h3>Daily Challenge</h3>
+      <p>One fresh challenge every morning, the same for everyone. Community rhythm keeps you coming back — you're not alone on this journey.</p>
+    </div>
+    <div class="feature">
+      <span class="feature-icon">🎵</span>
+      <h3>Real Irish Audio</h3>
+      <p>Every phrase is spoken by a Connacht Irish voice — not a robot, not a text-to-speech drone. The real sounds of the language, every time.</p>
+    </div>
+    <div class="feature">
+      <span class="feature-icon">🏛️</span>
+      <h3>Seo Linn</h3>
+      <p>A different Irish history fact every single day. 35 stories about language, culture and identity that make learning feel like belonging.</p>
+    </div>
+    <div class="feature">
+      <span class="feature-icon">🗺️</span>
+      <h3>30-Day Journey</h3>
+      <p>One new day unlocks each morning. No binge-learning, no forgetting. The pace is intentional — just like the Gaeltacht itself.</p>
+    </div>
+    <div class="feature">
+      <span class="feature-icon">📱</span>
+      <h3>Works Offline</h3>
+      <p>Install as an app, use on the train. Your progress is saved locally — no account, no email, no tracking. Just you and the language.</p>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="section" style="padding-top:0">
+  <div class="section-label">How it works</div>
+  <h2>Three minutes a day.<br/><em>Thirty days of Ireland.</em></h2>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <h3>Open your daily lesson</h3>
+        <p>Each day unlocks one phrase — greetings, questions, emotions, poetry. Read the story behind it. Hear how it sounds.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <h3>Take the daily quiz</h3>
+        <p>Five seeded questions, the same for everyone today. Compare your score, build the streak, feel the community.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <h3>Mark it done. Come back tomorrow.</h3>
+        <p>That's it. No pressure, no notifications. Just the quiet satisfaction of another day closer to the language.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- QUOTE -->
+<section class="quote-section">
+  <blockquote>"Tír gan teanga, tír gan anam."</blockquote>
+  <cite>A country without its language is a country without its soul — Irish proverb</cite>
+</section>
+
+<!-- BOTTOM CTA -->
+<div class="bottom-cta">
+  <h2>Tosaigh inniu.</h2>
+  <p>Start today. It only takes three minutes to meet a language that's been waiting 2,000 years for you.</p>
+  <a href="/" class="cta-btn">Open Gaeltacht Connect</a>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <span>☘ Gaeltacht Connect</span> · Built with love for the Irish language · Free forever
+</footer>
+
+</body>
+</html>
