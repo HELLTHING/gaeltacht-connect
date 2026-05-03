@@ -126,7 +126,7 @@ const loadS = () => { try { const r = localStorage.getItem("gc3"); return r ? JS
 const saveS = (s) => { try { localStorage.setItem("gc3", JSON.stringify(s)); } catch(e) { console.error(e); } };
 
 // ── OneSignal Web Push ───────────────────────────────────────
-const _OS_APP_ID = "ONESIGNAL_APP_ID_PLACEHOLDER";
+const _OS_APP_ID = "9ca9568a-ce1d-4d1c-a7c0-e5044e80d60b";
 
 function initOneSignal() {
   if (!window.OneSignalDeferred || _OS_APP_ID === "ONESIGNAL_APP_ID_PLACEHOLDER") return;
