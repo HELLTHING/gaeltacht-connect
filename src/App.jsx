@@ -126,26 +126,31 @@ const loadS = () => { try { const r = localStorage.getItem("gc3"); return r ? JS
 const saveS = (s) => { try { localStorage.setItem("gc3", JSON.stringify(s)); } catch(e) { console.error(e); } };
 
 // ── Supabase community counter ───────────────────────────────
+// Table: completions (id uuid, date text, created_at timestamptz)
+// No custom functions needed — just INSERT + COUNT
 const _SB_URL = "https://wcwsrolhbodjgourbkjz.supabase.co";
 const _SB_KEY = "sb_publishable_gqY68nZQ1uyqWcUVg4qKLA_JRJL36Y8";
-const _sbHeaders = { "apikey": _SB_KEY, "Authorization": `Bearer ${_SB_KEY}`, "Content-Type": "application/json" };
+const _sbH = { "apikey": _SB_KEY, "Authorization": `Bearer ${_SB_KEY}`, "Content-Type": "application/json" };
 
 async function sbIncrement(day) {
   try {
-    await fetch(`${_SB_URL}/rest/v1/rpc/increment_completion`, {
-      method: "POST", headers: _sbHeaders,
-      body: JSON.stringify({ day }),
+    await fetch(`${_SB_URL}/rest/v1/completions`, {
+      method: "POST",
+      headers: _sbH,
+      body: JSON.stringify({ date: day }),
     });
   } catch {}
 }
 
 async function sbGetCount(day) {
   try {
-    const r = await fetch(`${_SB_URL}/rest/v1/daily_stats?date=eq.${day}&select=completions`, {
-      headers: _sbHeaders,
-    });
-    const data = await r.json();
-    return data[0]?.completions ?? null;
+    const r = await fetch(
+      `${_SB_URL}/rest/v1/completions?date=eq.${day}&select=id`,
+      { headers: { ..._sbH, "Prefer": "count=exact" } }
+    );
+    const range = r.headers.get("Content-Range"); // e.g. "0-9/847"
+    if (range) return parseInt(range.split("/")[1], 10);
+    return null;
   } catch { return null; }
 }
 
