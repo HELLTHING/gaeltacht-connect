@@ -125,6 +125,47 @@ const T = {
 const loadS = () => { try { const r = localStorage.getItem("gc3"); return r ? JSON.parse(r) : null; } catch { return null; } };
 const saveS = (s) => { try { localStorage.setItem("gc3", JSON.stringify(s)); } catch(e) { console.error(e); } };
 
+// ── OneSignal Web Push ───────────────────────────────────────
+const _OS_APP_ID = "ONESIGNAL_APP_ID_PLACEHOLDER";
+
+function initOneSignal() {
+  if (!window.OneSignalDeferred || _OS_APP_ID === "ONESIGNAL_APP_ID_PLACEHOLDER") return;
+  window.OneSignalDeferred.push(async (os) => {
+    await os.init({
+      appId: _OS_APP_ID,
+      notifyButton: { enable: false },
+      promptOptions: {
+        slidedown: {
+          prompts: [{
+            type: "push",
+            autoPrompt: false,
+            text: {
+              actionMessage: "Get a daily reminder at 9am to complete your Irish challenge.",
+              acceptButton: "Tá — Yes please",
+              cancelButton: "Níl — Maybe later",
+            },
+          }],
+        },
+      },
+    });
+  });
+}
+
+async function osRequestPermission() {
+  if (!window.OneSignalDeferred || _OS_APP_ID === "ONESIGNAL_APP_ID_PLACEHOLDER") return false;
+  return new Promise(res => {
+    window.OneSignalDeferred.push(async (os) => {
+      try {
+        await os.slidedown.promptPush();
+        const subbed = await os.User.PushSubscription.optedIn;
+        res(!!subbed);
+      } catch { res(false); }
+    });
+  });
+}
+
+initOneSignal();
+
 // ── Supabase community counter ───────────────────────────────
 // Table: completions (id uuid, date text, created_at timestamptz)
 // No custom functions needed — just INSERT + COUNT
@@ -769,13 +810,19 @@ export default function App() {
   },[st?.notifEnabled,scheduleNotif]);
 
   const enableNotifs=useCallback(async()=>{
-    const perm=await Notification.requestPermission();
-    if(perm==="granted"){
+    const ok = await osRequestPermission();
+    if(ok){
       await save({...st,notifEnabled:true});
-      scheduleNotif();
-      new Notification("☘️ Gaeltacht Connect",{body:"You'll get a daily reminder at 9am. Maith thú!",icon:"/icons/apple-touch-icon.png"});
     } else {
-      await save({...st,notifEnabled:false});
+      // fallback to native browser notification
+      const perm=await Notification.requestPermission();
+      if(perm==="granted"){
+        await save({...st,notifEnabled:true});
+        scheduleNotif();
+        new Notification("☘️ Gaeltacht Connect",{body:"You'll get a daily reminder at 9am. Maith thú!",icon:"/icons/apple-touch-icon.png"});
+      } else {
+        await save({...st,notifEnabled:false});
+      }
     }
   },[st,save,scheduleNotif]);
 
