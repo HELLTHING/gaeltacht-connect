@@ -125,37 +125,78 @@ const T = {
 const loadS = () => { try { const r = localStorage.getItem("gc3"); return r ? JSON.parse(r) : null; } catch { return null; } };
 const saveS = (s) => { try { localStorage.setItem("gc3", JSON.stringify(s)); } catch(e) { console.error(e); } };
 
-// Share image generation
+// Share image generation — 1080×1080 Instagram-ready card
 const genShareImage = (day, total, streak) => {
-  const c = document.createElement("canvas"); c.width=600; c.height=400;
-  const x = c.getContext("2d");
-  // Background
-  x.fillStyle="#1B4332"; x.fillRect(0,0,600,400);
-  x.fillStyle="#2D6A4F"; x.fillRect(0,0,600,6);
-  // Decorative circles
-  x.globalAlpha=0.06;
-  x.fillStyle="#6FCF97"; x.beginPath(); x.arc(500,80,120,0,Math.PI*2); x.fill();
-  x.beginPath(); x.arc(80,350,80,0,Math.PI*2); x.fill();
-  x.globalAlpha=1;
-  // Brand
-  x.fillStyle="#6FCF9766"; x.font="13px serif"; x.textAlign="center";
-  x.fillText("☘ GAELTACHT CONNECT",300,45);
-  // Day
-  x.fillStyle="#E4E2D8"; x.font="bold 72px serif"; x.fillText(`Lá ${day}`,300,150);
-  x.fillStyle="#6FCF97"; x.font="20px serif"; x.fillText("of 30 completed",300,182);
-  // Phrase
+  const cv = document.createElement("canvas"); cv.width=1080; cv.height=1080;
+  const x = cv.getContext("2d");
   const ch = CH[day-1];
-  x.fillStyle="#D4A843"; x.font="italic 26px serif"; x.fillText(`"${ch.p}"`,300,240);
-  x.fillStyle="#A0A498"; x.font="16px serif"; x.fillText(ch.m,300,270);
-  // Stats
-  x.fillStyle="#E4E2D8"; x.font="bold 28px serif";
-  x.fillText(`${total}/30`,220,340); x.fillText(streak > 1 ? `🔥 ${streak}` : "",380,340);
-  x.fillStyle="#A0A498"; x.font="14px serif";
-  x.fillText("days done",220,362); if(streak>1) x.fillText("day streak",380,362);
-  // Footer
-  x.fillStyle="#6FCF9744"; x.font="12px serif";
-  x.fillText("gaeltachtconnect.ie  •  #GaeltachtConnect",300,392);
-  return c.toDataURL("image/png");
+
+  // Deep green bg
+  x.fillStyle="#0D2318"; x.fillRect(0,0,1080,1080);
+
+  // Diagonal texture
+  x.globalAlpha=0.03; x.strokeStyle="#6FCF97"; x.lineWidth=1;
+  for(let i=-1080;i<2160;i+=28){x.beginPath();x.moveTo(i,0);x.lineTo(i+1080,1080);x.stroke();}
+  x.globalAlpha=1;
+
+  // Circle accents
+  x.globalAlpha=0.07; x.fillStyle="#40916C";
+  x.beginPath(); x.arc(950,130,340,0,Math.PI*2); x.fill();
+  x.globalAlpha=0.04;
+  x.beginPath(); x.arc(130,950,260,0,Math.PI*2); x.fill();
+  x.globalAlpha=1;
+
+  // Top gradient bar
+  const grad=x.createLinearGradient(0,0,1080,0);
+  grad.addColorStop(0,"#2D6A4F"); grad.addColorStop(1,"#C9A22700");
+  x.fillStyle=grad; x.fillRect(0,0,1080,5);
+
+  // Brand
+  x.fillStyle="#40916C99"; x.font="600 28px sans-serif"; x.textAlign="left";
+  x.fillText("☘  GAELTACHT CONNECT",64,76);
+
+  // Big day number
+  x.fillStyle="#FFFFFF"; x.font="bold 160px serif"; x.textAlign="left";
+  x.fillText(`La ${day}`,60,280);
+  // Accent on "a" — gold dot
+  x.fillStyle="#C9A227"; x.font="bold 60px serif";
+  x.fillText("á",60+x.measureText("L").width,280);
+
+  x.fillStyle="#40916C"; x.font="500 36px sans-serif"; x.textAlign="left";
+  x.fillText(`of 30  ·  ${total} days done`,64,330);
+
+  // Divider
+  x.strokeStyle="#2D6A4F44"; x.lineWidth=2;
+  x.beginPath(); x.moveTo(64,372); x.lineTo(1016,372); x.stroke();
+
+  // Phrase — centered, gold, word wrap
+  x.fillStyle="#C9A227"; x.font="italic bold 58px serif"; x.textAlign="center";
+  const maxW=900; const words=ch.p.split(" "); let line=""; let py=490;
+  for(const w of words){
+    const test=line?line+" "+w:w;
+    if(x.measureText(test).width>maxW&&line){x.fillText(line,540,py);line=w;py+=74;}
+    else line=test;
+  }
+  x.fillText(line,540,py);
+
+  // Translation
+  x.fillStyle="#E8E4D899"; x.font="400 36px sans-serif"; x.textAlign="center";
+  x.fillText(`"${ch.m}"`,540,py+60);
+
+  // Streak badge
+  if(streak>=2){
+    x.fillStyle="#C9A22718";
+    x.beginPath(); x.roundRect(64,py+100,240,72,14); x.fill();
+    x.strokeStyle="#C9A22744"; x.lineWidth=1; x.stroke();
+    x.fillStyle="#C9A227"; x.font="bold 36px sans-serif"; x.textAlign="center";
+    x.fillText(`🔥 ${streak} lá as a chéile`,64+120,py+146);
+  }
+
+  // Bottom tag
+  x.fillStyle="#40916C55"; x.font="26px sans-serif"; x.textAlign="center";
+  x.fillText("#GaeltachtConnect  ·  #Gaeilge  ·  #IrishLanguage",540,1036);
+
+  return cv.toDataURL("image/png");
 };
 
 const shareProgress = async (day, total, streak) => {
@@ -313,6 +354,47 @@ const DAILY_POOL=[
   {tp:"learn",title:"Mothúcháin",ch:"Learn 5 emotions using 'tá ___ orm' (emotion is on me). Feel how Irish sees feelings.",tip:"Tá áthas orm (happy), tá brón orm (sad), tá fearg orm (angry), tá eagla orm (scared), tá náire orm (embarrassed)."},
   {tp:"learn",title:"Dia Dhuit",ch:"Learn what 'Dia dhuit' literally means — and why it's the most profound hello in any language.",tip:"'God be with you'. The reply 'Dia is Muire dhuit' = 'God and Mary be with you'. Two people blessing each other."},
 ];
+
+// ── Irish history facts ──────────────────────────────────────
+const HISTORY_FACTS=[
+  "In 1916, Patrick Pearse read the Proclamation of Independence outside the GPO in both Irish and English. He chose to begin in Irish — a deliberate act. Every word was planned.",
+  "The Irish word 'craic' has no English equivalent. It means fun, news, lively conversation, and the feeling of a great evening — all at once. It entered English dictionaries in 1985.",
+  "The Blasket Islands were abandoned in 1953. The last 22 inhabitants were evacuated to the mainland. Their Irish was considered the purest spoken anywhere. Linguists rushed to record everything before it disappeared.",
+  "Douglas Hyde founded the Gaelic League in 1893. Within a decade, 600 branches were teaching Irish to adults — for free, in the evenings, after work. Michael Collins and Patrick Pearse were both members.",
+  "The Book of Kells was created around 800 AD by Irish monks on the island of Iona. It contains secret illuminations scholars are still decoding after 1,200 years.",
+  "During the Famine (1845–1852), Ireland continued to export food to Britain. Landlords shipped grain while a million people starved. The Irish phrase 'ocras i measc an fhlúirse' — hunger amid plenty.",
+  "Newgrange in County Meath is 5,200 years old — older than Stonehenge, older than the Egyptian pyramids. On the winter solstice, sunlight enters the chamber for exactly 17 minutes. Its builders had no written language. They used stone.",
+  "Peig Sayers was born in Kerry in 1873 and never learned to read or write. She dictated her life story to her son. It became one of the most important books ever written in the Irish language.",
+  "In 1831, the British introduced the National Schools system. Irish was banned from classrooms. Within 50 years, the number of Irish speakers fell from 4 million to under 1 million.",
+  "The word 'boycott' comes from an Irishman. Captain Charles Boycott, a land agent in Mayo, was ostracised by his community in 1880. His name entered the English language as a verb.",
+  "The Claddagh ring was made in Galway in the 17th century by Richard Joyce — a goldsmith who'd been held captive by Algerian pirates for years. When he finally came home, he made the ring.",
+  "Máirtín Ó Cadhain wrote his masterpiece 'Cré na Cille' while interned by the Irish government during WWII. He was a Connemara schoolteacher. The book is considered the greatest Irish-language novel ever written.",
+  "In 1607, the last Gaelic chieftains — the Earl of Tyrone and the Earl of Tyrconnell — sailed from Lough Swilly in Donegal and never returned. Historians call it the end of Gaelic Ireland. The Irish call it Imeacht na nIarlaí.",
+  "The Ogham alphabet dates to the 4th century. It is carved along the edges of standing stones — 400 still exist in Ireland. Each stone is a message from someone who lived 1,600 years ago. Some are still unread.",
+  "Irish monks spread Christianity across Europe in the 6th and 7th centuries. They founded monasteries in France, Germany, Italy, and Switzerland — and brought the Irish language with them.",
+  "The word 'slogan' comes from Irish. 'Sluagh-ghairm' — army cry. Every advertising slogan is a distant echo of an Irish war cry.",
+  "Brehon Law — the ancient Irish legal system — had no prisons. It was based on compensation and community responsibility. Women had legal rights in Brehon Law centuries before English law acknowledged them.",
+  "Samuel Beckett wrote 'Waiting for Godot' in French first, then translated it to English himself. He said writing in a foreign language freed him from 'the temptation of style.' The Irish solution: use a different language.",
+  "In 1922, when the Irish Free State was founded, the constitution was written in Irish first, English second. Irish became the first official language. It still is.",
+  "Raidió na Gaeltachta launched in 1972 — the first radio station to broadcast entirely in Irish since the language was suppressed. Today it has over 400,000 listeners.",
+  "The Aran Islands (Oileáin Árann) off Galway are entirely Irish-speaking. J.M. Synge visited in 1898 on the advice of W.B. Yeats, who told him: 'Go live among the people.' He wrote 'The Playboy of the Western World' from what he heard there.",
+  "St. Brigid's Day (February 1st) marks the start of spring in the Irish calendar. Brigid was a goddess long before she was a saint. The Brigid's cross was woven on that day long before Christianity arrived in Ireland.",
+  "The Wild Atlantic Way stretches 2,500 km along Ireland's west coast — the longest defined coastal route in the world. Almost all of it passes through Irish-speaking areas.",
+  "The Irish language has no single word for 'yes' or 'no'. Questions are answered by repeating the verb. It isn't a gap in the language — it's a different philosophy of truth.",
+  "Nuala Ní Dhomhnaill is Ireland's greatest living Irish-language poet. She writes exclusively in Irish despite being offered vast audiences in English. 'Some things can only be said in Irish,' she says.",
+  "The Connemara pony has been bred on Ireland's west coast for over 2,500 years. It is the only horse breed native to Ireland. The Celts brought its ancestors here before Julius Caesar was born.",
+  "TG4, Ireland's Irish-language television channel, launched in 1996 with almost no budget. Today it produces award-winning drama, documentary, and sport — watched by millions.",
+  "Seamus Heaney won the Nobel Prize for Literature in 1995. His acceptance speech referenced the ancient Irish tradition of poetry as a social force. 'The poet is the one who connects the living and the dead.'",
+  "'Amhrán na bhFiann' — the Irish national anthem — was written by Peadar Kearney in a single night in a Dublin pub in 1907. He sold the rights for one pound.",
+  "The Irish diaspora is the largest in proportion to homeland population of any country in the world. 70 million people claim Irish ancestry. Ireland's home population: 5 million.",
+  "The Giant's Causeway in Antrim was formed 60 million years ago. Its Irish name is Clochán an Aifir — the stepping stones of the giant. Every rock has a name in Irish.",
+  "In 1366, the English Parliament passed the Statutes of Kilkenny — banning English settlers from speaking Irish. A century later, Elizabeth I ordered the execution of Irish harpers specifically, because they were the keepers of memory.",
+  "The word 'whiskey' comes from the Irish 'uisce beatha' — water of life. Irish monks first distilled it. The Scots later spelled it 'whisky'. Ireland gave the world its most beloved spirit.",
+  "Croagh Patrick in Mayo has been a pilgrimage site for over 5,000 years — long before St. Patrick climbed it in 441 AD. Each year, 30,000 people still climb it barefoot. In Irish, mountains have always been sacred.",
+  "The Irish language preserves words that have no equivalent anywhere else. 'Meitheal' — neighbours gathering to help each other with a task, no money involved. 'Caoineadh' — a ritual cry of grief. 'Tuiscint' — understanding that comes from the heart, not the head.",
+];
+
+function getHistoryFact(date){return HISTORY_FACTS[getDayOfYear(date)%HISTORY_FACTS.length];}
 
 // Daily challenge type colours
 const TYPE_CLR={speaking:"#1B4332",listening:"#1A5A8A",writing:"#B8860B",explore:"#2D6A4F",digital:"#5A4A8A",culture:"#8A3A3A",nature:"#2D6A2A",music:"#8A5A2A",game:"#4A4A8A",learn:"#6A3A6A"};
@@ -1690,6 +1772,20 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
                       {vqDone?"Arís →":"Tosaigh →"}
                     </button>
                   </div>
+                </div>
+              );
+            })()}
+
+            {/* ══ SEO LINN — Irish history fact ══ */}
+            {(()=>{
+              const fact=getHistoryFact(today);
+              return(
+                <div style={{background:`linear-gradient(135deg,${c.acc}08,${c.acc}14)`,border:`1px solid ${c.acc}22`,borderRadius:16,padding:"14px 16px"}}>
+                  <div style={{display:"flex",alignItems:"center",gap:7,marginBottom:8}}>
+                    <span style={{fontSize:"0.9rem"}}>🏛️</span>
+                    <div style={{...bd,fontSize:"0.56rem",color:c.acc,letterSpacing:"0.12em",textTransform:"uppercase",fontWeight:700}}>Seo Linn · Irish History</div>
+                  </div>
+                  <p style={{...bd,fontSize:"0.85rem",color:c.tx2,lineHeight:1.75,margin:0}}>{fact}</p>
                 </div>
               );
             })()}
