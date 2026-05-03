@@ -125,6 +125,30 @@ const T = {
 const loadS = () => { try { const r = localStorage.getItem("gc3"); return r ? JSON.parse(r) : null; } catch { return null; } };
 const saveS = (s) => { try { localStorage.setItem("gc3", JSON.stringify(s)); } catch(e) { console.error(e); } };
 
+// ── Supabase community counter ───────────────────────────────
+const _SB_URL = "https://wcwsrolhbodjgourbkjz.supabase.co";
+const _SB_KEY = "sb_publishable_gqY68nZQ1uyqWcUVg4qKLA_JRJL36Y8";
+const _sbHeaders = { "apikey": _SB_KEY, "Authorization": `Bearer ${_SB_KEY}`, "Content-Type": "application/json" };
+
+async function sbIncrement(day) {
+  try {
+    await fetch(`${_SB_URL}/rest/v1/rpc/increment_completion`, {
+      method: "POST", headers: _sbHeaders,
+      body: JSON.stringify({ day }),
+    });
+  } catch {}
+}
+
+async function sbGetCount(day) {
+  try {
+    const r = await fetch(`${_SB_URL}/rest/v1/daily_stats?date=eq.${day}&select=completions`, {
+      headers: _sbHeaders,
+    });
+    const data = await r.json();
+    return data[0]?.completions ?? null;
+  } catch { return null; }
+}
+
 // Share image generation — 1080×1080 Instagram-ready card
 const genShareImage = (day, total, streak) => {
   const cv = document.createElement("canvas"); cv.width=1080; cv.height=1080;
@@ -680,6 +704,7 @@ export default function App() {
   const [filterCat,setFilterCat]=useState("all");
   const [provIdx,setProvIdx]=useState(0);
   const [obStep,setObStep]=useState(0);
+  const [communityCount,setCommunityCount]=useState(null);
   const c = dk ? T.dark : T.light;
 
   useEffect(()=>{(async()=>{
@@ -687,13 +712,22 @@ export default function App() {
     if(s){setSt(s);if(s.dk)setDk(true)}
     else{const i={done:[],bonus:[],tasksDone:[],streak:0,best:0,dk:false,onboarded:false,started:new Date().toISOString(),dailyLog:{},county:null,notifEnabled:false};await saveS(i);setSt(i)}
     setLoading(false);
+    // Fetch community count in background
+    sbGetCount(todayKey()).then(n=>{if(n!==null)setCommunityCount(n);});
   })()},[]);
 
 
   const save=useCallback(async(ns)=>{setSt(ns);await saveS(ns)},[]);
   const toggle=async()=>{const n=!dk;setDk(n);if(st)await save({...st,dk:n})};
 
-  const markDailyDone=useCallback(async()=>{if(!st)return;const k=todayKey();const dl={...(st.dailyLog||{}),[k]:true};await save({...st,dailyLog:dl});},[st,save]);
+  const markDailyDone=useCallback(async()=>{
+    if(!st)return;
+    const k=todayKey();
+    if(st.dailyLog?.[k])return; // already done, don't double-count
+    const dl={...(st.dailyLog||{}),[k]:true};
+    await save({...st,dailyLog:dl});
+    sbIncrement(k).then(()=>sbGetCount(k).then(n=>{if(n!==null)setCommunityCount(n);}));
+  },[st,save]);
 
   const startDailyQuiz=useCallback(()=>{
     const q=getDailyVocabQuiz(VOCAB,new Date());
@@ -1838,7 +1872,9 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
                 <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:12}}>
                   <div style={{width:32,height:32,borderRadius:8,background:(TYPE_CLR[dailyC.tp]||c.acc)+"18",border:`1px solid ${TYPE_CLR[dailyC.tp]||c.acc}33`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:"0.95rem"}}>{TYPE_ICON[dailyC.tp]}</div>
                   <div style={{flex:1}}>
-                    <div style={{...bd,fontSize:"0.56rem",color:c.tx3,letterSpacing:"0.12em",textTransform:"uppercase"}}>Dúshlán an Lae · Everyone today</div>
+                    <div style={{...bd,fontSize:"0.56rem",color:c.tx3,letterSpacing:"0.12em",textTransform:"uppercase"}}>
+                      Dúshlán an Lae · {communityCount!==null?`${communityCount} daoine inniu`:"Everyone today"}
+                    </div>
                     <div style={{...hd,fontSize:"1.05rem",fontWeight:700,color:c.tx,lineHeight:1.2}}>{dailyC.title}</div>
                   </div>
                   {dailyDoneToday&&<span style={{fontSize:"1.2rem"}}>✅</span>}
