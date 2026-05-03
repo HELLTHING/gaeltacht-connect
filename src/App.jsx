@@ -573,6 +573,84 @@ const HISTORY_FACTS=[
 
 function getHistoryFact(date){return HISTORY_FACTS[getDayOfYear(date)%HISTORY_FACTS.length];}
 
+// ── Irish Songs ──────────────────────────────────────────────
+const SONGS=[
+  {id:"oro",title:"Óró Sé Do Bheatha Bhaile",en:"Welcome Home",era:"16th C · Rebel",emoji:"⚔️",color:"#8A1A1A",
+    story:"Written for Gráinne Mhaol — Grace O'Malley — the pirate queen of Connacht who commanded 200 men and negotiated face-to-face with Queen Elizabeth I in 1593. This song was a call to arms. Patrick Pearse revived it for the 1916 Rising, changing 'Gráinne Mhaol' to 'Éire' — Ireland herself coming home.",
+    irish:"Óró, sé do bheatha bhaile\nÓró, sé do bheatha bhaile\nAnois ar theacht an tsamhraidh",
+    translation:"Óró, welcome home / Now that summer is coming",
+    lesson:"'Sé do bheatha' = it is your life = welcome. One of the most powerful greetings in Irish.",
+    yt:"Óró+Sé+Do+Bheatha+Bhaile+Wolfe+Tones"},
+  {id:"fields",title:"The Fields of Athenry",en:"The Fields of Athenry",era:"1979 · Famine",emoji:"🌾",color:"#2D6A4F",
+    story:"Written in 1979, set during the Great Famine of 1847. Michael steals corn to feed his starving family and is transported to Australia. Now the unofficial anthem of Irish sport — sung by 80,000 at Croke Park. The melody sounds ancient. It isn't. It only needed to sound true.",
+    irish:"By a lonely prison wall\nI heard a young girl calling\nMichael they have taken you away\nFor you stole Trevelyn's corn\nSo the young might see the morn",
+    translation:"A Famine love song set outside Athenry, County Galway",
+    lesson:"Athenry = Áth na Rí = Ford of the Kings. Every Irish town name tells a story.",
+    yt:"Fields+of+Athenry+Paddy+Reilly"},
+  {id:"parting",title:"The Parting Glass",en:"The Parting Glass",era:"18th C · Farewell",emoji:"🥂",color:"#1A4A8A",
+    story:"The traditional Irish farewell song, sung at the end of an evening or at a wake. Seven million people emigrated between 1845 and 1900 — most heard this song as their last memory of home. When Ed Sheeran performed it at a concert, he admitted he could barely get through it.",
+    irish:"Of all the money that e'er I had\nI spent it in good company\nAnd all the harm that e'er I've done\nAlas it was to none but me",
+    translation:"(Originally in English — the melody is ancient Irish)",
+    lesson:"'Slán go fóill' — the words whispered as the glass is drained. You already know this one.",
+    yt:"The+Parting+Glass+Luke+Kelly"},
+  {id:"danny",title:"Danny Boy",en:"Danny Boy",era:"1913 · Longing",emoji:"🏔️",color:"#5A3A8A",
+    story:"The melody — 'Londonderry Air' — is ancient Irish; nobody knows who wrote it or when. The English lyrics were added in 1913. It has been recorded more than almost any other song. Judy Garland sang it. Johnny Cash sang it. It was played at JFK's funeral. The Irish themselves rarely sing it — they know it too well.",
+    irish:"Oh Danny boy, the pipes, the pipes are calling\nFrom glen to glen, and down the mountain side\nThe summer's gone, and all the roses falling\n'Tis you, 'tis you must go and I must bide",
+    translation:"(English lyrics on an ancient Irish melody — the landscape is Donegal)",
+    lesson:"'Glen' = gleann in Irish. The landscape in this song is the most Irish-speaking county.",
+    yt:"Danny+Boy+Celtic+Woman"},
+  {id:"raglan",title:"Raglan Road",en:"On Raglan Road",era:"1946 · Poetry",emoji:"🍂",color:"#8A6A1A",
+    story:"Patrick Kavanagh wrote this poem about a woman he loved and lost. He gave it to Luke Kelly, who set it to the ancient air 'The Dawning of the Day'. Kavanagh said hearing Kelly sing it was 'the best thing that ever happened to my poem'. Kelly died at 43. Kavanagh at 63. The road is still there, in Dublin 4.",
+    irish:"On Raglan Road on an autumn day I met her first and knew\nThat her dark hair would weave a snare that I might one day rue\nI saw the danger, yet I walked along the enchanted way\nAnd I said, let grief be a fallen leaf at the dawning of the day",
+    translation:"(Kavanagh wrote in English — his Irish was the landscape of Monaghan)",
+    lesson:"The air 'Fáinne Geal an Lae' (The Bright Ring of Day) is over 200 years old. The words are 80.",
+    yt:"Raglan+Road+Luke+Kelly"},
+  {id:"grace",title:"Grace",en:"Grace",era:"1985 · 1916",emoji:"🕯️",color:"#1A1A3A",
+    story:"Joseph Plunkett, a leader of the 1916 Rising, married Grace Gifford in his prison cell at 2am on the morning of his execution. They had ten minutes together. He was shot at dawn. Grace outlived him by 34 years and never remarried.",
+    irish:"As Loch Garman's hills I leave behind\nAnd the Lagan plains so green\nI remember all the happy times\nAnd the days that once had been",
+    translation:"A love song and a history lesson dressed as each other",
+    lesson:"Plunkett's poem 'I See His Blood Upon the Rose' — written the night before — is one of the most famous in Irish literature.",
+    yt:"Grace+1916+Wolfe+Tones"},
+  {id:"molly",title:"Molly Malone",en:"Cockles and Mussels",era:"1883 · Dublin",emoji:"🐚",color:"#C2541A",
+    story:"Dublin's unofficial anthem — a fishmonger who died of fever and now wheels her barrow through the streets as a ghost. Her statue stands at the bottom of Grafton Street. Dubliners call it 'the tart with the cart'. Molly may be entirely fictional — but she is more real to Dublin than most real people.",
+    irish:"In Dublin's fair city\nWhere the girls are so pretty\nI first set my eyes on sweet Molly Malone\nAs she wheeled her wheelbarrow\nThrough streets broad and narrow\nCrying cockles and mussels, alive, alive oh!",
+    translation:"(Dublin = Baile Átha Cliath = town of the ford of the hurdles)",
+    lesson:"'Alive, alive oh' = beo beo! The last words are pure Irish, smuggled into an English song.",
+    yt:"Molly+Malone+Dublin+traditional"},
+  {id:"whiskey",title:"Whiskey in the Jar",en:"Whiskey in the Jar",era:"17th C · Rogue",emoji:"🥃",color:"#8A4A1A",
+    story:"One of the oldest Irish folk songs — a highwayman robs a captain, his lover betrays him, he ends up in prison. Thin Lizzy recorded it in 1972. Metallica in 1998. The melody has refused to die for 400 years. Some songs are just built different.",
+    irish:"As I was going over the far-famed Kerry mountains\nI met with Captain Farrell and his money he was counting\nI first produced my pistol and then produced my rapier\nSaid 'Stand and deliver or the devil he may take ya'",
+    translation:"(17th century Irish folk song in English — the melody is pure Munster)",
+    lesson:"'Musha ring dum a doo dum a da' — the nonsense chorus. Even in Irish songs, joy needs no translation.",
+    yt:"Whiskey+in+the+Jar+Thin+Lizzy"},
+];
+
+// ── Web Audio sound effects ──────────────────────────────────
+let _audioCtx=null;
+function _ctx(){if(!_audioCtx)_audioCtx=new(window.AudioContext||window.webkitAudioContext)();return _audioCtx;}
+function _note(freq,dur,type='sine',vol=0.25,delay=0){
+  try{
+    const c=_ctx(),o=c.createOscillator(),g=c.createGain();
+    o.connect(g);g.connect(c.destination);
+    o.frequency.value=freq;o.type=type;
+    const t=c.currentTime+delay;
+    g.gain.setValueAtTime(0,t);
+    g.gain.linearRampToValueAtTime(vol,t+0.01);
+    g.gain.exponentialRampToValueAtTime(0.001,t+dur);
+    o.start(t);o.stop(t+dur+0.05);
+  }catch{}
+}
+function playSound(type){
+  try{
+    const P=[261.63,329.63,392,440,523.25]; // C E G A C pentatonic
+    if(type==='complete') P.forEach((f,i)=>_note(f,0.55,'triangle',0.22,i*0.09));
+    else if(type==='correct'){_note(392,0.12,'sine',0.18);_note(523.25,0.28,'sine',0.18,0.13);}
+    else if(type==='wrong') _note(196,0.35,'sine',0.18);
+    else if(type==='bonus') [523.25,659.25,783.99].forEach((f,i)=>_note(f,0.35,'triangle',0.2,i*0.07));
+    else if(type==='open') _note(329.63,0.7,'triangle',0.12);
+  }catch{}
+}
+
 // Daily challenge type colours
 const TYPE_CLR={speaking:"#1B4332",listening:"#1A5A8A",writing:"#B8860B",explore:"#2D6A4F",digital:"#5A4A8A",culture:"#8A3A3A",nature:"#2D6A2A",music:"#8A5A2A",game:"#4A4A8A",learn:"#6A3A6A"};
 const TYPE_ICON={speaking:"🗣️",listening:"👂",writing:"✍️",explore:"📍",digital:"📱",culture:"☘️",nature:"🌿",music:"🎵",game:"🎮",learn:"🧠"};
@@ -650,6 +728,7 @@ const BottomNav = ({view,setView,c,hd,bd}) => {
   const tabs=[
     {id:"home", icon:"🏠", label:"Baile"},
     {id:"map",  icon:"☘️", label:"30 Lá"},
+    {id:"ceol", icon:"🎵", label:"Ceol"},
     {id:"dict", icon:"📖", label:"Foclóir"},
     {id:"stats",icon:"📊", label:"Stats"},
     {id:"settings",icon:"⚙️",label:"Socruithe"},
@@ -832,6 +911,7 @@ export default function App() {
     if(!st||st.done.includes(d))return;
     const nd=[...st.done,d];const k=calcStreak(nd);
     await save({...st,done:nd,streak:k,best:Math.max(k,st.best)});
+    playSound('complete');
     setCeleb("day");
     // Trigger quiz after completing weeks 1, 2, 3
     if([7,14,21].includes(d)){
@@ -848,6 +928,7 @@ export default function App() {
   const doBonus=async(d)=>{
     if(!st||st.bonus.includes(d))return;
     await save({...st,bonus:[...st.bonus,d]});
+    playSound('bonus');
     setCeleb("bonus");setTimeout(()=>setCeleb(null),1500);
   };
   const doTask=async(day,idx)=>{
@@ -1106,7 +1187,7 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
                     <button key={i} onClick={()=>{
                       if(quizPicked!==null)return;
                       setQuizPicked(opt);
-                      if(opt===q.answer)setQuizScore(s=>s+1);
+                      if(opt===q.answer){setQuizScore(s=>s+1);playSound('correct');}else{playSound('wrong');}
                       setTimeout(()=>{
                         if(quizIdx+1<quiz.length){setQuizIdx(i=>i+1);setQuizPicked(null);}
                         else{
@@ -1739,6 +1820,91 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
           </div>
 
         </div>
+        <BottomNav view={view} setView={setView} c={c} hd={hd} bd={bd}/>
+      </div>
+    );
+  }
+
+  // ═══════════════════════════════
+  // CEOL VIEW (Irish music)
+  // ═══════════════════════════════
+  if(view==="ceol"){
+    const [openSong,setOpenSong]=useState(null);
+    return(
+      <div style={{minHeight:"100vh",background:c.bg,color:c.tx,paddingBottom:88,animation:"rise 0.3s ease"}}>
+        <style>{css}</style>
+        {/* Header */}
+        <div style={{background:"#1A0A0A",padding:"28px 20px 24px"}}>
+          <div style={{maxWidth:520,margin:"0 auto"}}>
+            <div style={{...bd,fontSize:"0.7rem",color:"rgba(255,255,255,0.45)",letterSpacing:"0.14em",textTransform:"uppercase",marginBottom:6}}>Ceol na hÉireann</div>
+            <h1 style={{...hd,fontSize:"1.9rem",fontWeight:700,color:"#fff",margin:"0 0 6px",lineHeight:1.2}}>Irish Music</h1>
+            <p style={{...bd,fontSize:"0.88rem",color:"rgba(255,255,255,0.5)",margin:0}}>8 songs that carry Irish history in their melody</p>
+          </div>
+        </div>
+
+        <div style={{maxWidth:520,margin:"0 auto",padding:"20px 16px",display:"flex",flexDirection:"column",gap:12}}>
+          {SONGS.map(song=>{
+            const isOpen=openSong===song.id;
+            return(
+              <div key={song.id} style={{borderRadius:16,overflow:"hidden",border:`1px solid ${c.bd}`,background:c.card,transition:"all 0.2s"}}>
+                {/* Song header — always visible */}
+                <button onClick={()=>{setOpenSong(isOpen?null:song.id);if(!isOpen)playSound('open');}}
+                  style={{width:"100%",background:isOpen?song.color+"22":"transparent",border:"none",cursor:"pointer",padding:"16px",display:"flex",alignItems:"center",gap:14,textAlign:"left"}}>
+                  <div style={{width:52,height:52,borderRadius:12,background:song.color,display:"flex",alignItems:"center",justifyContent:"center",fontSize:"1.5rem",flexShrink:0}}>
+                    {song.emoji}
+                  </div>
+                  <div style={{flex:1,minWidth:0}}>
+                    <div style={{...hd,fontSize:"0.97rem",fontWeight:700,color:c.tx,marginBottom:3,lineHeight:1.2}}>{song.title}</div>
+                    <div style={{...bd,fontSize:"0.78rem",color:c.tx3}}>{song.en}</div>
+                  </div>
+                  <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:4,flexShrink:0}}>
+                    <div style={{...bd,fontSize:"0.65rem",color:song.color,background:song.color+"18",padding:"3px 8px",borderRadius:20,border:`1px solid ${song.color}44`,whiteSpace:"nowrap"}}>{song.era}</div>
+                    <div style={{color:c.tx3,fontSize:"0.7rem"}}>{isOpen?"▲":"▼"}</div>
+                  </div>
+                </button>
+
+                {/* Expanded content */}
+                {isOpen&&(
+                  <div style={{borderTop:`1px solid ${c.bd}`,animation:"pop 0.2s ease"}}>
+                    {/* Story */}
+                    <div style={{padding:"16px 16px 0"}}>
+                      <div style={{...bd,fontSize:"0.82rem",color:c.tx2,lineHeight:1.7,marginBottom:14}}>{song.story}</div>
+                    </div>
+
+                    {/* Lyrics card */}
+                    <div style={{margin:"0 16px",background:song.color+"14",border:`1px solid ${song.color}33`,borderRadius:12,padding:"14px 16px",marginBottom:12}}>
+                      <div style={{...bd,fontSize:"0.68rem",color:song.color,letterSpacing:"0.1em",textTransform:"uppercase",marginBottom:8}}>Lyrics</div>
+                      <div style={{...hd,fontSize:"0.9rem",color:c.tx,whiteSpace:"pre-line",lineHeight:1.65,marginBottom:8}}>{song.irish}</div>
+                      <div style={{...bd,fontSize:"0.78rem",color:c.tx3,fontStyle:"italic"}}>{song.translation}</div>
+                    </div>
+
+                    {/* Irish lesson */}
+                    <div style={{margin:"0 16px 12px",background:c.tipBg,border:`1px solid ${c.tipBd}`,borderRadius:12,padding:"12px 14px"}}>
+                      <div style={{...bd,fontSize:"0.68rem",color:c.tipTx,letterSpacing:"0.1em",textTransform:"uppercase",marginBottom:6}}>Irish lesson</div>
+                      <div style={{...bd,fontSize:"0.83rem",color:c.tipTx,lineHeight:1.5}}>{song.lesson}</div>
+                    </div>
+
+                    {/* YouTube link */}
+                    <div style={{padding:"0 16px 16px"}}>
+                      <a href={`https://www.youtube.com/results?search_query=${song.yt}`} target="_blank" rel="noopener noreferrer"
+                        style={{display:"flex",alignItems:"center",justifyContent:"center",gap:8,width:"100%",padding:"12px",borderRadius:12,background:"#FF0000",color:"#fff",textDecoration:"none",...bd,fontSize:"0.85rem",fontWeight:700}}>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.2a3 3 0 00-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 00.5 6.2C0 8.1 0 12 0 12s0 3.9.5 5.8a3 3 0 002.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 002.1-2.1C24 15.9 24 12 24 12s0-3.9-.5-5.8zM9.8 15.5V8.5l6.3 3.5-6.3 3.5z"/></svg>
+                        Éist ar YouTube
+                      </a>
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+
+          {/* Footer note */}
+          <div style={{...bd,fontSize:"0.78rem",color:c.tx3,textAlign:"center",padding:"8px 0 4px",lineHeight:1.6}}>
+            In 1366, Elizabeth I ordered the execution of Irish harpers.<br/>
+            The music refused to die. These songs are why.
+          </div>
+        </div>
+
         <BottomNav view={view} setView={setView} c={c} hd={hd} bd={bd}/>
       </div>
     );
