@@ -1616,41 +1616,22 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
       <style>{css}</style>
 
       {/* ── TOP BAR ── */}
-      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"18px 22px 14px"}}>
-        <div style={{display:"flex",alignItems:"center",gap:8}}>
-          <span style={{fontSize:"1.1rem"}}>☘️</span>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"16px 20px 12px"}}>
+        <div style={{display:"flex",alignItems:"center",gap:10}}>
+          <div style={{width:36,height:36,borderRadius:10,background:season.color+"22",border:`1px solid ${season.color}33`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:"1.2rem",flexShrink:0}}>{season.icon}</div>
           <div>
-            <span style={{...hd,fontSize:"1rem",fontWeight:600,color:c.tx,letterSpacing:"0.01em"}}>Gaeltacht Connect</span>
-            {st.county&&(()=>{const co=COUNTIES.find(x=>x.en===st.county);return co?(
-              <div style={{...bd,fontSize:"0.6rem",color:c.tx3,marginTop:1}}>
-                Contae {co.ga}{co.g?" · ☘️ Gaeltacht":""}
-              </div>
-            ):null;})()}
+            <div style={{...hd,fontSize:"1rem",fontWeight:700,color:c.tx,lineHeight:1.1}}>Gaeltacht Connect</div>
+            <div style={{...bd,fontSize:"0.62rem",color:season.color,fontWeight:600,letterSpacing:"0.04em"}}>{season.name}{st.county&&(()=>{const co=COUNTIES.find(x=>x.en===st.county);return co?` · ${co.ga}`:""})()}</div>
           </div>
         </div>
-        <button onClick={toggle} style={{background:"none",border:`1px solid ${c.bd}`,borderRadius:8,width:34,height:34,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",color:c.tx3,fontSize:"0.9rem"}}>
-          {dk?"☀️":"🌙"}
-        </button>
+        <div style={{display:"flex",gap:8,alignItems:"center"}}>
+          {st.streak>=1&&<div style={{...hd,fontSize:"0.85rem",color:c.gold,background:c.gold+"18",border:`1px solid ${c.gold}33`,borderRadius:20,padding:"4px 10px"}}>🔥 {st.streak}</div>}
+          <button onClick={toggle} style={{background:"none",border:`1px solid ${c.bd}`,borderRadius:8,width:32,height:32,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",color:c.tx3,fontSize:"0.85rem"}}>{dk?"☀️":"🌙"}</button>
+        </div>
       </div>
 
       {/* ── MAIN CONTENT ── */}
-      <div style={{flex:1,maxWidth:520,width:"100%",margin:"0 auto",padding:"0 18px",display:"flex",flexDirection:"column",gap:14}}>
-
-        {/* ── SEASON + WORD OF DAY ── */}
-        <div style={{display:"flex",gap:8,alignItems:"stretch"}}>
-          <div style={{background:season.color+"18",border:`1px solid ${season.color}30`,borderRadius:14,padding:"10px 14px",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",minWidth:72}}>
-            <div style={{fontSize:"1.4rem",lineHeight:1}}>{season.icon}</div>
-            <div style={{...hd,fontSize:"0.6rem",color:season.color,marginTop:4,fontWeight:700,letterSpacing:"0.04em",textAlign:"center"}}>{season.name}</div>
-          </div>
-          <div style={{flex:1,background:c.card,border:`1px solid ${c.bd}`,borderRadius:14,padding:"10px 16px",boxShadow:c.shadow}}>
-            <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start"}}>
-              <div style={{...bd,fontSize:"0.6rem",color:c.tx3,letterSpacing:"0.1em",textTransform:"uppercase",marginBottom:4}}>Focal an Lae</div>
-              <button onClick={()=>speakIrish(wod.p)} style={{background:"none",border:"none",cursor:"pointer",fontSize:"0.95rem",padding:0,lineHeight:1,marginTop:-2}}>🔊</button>
-            </div>
-            <div style={{...hd,fontSize:"1.15rem",fontWeight:700,color:c.acc,fontStyle:"italic"}}>{wod.p}</div>
-            <div style={{...bd,fontSize:"0.72rem",color:c.tx3}}>{wod.m} <span style={{color:c.tx3,opacity:0.6}}>· /{wod.pr}/</span></div>
-          </div>
-        </div>
+      <div style={{flex:1,maxWidth:520,width:"100%",margin:"0 auto",padding:"0 16px",display:"flex",flexDirection:"column",gap:12}}>
 
         {allDone ? (
           <div style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",textAlign:"center",padding:"40px 0"}}>
@@ -1661,108 +1642,91 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
           </div>
         ) : (
           <>
-            {/* ══ DÚSHLÁN AN LAE — HERO ══ */}
-            <div style={{background:c.card,border:`1px solid ${c.bd}`,borderRadius:20,overflow:"hidden",boxShadow:c.shadow}}>
-              <div style={{height:5,background:`linear-gradient(90deg,${TYPE_CLR[dailyC.tp]||c.acc},${TYPE_CLR[dailyC.tp]||c.acc}88)`}}/>
-              <div style={{padding:"20px 20px 18px"}}>
-                <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:14}}>
-                  <div style={{display:"flex",alignItems:"center",gap:8}}>
-                    <span style={{fontSize:"1.1rem"}}>{TYPE_ICON[dailyC.tp]}</span>
-                    <div>
-                      <div style={{...bd,fontSize:"0.58rem",color:c.tx3,letterSpacing:"0.1em",textTransform:"uppercase"}}>Dúshlán an Lae · Everyone today</div>
-                      <div style={{...hd,fontSize:"1rem",fontWeight:700,color:c.tx}}>{dailyC.title}</div>
-                    </div>
+            {/* ══ HERO — DÚSHLÁN AN LAE ══ */}
+            <div style={{background:c.card,border:`1px solid ${c.bd}`,borderRadius:22,overflow:"hidden",boxShadow:c.shadow}}>
+              <div style={{height:4,background:`linear-gradient(90deg,${TYPE_CLR[dailyC.tp]||c.acc},${TYPE_CLR[dailyC.tp]||c.acc}55)`}}/>
+              <div style={{padding:"18px 20px 16px"}}>
+                <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:12}}>
+                  <div style={{width:32,height:32,borderRadius:8,background:(TYPE_CLR[dailyC.tp]||c.acc)+"18",border:`1px solid ${TYPE_CLR[dailyC.tp]||c.acc}33`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:"0.95rem"}}>{TYPE_ICON[dailyC.tp]}</div>
+                  <div style={{flex:1}}>
+                    <div style={{...bd,fontSize:"0.56rem",color:c.tx3,letterSpacing:"0.12em",textTransform:"uppercase"}}>Dúshlán an Lae · Everyone today</div>
+                    <div style={{...hd,fontSize:"1.05rem",fontWeight:700,color:c.tx,lineHeight:1.2}}>{dailyC.title}</div>
                   </div>
-                  {dailyDoneToday&&<span style={{fontSize:"1.3rem"}}>✅</span>}
+                  {dailyDoneToday&&<span style={{fontSize:"1.2rem"}}>✅</span>}
                 </div>
-                <p style={{...bd,fontSize:"0.93rem",color:c.tx2,lineHeight:1.75,margin:"0 0 12px"}}>{dailyC.ch}</p>
-                {dailyC.tip&&<div style={{...bd,fontSize:"0.78rem",color:c.tx3,fontStyle:"italic",background:c.cardAlt,borderRadius:10,padding:"9px 13px",marginBottom:14}}>💡 {dailyC.tip}</div>}
-                <button
-                  onClick={()=>{if(!dailyDoneToday)markDailyDone();}}
-                  style={{width:"100%",padding:"15px",borderRadius:12,background:dailyDoneToday?c.cardAlt:TYPE_CLR[dailyC.tp]||c.btn,border:`1px solid ${dailyDoneToday?c.bd:"transparent"}`,color:dailyDoneToday?c.tx3:"#fff",...hd,fontSize:"1rem",fontWeight:700,cursor:dailyDoneToday?"default":"pointer",transition:"all 0.2s",letterSpacing:"0.02em"}}
-                >
+                <p style={{...bd,fontSize:"0.95rem",color:c.tx2,lineHeight:1.8,margin:"0 0 10px"}}>{dailyC.ch}</p>
+                {dailyC.tip&&<div style={{...bd,fontSize:"0.76rem",color:c.tx3,fontStyle:"italic",background:c.cardAlt,borderRadius:10,padding:"8px 12px",marginBottom:12}}>💡 {dailyC.tip}</div>}
+                <button onClick={()=>{if(!dailyDoneToday)markDailyDone();}} style={{width:"100%",padding:"14px",borderRadius:12,background:dailyDoneToday?c.cardAlt:TYPE_CLR[dailyC.tp]||c.btn,border:`1px solid ${dailyDoneToday?c.bd:"transparent"}`,color:dailyDoneToday?c.tx3:"#fff",...hd,fontSize:"1rem",fontWeight:700,cursor:dailyDoneToday?"default":"pointer",transition:"all 0.2s"}}>
                   {dailyDoneToday?"✅ Déanta inniu! Come back tomorrow":"Déanta — Mark as done"}
                 </button>
               </div>
             </div>
 
-            {/* ══ FIONN ══ */}
-            <FionnSays
-              mood={st.streak>=5?"excited":st.streak>=2?"happy":total>0?"wink":"idle"}
-              text={st.streak>=5?"You're basically Irish now! 🔥":st.streak>=2?`${st.streak} days straight — keep it up!`:st.county&&total===0?`Dia dhuit ó ${COUNTIES.find(x=>x.en===st.county)?.ga||st.county}! Ready to start?`:total>0?"Good. I was gettin' lonely.":"Dia dhuit! Ready for today?"}
-              size={56}
-              align="left"
-            />
-
-            {/* ══ CLUICHE AN LAE — Daily vocab quiz ══ */}
+            {/* ══ 2-COL ROW: FOCAL + CLUICHE ══ */}
             {(()=>{
-              const vqDoneKey=todayKey()+"_vq";
-              const vqScore=st.dailyLog?.[vqDoneKey];
+              const vqKey=todayKey()+"_vq";
+              const vqScore=st.dailyLog?.[vqKey];
               const vqDone=vqScore!==undefined;
               return(
-                <div style={{background:c.card,border:`1px solid ${c.bd}`,borderRadius:16,padding:"16px 18px",boxShadow:c.shadow,display:"flex",alignItems:"center",justifyContent:"space-between",gap:12}}>
-                  <div style={{flex:1}}>
-                    <div style={{...bd,fontSize:"0.58rem",color:c.tx3,letterSpacing:"0.1em",textTransform:"uppercase",marginBottom:3}}>Cluiche an Lae · Daily Quiz</div>
-                    <div style={{...hd,fontSize:"0.96rem",fontWeight:700,color:c.tx}}>5 focal · ~2 nóiméad</div>
-                    {vqDone&&<div style={{...bd,fontSize:"0.75rem",color:c.acc,marginTop:3}}>Score: {vqScore}/5 {vqScore===5?"🏆":vqScore>=3?"🌟":"💪"}</div>}
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+                  {/* Focal an Lae */}
+                  <div style={{background:c.card,border:`1px solid ${c.bd}`,borderRadius:16,padding:"14px 14px 12px",boxShadow:c.shadow}}>
+                    <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}}>
+                      <div style={{...bd,fontSize:"0.56rem",color:c.tx3,letterSpacing:"0.1em",textTransform:"uppercase"}}>Focal an Lae</div>
+                      <button onClick={()=>speakIrish(wod.p)} style={{background:"none",border:"none",cursor:"pointer",fontSize:"0.9rem",padding:0,lineHeight:1}}>🔊</button>
+                    </div>
+                    <div style={{...hd,fontSize:"1.1rem",fontWeight:700,color:c.acc,fontStyle:"italic",lineHeight:1.2,marginBottom:3}}>{wod.p}</div>
+                    <div style={{...bd,fontSize:"0.7rem",color:c.tx3,lineHeight:1.3}}>{wod.m}</div>
+                    <div style={{...bd,fontSize:"0.62rem",color:c.tx3,opacity:0.5}}>/{wod.pr}/</div>
                   </div>
-                  <button onClick={startDailyQuiz} style={{
-                    background:vqDone?c.cardAlt:c.btn,
-                    border:`1px solid ${vqDone?c.bd:"transparent"}`,
-                    borderRadius:12,padding:"10px 16px",
-                    color:vqDone?c.tx3:"#fff",
-                    ...hd,fontSize:"0.85rem",fontWeight:700,cursor:"pointer",whiteSpace:"nowrap",
-                  }}>
-                    {vqDone?"Arís →":"Tosaigh →"}
-                  </button>
+                  {/* Cluiche an Lae */}
+                  <div style={{background:vqDone?c.cardAlt:c.card,border:`1px solid ${vqDone?c.bd:c.acc+"44"}`,borderRadius:16,padding:"14px 14px 12px",boxShadow:c.shadow,display:"flex",flexDirection:"column",justifyContent:"space-between"}}>
+                    <div>
+                      <div style={{...bd,fontSize:"0.56rem",color:c.tx3,letterSpacing:"0.1em",textTransform:"uppercase",marginBottom:6}}>Cluiche an Lae</div>
+                      <div style={{...hd,fontSize:"1rem",fontWeight:700,color:vqDone?c.tx3:c.tx,lineHeight:1.2}}>5 focal</div>
+                      {vqDone?<div style={{...bd,fontSize:"0.72rem",color:c.acc,marginTop:3}}>{vqScore}/5 {vqScore===5?"🏆":vqScore>=3?"🌟":"💪"}</div>:<div style={{...bd,fontSize:"0.68rem",color:c.tx3,marginTop:2}}>~2 nóiméad</div>}
+                    </div>
+                    <button onClick={startDailyQuiz} style={{marginTop:10,width:"100%",padding:"8px",borderRadius:10,background:vqDone?"none":c.btn,border:`1px solid ${vqDone?c.bd:"transparent"}`,color:vqDone?c.tx3:"#fff",...hd,fontSize:"0.82rem",fontWeight:700,cursor:"pointer"}}>
+                      {vqDone?"Arís →":"Tosaigh →"}
+                    </button>
+                  </div>
                 </div>
               );
             })()}
 
-            {/* ══ 30-DAY JOURNEY ══ */}
-            <div style={{borderTop:`1px solid ${c.bd}`,paddingTop:14}}>
+            {/* ══ JOURNEY STRIP ══ */}
+            <div style={{background:c.card,border:`1px solid ${c.bd}`,borderRadius:16,padding:"14px 16px",boxShadow:c.shadow}}>
               <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:10}}>
-                <div style={{display:"flex",alignItems:"center",gap:8}}>
-                  <div style={{width:3,height:20,borderRadius:2,background:catColor}}/>
-                  <div>
-                    <div style={{...bd,fontSize:"0.58rem",color:c.tx3,letterSpacing:"0.1em",textTransform:"uppercase"}}>Do chuid taistil · Your journey</div>
-                    <div style={{...hd,fontSize:"0.88rem",fontWeight:700,color:c.tx}}>30 Lá Challenge</div>
-                  </div>
+                <div style={{display:"flex",alignItems:"center",gap:6}}>
+                  <div style={{...bd,fontSize:"0.56rem",color:c.tx3,letterSpacing:"0.1em",textTransform:"uppercase"}}>30 Lá · Do thuras</div>
+                  <span style={{...bd,fontSize:"0.65rem",color:c.tx3,background:c.cardAlt,border:`1px solid ${c.bd}`,borderRadius:20,padding:"2px 8px"}}>{total}/30</span>
                 </div>
-                <div style={{display:"flex",alignItems:"center",gap:10}}>
-                  {st.streak>=1&&<span style={{...hd,fontSize:"0.85rem",color:c.gold}}>🔥{st.streak}</span>}
-                  <span style={{...bd,fontSize:"0.72rem",color:c.tx3,background:c.cardAlt,border:`1px solid ${c.bd}`,borderRadius:20,padding:"3px 10px"}}>{total}/30</span>
-                </div>
+                {st.streak>=1&&<span style={{...bd,fontSize:"0.78rem",color:c.gold}}>🔥 {st.streak} lá</span>}
               </div>
 
               {journeyAvailable ? (
-                <div style={{background:c.card,border:`1px solid ${catColor}40`,borderRadius:16,overflow:"hidden",boxShadow:c.shadow}}>
-                  <div style={{height:3,background:catColor}}/>
-                  <div style={{padding:"16px 18px"}}>
-                    <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:12}}>
-                      <span style={{fontSize:"0.85rem"}}>{CATS[currentCh.cat]}</span>
-                      <span style={{...bd,fontSize:"0.65rem",color:c.tx3,letterSpacing:"0.06em",textTransform:"uppercase"}}>{currentCh.cat}</span>
-                      <div style={{flex:1}}/>
-                      <span style={{...hd,fontSize:"0.72rem",color:c.tx3}}>Lá {nextDay}</span>
-                      {st.done.includes(nextDay)&&<span style={{fontSize:"0.95rem"}}>✅</span>}
-                    </div>
-                    <div style={{...hd,fontSize:"1.5rem",fontWeight:700,color:c.acc,fontStyle:"italic",marginBottom:4}}>{currentCh.p}</div>
-                    <div style={{...bd,fontSize:"0.78rem",color:c.tx3,marginBottom:12}}>{currentCh.m} · /{currentCh.pr}/</div>
-                    <button onClick={()=>{setSelDay(nextDay);setView("day")}} style={{width:"100%",padding:"13px",borderRadius:12,background:c.btn,border:"none",color:c.btnTx,...hd,fontSize:"0.95rem",cursor:"pointer",letterSpacing:"0.02em"}}>
-                      {st.done.includes(nextDay)?"View challenge →":"Oscail an dúshlán →"}
-                    </button>
+                <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:10}}>
+                  <div style={{flex:1,minWidth:0}}>
+                    <div style={{...bd,fontSize:"0.65rem",color:c.tx3,marginBottom:2}}>Lá {nextDay} · {currentCh.cat}</div>
+                    <div style={{...hd,fontSize:"1.1rem",fontWeight:700,color:c.acc,fontStyle:"italic",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{currentCh.p}</div>
+                    <div style={{...bd,fontSize:"0.7rem",color:c.tx3}}>{currentCh.m}</div>
                   </div>
+                  <button onClick={()=>{setSelDay(nextDay);setView("day")}} style={{flexShrink:0,padding:"10px 16px",borderRadius:12,background:c.btn,border:"none",color:c.btnTx,...hd,fontSize:"0.85rem",cursor:"pointer",whiteSpace:"nowrap"}}>
+                    {st.done.includes(nextDay)?"Féach →":"Oscail →"}
+                  </button>
                 </div>
               ) : (
-                <div style={{background:c.cardAlt,border:`1px solid ${c.bd}`,borderRadius:16,padding:"18px 20px",textAlign:"center"}}>
-                  <div style={{fontSize:"1.8rem",marginBottom:8}}>🌙</div>
-                  <div style={{...hd,fontSize:"1rem",color:c.tx,marginBottom:4}}>Ar fheabhas! Great work today.</div>
-                  <div style={{...bd,fontSize:"0.82rem",color:c.tx3,lineHeight:1.6}}>Day {nextDay} unlocks tomorrow.<br/>Come back then to continue your journey.</div>
+                <div style={{display:"flex",alignItems:"center",gap:10}}>
+                  <span style={{fontSize:"1.3rem"}}>🌙</span>
+                  <div>
+                    <div style={{...hd,fontSize:"0.9rem",color:c.tx}}>Lá {nextDay} unlocks tomorrow</div>
+                    <div style={{...bd,fontSize:"0.72rem",color:c.tx3}}>Come back then to continue</div>
+                  </div>
                 </div>
               )}
 
               {/* Progress dots */}
-              <div style={{display:"flex",gap:3,flexWrap:"wrap",marginTop:10,justifyContent:"center"}}>
+              <div style={{display:"flex",gap:3,flexWrap:"wrap",marginTop:12,justifyContent:"center"}}>
                 {CH.map(ch=>(
                   <div key={ch.day} style={{width:6,height:6,borderRadius:"50%",background:st.done.includes(ch.day)?c.acc:ch.day<=calendarDay?c.dotOff+"99":c.dotOff+"33",transition:"background 0.3s"}}/>
                 ))}
