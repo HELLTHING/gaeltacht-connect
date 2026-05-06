@@ -581,7 +581,7 @@ let _melodyNodes=[];
 function stopMelody(){_melodyNodes.forEach(o=>{try{o.stop(0)}catch{}});_melodyNodes=[];}
 function playMelody(notes,inst,onEnd){
   stopMelody();
-  const c=_ctx(),BPS=0.37; // seconds per beat
+  const c=_ctx(),BPS=0.52; // seconds per beat — slower = more musical
   let delay=0;
   notes.forEach(([freq,beats])=>{
     const dur=beats*BPS;
@@ -617,15 +617,57 @@ function playMelody(notes,inst,onEnd){
 }
 // Melodic motifs for each song — simplified but recognisable phrases
 // Frequencies: D4=293.66 E4=329.63 F#4=369.99 G4=392 A4=440 B4=493.88 D5=587.33 E5=659.25
+// D4=293.66 E4=329.63 F#4=369.99 G4=392 A4=440 B4=493.88 D5=587.33 E5=659.25
+// Each melody ~24–32 notes at BPS=0.52 → 15–20 seconds
 const SONG_MELODIES={
-  oro:    {inst:'whistle',notes:[[440,1],[440,0.5],[587.33,1.5],[493.88,0.5],[440,0.5],[369.99,0.5],[392,0.5],[440,2]]},
-  fields: {inst:'harp',  notes:[[293.66,1],[329.63,0.5],[369.99,0.5],[440,1.5],[369.99,0.5],[329.63,0.5],[293.66,2]]},
-  parting:{inst:'harp',  notes:[[587.33,1],[493.88,0.5],[440,0.5],[369.99,1],[329.63,0.5],[293.66,2]]},
-  danny:  {inst:'whistle',notes:[[293.66,1],[440,0.5],[392,0.5],[440,1],[493.88,0.5],[587.33,0.5],[440,2]]},
-  raglan: {inst:'whistle',notes:[[440,0.5],[392,0.5],[369.99,0.5],[329.63,0.5],[293.66,1.5],[440,0.5],[493.88,1],[440,2]]},
-  grace:  {inst:'harp',  notes:[[293.66,1],[369.99,0.5],[440,0.5],[493.88,1],[440,0.5],[392,0.5],[369.99,0.5],[329.63,0.5],[293.66,2]]},
-  molly:  {inst:'whistle',notes:[[293.66,0.5],[369.99,0.5],[440,1],[369.99,0.5],[293.66,0.5],[440,1],[493.88,2]]},
-  whiskey:{inst:'harp',  notes:[[440,0.5],[369.99,0.5],[293.66,0.5],[329.63,0.5],[369.99,0.5],[440,1],[587.33,0.5],[440,1.5]]},
+  oro:{inst:'whistle',notes:[
+    [440,1],[440,0.5],[587.33,1],[493.88,0.5],[440,1],[369.99,0.5],
+    [329.63,0.5],[293.66,0.5],[329.63,0.5],[369.99,1],[440,1.5],
+    [440,0.5],[587.33,1],[493.88,0.5],[440,1],[369.99,0.5],
+    [329.63,0.5],[293.66,0.5],[329.63,0.5],[369.99,0.5],[293.66,2.5],
+  ]},
+  fields:{inst:'harp',notes:[
+    [293.66,1],[329.63,0.5],[369.99,0.5],[440,1],[440,0.5],[493.88,0.5],
+    [440,1],[369.99,0.5],[329.63,0.5],[293.66,1.5],
+    [293.66,0.5],[329.63,0.5],[369.99,0.5],[440,1],[493.88,0.5],[587.33,0.5],
+    [440,1],[369.99,0.5],[329.63,0.5],[293.66,2.5],
+  ]},
+  parting:{inst:'harp',notes:[
+    [493.88,1],[587.33,0.5],[587.33,1],[493.88,0.5],[440,1],
+    [369.99,1],[440,0.5],[493.88,0.5],[440,1],[369.99,0.5],[329.63,1],
+    [293.66,0.5],[369.99,0.5],[440,1],[440,0.5],[369.99,0.5],
+    [329.63,0.5],[293.66,0.5],[329.63,0.5],[293.66,2.5],
+  ]},
+  danny:{inst:'whistle',notes:[
+    [293.66,0.5],[329.63,0.5],[369.99,0.5],[440,1],[493.88,0.5],
+    [440,1],[369.99,0.5],[440,0.5],[493.88,0.5],[587.33,1],
+    [440,1],[493.88,0.5],[440,1],[369.99,0.5],[329.63,0.5],
+    [293.66,0.5],[329.63,0.5],[369.99,0.5],[293.66,2.5],
+  ]},
+  raglan:{inst:'whistle',notes:[
+    [440,1],[440,0.5],[369.99,0.5],[440,1],[493.88,0.5],
+    [440,0.5],[369.99,0.5],[329.63,0.5],[293.66,0.5],[369.99,0.5],[440,1],
+    [493.88,0.5],[587.33,0.5],[493.88,1],[440,1],[369.99,0.5],
+    [329.63,0.5],[293.66,0.5],[329.63,0.5],[293.66,2.5],
+  ]},
+  grace:{inst:'harp',notes:[
+    [293.66,1],[369.99,0.5],[440,0.5],[493.88,1],[440,0.5],[369.99,0.5],
+    [329.63,0.5],[369.99,1],[293.66,0.5],[329.63,0.5],[369.99,0.5],[440,1],
+    [493.88,1],[587.33,0.5],[493.88,0.5],[440,1],[369.99,0.5],[329.63,0.5],
+    [293.66,0.5],[329.63,0.5],[293.66,2.5],
+  ]},
+  molly:{inst:'whistle',notes:[
+    [293.66,0.5],[329.63,0.5],[369.99,1],[440,1],[369.99,0.5],[329.63,0.5],
+    [293.66,0.5],[329.63,0.5],[369.99,0.5],[440,1],[493.88,0.5],[587.33,0.5],
+    [440,1],[440,0.5],[369.99,0.5],[329.63,0.5],[293.66,0.5],
+    [329.63,0.5],[369.99,0.5],[293.66,2.5],
+  ]},
+  whiskey:{inst:'harp',notes:[
+    [440,0.5],[440,0.5],[369.99,0.5],[440,1],[587.33,0.5],[493.88,0.5],
+    [440,0.5],[392,0.5],[440,0.5],[369.99,0.5],[293.66,0.5],[329.63,0.5],
+    [369.99,0.5],[440,1],[440,0.5],[587.33,0.5],[493.88,1],
+    [440,0.5],[369.99,0.5],[329.63,0.5],[293.66,2.5],
+  ]},
 };
 
 // ── Irish Songs ──────────────────────────────────────────────
@@ -823,7 +865,7 @@ const COUNTIES=[
 ];
 
 // Bottom navigation component
-const BottomNav = ({view,setView,c,hd,bd}) => {
+const BottomNav = ({view,setView,setPrevView,c,hd,bd}) => {
   const tabs=[
     {id:"home", icon:"🏠", label:"Baile"},
     {id:"map",  icon:"☘️", label:"30 Lá"},
@@ -845,7 +887,7 @@ const BottomNav = ({view,setView,c,hd,bd}) => {
       {tabs.map(t=>{
         const active=view===t.id||( view==="day"&&t.id==="home");
         return(
-          <button key={t.id} onClick={()=>setView(t.id)} style={{
+          <button key={t.id} onClick={()=>{if(setPrevView&&view!==t.id)setPrevView(view);setView(t.id);}} style={{
             flex:1,padding:"8px 2px 10px",background:"none",border:"none",
             cursor:"pointer",display:"flex",flexDirection:"column",
             alignItems:"center",gap:2,transition:"opacity 0.15s",
@@ -927,7 +969,6 @@ export default function App() {
   const [search,setSearch]=useState("");
   const [filterCat,setFilterCat]=useState("all");
   const [provIdx,setProvIdx]=useState(0);
-  const [obStep,setObStep]=useState(0);
   const [communityCount,setCommunityCount]=useState(null);
   const [openSong,setOpenSong]=useState(null);
   const [playingSong,setPlayingSong]=useState(null);
@@ -947,7 +988,7 @@ export default function App() {
   useEffect(()=>{(async()=>{
     const s=await loadS();
     if(s){setSt(s);if(s.dk)setDk(true)}
-    else{const i={done:[],bonus:[],tasksDone:[],streak:0,best:0,dk:false,onboarded:false,started:new Date().toISOString(),dailyLog:{},county:null,notifEnabled:false};await saveS(i);setSt(i)}
+    else{const i={done:[],bonus:[],tasksDone:[],streak:0,best:0,dk:false,onboarded:true,started:new Date().toISOString(),dailyLog:{},county:null,notifEnabled:false};await saveS(i);setSt(i)}
     setLoading(false);
     // Fetch community count in background
     sbGetCount(todayKey()).then(n=>{if(n!==null)setCommunityCount(n);});
@@ -1153,105 +1194,6 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
   // ═══════════════════════════════
   // ONBOARDING
   // ═══════════════════════════════
-  if(!st.onboarded && obStep===0){
-    const features=[
-      {icon:"🎯",title:"One real challenge per day",desc:"Go out and use the language — not flashcards, not drills"},
-      {icon:"🗣️",title:"Phrases that actually matter",desc:"Order a coffee, greet a neighbour, read a sign"},
-      {icon:"🔥",title:"30 days to make it stick",desc:"A streak, a habit, a connection to something real"},
-    ];
-    return(
-      <div style={{minHeight:"100vh",background:c.hero,display:"flex",flexDirection:"column",justifyContent:"flex-end",padding:"0 0 40px"}}>
-        <style>{css}</style>
-
-        {/* Top decorative area */}
-        <div style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"48px 32px 24px",textAlign:"center"}}>
-          <div style={{fontSize:"4rem",marginBottom:24,animation:"shamrock-spin 0.8s cubic-bezier(0.34,1.56,0.64,1) both"}}>☘️</div>
-          <h1 style={{...hd,fontSize:"2.2rem",color:"#fff",lineHeight:1.2,marginBottom:12,animation:"rise 0.6s 0.3s ease both",opacity:0}}>
-            Bring Irish into<br/>your daily life
-          </h1>
-          <p style={{...bd,fontSize:"0.95rem",color:"rgba(255,255,255,0.6)",lineHeight:1.7,animation:"rise 0.6s 0.55s ease both",opacity:0}}>
-            30 real-world challenges.<br/>One per day. No excuses.
-          </p>
-        </div>
-
-        {/* Bottom sheet */}
-        <div style={{background:c.bg,borderRadius:"24px 24px 0 0",padding:"28px 24px 8px",animation:"rise 0.5s 0.7s ease both",opacity:0}}>
-          <div style={{display:"flex",flexDirection:"column",gap:0,marginBottom:28}}>
-            {features.map((f,i)=>(
-              <div key={i} style={{display:"flex",alignItems:"flex-start",gap:16,padding:"16px 0",borderBottom:i<features.length-1?`1px solid ${c.bd}`:"none",animation:`rise 0.5s ${0.8+i*0.1}s ease both`,opacity:0}}>
-                <div style={{width:40,height:40,borderRadius:12,background:c.cardAlt,border:`1px solid ${c.bd}`,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,fontSize:"1.2rem"}}>
-                  {f.icon}
-                </div>
-                <div style={{paddingTop:2}}>
-                  <div style={{...hd,fontSize:"1rem",color:c.tx,marginBottom:3}}>{f.title}</div>
-                  <div style={{...bd,fontSize:"0.82rem",color:c.tx3,lineHeight:1.5}}>{f.desc}</div>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <button
-            onClick={()=>setObStep(1)}
-            style={{width:"100%",padding:"17px",borderRadius:14,background:c.btn,border:"none",color:c.btnTx,...hd,fontSize:"1.2rem",letterSpacing:"0.03em",cursor:"pointer",marginBottom:16,animation:"rise 0.5s 1.1s ease both",opacity:0}}
-          >
-            Tosaigh! — Let's begin
-          </button>
-
-          <p style={{...bd,fontSize:"0.75rem",fontStyle:"italic",color:c.tx3,lineHeight:1.7,textAlign:"center",animation:"rise 0.5s 1.2s ease both",opacity:0}}>
-            "Is fearr Gaeilge briste ná Béarla cliste"<br/>
-            <span style={{opacity:0.55}}>Broken Irish is better than clever English</span>
-          </p>
-        </div>
-      </div>
-    );
-  }
-
-  // COUNTY PICKER (onboarding step 2)
-  if(!st.onboarded && obStep===1){
-    const pickCounty=async(county)=>{
-      await save({done:[],bonus:[],tasksDone:[],streak:0,best:0,dk,onboarded:true,started:new Date().toISOString(),dailyLog:{},county});
-      setObStep(0);
-    };
-    return(
-      <div style={{minHeight:"100vh",background:c.bg,color:c.tx,display:"flex",flexDirection:"column"}}>
-        <style>{css}</style>
-        {/* Header */}
-        <div style={{background:c.hero,padding:"28px 24px 24px",textAlign:"center"}}>
-          <div style={{...bd,fontSize:"0.7rem",color:"rgba(255,255,255,0.5)",letterSpacing:"0.12em",textTransform:"uppercase",marginBottom:8}}>Cad as tú?</div>
-          <h2 style={{...hd,fontSize:"1.6rem",color:"#fff",marginBottom:6}}>Where are you from?</h2>
-          <p style={{...bd,fontSize:"0.82rem",color:"rgba(255,255,255,0.55)"}}>Pick your county — we'll make it personal</p>
-        </div>
-
-        {/* County grid */}
-        <div style={{flex:1,overflowY:"auto",padding:"16px 16px 100px"}}>
-          <div style={{display:"grid",gridTemplateColumns:"repeat(2,1fr)",gap:8,maxWidth:480,margin:"0 auto"}}>
-            {COUNTIES.map((co,i)=>(
-              <button key={i} onClick={()=>pickCounty(co.en)} style={{
-                background:c.card,border:`1px solid ${c.bd}`,borderRadius:14,
-                padding:"14px 14px 12px",cursor:"pointer",textAlign:"left",
-                boxShadow:c.shadow,transition:"all 0.15s",
-              }}>
-                <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:4}}>
-                  <div style={{...hd,fontSize:"0.95rem",fontWeight:700,color:c.acc,lineHeight:1.2}}>{co.ga}</div>
-                  {co.g&&<span style={{fontSize:"0.7rem",background:`${c.acc}15`,border:`1px solid ${c.acc}30`,borderRadius:6,padding:"1px 5px",color:c.acc,flexShrink:0,marginLeft:4}}>☘️</span>}
-                </div>
-                <div style={{...bd,fontSize:"0.72rem",color:c.tx3}}>{co.en}</div>
-                <div style={{...bd,fontSize:"0.62rem",color:c.tx3,opacity:0.5,marginTop:2}}>/{co.pr}/</div>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Skip button */}
-        <div style={{position:"fixed",bottom:0,left:0,right:0,padding:"16px 24px 32px",background:c.bg,borderTop:`1px solid ${c.bd}`}}>
-          <button onClick={()=>pickCounty(null)} style={{width:"100%",padding:"14px",borderRadius:12,background:"none",border:`1px solid ${c.bd}`,color:c.tx3,...bd,fontSize:"0.9rem",cursor:"pointer"}}>
-            Skip — I'd rather not say
-          </button>
-        </div>
-      </div>
-    );
-  }
-
   // ═══════════════════════════════
   // QUIZ VIEW
   // ═══════════════════════════════
@@ -1618,7 +1560,7 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
           ))}
           {filtered.length===0&&<div style={{textAlign:"center",padding:"40px",...bd,color:c.tx3,fontStyle:"italic"}}>Níor aimsíodh aon rud — Nothing found</div>}
         </div>
-        <BottomNav view={view} setView={setView} c={c} hd={hd} bd={bd}/>
+        <BottomNav view={view} setView={setView} setPrevView={setPrevView} c={c} hd={hd} bd={bd}/>
       </div>
     );
   }
@@ -1732,7 +1674,7 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
             <button onClick={doReset} style={{background:"none",border:`1px solid ${c.bd}`,borderRadius:8,padding:"8px 20px",color:c.tx3,...bd,fontSize:"0.72rem",cursor:"pointer"}}>Reset progress</button>
           </div>
         </div>
-        <BottomNav view={view} setView={setView} c={c} hd={hd} bd={bd}/>
+        <BottomNav view={view} setView={setView} setPrevView={setPrevView} c={c} hd={hd} bd={bd}/>
       </div>
     );
   }
@@ -1782,6 +1724,39 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
               </div>
               <button onClick={toggle} style={{width:52,height:28,borderRadius:14,background:dk?c.acc:"#ccc",border:"none",position:"relative",cursor:"pointer",transition:"background 0.3s",padding:0}}>
                 <div style={{width:20,height:20,borderRadius:"50%",background:"#fff",position:"absolute",top:2,left:dk?28:2,transition:"left 0.3s",boxShadow:"0 1px 3px rgba(0,0,0,0.2)"}}/>
+              </button>
+            </div>
+          </div>
+
+          {/* COUNTY */}
+          <div style={{...hd,fontSize:"0.65rem",color:c.tx3,letterSpacing:"0.12em",marginBottom:10}}>YOUR COUNTY · CAD AS TÚ?</div>
+          <div style={{background:c.card,border:`1px solid ${c.bd}`,borderRadius:12,marginBottom:20,overflow:"hidden",boxShadow:c.shadow}}>
+            {st.county&&(()=>{const co=COUNTIES.find(x=>x.en===st.county);return co?(
+              <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"14px 18px",borderBottom:`1px solid ${c.bd}`}}>
+                <div style={{display:"flex",alignItems:"center",gap:10}}>
+                  <span style={{fontSize:"1.1rem"}}>📍</span>
+                  <div>
+                    <div style={{...hd,fontSize:"1rem",color:c.tx}}>{co.ga}</div>
+                    <div style={{...bd,fontSize:"0.72rem",color:c.tx3}}>{co.en} · /{co.pr}/</div>
+                  </div>
+                  {co.g&&<span style={{...bd,fontSize:"0.65rem",color:c.acc,background:c.acc+"15",border:`1px solid ${c.acc}30`,borderRadius:6,padding:"2px 6px"}}>☘️ Gaeltacht</span>}
+                </div>
+                <button onClick={async()=>await save({...st,county:null})} style={{...bd,fontSize:"0.72rem",color:c.tx3,background:"none",border:`1px solid ${c.bd}`,borderRadius:8,padding:"5px 10px",cursor:"pointer"}}>Clear</button>
+              </div>
+            ):null;})()}
+            <div style={{padding:"10px 12px"}}>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6,maxHeight:200,overflowY:"auto"}}>
+                {COUNTIES.map((co,i)=>(
+                  <button key={i} onClick={async()=>await save({...st,county:co.en})}
+                    style={{background:st.county===co.en?c.acc+"18":c.cardAlt,border:`1px solid ${st.county===co.en?c.acc:c.bd}`,borderRadius:10,padding:"9px 10px",cursor:"pointer",textAlign:"left"}}>
+                    <div style={{...hd,fontSize:"0.82rem",fontWeight:700,color:st.county===co.en?c.acc:c.tx,lineHeight:1.2}}>{co.ga}</div>
+                    <div style={{...bd,fontSize:"0.6rem",color:c.tx3}}>{co.en}</div>
+                  </button>
+                ))}
+              </div>
+              <button onClick={async()=>await save({...st,county:null})}
+                style={{width:"100%",marginTop:8,padding:"8px",borderRadius:8,background:"none",border:`1px solid ${c.bd}`,color:c.tx3,...bd,fontSize:"0.72rem",cursor:"pointer"}}>
+                {st.county?"Change to: No county":"No county preference"}
               </button>
             </div>
           </div>
@@ -1943,7 +1918,7 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
           </div>
 
         </div>
-        <BottomNav view={view} setView={setView} c={c} hd={hd} bd={bd}/>
+        <BottomNav view={view} setView={setView} setPrevView={setPrevView} c={c} hd={hd} bd={bd}/>
       </div>
     );
   }
@@ -1956,14 +1931,18 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
       <div style={{minHeight:"100vh",background:c.bg,color:c.tx,paddingBottom:88,animation:"rise 0.3s ease"}}>
         <style>{css}</style>
         {/* Header */}
-        <div style={{background:"#1A0A0A",padding:"28px 20px 24px"}}>
+        <div style={{background:"#1A0A0A",padding:"20px 20px 20px"}}>
           <div style={{maxWidth:520,margin:"0 auto"}}>
+            <button onClick={()=>{stopMelody();setPlayingSong(null);setOpenSong(null);setView(prevView||"home");}}
+              style={{display:"flex",alignItems:"center",gap:6,background:"rgba(255,255,255,0.1)",border:"1px solid rgba(255,255,255,0.2)",borderRadius:10,padding:"7px 14px",cursor:"pointer",color:"rgba(255,255,255,0.8)",...bd,fontSize:"0.85rem",marginBottom:16}}>
+              ← Ar ais
+            </button>
             <div style={{...bd,fontSize:"0.7rem",color:"rgba(255,255,255,0.45)",letterSpacing:"0.14em",textTransform:"uppercase",marginBottom:6}}>Ceol na hÉireann</div>
-            <h1 style={{...hd,fontSize:"1.9rem",fontWeight:700,color:"#fff",margin:"0 0 6px",lineHeight:1.2}}>Irish Music</h1>
-            <p style={{...bd,fontSize:"0.88rem",color:"rgba(255,255,255,0.5)",margin:0}}>
+            <h1 style={{...hd,fontSize:"1.7rem",fontWeight:700,color:"#fff",margin:"0 0 6px",lineHeight:1.2}}>Irish Music</h1>
+            <p style={{...bd,fontSize:"0.82rem",color:"rgba(255,255,255,0.5)",margin:0}}>
               {playingSong
                 ? `♪ Playing — ${SONGS.find(s=>s.id===playingSong)?.title||""}`
-                : "Tap any song to read its story · Play the melody inside the app"}
+                : "Tap a song · hear the melody in-app"}
             </p>
           </div>
         </div>
@@ -2056,7 +2035,7 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
           </div>
         </div>
 
-        <BottomNav view={view} setView={setView} c={c} hd={hd} bd={bd}/>
+        <BottomNav view={view} setView={setView} setPrevView={setPrevView} c={c} hd={hd} bd={bd}/>
       </div>
     );
   }
@@ -2185,7 +2164,7 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
           </div>
           <div style={{height:40}}/>
         </div>
-        <BottomNav view={view} setView={setView} c={c} hd={hd} bd={bd}/>
+        <BottomNav view={view} setView={setView} setPrevView={setPrevView} c={c} hd={hd} bd={bd}/>
       </div>
     );
   }
@@ -2361,7 +2340,7 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
 
       </div>
 
-      <BottomNav view={view} setView={setView} c={c} hd={hd} bd={bd}/>
+      <BottomNav view={view} setView={setView} setPrevView={setPrevView} c={c} hd={hd} bd={bd}/>
     </div>
   );
 }
