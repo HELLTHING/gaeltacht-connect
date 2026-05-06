@@ -627,15 +627,19 @@ const SONGS=[
 
 // ── Web Audio sound effects ──────────────────────────────────
 let _audioCtx=null;
-function _ctx(){if(!_audioCtx)_audioCtx=new(window.AudioContext||window.webkitAudioContext)();return _audioCtx;}
-function _note(freq,dur,type='sine',vol=0.25,delay=0){
+function _ctx(){
+  if(!_audioCtx)_audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+  if(_audioCtx.state==='suspended')_audioCtx.resume();
+  return _audioCtx;
+}
+function _note(freq,dur,type='sine',vol=0.35,delay=0){
   try{
     const c=_ctx(),o=c.createOscillator(),g=c.createGain();
     o.connect(g);g.connect(c.destination);
     o.frequency.value=freq;o.type=type;
     const t=c.currentTime+delay;
     g.gain.setValueAtTime(0,t);
-    g.gain.linearRampToValueAtTime(vol,t+0.01);
+    g.gain.linearRampToValueAtTime(vol,t+0.02);
     g.gain.exponentialRampToValueAtTime(0.001,t+dur);
     o.start(t);o.stop(t+dur+0.05);
   }catch{}
@@ -831,6 +835,7 @@ export default function App() {
   const [obStep,setObStep]=useState(0);
   const [communityCount,setCommunityCount]=useState(null);
   const [openSong,setOpenSong]=useState(null);
+  const [prevView,setPrevView]=useState("home");
   const c = dk ? T.dark : T.light;
 
   useEffect(()=>{(async()=>{
@@ -1250,8 +1255,8 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
 
         {/* ── TOP NAV ── */}
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"16px 20px"}}>
-          <button onClick={()=>{setView("home");setSelDay(null)}} style={{display:"flex",alignItems:"center",gap:6,background:"none",border:"none",cursor:"pointer",color:c.tx3,...bd,fontSize:"0.9rem",padding:"4px 0"}}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+          <button onClick={()=>{setView(prevView);setSelDay(null)}} style={{display:"flex",alignItems:"center",gap:8,background:c.card,border:`1px solid ${c.bd}`,borderRadius:10,cursor:"pointer",color:c.tx,...bd,fontSize:"0.9rem",padding:"8px 14px",fontWeight:600}}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
             Ar ais
           </button>
           <div style={{display:"flex",alignItems:"center",gap:6}}>
@@ -1995,7 +2000,7 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
                     const here=isNext(ch.day);
                     const cc=CAT_CLR[ch.cat]||c.acc;
                     return (
-                      <button key={ch.day} onClick={()=>{setSelDay(ch.day);setView("day")}} style={{
+                      <button key={ch.day} onClick={()=>{setPrevView("map");setSelDay(ch.day);setView("day")}} style={{
                         background:dn?`${c.acc}10`:c.card,
                         border:here?`2px solid ${cc}`:`1px solid ${dn?c.acc+"28":c.bd}`,
                         borderRadius:14,padding:0,cursor:lk?"not-allowed":"pointer",
@@ -2168,7 +2173,7 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
                     <div style={{...hd,fontSize:"1.1rem",fontWeight:700,color:c.acc,fontStyle:"italic",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{currentCh.p}</div>
                     <div style={{...bd,fontSize:"0.7rem",color:c.tx3}}>{currentCh.m}</div>
                   </div>
-                  <button onClick={()=>{setSelDay(nextDay);setView("day")}} style={{flexShrink:0,padding:"10px 16px",borderRadius:12,background:c.btn,border:"none",color:c.btnTx,...hd,fontSize:"0.85rem",cursor:"pointer",whiteSpace:"nowrap"}}>
+                  <button onClick={()=>{setPrevView("home");setSelDay(nextDay);setView("day")}} style={{flexShrink:0,padding:"10px 16px",borderRadius:12,background:c.btn,border:"none",color:c.btnTx,...hd,fontSize:"0.85rem",cursor:"pointer",whiteSpace:"nowrap"}}>
                     {st.done.includes(nextDay)?"Féach →":"Oscail →"}
                   </button>
                 </div>
