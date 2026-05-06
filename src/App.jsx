@@ -830,6 +830,7 @@ export default function App() {
   const [provIdx,setProvIdx]=useState(0);
   const [obStep,setObStep]=useState(0);
   const [communityCount,setCommunityCount]=useState(null);
+  const [openSong,setOpenSong]=useState(null);
   const c = dk ? T.dark : T.light;
 
   useEffect(()=>{(async()=>{
@@ -1829,7 +1830,6 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
   // CEOL VIEW (Irish music)
   // ═══════════════════════════════
   if(view==="ceol"){
-    const [openSong,setOpenSong]=useState(null);
     return(
       <div style={{minHeight:"100vh",background:c.bg,color:c.tx,paddingBottom:88,animation:"rise 0.3s ease"}}>
         <style>{css}</style>
