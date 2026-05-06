@@ -573,6 +573,59 @@ const HISTORY_FACTS=[
 
 function getHistoryFact(date){return HISTORY_FACTS[getDayOfYear(date)%HISTORY_FACTS.length];}
 
+// ── Melody synthesizer (Celtic harp + tin whistle via Web Audio) ──
+// Notes: [frequency_hz, duration_beats] — D major pentatonic at ~♩=160
+let _melodyNodes=[];
+function stopMelody(){_melodyNodes.forEach(o=>{try{o.stop(0)}catch{}});_melodyNodes=[];}
+function playMelody(notes,inst,onEnd){
+  stopMelody();
+  const c=_ctx(),BPS=0.37; // seconds per beat
+  let delay=0;
+  notes.forEach(([freq,beats])=>{
+    const dur=beats*BPS;
+    const t=c.currentTime+delay;
+    if(inst==='harp'){
+      [1,2,3].forEach((h,i)=>{
+        const o=c.createOscillator(),g=c.createGain();
+        o.connect(g);g.connect(c.destination);
+        o.frequency.value=freq*h;o.type='triangle';
+        g.gain.setValueAtTime(0,t);
+        g.gain.linearRampToValueAtTime(0.2/(i+1),t+0.01);
+        g.gain.exponentialRampToValueAtTime(0.001,t+Math.max(dur*0.85/Math.pow(h,0.5),0.05));
+        o.start(t);o.stop(t+dur*1.1);
+        _melodyNodes.push(o);
+      });
+    } else { // tin whistle
+      const o=c.createOscillator(),g=c.createGain();
+      const lfo=c.createOscillator(),lg=c.createGain();
+      lfo.frequency.value=5.5;lg.gain.value=5;
+      lfo.connect(lg);lg.connect(o.frequency);
+      o.connect(g);g.connect(c.destination);
+      o.frequency.value=freq;o.type='sine';
+      g.gain.setValueAtTime(0,t);
+      g.gain.linearRampToValueAtTime(0.14,t+0.05);
+      g.gain.setValueAtTime(0.14,t+Math.max(dur-0.07,0.03));
+      g.gain.exponentialRampToValueAtTime(0.001,t+dur);
+      lfo.start(t);o.start(t);lfo.stop(t+dur+0.1);o.stop(t+dur+0.1);
+      _melodyNodes.push(o,lfo);
+    }
+    delay+=dur;
+  });
+  if(onEnd)setTimeout(()=>{_melodyNodes=[];onEnd();},delay*1000+700);
+}
+// Melodic motifs for each song — simplified but recognisable phrases
+// Frequencies: D4=293.66 E4=329.63 F#4=369.99 G4=392 A4=440 B4=493.88 D5=587.33 E5=659.25
+const SONG_MELODIES={
+  oro:    {inst:'whistle',notes:[[440,1],[440,0.5],[587.33,1.5],[493.88,0.5],[440,0.5],[369.99,0.5],[392,0.5],[440,2]]},
+  fields: {inst:'harp',  notes:[[293.66,1],[329.63,0.5],[369.99,0.5],[440,1.5],[369.99,0.5],[329.63,0.5],[293.66,2]]},
+  parting:{inst:'harp',  notes:[[587.33,1],[493.88,0.5],[440,0.5],[369.99,1],[329.63,0.5],[293.66,2]]},
+  danny:  {inst:'whistle',notes:[[293.66,1],[440,0.5],[392,0.5],[440,1],[493.88,0.5],[587.33,0.5],[440,2]]},
+  raglan: {inst:'whistle',notes:[[440,0.5],[392,0.5],[369.99,0.5],[329.63,0.5],[293.66,1.5],[440,0.5],[493.88,1],[440,2]]},
+  grace:  {inst:'harp',  notes:[[293.66,1],[369.99,0.5],[440,0.5],[493.88,1],[440,0.5],[392,0.5],[369.99,0.5],[329.63,0.5],[293.66,2]]},
+  molly:  {inst:'whistle',notes:[[293.66,0.5],[369.99,0.5],[440,1],[369.99,0.5],[293.66,0.5],[440,1],[493.88,2]]},
+  whiskey:{inst:'harp',  notes:[[440,0.5],[369.99,0.5],[293.66,0.5],[329.63,0.5],[369.99,0.5],[440,1],[587.33,0.5],[440,1.5]]},
+};
+
 // ── Irish Songs ──────────────────────────────────────────────
 const SONGS=[
   {id:"oro",title:"Óró Sé Do Bheatha Bhaile",en:"Welcome Home",era:"16th C · Rebel",emoji:"⚔️",color:"#8A1A1A",
@@ -625,33 +678,73 @@ const SONGS=[
     yt:"Whiskey+in+the+Jar+Thin+Lizzy"},
 ];
 
-// ── Web Audio sound effects ──────────────────────────────────
+// ── Celtic Web Audio sound effects ──────────────────────────
+// D major pentatonic — the most common scale in Irish traditional music
 let _audioCtx=null;
 function _ctx(){
   if(!_audioCtx)_audioCtx=new(window.AudioContext||window.webkitAudioContext)();
   if(_audioCtx.state==='suspended')_audioCtx.resume();
   return _audioCtx;
 }
-function _note(freq,dur,type='sine',vol=0.35,delay=0){
+// Celtic harp: triangle wave + harmonics + fast pluck decay
+function _harp(freq,delay=0,vol=0.28,dur=1.5){
   try{
-    const c=_ctx(),o=c.createOscillator(),g=c.createGain();
+    const c=_ctx(),t=c.currentTime+delay;
+    [1,2,3].forEach((h,i)=>{
+      const o=c.createOscillator(),g=c.createGain();
+      o.connect(g);g.connect(c.destination);
+      o.frequency.value=freq*h;o.type='triangle';
+      g.gain.setValueAtTime(0,t);
+      g.gain.linearRampToValueAtTime(vol/(i+1),t+0.008);
+      g.gain.exponentialRampToValueAtTime(0.001,t+dur/(h*0.6));
+      o.start(t);o.stop(t+dur);
+    });
+  }catch{}
+}
+// Tin whistle: sine wave + LFO vibrato
+function _whistle(freq,dur,delay=0,vol=0.17){
+  try{
+    const c=_ctx(),t=c.currentTime+delay;
+    const o=c.createOscillator(),g=c.createGain();
+    const lfo=c.createOscillator(),lg=c.createGain();
+    lfo.frequency.value=5.5;lg.gain.value=5;
+    lfo.connect(lg);lg.connect(o.frequency);
     o.connect(g);g.connect(c.destination);
-    o.frequency.value=freq;o.type=type;
-    const t=c.currentTime+delay;
+    o.frequency.value=freq;o.type='sine';
     g.gain.setValueAtTime(0,t);
-    g.gain.linearRampToValueAtTime(vol,t+0.02);
+    g.gain.linearRampToValueAtTime(vol,t+0.06);
+    g.gain.setValueAtTime(vol,t+Math.max(dur-0.07,0.05));
     g.gain.exponentialRampToValueAtTime(0.001,t+dur);
-    o.start(t);o.stop(t+dur+0.05);
+    lfo.start(t);o.start(t);lfo.stop(t+dur+0.1);o.stop(t+dur+0.1);
   }catch{}
 }
 function playSound(type){
   try{
-    const P=[261.63,329.63,392,440,523.25]; // C E G A C pentatonic
-    if(type==='complete') P.forEach((f,i)=>_note(f,0.55,'triangle',0.22,i*0.09));
-    else if(type==='correct'){_note(392,0.12,'sine',0.18);_note(523.25,0.28,'sine',0.18,0.13);}
-    else if(type==='wrong') _note(196,0.35,'sine',0.18);
-    else if(type==='bonus') [523.25,659.25,783.99].forEach((f,i)=>_note(f,0.35,'triangle',0.2,i*0.07));
-    else if(type==='open') _note(329.63,0.7,'triangle',0.12);
+    _ctx(); // ensure context exists
+    // D pentatonic: D4 F#4 A4 B4 D5 (Irish traditional scale)
+    const P=[293.66,369.99,440,493.88,587.33];
+    if(type==='complete'){
+      // Ascending harp arpeggio — like a traditional reel ending
+      P.forEach((f,i)=>_harp(f,i*0.11,0.26,1.6));
+    }
+    else if(type==='correct'){
+      // Two-note tin whistle lift
+      _whistle(P[1],0.28,0,0.16);
+      _whistle(P[3],0.38,0.24,0.16);
+    }
+    else if(type==='wrong'){
+      // Low harp thud
+      _harp(P[0]*0.5,0,0.22,0.55);
+    }
+    else if(type==='bonus'){
+      // Harp flourish — fast ascending run + final chord
+      P.forEach((f,i)=>_harp(f,i*0.07,0.24,1.4));
+      _harp(P[0]*2,0.44,0.18,1.2);
+    }
+    else if(type==='open'){
+      // Single soft harp pluck
+      _harp(P[2],0,0.16,1.3);
+    }
   }catch{}
 }
 
@@ -764,7 +857,7 @@ const BottomNav = ({view,setView,c,hd,bd}) => {
               <span style={{fontSize:"1.15rem",lineHeight:1}}>{t.icon}</span>
             </div>
             <span style={{
-              ...bd,fontSize:"0.6rem",
+              ...bd,fontSize:"0.53rem",
               color:active?c.acc:c.tx3,
               fontWeight:active?700:400,
               letterSpacing:"0.02em",
@@ -854,9 +947,10 @@ export default function App() {
   const markDailyDone=useCallback(async()=>{
     if(!st)return;
     const k=todayKey();
-    if(st.dailyLog?.[k])return; // already done, don't double-count
+    if(st.dailyLog?.[k])return;
     const dl={...(st.dailyLog||{}),[k]:true};
     await save({...st,dailyLog:dl});
+    playSound('complete');
     sbIncrement(k).then(()=>sbGetCount(k).then(n=>{if(n!==null)setCommunityCount(n);}));
   },[st,save]);
 
@@ -1149,17 +1243,22 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
   // ═══════════════════════════════
   if(view==="quiz"&&quiz){
     const q=quiz[quizIdx];
-    const weekNum=Math.ceil(total/7);
+    const weekNum=Math.max(1,Math.ceil((total||1)/7));
     return(
       <div style={{minHeight:"100vh",background:c.bg,color:c.tx,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"32px 24px"}}>
         <style>{css}</style>
+        {/* Exit button */}
+        <button onClick={()=>{setView(prevView||"home");setQuiz(null);setQuizDone(false);}} style={{position:"fixed",top:16,left:16,background:c.card,border:`1px solid ${c.bd}`,borderRadius:10,padding:"8px 14px",cursor:"pointer",display:"flex",alignItems:"center",gap:6,color:c.tx,...bd,fontSize:"0.85rem",fontWeight:600,zIndex:10}}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+          Ar ais
+        </button>
         <div style={{maxWidth:420,width:"100%"}}>
           {!quizDone?(
             <>
               {/* Header */}
               <div style={{textAlign:"center",marginBottom:28,animation:"rise 0.5s ease"}}>
                 <div style={{...bd,fontSize:"0.7rem",color:c.tx3,letterSpacing:"0.14em",textTransform:"uppercase",marginBottom:8}}>
-                  Week {weekNum} Quiz · {quizIdx+1} of {quiz.length}
+                  {quizType==="daily"?"Cluiche an Lae":`Seachtain ${weekNum} · Quiz`} · {quizIdx+1} / {quiz.length}
                 </div>
                 <h2 style={{...hd,fontSize:"1.3rem",fontWeight:700,color:c.tx}}>What does this mean?</h2>
               </div>
@@ -1197,12 +1296,10 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
                       setTimeout(()=>{
                         if(quizIdx+1<quiz.length){setQuizIdx(i=>i+1);setQuizPicked(null);}
                         else{
+                          const finalScore=quizScore+(opt===q.answer?1:0);
                           setQuizDone(true);
-                          // save daily quiz score when the daily quiz finishes
-                          if(quizType==="daily"){
-                            const finalScore=quizScore+(opt===q.answer?1:0);
-                            saveDailyQuizScore(finalScore);
-                          }
+                          if(finalScore===quiz.length) playSound('bonus');
+                          if(quizType==="daily") saveDailyQuizScore(finalScore);
                         }
                       },1000);
                     }} style={{
@@ -1261,10 +1358,16 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
           </button>
           <div style={{display:"flex",alignItems:"center",gap:6}}>
             <span style={{...bd,fontSize:"0.72rem",color:c.tx3}}>Lá {ch.day} / 30</span>
-            <div style={{display:"flex",gap:3}}>
-              {[1,2,3,4,5].map(i=>(
-                <div key={i} style={{width:5,height:5,borderRadius:"50%",background:i<=ch.d?dayColor:c.bd}}/>
-              ))}
+            <div style={{display:"flex",alignItems:"center",gap:6}}>
+              <div style={{display:"flex",gap:3}}>
+                {[1,2,3,4,5].map(i=>(
+                  <div key={i} style={{width:5,height:5,borderRadius:"50%",background:i<=ch.d?dayColor:c.bd}}/>
+                ))}
+              </div>
+              {ch.tasks&&(()=>{
+                const done=(st.tasksDone||[]).filter(k=>k.startsWith(`${ch.day}-`)).length;
+                return done>0?<span style={{...bd,fontSize:"0.6rem",color:dayColor,background:dayColor+"18",borderRadius:10,padding:"2px 7px",border:`1px solid ${dayColor}44`}}>{done}/{ch.tasks.length} tasks</span>:null;
+              })()}
             </div>
           </div>
         </div>
@@ -1843,24 +1946,33 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
           <div style={{maxWidth:520,margin:"0 auto"}}>
             <div style={{...bd,fontSize:"0.7rem",color:"rgba(255,255,255,0.45)",letterSpacing:"0.14em",textTransform:"uppercase",marginBottom:6}}>Ceol na hÉireann</div>
             <h1 style={{...hd,fontSize:"1.9rem",fontWeight:700,color:"#fff",margin:"0 0 6px",lineHeight:1.2}}>Irish Music</h1>
-            <p style={{...bd,fontSize:"0.88rem",color:"rgba(255,255,255,0.5)",margin:0}}>8 songs that carry Irish history in their melody</p>
+            <p style={{...bd,fontSize:"0.88rem",color:"rgba(255,255,255,0.5)",margin:0}}>
+              {playingSong
+                ? `♪ Playing — ${SONGS.find(s=>s.id===playingSong)?.title||""}`
+                : "Tap any song to read its story · Play the melody inside the app"}
+            </p>
           </div>
         </div>
 
         <div style={{maxWidth:520,margin:"0 auto",padding:"20px 16px",display:"flex",flexDirection:"column",gap:12}}>
           {SONGS.map(song=>{
             const isOpen=openSong===song.id;
+            const isPlaying=playingSong===song.id;
+            const mel=SONG_MELODIES[song.id];
             return(
-              <div key={song.id} style={{borderRadius:16,overflow:"hidden",border:`1px solid ${c.bd}`,background:c.card,transition:"all 0.2s"}}>
-                {/* Song header — always visible */}
-                <button onClick={()=>{setOpenSong(isOpen?null:song.id);if(!isOpen)playSound('open');}}
-                  style={{width:"100%",background:isOpen?song.color+"22":"transparent",border:"none",cursor:"pointer",padding:"16px",display:"flex",alignItems:"center",gap:14,textAlign:"left"}}>
-                  <div style={{width:52,height:52,borderRadius:12,background:song.color,display:"flex",alignItems:"center",justifyContent:"center",fontSize:"1.5rem",flexShrink:0}}>
-                    {song.emoji}
+              <div key={song.id} style={{borderRadius:16,overflow:"hidden",border:`1.5px solid ${isPlaying?song.color:c.bd}`,background:c.card,transition:"border-color 0.3s"}}>
+                {/* Song header */}
+                <button onClick={()=>{
+                    if(isOpen){setOpenSong(null);}
+                    else{if(playingSong&&playingSong!==song.id){stopMelody();setPlayingSong(null);}setOpenSong(song.id);playSound('open');}
+                  }}
+                  style={{width:"100%",background:isOpen||isPlaying?song.color+"1A":"transparent",border:"none",cursor:"pointer",padding:"16px",display:"flex",alignItems:"center",gap:14,textAlign:"left"}}>
+                  <div style={{width:52,height:52,borderRadius:12,background:isPlaying?song.color:song.color+"CC",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"1.5rem",flexShrink:0,transition:"all 0.3s",animation:isPlaying?"breathe 1.5s ease infinite":undefined}}>
+                    {isPlaying?"♪":song.emoji}
                   </div>
                   <div style={{flex:1,minWidth:0}}>
-                    <div style={{...hd,fontSize:"0.97rem",fontWeight:700,color:c.tx,marginBottom:3,lineHeight:1.2}}>{song.title}</div>
-                    <div style={{...bd,fontSize:"0.78rem",color:c.tx3}}>{song.en}</div>
+                    <div style={{...hd,fontSize:"0.97rem",fontWeight:700,color:isPlaying?song.color:c.tx,marginBottom:3,lineHeight:1.2}}>{song.title}</div>
+                    <div style={{...bd,fontSize:"0.78rem",color:c.tx3}}>{isPlaying?"Ag seinm anois · Playing now":song.en}</div>
                   </div>
                   <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:4,flexShrink:0}}>
                     <div style={{...bd,fontSize:"0.65rem",color:song.color,background:song.color+"18",padding:"3px 8px",borderRadius:20,border:`1px solid ${song.color}44`,whiteSpace:"nowrap"}}>{song.era}</div>
@@ -1871,30 +1983,51 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
                 {/* Expanded content */}
                 {isOpen&&(
                   <div style={{borderTop:`1px solid ${c.bd}`,animation:"pop 0.2s ease"}}>
+
+                    {/* ── Play melody button ── */}
+                    {mel&&(
+                      <div style={{padding:"14px 16px 0"}}>
+                        <button onClick={()=>{
+                          if(isPlaying){stopMelody();setPlayingSong(null);}
+                          else{if(playingSong){stopMelody();setPlayingSong(null);}
+                            setPlayingSong(song.id);
+                            playMelody(mel.notes,mel.inst,()=>setPlayingSong(null));
+                          }
+                        }} style={{width:"100%",padding:"13px",borderRadius:12,background:isPlaying?song.color+"22":song.color,border:`1.5px solid ${song.color}`,color:isPlaying?song.color:"#fff",...hd,fontSize:"0.95rem",fontWeight:700,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:8,transition:"all 0.2s"}}>
+                          {isPlaying
+                            ? <><span style={{fontSize:"1.1rem"}}>⏹</span> Stop</>
+                            : <><span style={{fontSize:"1.1rem"}}>▶</span> Séinn an fonn · Play melody</>}
+                        </button>
+                        <div style={{...bd,fontSize:"0.65rem",color:c.tx3,textAlign:"center",marginTop:5,opacity:0.7}}>
+                          {mel.inst==='whistle'?"🎶 Tin whistle synthesis":"🎶 Celtic harp synthesis"} · no internet needed
+                        </div>
+                      </div>
+                    )}
+
                     {/* Story */}
-                    <div style={{padding:"16px 16px 0"}}>
+                    <div style={{padding:"14px 16px 0"}}>
                       <div style={{...bd,fontSize:"0.82rem",color:c.tx2,lineHeight:1.7,marginBottom:14}}>{song.story}</div>
                     </div>
 
-                    {/* Lyrics card */}
+                    {/* Lyrics */}
                     <div style={{margin:"0 16px",background:song.color+"14",border:`1px solid ${song.color}33`,borderRadius:12,padding:"14px 16px",marginBottom:12}}>
                       <div style={{...bd,fontSize:"0.68rem",color:song.color,letterSpacing:"0.1em",textTransform:"uppercase",marginBottom:8}}>Lyrics</div>
                       <div style={{...hd,fontSize:"0.9rem",color:c.tx,whiteSpace:"pre-line",lineHeight:1.65,marginBottom:8}}>{song.irish}</div>
                       <div style={{...bd,fontSize:"0.78rem",color:c.tx3,fontStyle:"italic"}}>{song.translation}</div>
                     </div>
 
-                    {/* Irish lesson */}
+                    {/* Lesson */}
                     <div style={{margin:"0 16px 12px",background:c.tipBg,border:`1px solid ${c.tipBd}`,borderRadius:12,padding:"12px 14px"}}>
                       <div style={{...bd,fontSize:"0.68rem",color:c.tipTx,letterSpacing:"0.1em",textTransform:"uppercase",marginBottom:6}}>Irish lesson</div>
                       <div style={{...bd,fontSize:"0.83rem",color:c.tipTx,lineHeight:1.5}}>{song.lesson}</div>
                     </div>
 
-                    {/* YouTube link */}
+                    {/* YouTube — full recording */}
                     <div style={{padding:"0 16px 16px"}}>
                       <a href={`https://www.youtube.com/results?search_query=${song.yt}`} target="_blank" rel="noopener noreferrer"
-                        style={{display:"flex",alignItems:"center",justifyContent:"center",gap:8,width:"100%",padding:"12px",borderRadius:12,background:"#FF0000",color:"#fff",textDecoration:"none",...bd,fontSize:"0.85rem",fontWeight:700}}>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.2a3 3 0 00-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 00.5 6.2C0 8.1 0 12 0 12s0 3.9.5 5.8a3 3 0 002.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 002.1-2.1C24 15.9 24 12 24 12s0-3.9-.5-5.8zM9.8 15.5V8.5l6.3 3.5-6.3 3.5z"/></svg>
-                        Éist ar YouTube
+                        style={{display:"flex",alignItems:"center",justifyContent:"center",gap:8,width:"100%",padding:"11px",borderRadius:12,background:"#FF0000",color:"#fff",textDecoration:"none",...bd,fontSize:"0.82rem",fontWeight:700}}>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.2a3 3 0 00-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 00.5 6.2C0 8.1 0 12 0 12s0 3.9.5 5.8a3 3 0 002.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 002.1-2.1C24 15.9 24 12 24 12s0-3.9-.5-5.8zM9.8 15.5V8.5l6.3 3.5-6.3 3.5z"/></svg>
+                        Full recording on YouTube →
                       </a>
                     </div>
                   </div>
@@ -1903,10 +2036,9 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
             );
           })}
 
-          {/* Footer note */}
-          <div style={{...bd,fontSize:"0.78rem",color:c.tx3,textAlign:"center",padding:"8px 0 4px",lineHeight:1.6}}>
+          <div style={{...bd,fontSize:"0.75rem",color:c.tx3,textAlign:"center",padding:"8px 0 4px",lineHeight:1.6,opacity:0.7}}>
             In 1366, Elizabeth I ordered the execution of Irish harpers.<br/>
-            The music refused to die. These songs are why.
+            The music refused to die. These songs are proof.
           </div>
         </div>
 
@@ -2152,6 +2284,39 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
                     <div style={{...bd,fontSize:"0.56rem",color:c.acc,letterSpacing:"0.12em",textTransform:"uppercase",fontWeight:700}}>Seo Linn · Irish History</div>
                   </div>
                   <p style={{...bd,fontSize:"0.85rem",color:c.tx2,lineHeight:1.75,margin:0}}>{fact}</p>
+                </div>
+              );
+            })()}
+
+            {/* ══ STREAK CALENDAR — last 7 days ══ */}
+            {(()=>{
+              const days=Array.from({length:7},(_,i)=>{
+                const d=new Date();d.setDate(d.getDate()-(6-i));
+                const key=d.toISOString().split("T")[0];
+                return{key,done:!!st.dailyLog?.[key],isToday:key===todayKey(),
+                  dow:["Su","Mo","Tu","We","Th","Fr","Sa"][d.getDay()],date:d.getDate()};
+              });
+              return(
+                <div style={{background:c.card,border:`1px solid ${c.bd}`,borderRadius:16,padding:"14px 16px",boxShadow:c.shadow}}>
+                  <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
+                    <div style={{...bd,fontSize:"0.56rem",color:c.tx3,letterSpacing:"0.1em",textTransform:"uppercase"}}>Seachtain seo · This week</div>
+                    <div style={{...bd,fontSize:"0.65rem",color:c.gold}}>{days.filter(d=>d.done).length}/7 ✓</div>
+                  </div>
+                  <div style={{display:"flex",gap:5,justifyContent:"space-between"}}>
+                    {days.map(d=>(
+                      <div key={d.key} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",gap:4}}>
+                        <div style={{...bd,fontSize:"0.52rem",color:c.tx3,textTransform:"uppercase"}}>{d.dow}</div>
+                        <div style={{width:"100%",aspectRatio:"1",maxWidth:36,borderRadius:8,
+                          background:d.done?c.acc:d.isToday?c.acc+"22":"transparent",
+                          border:`1.5px solid ${d.done?c.acc:d.isToday?c.acc+"88":c.bd}`,
+                          display:"flex",alignItems:"center",justifyContent:"center",
+                          fontSize:"0.72rem",color:d.done?"#fff":d.isToday?c.acc:c.tx3,
+                          fontWeight:d.isToday?700:400}}>
+                          {d.done?"✓":d.date}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               );
             })()}
