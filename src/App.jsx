@@ -928,6 +928,7 @@ export default function App() {
   const [obStep,setObStep]=useState(0);
   const [communityCount,setCommunityCount]=useState(null);
   const [openSong,setOpenSong]=useState(null);
+  const [playingSong,setPlayingSong]=useState(null);
   const [prevView,setPrevView]=useState("home");
   const c = dk ? T.dark : T.light;
 
