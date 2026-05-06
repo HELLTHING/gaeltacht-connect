@@ -575,6 +575,8 @@ function getHistoryFact(date){return HISTORY_FACTS[getDayOfYear(date)%HISTORY_FA
 
 // ── Melody synthesizer (Celtic harp + tin whistle via Web Audio) ──
 // Notes: [frequency_hz, duration_beats] — D major pentatonic at ~♩=160
+function haptic(pattern=[10]){try{navigator.vibrate&&navigator.vibrate(pattern);}catch{}}
+
 let _melodyNodes=[];
 function stopMelody(){_melodyNodes.forEach(o=>{try{o.stop(0)}catch{}});_melodyNodes=[];}
 function playMelody(notes,inst,onEnd){
@@ -930,7 +932,17 @@ export default function App() {
   const [openSong,setOpenSong]=useState(null);
   const [playingSong,setPlayingSong]=useState(null);
   const [prevView,setPrevView]=useState("home");
+  const [installPrompt,setInstallPrompt]=useState(null);
+  const [installed,setInstalled]=useState(false);
   const c = dk ? T.dark : T.light;
+
+  useEffect(()=>{
+    const handler=(e)=>{e.preventDefault();setInstallPrompt(e);};
+    window.addEventListener("beforeinstallprompt",handler);
+    window.addEventListener("appinstalled",()=>{setInstalled(true);setInstallPrompt(null);});
+    if(window.matchMedia("(display-mode: standalone)").matches)setInstalled(true);
+    return()=>window.removeEventListener("beforeinstallprompt",handler);
+  },[]);
 
   useEffect(()=>{(async()=>{
     const s=await loadS();
@@ -952,6 +964,7 @@ export default function App() {
     const dl={...(st.dailyLog||{}),[k]:true};
     await save({...st,dailyLog:dl});
     playSound('complete');
+    haptic([30,50,30,50,80]);
     sbIncrement(k).then(()=>sbGetCount(k).then(n=>{if(n!==null)setCommunityCount(n);}));
   },[st,save]);
 
@@ -1293,13 +1306,13 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
                     <button key={i} onClick={()=>{
                       if(quizPicked!==null)return;
                       setQuizPicked(opt);
-                      if(opt===q.answer){setQuizScore(s=>s+1);playSound('correct');}else{playSound('wrong');}
+                      if(opt===q.answer){setQuizScore(s=>s+1);playSound('correct');haptic([15]);}else{playSound('wrong');haptic([40,30,40]);}
                       setTimeout(()=>{
                         if(quizIdx+1<quiz.length){setQuizIdx(i=>i+1);setQuizPicked(null);}
                         else{
                           const finalScore=quizScore+(opt===q.answer?1:0);
                           setQuizDone(true);
-                          if(finalScore===quiz.length) playSound('bonus');
+                          if(finalScore===quiz.length){playSound('bonus');haptic([30,50,30,50,100]);}
                           if(quizType==="daily") saveDailyQuizScore(finalScore);
                         }
                       },1000);
@@ -2329,6 +2342,22 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
             ))}
           </div>
         </div>
+
+        {/* ── PWA INSTALL PROMPT ── */}
+        {installPrompt&&!installed&&(
+          <button onClick={async()=>{
+            installPrompt.prompt();
+            const{outcome}=await installPrompt.userChoice;
+            if(outcome==="accepted"){setInstalled(true);setInstallPrompt(null);}
+          }} style={{width:"100%",padding:"14px 18px",borderRadius:16,background:`linear-gradient(135deg,${c.acc},${c.acc}CC)`,border:"none",color:"#fff",display:"flex",alignItems:"center",gap:12,cursor:"pointer",boxShadow:`0 4px 16px ${c.acc}44`}}>
+            <span style={{fontSize:"1.4rem"}}>📲</span>
+            <div style={{textAlign:"left",flex:1}}>
+              <div style={{...hd,fontSize:"0.95rem",fontWeight:700,lineHeight:1.2}}>Suiteáil an aip</div>
+              <div style={{...bd,fontSize:"0.68rem",opacity:0.8,marginTop:2}}>Install app · Works offline</div>
+            </div>
+            <span style={{fontSize:"1.1rem",opacity:0.7}}>→</span>
+          </button>
+        )}
 
       </div>
 
