@@ -2180,188 +2180,156 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
   // ═══════════════════════════════
   // HOME VIEW
   // ═══════════════════════════════
-  const catColor = CAT_CLR[currentCh?.cat] || c.acc;
   const today = new Date();
-  const season = getIrishSeason(today);
   const dailyC = getDailyChallenge(DAILY_POOL, today);
   const wod = getWordOfDay(VOCAB, today);
   const dailyDoneToday = st?.dailyLog?.[todayKey()] || false;
   const daysSinceStart = st.started ? Math.floor((Date.now()-new Date(st.started).getTime())/86400000) : 0;
   const calendarDay = Math.min(daysSinceStart+1, 30);
-  const journeyAvailable = nextDay <= calendarDay;
+  const vqKey = todayKey()+"_vq";
+  const vqScore = st.dailyLog?.[vqKey];
+  const vqDone = vqScore !== undefined;
+
+  const menuItems = [
+    {id:"map",  icon:"☘️", label:"30 Lá",      sub:`${total} / 30 lá déanta`,  clr:c.acc},
+    {id:"ceol", icon:"🎵", label:"Ceol",        sub:"8 amhráin · melodies",      clr:"#8A1A1A"},
+    {id:"dict", icon:"📖", label:"Foclóir",     sub:`${VOCAB.length} focal`,     clr:"#1A4A8A"},
+    {id:"stats",icon:"📊", label:"Staitisticí", sub:"Do dhul chun cinn",         clr:c.gold},
+  ];
 
   return(
     <div style={{minHeight:"100vh",background:c.bg,color:c.tx,display:"flex",flexDirection:"column",paddingBottom:72}}>
       <style>{css}</style>
 
-      {/* ── TOP BAR ── */}
-      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"16px 20px 12px"}}>
-        <div style={{display:"flex",alignItems:"center",gap:10}}>
-          <div style={{width:36,height:36,borderRadius:10,background:season.color+"22",border:`1px solid ${season.color}33`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:"1.2rem",flexShrink:0}}>{season.icon}</div>
-          <div>
-            <div style={{...hd,fontSize:"1rem",fontWeight:700,color:c.tx,lineHeight:1.1}}>Gaeltacht Connect</div>
-            <div style={{...bd,fontSize:"0.62rem",color:season.color,fontWeight:600,letterSpacing:"0.04em"}}>{season.name}{st.county&&(()=>{const co=COUNTIES.find(x=>x.en===st.county);return co?` · ${co.ga}`:""})()}</div>
-          </div>
+      {/* ── HEADER ── */}
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"16px 20px 10px"}}>
+        <div style={{display:"flex",alignItems:"center",gap:8}}>
+          <span style={{fontSize:"1.4rem",lineHeight:1}}>☘️</span>
+          <span style={{...hd,fontSize:"1.05rem",fontWeight:800,color:c.tx,letterSpacing:"-0.01em"}}>Gaeltacht Connect</span>
         </div>
-        <div style={{display:"flex",gap:8,alignItems:"center"}}>
-          {st.streak>=1&&<div style={{...hd,fontSize:"0.85rem",color:c.gold,background:c.gold+"18",border:`1px solid ${c.gold}33`,borderRadius:20,padding:"4px 10px"}}>🔥 {st.streak}</div>}
+        <div style={{display:"flex",gap:6,alignItems:"center"}}>
+          {st.streak>=1&&<div style={{...bd,fontSize:"0.8rem",color:c.gold,background:c.gold+"18",border:`1px solid ${c.gold}33`,borderRadius:20,padding:"4px 10px",fontWeight:700}}>🔥 {st.streak}</div>}
           <button onClick={toggle} style={{background:"none",border:`1px solid ${c.bd}`,borderRadius:8,width:32,height:32,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",color:c.tx3,fontSize:"0.85rem"}}>{dk?"☀️":"🌙"}</button>
+          <button onClick={()=>setView("settings")} style={{background:"none",border:`1px solid ${c.bd}`,borderRadius:8,width:32,height:32,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",color:c.tx3,fontSize:"1rem"}}>⚙️</button>
         </div>
       </div>
 
-      {/* ── MAIN CONTENT ── */}
-      <div style={{flex:1,maxWidth:520,width:"100%",margin:"0 auto",padding:"0 16px",display:"flex",flexDirection:"column",gap:12}}>
+      <div style={{flex:1,maxWidth:520,width:"100%",margin:"0 auto",padding:"0 16px",display:"flex",flexDirection:"column",gap:11}}>
 
+        {/* ── STATS ROW ── */}
+        <div style={{display:"flex",gap:8}}>
+          {[
+            {icon:"✅",val:total,   label:"Completed", clr:c.acc},
+            {icon:"🔥",val:st.streak,label:"Streak",   clr:c.gold},
+            {icon:"⭐",val:st.bonus.length,label:"Bonus",clr:c.gold},
+          ].map((s,i)=>(
+            <div key={i} style={{flex:1,background:c.card,border:`1px solid ${c.bd}`,borderRadius:14,padding:"11px 6px",textAlign:"center",boxShadow:c.shadow}}>
+              <div style={{...hd,fontSize:"1.3rem",color:s.clr,lineHeight:1.1}}>{s.icon} {s.val}</div>
+              <div style={{...bd,fontSize:"0.57rem",color:c.tx3,marginTop:3,letterSpacing:"0.04em"}}>{s.label}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* ── DÚSHLÁN AN LAE ── */}
         {allDone ? (
-          <div style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",textAlign:"center",padding:"40px 0"}}>
-            <div style={{fontSize:"4rem",marginBottom:16}}>🏆</div>
-            <div style={{...hd,fontSize:"2.2rem",color:c.acc,marginBottom:8}}>30 Lá — Déanta!</div>
-            <div style={{...bd,fontSize:"1rem",color:c.tx3,fontStyle:"italic",marginBottom:28,lineHeight:1.6}}>You did something real.<br/>The language is proud of you.</div>
-            <button onClick={()=>shareProgress(30,30,st.streak)} style={{background:c.btn,border:"none",borderRadius:12,padding:"14px 32px",color:c.btnTx,...hd,fontSize:"1.1rem",cursor:"pointer",letterSpacing:"0.02em"}}>Share achievement →</button>
+          <div style={{background:c.card,border:`1px solid ${c.bd}`,borderRadius:20,padding:"28px 20px",textAlign:"center",boxShadow:c.shadow}}>
+            <div style={{fontSize:"3rem",marginBottom:12}}>🏆</div>
+            <div style={{...hd,fontSize:"1.8rem",color:c.acc,marginBottom:6}}>30 Lá — Déanta!</div>
+            <div style={{...bd,fontSize:"0.9rem",color:c.tx3,fontStyle:"italic",lineHeight:1.6}}>You did something real.<br/>The language is proud of you.</div>
           </div>
         ) : (
-          <>
-            {/* ══ HERO — DÚSHLÁN AN LAE ══ */}
-            <div style={{background:c.card,border:`1px solid ${c.bd}`,borderRadius:22,overflow:"hidden",boxShadow:c.shadow}}>
-              <div style={{height:4,background:`linear-gradient(90deg,${TYPE_CLR[dailyC.tp]||c.acc},${TYPE_CLR[dailyC.tp]||c.acc}55)`}}/>
-              <div style={{padding:"18px 20px 16px"}}>
-                <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:12}}>
-                  <div style={{width:32,height:32,borderRadius:8,background:(TYPE_CLR[dailyC.tp]||c.acc)+"18",border:`1px solid ${TYPE_CLR[dailyC.tp]||c.acc}33`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:"0.95rem"}}>{TYPE_ICON[dailyC.tp]}</div>
-                  <div style={{flex:1}}>
-                    <div style={{...bd,fontSize:"0.56rem",color:c.tx3,letterSpacing:"0.12em",textTransform:"uppercase"}}>
-                      Dúshlán an Lae · {communityCount!==null?`${communityCount} daoine inniu`:"Everyone today"}
-                    </div>
-                    <div style={{...hd,fontSize:"1.05rem",fontWeight:700,color:c.tx,lineHeight:1.2}}>{dailyC.title}</div>
-                  </div>
-                  {dailyDoneToday&&<span style={{fontSize:"1.2rem"}}>✅</span>}
+          <div style={{background:c.card,border:`1px solid ${c.bd}`,borderRadius:20,overflow:"hidden",boxShadow:c.shadow}}>
+            <div style={{height:3,background:`linear-gradient(90deg,${TYPE_CLR[dailyC.tp]||c.acc},${TYPE_CLR[dailyC.tp]||c.acc}44)`}}/>
+            <div style={{padding:"16px 18px 14px"}}>
+              <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:10}}>
+                <div style={{width:30,height:30,borderRadius:8,background:(TYPE_CLR[dailyC.tp]||c.acc)+"18",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"0.9rem"}}>{TYPE_ICON[dailyC.tp]}</div>
+                <div style={{flex:1}}>
+                  <div style={{...bd,fontSize:"0.54rem",color:c.tx3,letterSpacing:"0.12em",textTransform:"uppercase"}}>Dúshlán an Lae · {communityCount!==null?`${communityCount} inniu`:"Today"}</div>
+                  <div style={{...hd,fontSize:"1rem",fontWeight:700,color:c.tx,lineHeight:1.2}}>{dailyC.title}</div>
                 </div>
-                <p style={{...bd,fontSize:"0.95rem",color:c.tx2,lineHeight:1.8,margin:"0 0 10px"}}>{dailyC.ch}</p>
-                {dailyC.tip&&<div style={{...bd,fontSize:"0.76rem",color:c.tx3,fontStyle:"italic",background:c.cardAlt,borderRadius:10,padding:"8px 12px",marginBottom:12}}>💡 {dailyC.tip}</div>}
-                <button onClick={()=>{if(!dailyDoneToday)markDailyDone();}} style={{width:"100%",padding:"14px",borderRadius:12,background:dailyDoneToday?c.cardAlt:TYPE_CLR[dailyC.tp]||c.btn,border:`1px solid ${dailyDoneToday?c.bd:"transparent"}`,color:dailyDoneToday?c.tx3:"#fff",...hd,fontSize:"1rem",fontWeight:700,cursor:dailyDoneToday?"default":"pointer",transition:"all 0.2s"}}>
-                  {dailyDoneToday?"✅ Déanta inniu! Come back tomorrow":"Déanta — Mark as done"}
-                </button>
+                {dailyDoneToday&&<span style={{fontSize:"1.1rem"}}>✅</span>}
               </div>
+              <p style={{...bd,fontSize:"0.9rem",color:c.tx2,lineHeight:1.8,margin:"0 0 10px"}}>{dailyC.ch}</p>
+              {dailyC.tip&&<div style={{...bd,fontSize:"0.72rem",color:c.tx3,fontStyle:"italic",background:c.cardAlt,borderRadius:8,padding:"7px 10px",marginBottom:10}}>💡 {dailyC.tip}</div>}
+              <button onClick={()=>{if(!dailyDoneToday)markDailyDone();}} style={{width:"100%",padding:"13px",borderRadius:12,background:dailyDoneToday?c.cardAlt:TYPE_CLR[dailyC.tp]||c.btn,border:`1px solid ${dailyDoneToday?c.bd:"transparent"}`,color:dailyDoneToday?c.tx3:"#fff",...hd,fontSize:"0.95rem",fontWeight:700,cursor:dailyDoneToday?"default":"pointer",transition:"all 0.2s"}}>
+                {dailyDoneToday?"✅ Déanta inniu! Come back tomorrow":"Déanta — Mark as done"}
+              </button>
             </div>
+          </div>
+        )}
 
-            {/* ══ 2-COL ROW: FOCAL + CLUICHE ══ */}
-            {(()=>{
-              const vqKey=todayKey()+"_vq";
-              const vqScore=st.dailyLog?.[vqKey];
-              const vqDone=vqScore!==undefined;
-              return(
-                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
-                  {/* Focal an Lae */}
-                  <div style={{background:c.card,border:`1px solid ${c.bd}`,borderRadius:16,padding:"14px 14px 12px",boxShadow:c.shadow}}>
-                    <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}}>
-                      <div style={{...bd,fontSize:"0.56rem",color:c.tx3,letterSpacing:"0.1em",textTransform:"uppercase"}}>Focal an Lae</div>
-                      <button onClick={()=>speakIrish(wod.p)} style={{background:"none",border:"none",cursor:"pointer",fontSize:"0.9rem",padding:0,lineHeight:1}}>🔊</button>
-                    </div>
-                    <div style={{...hd,fontSize:"1.1rem",fontWeight:700,color:c.acc,fontStyle:"italic",lineHeight:1.2,marginBottom:3}}>{wod.p}</div>
-                    <div style={{...bd,fontSize:"0.7rem",color:c.tx3,lineHeight:1.3}}>{wod.m}</div>
-                    <div style={{...bd,fontSize:"0.62rem",color:c.tx3,opacity:0.5}}>/{wod.pr}/</div>
-                  </div>
-                  {/* Cluiche an Lae */}
-                  <div style={{background:vqDone?c.cardAlt:c.card,border:`1px solid ${vqDone?c.bd:c.acc+"44"}`,borderRadius:16,padding:"14px 14px 12px",boxShadow:c.shadow,display:"flex",flexDirection:"column",justifyContent:"space-between"}}>
-                    <div>
-                      <div style={{...bd,fontSize:"0.56rem",color:c.tx3,letterSpacing:"0.1em",textTransform:"uppercase",marginBottom:6}}>Cluiche an Lae</div>
-                      <div style={{...hd,fontSize:"1rem",fontWeight:700,color:vqDone?c.tx3:c.tx,lineHeight:1.2}}>5 focal</div>
-                      {vqDone?<div style={{...bd,fontSize:"0.72rem",color:c.acc,marginTop:3}}>{vqScore}/5 {vqScore===5?"🏆":vqScore>=3?"🌟":"💪"}</div>:<div style={{...bd,fontSize:"0.68rem",color:c.tx3,marginTop:2}}>~2 nóiméad</div>}
-                    </div>
-                    <button onClick={startDailyQuiz} style={{marginTop:10,width:"100%",padding:"8px",borderRadius:10,background:vqDone?"none":c.btn,border:`1px solid ${vqDone?c.bd:"transparent"}`,color:vqDone?c.tx3:"#fff",...hd,fontSize:"0.82rem",fontWeight:700,cursor:"pointer"}}>
-                      {vqDone?"Arís →":"Tosaigh →"}
-                    </button>
-                  </div>
-                </div>
-              );
-            })()}
+        {/* ── FOCAL + CLUICHE 2-COL ── */}
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+          <div style={{background:c.card,border:`1px solid ${c.bd}`,borderRadius:16,padding:"13px 13px 11px",boxShadow:c.shadow}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:5}}>
+              <div style={{...bd,fontSize:"0.54rem",color:c.tx3,letterSpacing:"0.1em",textTransform:"uppercase"}}>Focal an Lae</div>
+              <button onClick={()=>speakIrish(wod.p)} style={{background:"none",border:"none",cursor:"pointer",fontSize:"0.85rem",padding:0,lineHeight:1}}>🔊</button>
+            </div>
+            <div style={{...hd,fontSize:"1.05rem",fontWeight:700,color:c.acc,fontStyle:"italic",lineHeight:1.2,marginBottom:3}}>{wod.p}</div>
+            <div style={{...bd,fontSize:"0.68rem",color:c.tx3,lineHeight:1.3}}>{wod.m}</div>
+            <div style={{...bd,fontSize:"0.58rem",color:c.tx3,opacity:0.5}}>/{wod.pr}/</div>
+          </div>
+          <div style={{background:vqDone?c.cardAlt:c.card,border:`1px solid ${vqDone?c.bd:c.acc+"44"}`,borderRadius:16,padding:"13px 13px 11px",boxShadow:c.shadow,display:"flex",flexDirection:"column",justifyContent:"space-between"}}>
+            <div>
+              <div style={{...bd,fontSize:"0.54rem",color:c.tx3,letterSpacing:"0.1em",textTransform:"uppercase",marginBottom:5}}>Cluiche an Lae</div>
+              <div style={{...hd,fontSize:"0.95rem",fontWeight:700,color:vqDone?c.tx3:c.tx,lineHeight:1.2}}>5 focal</div>
+              {vqDone?<div style={{...bd,fontSize:"0.7rem",color:c.acc,marginTop:3}}>{vqScore}/5 {vqScore===5?"🏆":vqScore>=3?"🌟":"💪"}</div>:<div style={{...bd,fontSize:"0.65rem",color:c.tx3,marginTop:2}}>~2 min</div>}
+            </div>
+            <button onClick={startDailyQuiz} style={{marginTop:9,width:"100%",padding:"8px",borderRadius:10,background:vqDone?"none":c.btn,border:`1px solid ${vqDone?c.bd:"transparent"}`,color:vqDone?c.tx3:"#fff",...hd,fontSize:"0.8rem",fontWeight:700,cursor:"pointer"}}>
+              {vqDone?"Arís →":"Tosaigh →"}
+            </button>
+          </div>
+        </div>
 
-            {/* ══ SEO LINN — Irish history fact ══ */}
-            {(()=>{
-              const fact=getHistoryFact(today);
-              return(
-                <div style={{background:`linear-gradient(135deg,${c.acc}08,${c.acc}14)`,border:`1px solid ${c.acc}22`,borderRadius:16,padding:"14px 16px"}}>
-                  <div style={{display:"flex",alignItems:"center",gap:7,marginBottom:8}}>
-                    <span style={{fontSize:"0.9rem"}}>🏛️</span>
-                    <div style={{...bd,fontSize:"0.56rem",color:c.acc,letterSpacing:"0.12em",textTransform:"uppercase",fontWeight:700}}>Seo Linn · Irish History</div>
-                  </div>
-                  <p style={{...bd,fontSize:"0.85rem",color:c.tx2,lineHeight:1.75,margin:0}}>{fact}</p>
-                </div>
-              );
-            })()}
-
-            {/* ══ STREAK CALENDAR — last 7 days ══ */}
-            {(()=>{
-              const days=Array.from({length:7},(_,i)=>{
-                const d=new Date();d.setDate(d.getDate()-(6-i));
-                const key=d.toISOString().split("T")[0];
-                return{key,done:!!st.dailyLog?.[key],isToday:key===todayKey(),
-                  dow:["Su","Mo","Tu","We","Th","Fr","Sa"][d.getDay()],date:d.getDate()};
-              });
-              return(
-                <div style={{background:c.card,border:`1px solid ${c.bd}`,borderRadius:16,padding:"14px 16px",boxShadow:c.shadow}}>
-                  <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
-                    <div style={{...bd,fontSize:"0.56rem",color:c.tx3,letterSpacing:"0.1em",textTransform:"uppercase"}}>Seachtain seo · This week</div>
-                    <div style={{...bd,fontSize:"0.65rem",color:c.gold}}>{days.filter(d=>d.done).length}/7 ✓</div>
-                  </div>
-                  <div style={{display:"flex",gap:5,justifyContent:"space-between"}}>
-                    {days.map(d=>(
-                      <div key={d.key} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",gap:4}}>
-                        <div style={{...bd,fontSize:"0.52rem",color:c.tx3,textTransform:"uppercase"}}>{d.dow}</div>
-                        <div style={{width:"100%",aspectRatio:"1",maxWidth:36,borderRadius:8,
-                          background:d.done?c.acc:d.isToday?c.acc+"22":"transparent",
-                          border:`1.5px solid ${d.done?c.acc:d.isToday?c.acc+"88":c.bd}`,
-                          display:"flex",alignItems:"center",justifyContent:"center",
-                          fontSize:"0.72rem",color:d.done?"#fff":d.isToday?c.acc:c.tx3,
-                          fontWeight:d.isToday?700:400}}>
-                          {d.done?"✓":d.date}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              );
-            })()}
-
-            {/* ══ JOURNEY STRIP ══ */}
-            <div style={{background:c.card,border:`1px solid ${c.bd}`,borderRadius:16,padding:"14px 16px",boxShadow:c.shadow}}>
-              <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:10}}>
-                <div style={{display:"flex",alignItems:"center",gap:6}}>
-                  <div style={{...bd,fontSize:"0.56rem",color:c.tx3,letterSpacing:"0.1em",textTransform:"uppercase"}}>30 Lá · Do thuras</div>
-                  <span style={{...bd,fontSize:"0.65rem",color:c.tx3,background:c.cardAlt,border:`1px solid ${c.bd}`,borderRadius:20,padding:"2px 8px"}}>{total}/30</span>
-                </div>
-                {st.streak>=1&&<span style={{...bd,fontSize:"0.78rem",color:c.gold}}>🔥 {st.streak} lá</span>}
+        {/* ── STREAK CALENDAR ── */}
+        {(()=>{
+          const days=Array.from({length:7},(_,i)=>{
+            const d=new Date();d.setDate(d.getDate()-(6-i));
+            const key=d.toISOString().split("T")[0];
+            return{key,done:!!st.dailyLog?.[key],isToday:key===todayKey(),
+              dow:["Su","Mo","Tu","We","Th","Fr","Sa"][d.getDay()],date:d.getDate()};
+          });
+          return(
+            <div style={{background:c.card,border:`1px solid ${c.bd}`,borderRadius:16,padding:"12px 14px",boxShadow:c.shadow}}>
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
+                <div style={{...bd,fontSize:"0.54rem",color:c.tx3,letterSpacing:"0.1em",textTransform:"uppercase"}}>Seachtain seo</div>
+                <div style={{...bd,fontSize:"0.62rem",color:c.gold}}>{days.filter(d=>d.done).length}/7 ✓</div>
               </div>
-
-              {journeyAvailable ? (
-                <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:10}}>
-                  <div style={{flex:1,minWidth:0}}>
-                    <div style={{...bd,fontSize:"0.65rem",color:c.tx3,marginBottom:2}}>Lá {nextDay} · {currentCh.cat}</div>
-                    <div style={{...hd,fontSize:"1.1rem",fontWeight:700,color:c.acc,fontStyle:"italic",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{currentCh.p}</div>
-                    <div style={{...bd,fontSize:"0.7rem",color:c.tx3}}>{currentCh.m}</div>
+              <div style={{display:"flex",gap:4,justifyContent:"space-between"}}>
+                {days.map(d=>(
+                  <div key={d.key} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",gap:3}}>
+                    <div style={{...bd,fontSize:"0.5rem",color:c.tx3,textTransform:"uppercase"}}>{d.dow}</div>
+                    <div style={{width:"100%",aspectRatio:"1",maxWidth:34,borderRadius:7,
+                      background:d.done?c.acc:d.isToday?c.acc+"22":"transparent",
+                      border:`1.5px solid ${d.done?c.acc:d.isToday?c.acc+"88":c.bd}`,
+                      display:"flex",alignItems:"center",justifyContent:"center",
+                      fontSize:"0.68rem",color:d.done?"#fff":d.isToday?c.acc:c.tx3,
+                      fontWeight:d.isToday?700:400}}>
+                      {d.done?"✓":d.date}
+                    </div>
                   </div>
-                  <button onClick={()=>{setPrevView("home");setSelDay(nextDay);setView("day")}} style={{flexShrink:0,padding:"10px 16px",borderRadius:12,background:c.btn,border:"none",color:c.btnTx,...hd,fontSize:"0.85rem",cursor:"pointer",whiteSpace:"nowrap"}}>
-                    {st.done.includes(nextDay)?"Féach →":"Oscail →"}
-                  </button>
-                </div>
-              ) : (
-                <div style={{display:"flex",alignItems:"center",gap:10}}>
-                  <span style={{fontSize:"1.3rem"}}>🌙</span>
-                  <div>
-                    <div style={{...hd,fontSize:"0.9rem",color:c.tx}}>Lá {nextDay} unlocks tomorrow</div>
-                    <div style={{...bd,fontSize:"0.72rem",color:c.tx3}}>Come back then to continue</div>
-                  </div>
-                </div>
-              )}
-
-              {/* Progress dots */}
-              <div style={{display:"flex",gap:3,flexWrap:"wrap",marginTop:12,justifyContent:"center"}}>
-                {CH.map(ch=>(
-                  <div key={ch.day} style={{width:6,height:6,borderRadius:"50%",background:st.done.includes(ch.day)?c.acc:ch.day<=calendarDay?c.dotOff+"99":c.dotOff+"33",transition:"background 0.3s"}}/>
                 ))}
               </div>
             </div>
-          </>
-        )}
+          );
+        })()}
+
+        {/* ── MENU GRID ── */}
+        <div>
+          <div style={{...bd,fontSize:"0.54rem",color:c.tx3,letterSpacing:"0.12em",textTransform:"uppercase",marginBottom:8}}>Clár · Menu</div>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+            {menuItems.map(item=>(
+              <button key={item.id} onClick={()=>setView(item.id)} style={{background:c.card,border:`1px solid ${c.bd}`,borderRadius:16,padding:"15px 15px 13px",textAlign:"left",cursor:"pointer",boxShadow:c.shadow,display:"flex",flexDirection:"column",gap:7,transition:"border-color 0.2s"}}>
+                <div style={{width:38,height:38,borderRadius:10,background:item.clr+"18",border:`1px solid ${item.clr}30`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:"1.15rem"}}>{item.icon}</div>
+                <div>
+                  <div style={{...hd,fontSize:"0.95rem",fontWeight:700,color:c.tx,lineHeight:1.15}}>{item.label}</div>
+                  <div style={{...bd,fontSize:"0.63rem",color:c.tx3,marginTop:2,lineHeight:1.3}}>{item.sub}</div>
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+
       </div>
 
       <BottomNav view={view} setView={setView} c={c} hd={hd} bd={bd}/>
