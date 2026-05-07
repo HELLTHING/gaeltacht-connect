@@ -577,98 +577,20 @@ function getHistoryFact(date){return HISTORY_FACTS[getDayOfYear(date)%HISTORY_FA
 // Notes: [frequency_hz, duration_beats] — D major pentatonic at ~♩=160
 function haptic(pattern=[10]){try{navigator.vibrate&&navigator.vibrate(pattern);}catch{}}
 
-let _melodyNodes=[];
-function stopMelody(){_melodyNodes.forEach(o=>{try{o.stop(0)}catch{}});_melodyNodes=[];}
-function playMelody(notes,inst,onEnd){
-  stopMelody();
-  const c=_ctx(),BPS=0.52; // seconds per beat — slower = more musical
-  let delay=0;
-  notes.forEach(([freq,beats])=>{
-    const dur=beats*BPS;
-    const t=c.currentTime+delay;
-    if(inst==='harp'){
-      [1,2,3].forEach((h,i)=>{
-        const o=c.createOscillator(),g=c.createGain();
-        o.connect(g);g.connect(c.destination);
-        o.frequency.value=freq*h;o.type='triangle';
-        g.gain.setValueAtTime(0,t);
-        g.gain.linearRampToValueAtTime(0.2/(i+1),t+0.01);
-        g.gain.exponentialRampToValueAtTime(0.001,t+Math.max(dur*0.85/Math.pow(h,0.5),0.05));
-        o.start(t);o.stop(t+dur*1.1);
-        _melodyNodes.push(o);
-      });
-    } else { // tin whistle
-      const o=c.createOscillator(),g=c.createGain();
-      const lfo=c.createOscillator(),lg=c.createGain();
-      lfo.frequency.value=5.5;lg.gain.value=5;
-      lfo.connect(lg);lg.connect(o.frequency);
-      o.connect(g);g.connect(c.destination);
-      o.frequency.value=freq;o.type='sine';
-      g.gain.setValueAtTime(0,t);
-      g.gain.linearRampToValueAtTime(0.14,t+0.05);
-      g.gain.setValueAtTime(0.14,t+Math.max(dur-0.07,0.03));
-      g.gain.exponentialRampToValueAtTime(0.001,t+dur);
-      lfo.start(t);o.start(t);lfo.stop(t+dur+0.1);o.stop(t+dur+0.1);
-      _melodyNodes.push(o,lfo);
-    }
-    delay+=dur;
-  });
-  if(onEnd)setTimeout(()=>{_melodyNodes=[];onEnd();},delay*1000+700);
+// ── Ceol audio player (WAV files) ────────────────────────────────────────────
+let _ceolAudio=null;
+function stopMelody(){
+  if(_ceolAudio){_ceolAudio.pause();_ceolAudio.currentTime=0;_ceolAudio=null;}
 }
-// Melodic motifs for each song — simplified but recognisable phrases
-// Frequencies: D4=293.66 E4=329.63 F#4=369.99 G4=392 A4=440 B4=493.88 D5=587.33 E5=659.25
-// D4=293.66 E4=329.63 F#4=369.99 G4=392 A4=440 B4=493.88 D5=587.33 E5=659.25
-// Each melody ~24–32 notes at BPS=0.52 → 15–20 seconds
-const SONG_MELODIES={
-  oro:{inst:'whistle',notes:[
-    [440,1],[440,0.5],[587.33,1],[493.88,0.5],[440,1],[369.99,0.5],
-    [329.63,0.5],[293.66,0.5],[329.63,0.5],[369.99,1],[440,1.5],
-    [440,0.5],[587.33,1],[493.88,0.5],[440,1],[369.99,0.5],
-    [329.63,0.5],[293.66,0.5],[329.63,0.5],[369.99,0.5],[293.66,2.5],
-  ]},
-  fields:{inst:'harp',notes:[
-    [293.66,1],[329.63,0.5],[369.99,0.5],[440,1],[440,0.5],[493.88,0.5],
-    [440,1],[369.99,0.5],[329.63,0.5],[293.66,1.5],
-    [293.66,0.5],[329.63,0.5],[369.99,0.5],[440,1],[493.88,0.5],[587.33,0.5],
-    [440,1],[369.99,0.5],[329.63,0.5],[293.66,2.5],
-  ]},
-  parting:{inst:'harp',notes:[
-    [493.88,1],[587.33,0.5],[587.33,1],[493.88,0.5],[440,1],
-    [369.99,1],[440,0.5],[493.88,0.5],[440,1],[369.99,0.5],[329.63,1],
-    [293.66,0.5],[369.99,0.5],[440,1],[440,0.5],[369.99,0.5],
-    [329.63,0.5],[293.66,0.5],[329.63,0.5],[293.66,2.5],
-  ]},
-  danny:{inst:'whistle',notes:[
-    [293.66,0.5],[329.63,0.5],[369.99,0.5],[440,1],[493.88,0.5],
-    [440,1],[369.99,0.5],[440,0.5],[493.88,0.5],[587.33,1],
-    [440,1],[493.88,0.5],[440,1],[369.99,0.5],[329.63,0.5],
-    [293.66,0.5],[329.63,0.5],[369.99,0.5],[293.66,2.5],
-  ]},
-  raglan:{inst:'whistle',notes:[
-    [440,1],[440,0.5],[369.99,0.5],[440,1],[493.88,0.5],
-    [440,0.5],[369.99,0.5],[329.63,0.5],[293.66,0.5],[369.99,0.5],[440,1],
-    [493.88,0.5],[587.33,0.5],[493.88,1],[440,1],[369.99,0.5],
-    [329.63,0.5],[293.66,0.5],[329.63,0.5],[293.66,2.5],
-  ]},
-  grace:{inst:'harp',notes:[
-    [293.66,1],[369.99,0.5],[440,0.5],[493.88,1],[440,0.5],[369.99,0.5],
-    [329.63,0.5],[369.99,1],[293.66,0.5],[329.63,0.5],[369.99,0.5],[440,1],
-    [493.88,1],[587.33,0.5],[493.88,0.5],[440,1],[369.99,0.5],[329.63,0.5],
-    [293.66,0.5],[329.63,0.5],[293.66,2.5],
-  ]},
-  molly:{inst:'whistle',notes:[
-    [293.66,0.5],[329.63,0.5],[369.99,1],[440,1],[369.99,0.5],[329.63,0.5],
-    [293.66,0.5],[329.63,0.5],[369.99,0.5],[440,1],[493.88,0.5],[587.33,0.5],
-    [440,1],[440,0.5],[369.99,0.5],[329.63,0.5],[293.66,0.5],
-    [329.63,0.5],[369.99,0.5],[293.66,2.5],
-  ]},
-  whiskey:{inst:'harp',notes:[
-    [440,0.5],[440,0.5],[369.99,0.5],[440,1],[587.33,0.5],[493.88,0.5],
-    [440,0.5],[392,0.5],[440,0.5],[369.99,0.5],[293.66,0.5],[329.63,0.5],
-    [369.99,0.5],[440,1],[440,0.5],[587.33,0.5],[493.88,1],
-    [440,0.5],[369.99,0.5],[329.63,0.5],[293.66,2.5],
-  ]},
-};
+function playMelody(songId,onEnd){
+  stopMelody();
+  const audio=new Audio(`/audio/ceol/${songId}.wav`);
+  _ceolAudio=audio;
+  audio.volume=0.82;
+  audio.play().catch(()=>{});
+  audio.onended=()=>{_ceolAudio=null;if(onEnd)onEnd();};
+  audio.onerror=()=>{_ceolAudio=null;if(onEnd)onEnd();};
+}
 
 // ── Irish Songs ──────────────────────────────────────────────
 const SONGS=[
@@ -872,7 +794,6 @@ const BottomNav = ({view,setView,setPrevView,c,hd,bd}) => {
     {id:"ceol", icon:"🎵", label:"Ceol"},
     {id:"dict", icon:"📖", label:"Foclóir"},
     {id:"stats",icon:"📊", label:"Stats"},
-    {id:"settings",icon:"⚙️",label:"Socruithe"},
   ];
   return(
     <div style={{
@@ -1951,7 +1872,6 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
           {SONGS.map(song=>{
             const isOpen=openSong===song.id;
             const isPlaying=playingSong===song.id;
-            const mel=SONG_MELODIES[song.id];
             return(
               <div key={song.id} style={{borderRadius:16,overflow:"hidden",border:`1.5px solid ${isPlaying?song.color:c.bd}`,background:c.card,transition:"border-color 0.3s"}}>
                 {/* Song header */}
@@ -1960,7 +1880,7 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
                     else{if(playingSong&&playingSong!==song.id){stopMelody();setPlayingSong(null);}setOpenSong(song.id);playSound('open');}
                   }}
                   style={{width:"100%",background:isOpen||isPlaying?song.color+"1A":"transparent",border:"none",cursor:"pointer",padding:"16px",display:"flex",alignItems:"center",gap:14,textAlign:"left"}}>
-                  <div style={{width:52,height:52,borderRadius:12,background:isPlaying?song.color:song.color+"CC",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"1.5rem",flexShrink:0,transition:"all 0.3s",animation:isPlaying?"breathe 1.5s ease infinite":undefined}}>
+                  <div style={{width:52,height:52,borderRadius:12,background:isPlaying?song.color:song.color+"CC",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"1.5rem",flexShrink:0,transition:"all 0.3s",...(isPlaying?{animation:"breathe 1.5s ease infinite"}:{})}}>
                     {isPlaying?"♪":song.emoji}
                   </div>
                   <div style={{flex:1,minWidth:0}}>
@@ -1978,24 +1898,23 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
                   <div style={{borderTop:`1px solid ${c.bd}`,animation:"pop 0.2s ease"}}>
 
                     {/* ── Play melody button ── */}
-                    {mel&&(
-                      <div style={{padding:"14px 16px 0"}}>
-                        <button onClick={()=>{
-                          if(isPlaying){stopMelody();setPlayingSong(null);}
-                          else{if(playingSong){stopMelody();setPlayingSong(null);}
-                            setPlayingSong(song.id);
-                            playMelody(mel.notes,mel.inst,()=>setPlayingSong(null));
-                          }
-                        }} style={{width:"100%",padding:"13px",borderRadius:12,background:isPlaying?song.color+"22":song.color,border:`1.5px solid ${song.color}`,color:isPlaying?song.color:"#fff",...hd,fontSize:"0.95rem",fontWeight:700,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:8,transition:"all 0.2s"}}>
-                          {isPlaying
-                            ? <><span style={{fontSize:"1.1rem"}}>⏹</span> Stop</>
-                            : <><span style={{fontSize:"1.1rem"}}>▶</span> Séinn an fonn · Play melody</>}
-                        </button>
-                        <div style={{...bd,fontSize:"0.65rem",color:c.tx3,textAlign:"center",marginTop:5,opacity:0.7}}>
-                          {mel.inst==='whistle'?"🎶 Tin whistle synthesis":"🎶 Celtic harp synthesis"} · no internet needed
-                        </div>
+                    <div style={{padding:"14px 16px 0"}}>
+                      <button onClick={()=>{
+                        if(isPlaying){stopMelody();setPlayingSong(null);}
+                        else{
+                          if(playingSong){stopMelody();setPlayingSong(null);}
+                          setPlayingSong(song.id);
+                          playMelody(song.id,()=>setPlayingSong(null));
+                        }
+                      }} style={{width:"100%",padding:"13px",borderRadius:12,background:isPlaying?song.color+"22":song.color,border:`1.5px solid ${song.color}`,color:isPlaying?song.color:"#fff",...hd,fontSize:"0.95rem",fontWeight:700,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:8,transition:"all 0.2s"}}>
+                        {isPlaying
+                          ? <><span style={{fontSize:"1.1rem"}}>⏹</span> Stop</>
+                          : <><span style={{fontSize:"1.1rem"}}>▶</span> Séinn an fonn · Play melody</>}
+                      </button>
+                      <div style={{...bd,fontSize:"0.65rem",color:c.tx3,textAlign:"center",marginTop:5,opacity:0.7}}>
+                        🎶 Synthesised Celtic melody · no internet needed
                       </div>
-                    )}
+                    </div>
 
                     {/* Story */}
                     <div style={{padding:"14px 16px 0"}}>
