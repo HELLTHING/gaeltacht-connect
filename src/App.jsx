@@ -290,39 +290,6 @@ const _audioCache = new Map(); // text → object URL (session)
 let _currentAudio = null;
 let _idb = null; // IndexedDB connection
 
-// Static audio files (espeak-ng fallback, replaced by abair.ie via fetch-audio.mjs)
-const _STATIC_AUDIO = new Map([
-  ["Dia dhuit!","/audio/day-01.wav"],
-  ["Go raibh maith agat!","/audio/day-02.wav"],
-  ["Slán go fóill!","/audio/day-03.wav"],
-  ["Conas atá tú?","/audio/day-04.wav"],
-  ["Maidin mhaith!","/audio/day-05.wav"],
-  ["Le do thoil","/audio/day-06.wav"],
-  ["Dia dhuit → Conas atá tú? → Go raibh maith agat → Slán!","/audio/day-07.wav"],
-  ["Caife, le do thoil","/audio/day-08.wav"],
-  ["Cé mhéad?","/audio/day-09.wav"],
-  ["Tá ocras orm","/audio/day-10.wav"],
-  ["An bhfuil bainne agaibh?","/audio/day-11.wav"],
-  ["Is maith liom caife!","/audio/day-12.wav"],
-  ["Tá sé fuar inniu!","/audio/day-13.wav"],
-  ["Weeks 1 & 2 combined","/audio/day-14.wav"],
-  ["Is mise ___. Cad is ainm duit?","/audio/day-15.wav"],
-  ["Cá bhfuil an leithreas?","/audio/day-16.wav"],
-  ["Is as ___ mé","/audio/day-17.wav"],
-  ["Mo mháthair / m'athair / mo pháiste","/audio/day-18.wav"],
-  ["Dearg, glas, gorm, bán, dubh","/audio/day-19.wav"],
-  ["A haon → a deich","/audio/day-20.wav"],
-  ["Tá sé go hálainn. Feicim crann glas.","/audio/day-21.wav"],
-  ["Is breá liom an ceol seo!","/audio/day-22.wav"],
-  ["Is fearr Gaeilge briste ná Béarla cliste","/audio/day-23.wav"],
-  ["Tuigim! / Ní thuigim.","/audio/day-24.wav"],
-  ["Lá maith agam inniu!","/audio/day-25.wav"],
-  ["Pionta, le do thoil!","/audio/day-26.wav"],
-  ["An bhfuil Gaeilge agat?","/audio/day-27.wav"],
-  ["Baile, Cill, Dún, Áth, Lios","/audio/day-28.wav"],
-  ["Any 3 phrases from this month!","/audio/day-29.wav"],
-  ["Tá Gaeilge agam. Tá mé bródúil.","/audio/day-30.wav"],
-]);
 
 function _openIDB() {
   if (_idb) return Promise.resolve(_idb);
@@ -382,6 +349,17 @@ async function _fetchAndCacheAudio(text) {
   return blob;
 }
 
+function _bestSpeechVoice() {
+  const voices = window.speechSynthesis?.getVoices() || [];
+  return (
+    voices.find(v => v.lang === 'ga-IE') ||
+    voices.find(v => v.lang === 'ga') ||
+    voices.find(v => v.lang === 'en-IE') ||
+    voices.find(v => v.lang === 'en-GB') ||
+    null
+  );
+}
+
 async function speakIrish(text) {
   if (_currentAudio) { _currentAudio.pause(); _currentAudio.src=''; _currentAudio=null; }
   // 1. Session memory cache (instant)
@@ -389,28 +367,26 @@ async function speakIrish(text) {
     _currentAudio = new Audio(_audioCache.get(text));
     return _currentAudio.play().catch(()=>{});
   }
-  // 2. IndexedDB (abair.ie quality, offline-capable)
+  // 2. IndexedDB → abair.ie Connacht neural TTS (best quality)
   try {
     let blob = await _idbGet(text);
-    if (!blob) blob = await _fetchAndCacheAudio(text); // fetches abair.ie + saves to IDB
+    if (!blob) blob = await _fetchAndCacheAudio(text);
     const url = URL.createObjectURL(blob);
     _audioCache.set(text, url);
     _currentAudio = new Audio(url);
     return _currentAudio.play().catch(()=>{});
   } catch {}
-  // 3. Static bundled file (espeak-ng, always available offline)
-  const staticPath = _STATIC_AUDIO.get(text);
-  if (staticPath) {
-    try {
-      _currentAudio = new Audio(staticPath);
-      return _currentAudio.play().catch(()=>{});
-    } catch {}
+  // 3. Web Speech API — prefer ga-IE, fall back to en-IE / en-GB
+  if (window.speechSynthesis) {
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    const voice = _bestSpeechVoice();
+    if (voice) u.voice = voice;
+    u.lang = voice?.lang || 'ga-IE';
+    u.rate = 0.78;
+    u.pitch = 1.05;
+    window.speechSynthesis.speak(u);
   }
-  // 4. Web Speech API (last resort)
-  window.speechSynthesis?.cancel();
-  const u = new SpeechSynthesisUtterance(text);
-  u.lang = 'ga-IE'; u.rate = 0.8;
-  window.speechSynthesis?.speak(u);
 }
 
 // Pre-warm audio cache for all 30 day phrases in the background
