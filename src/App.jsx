@@ -294,8 +294,8 @@ let _idb = null; // IndexedDB connection
 function _openIDB() {
   if (_idb) return Promise.resolve(_idb);
   return new Promise((res, rej) => {
-    const req = indexedDB.open("gc-audio", 1);
-    req.onupgradeneeded = e => e.target.result.createObjectStore("wav");
+    const req = indexedDB.open("gc-audio-2", 1);
+    req.onupgradeneeded = e => e.target.result.createObjectStore("tts");
     req.onsuccess = e => { _idb = e.target.result; res(_idb); };
     req.onerror = () => rej();
   });
@@ -305,8 +305,8 @@ async function _idbGet(key) {
   try {
     const db = await _openIDB();
     return new Promise(res => {
-      const tx = db.transaction("wav", "readonly");
-      const req = tx.objectStore("wav").get(key);
+      const tx = db.transaction("tts", "readonly");
+      const req = tx.objectStore("tts").get(key);
       req.onsuccess = () => res(req.result || null);
       req.onerror = () => res(null);
     });
@@ -317,36 +317,31 @@ async function _idbPut(key, blob) {
   try {
     const db = await _openIDB();
     return new Promise(res => {
-      const tx = db.transaction("wav", "readwrite");
-      tx.objectStore("wav").put(blob, key);
+      const tx = db.transaction("tts", "readwrite");
+      tx.objectStore("tts").put(blob, key);
       tx.oncomplete = res; tx.onerror = res;
     });
   } catch {}
 }
 
-function _pcmToWav(pcm, sr=22050) {
-  const buf = new ArrayBuffer(44 + pcm.length);
-  const v = new DataView(buf);
-  const s = (o, t) => { for(let i=0;i<t.length;i++) v.setUint8(o+i, t.charCodeAt(i)); };
-  s(0,'RIFF'); v.setUint32(4,36+pcm.length,true);
-  s(8,'WAVE'); s(12,'fmt '); v.setUint32(16,16,true);
-  v.setUint16(20,1,true); v.setUint16(22,1,true);
-  v.setUint32(24,sr,true); v.setUint32(28,sr*2,true);
-  v.setUint16(32,2,true); v.setUint16(34,16,true);
-  s(36,'data'); v.setUint32(40,pcm.length,true);
-  new Uint8Array(buf,44).set(pcm);
-  return new Blob([buf],{type:'audio/wav'});
-}
-
 async function _fetchAndCacheAudio(text) {
-  const r = await fetch(`https://www.abair.ie/api2/synthesise?input=${encodeURIComponent(text)}&voice=ga_CO_pmg_nnmnkwii&audioEncoding=LINEAR16`);
-  if (!r.ok) throw new Error();
-  const d = await r.json();
-  if (!d.audioContent) throw new Error();
-  const pcm = Uint8Array.from(atob(d.audioContent), c=>c.charCodeAt(0));
-  const blob = _pcmToWav(pcm);
-  await _idbPut(text, blob);
-  return blob;
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), 9000);
+  try {
+    const r = await fetch(
+      `https://www.abair.ie/api2/synthesise?input=${encodeURIComponent(text)}&voice=ga_CO_pmg_nnmnkwii&audioEncoding=MP3`,
+      { signal: ctrl.signal }
+    );
+    if (!r.ok) throw new Error();
+    const d = await r.json();
+    if (!d.audioContent) throw new Error();
+    const bytes = Uint8Array.from(atob(d.audioContent), c => c.charCodeAt(0));
+    const blob = new Blob([bytes], { type: 'audio/mpeg' });
+    await _idbPut(text, blob);
+    return blob;
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
 function _bestSpeechVoice() {
