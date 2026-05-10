@@ -85,12 +85,31 @@ const WK = [
   { name: "Tumadh Iomlán", en: "Full Immersion", start: 21, end: 30 },
 ];
 
-const T = {
-  light: {
+const THEMES = {
+  coill: {   // Coill = Forest — dark green + gold (default)
+    dark:true,
+    bg:"#091508",bg2:"#0D1F0F",card:"#101E10",cardAlt:"#142014",
+    phrase:"#1A2E20",phraseBd:"rgba(200,150,62,0.3)",
+    tx:"#F0EDE4",tx2:"#C8C4B4",tx3:"rgba(240,237,228,0.45)",
+    acc:"#C8963E",acc2:"#A87030",gold:"#C8963E",green:"#6FCF97",
+    bd:"rgba(200,150,62,0.18)",shadow:"0 2px 20px rgba(0,0,0,0.4)",
+    doneBg:"rgba(27,67,50,0.3)",doneBd:"rgba(45,106,79,0.4)",doneTx:"#6FCF97",
+    nextBd:"#C8963E",
+    tipBg:"rgba(200,150,62,0.08)",tipBd:"rgba(200,150,62,0.2)",tipTx:"#D4AA30",
+    btn:"#1B4332",btnTx:"#F0EDE4",
+    progBg:"rgba(255,255,255,0.08)",progFill:"linear-gradient(90deg,#1B4332,#C8963E)",
+    celebBg:"rgba(9,21,8,0.96)",
+    dotOn:"#6FCF97",dotOff:"rgba(255,255,255,0.12)",dotDone:"#C8963E",
+    nav:"#101E10",navBd:"rgba(200,150,62,0.18)",
+    hero:"#071A0E",
+    ink:"rgba(200,150,62,0.3)",
+  },
+  parchment: {  // Lámhscríbhinn = Manuscript — warm Celtic parchment
+    dark:false,
     bg:"#FDFAF4",bg2:"#F5EFE0",card:"#FFFFFF",cardAlt:"#FAF6EE",
     phrase:"#EEF7F1",phraseBd:"#C9DDD1",
     tx:"#1A1A18",tx2:"#3D3D38",tx3:"#7A7A70",
-    acc:"#1B4332",acc2:"#0D2E1F",gold:"#C9A227",
+    acc:"#1B4332",acc2:"#0D2E1F",gold:"#C9A227",green:"#1B4332",
     bd:"#D8D0C0",shadow:"0 2px 12px rgba(27,67,50,0.08)",
     doneBg:"#EAF4EE",doneBd:"#A8CCBA",doneTx:"#1B4332",
     nextBd:"#1B4332",
@@ -103,22 +122,23 @@ const T = {
     hero:"#1B4332",
     ink:"#1B4332",
   },
-  dark: {
-    bg:"#141A14",bg2:"#1A221A",card:"#1E281E",cardAlt:"#222E22",
-    phrase:"#1A2E20",phraseBd:"#2E4A38",
-    tx:"#F0EDE4",tx2:"#C8C4B4",tx3:"#7A7A68",
-    acc:"#6FCF97",acc2:"#4AB87A",gold:"#D4AA30",
-    bd:"#2E3E2E",shadow:"0 2px 12px rgba(0,0,0,0.3)",
-    doneBg:"#1A2E20",doneBd:"#2E4A38",doneTx:"#6FCF97",
+  oiche: {   // Oíche = Midnight — very dark, emerald accents
+    dark:true,
+    bg:"#080C08",bg2:"#0C120C",card:"#0F160F",cardAlt:"#131A13",
+    phrase:"#141E14",phraseBd:"#2A4030",
+    tx:"#E8F0E8",tx2:"#B0C4B0",tx3:"#607060",
+    acc:"#6FCF97",acc2:"#4AB87A",gold:"#D4AA30",green:"#6FCF97",
+    bd:"#1E2E1E",shadow:"0 2px 12px rgba(0,0,0,0.5)",
+    doneBg:"#0E2018",doneBd:"#1E4030",doneTx:"#6FCF97",
     nextBd:"#6FCF97",
-    tipBg:"#1E1E14",tipBd:"#3A3520",tipTx:"#C8B870",
+    tipBg:"#14140A",tipBd:"#2A2810",tipTx:"#C8B870",
     btn:"#2D6A4F",btnTx:"#fff",
-    progBg:"#1A2A1A",progFill:"linear-gradient(90deg,#2D6A4F,#D4AA30)",
-    celebBg:"rgba(20,26,20,0.96)",
-    dotOn:"#6FCF97",dotOff:"#2E3E2E",dotDone:"#6FCF97",
-    nav:"#1E281E",navBd:"#2E3E2E",
-    hero:"#0D2E1F",
-    ink:"#2E3E2E",
+    progBg:"#111811",progFill:"linear-gradient(90deg,#2D6A4F,#D4AA30)",
+    celebBg:"rgba(8,12,8,0.96)",
+    dotOn:"#6FCF97",dotOff:"#1E2E1E",dotDone:"#6FCF97",
+    nav:"#0F160F",navBd:"#1E2E1E",
+    hero:"#0A1A10",
+    ink:"#1E2E1E",
   },
 };
 
@@ -818,7 +838,7 @@ export default function App() {
   const [view,setView]=useState("home");
   const [selDay,setSelDay]=useState(null);
   const [celeb,setCeleb]=useState(null);
-  const [dk,setDk]=useState(false);
+  const [theme,setTheme]=useState("coill");
   const [quiz,setQuiz]=useState(null);
   const [quizIdx,setQuizIdx]=useState(0);
   const [quizScore,setQuizScore]=useState(0);
@@ -835,7 +855,8 @@ export default function App() {
   const [installPrompt,setInstallPrompt]=useState(null);
   const [installed,setInstalled]=useState(false);
   const [speakLoading,setSpeakLoading]=useState(false);
-  const c = dk ? T.dark : T.light;
+  const c = THEMES[theme]||THEMES.coill;
+  const dk = c.dark; // keep dk as a convenience boolean for backward compat
 
   useEffect(()=>{
     const handler=(e)=>{e.preventDefault();setInstallPrompt(e);};
@@ -847,8 +868,8 @@ export default function App() {
 
   useEffect(()=>{(async()=>{
     const s=await loadS();
-    if(s){setSt(s);if(s.dk)setDk(true)}
-    else{const i={done:[],bonus:[],tasksDone:[],streak:0,best:0,dk:false,onboarded:true,started:new Date().toISOString(),dailyLog:{},county:null,notifEnabled:false};await saveS(i);setSt(i)}
+    if(s){setSt(s);if(s.theme&&THEMES[s.theme])setTheme(s.theme);}
+    else{const i={done:[],bonus:[],tasksDone:[],streak:0,best:0,theme:"coill",onboarded:true,started:new Date().toISOString(),dailyLog:{},county:null,notifEnabled:false};await saveS(i);setSt(i)}
     setLoading(false);
     // Fetch community count in background
     sbGetCount(todayKey()).then(n=>{if(n!==null)setCommunityCount(n);});
@@ -856,7 +877,13 @@ export default function App() {
 
 
   const save=useCallback(async(ns)=>{setSt(ns);await saveS(ns)},[]);
-  const toggle=async()=>{const n=!dk;setDk(n);if(st)await save({...st,dk:n})};
+  const cycleTheme=async()=>{
+    const order=["coill","parchment","oiche"];
+    const next=order[(order.indexOf(theme)+1)%order.length];
+    setTheme(next);
+    if(st)await save({...st,theme:next});
+  };
+  const toggle=cycleTheme; // alias so all existing toggle calls still work
 
   const speak=useCallback(async(text)=>{
     setSpeakLoading(true);
@@ -960,7 +987,7 @@ export default function App() {
   };
   const doReset=async()=>{
     if(!confirm("Reset all progress? Cannot undo."))return;
-    await save({done:[],bonus:[],tasksDone:[],streak:0,best:0,dk,onboarded:true,started:new Date().toISOString(),dailyLog:{},county:null,notifEnabled:false});
+    await save({done:[],bonus:[],tasksDone:[],streak:0,best:0,theme:"coill",onboarded:true,started:new Date().toISOString(),dailyLog:{},county:null,notifEnabled:false});
     setView("home");setSelDay(null);
   };
 
