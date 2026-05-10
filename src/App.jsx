@@ -344,6 +344,12 @@ async function _fetchAndCacheAudio(text) {
   }
 }
 
+// Pre-load voices so getVoices() isn't empty on first speakIrish() call
+if (typeof window !== 'undefined' && window.speechSynthesis) {
+  window.speechSynthesis.getVoices();
+  window.speechSynthesis.addEventListener('voiceschanged', () => { window.speechSynthesis.getVoices(); });
+}
+
 function _bestSpeechVoice() {
   const voices = window.speechSynthesis?.getVoices() || [];
   return (
@@ -351,6 +357,7 @@ function _bestSpeechVoice() {
     voices.find(v => v.lang === 'ga') ||
     voices.find(v => v.lang === 'en-IE') ||
     voices.find(v => v.lang === 'en-GB') ||
+    voices.find(v => v.lang?.startsWith('en')) ||
     null
   );
 }
@@ -867,6 +874,7 @@ export default function App() {
   const [prevView,setPrevView]=useState("home");
   const [installPrompt,setInstallPrompt]=useState(null);
   const [installed,setInstalled]=useState(false);
+  const [speakLoading,setSpeakLoading]=useState(false);
   const c = dk ? T.dark : T.light;
 
   useEffect(()=>{
@@ -889,6 +897,12 @@ export default function App() {
 
   const save=useCallback(async(ns)=>{setSt(ns);await saveS(ns)},[]);
   const toggle=async()=>{const n=!dk;setDk(n);if(st)await save({...st,dk:n})};
+
+  const speak=useCallback(async(text)=>{
+    setSpeakLoading(true);
+    await speakIrish(text);
+    setSpeakLoading(false);
+  },[]);
 
   const markDailyDone=useCallback(async()=>{
     if(!st)return;
@@ -986,7 +1000,7 @@ export default function App() {
   };
   const doReset=async()=>{
     if(!confirm("Reset all progress? Cannot undo."))return;
-    await save({done:[],bonus:[],tasksDone:[],streak:0,best:0,dk,onboarded:true,started:new Date().toISOString()});
+    await save({done:[],bonus:[],tasksDone:[],streak:0,best:0,dk,onboarded:true,started:new Date().toISOString(),dailyLog:{},county:null,notifEnabled:false});
     setView("home");setSelDay(null);
   };
 
@@ -1121,7 +1135,7 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
               {/* Phrase card */}
               <div style={{background:c.phrase,border:`1.5px solid ${c.phraseBd}`,borderRadius:16,padding:"32px 24px",marginBottom:20,textAlign:"center",animation:"pop 0.4s ease"}}>
                 <div style={{...hd,fontSize:"1.8rem",fontWeight:700,color:c.acc,marginBottom:8}}>{q.phrase}</div>
-                <button onClick={()=>speakIrish(q.phrase)} style={{background:"none",border:`1px solid ${c.phraseBd}`,borderRadius:20,padding:"5px 14px",color:c.acc,...bd,fontSize:"0.8rem",cursor:"pointer",display:"inline-flex",alignItems:"center",gap:6}}>
+                <button onClick={()=>speak(q.phrase)} style={{background:"none",border:`1px solid ${c.phraseBd}`,borderRadius:20,padding:"5px 14px",color:c.acc,...bd,fontSize:"0.8rem",cursor:"pointer",display:"inline-flex",alignItems:"center",gap:6}}>
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M15.54 8.46a5 5 0 010 7.07" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round"/></svg>
                   Éist
                 </button>
@@ -1257,7 +1271,7 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
                     {ch.p}
                   </div>
                   <div style={{...bd,fontSize:"0.88rem",color:c.tx3,letterSpacing:"0.05em",marginBottom:8}}>{ch.pr}</div>
-                  <button onClick={()=>speakIrish(ch.p)} style={{background:c.phrase,border:`1px solid ${c.phraseBd}`,borderRadius:20,padding:"7px 18px",color:c.acc,...bd,fontSize:"0.85rem",cursor:"pointer",display:"inline-flex",alignItems:"center",gap:7,marginBottom:8}}>
+                  <button onClick={()=>speak(ch.p)} style={{background:c.phrase,border:`1px solid ${c.phraseBd}`,borderRadius:20,padding:"7px 18px",color:c.acc,...bd,fontSize:"0.85rem",cursor:"pointer",display:"inline-flex",alignItems:"center",gap:7,marginBottom:8}}>
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M15.54 8.46a5 5 0 010 7.07" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round"/></svg>
                     Éist le fuaim
                   </button>
@@ -1445,8 +1459,8 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
                 <div style={{...bd,fontSize:"0.7rem",color:c.tx3}}>/{w.pr}/</div>
                 <div style={{...bd,fontSize:"0.82rem",color:c.tx2}}>{w.m}</div>
               </div>
-              <button onClick={()=>speakIrish(w.p)} style={{background:c.cardAlt,border:`1px solid ${c.bd}`,borderRadius:8,width:34,height:34,flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",fontSize:"0.95rem"}}>
-                🔊
+              <button onClick={()=>speak(w.p)} style={{background:c.cardAlt,border:`1px solid ${c.bd}`,borderRadius:8,width:34,height:34,flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",fontSize:"0.95rem",opacity:speakLoading?0.5:1}}>
+                {speakLoading?"⏳":"🔊"}
               </button>
             </div>
           ))}
@@ -2071,6 +2085,8 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
   const vqKey = todayKey()+"_vq";
   const vqScore = st.dailyLog?.[vqKey];
   const vqDone = vqScore !== undefined;
+  const histFact = getHistoryFact(today);
+  const irishSeason = getIrishSeason(today);
 
   const menuItems = [
     {id:"map",  icon:"☘️", label:"30 Lá",      sub:`${total} / 30 lá déanta`,  clr:c.acc},
@@ -2145,7 +2161,7 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
           <div style={{background:c.card,border:`1px solid ${c.bd}`,borderRadius:16,padding:"13px 13px 11px",boxShadow:c.shadow}}>
             <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:5}}>
               <div style={{...bd,fontSize:"0.54rem",color:c.tx3,letterSpacing:"0.1em",textTransform:"uppercase"}}>Focal an Lae</div>
-              <button onClick={()=>speakIrish(wod.p)} style={{background:"none",border:"none",cursor:"pointer",fontSize:"0.85rem",padding:0,lineHeight:1}}>🔊</button>
+              <button onClick={()=>speak(wod.p)} style={{background:"none",border:"none",cursor:"pointer",fontSize:"0.85rem",padding:0,lineHeight:1}}>🔊</button>
             </div>
             <div style={{...hd,fontSize:"1.05rem",fontWeight:700,color:c.acc,fontStyle:"italic",lineHeight:1.2,marginBottom:3}}>{wod.p}</div>
             <div style={{...bd,fontSize:"0.68rem",color:c.tx3,lineHeight:1.3}}>{wod.m}</div>
@@ -2210,6 +2226,16 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
               </button>
             ))}
           </div>
+        </div>
+
+        {/* ── FÍRIC AN LAE — History Fact of the Day ── */}
+        <div style={{background:c.card,border:`1px solid ${c.bd}`,borderRadius:16,padding:"14px 16px",boxShadow:c.shadow,position:"relative",overflow:"hidden"}}>
+          <div style={{position:"absolute",top:0,left:0,right:0,height:3,background:`linear-gradient(90deg,${c.gold},${c.gold}44)`}}/>
+          <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:8}}>
+            <span style={{fontSize:"0.95rem"}}>{irishSeason.icon}</span>
+            <div style={{...bd,fontSize:"0.52rem",color:c.gold,letterSpacing:"0.12em",textTransform:"uppercase",fontWeight:700}}>Fíric an Lae · {irishSeason.name}</div>
+          </div>
+          <p style={{...bd,fontSize:"0.82rem",color:c.tx2,lineHeight:1.7,margin:0}}>{histFact}</p>
         </div>
 
         {/* ── PWA INSTALL PROMPT ── */}
