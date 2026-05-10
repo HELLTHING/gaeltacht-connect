@@ -764,54 +764,15 @@ const COUNTIES=[
   {en:"Wicklow",ga:"Cill Mhantáin",pr:"kill WAN-tawn",g:false},
 ];
 
-// Bottom navigation component
-const BottomNav = ({view,setView,setPrevView,c,hd,bd}) => {
-  const tabs=[
-    {id:"home", icon:"🏠", label:"Baile"},
-    {id:"map",  icon:"☘️", label:"30 Lá"},
-    {id:"ceol", icon:"🎵", label:"Ceol"},
-    {id:"dict", icon:"📖", label:"Foclóir"},
-    {id:"stats",icon:"📊", label:"Stats"},
-  ];
-  return(
-    <div style={{
-      position:"fixed",bottom:0,left:0,right:0,
-      background:c.nav,
-      borderTop:`1px solid ${c.bd}`,
-      display:"flex",zIndex:50,
-      paddingBottom:"env(safe-area-inset-bottom)",
-      backdropFilter:"blur(12px)",
-      WebkitBackdropFilter:"blur(12px)",
-    }}>
-      {tabs.map(t=>{
-        const active=view===t.id||( view==="day"&&t.id==="home");
-        return(
-          <button key={t.id} onClick={()=>{if(setPrevView&&view!==t.id)setPrevView(view);setView(t.id);}} style={{
-            flex:1,padding:"8px 2px 10px",background:"none",border:"none",
-            cursor:"pointer",display:"flex",flexDirection:"column",
-            alignItems:"center",gap:2,transition:"opacity 0.15s",
-          }}>
-            <div style={{
-              width:40,height:32,borderRadius:10,
-              background:active?`${c.acc}18`:"transparent",
-              display:"flex",alignItems:"center",justifyContent:"center",
-              transition:"background 0.2s",
-            }}>
-              <span style={{fontSize:"1.15rem",lineHeight:1}}>{t.icon}</span>
-            </div>
-            <span style={{
-              ...bd,fontSize:"0.53rem",
-              color:active?c.acc:c.tx3,
-              fontWeight:active?700:400,
-              letterSpacing:"0.02em",
-              transition:"color 0.2s",
-            }}>{t.label}</span>
-          </button>
-        );
-      })}
-    </div>
-  );
-};
+// Back button — shared across all secondary views
+const BackBtn = ({onClick,c,bd,label="← Ar ais"}) => (
+  <button onClick={onClick} style={{
+    display:"flex",alignItems:"center",gap:6,
+    background:c.card,border:`1px solid ${c.bd}`,
+    borderRadius:10,padding:"8px 14px",cursor:"pointer",
+    color:c.tx,...bd,fontSize:"0.85rem",fontWeight:600,
+  }}>{label}</button>
+);
 
 // Generate quiz questions from completed days
 const makeQuiz = (done) => {
@@ -1146,7 +1107,7 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
     const dayColor=CAT_CLR[ch.cat]||c.acc;
 
     return(
-      <div style={{minHeight:"100vh",background:c.bg,color:c.tx,paddingBottom:90}}>
+      <div style={{minHeight:"100vh",background:c.bg,color:c.tx,paddingBottom:24}}>
         <style>{css}</style>
 
         {/* ── TOP NAV ── */}
@@ -1346,7 +1307,6 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
             ⭐ Bonus déanta!
           </div>
         )}
-        <BottomNav view="day" setView={(v)=>{setView(v);setSelDay(null);}} c={c} hd={hd} bd={bd}/>
       </div>
     );
   }
@@ -1368,11 +1328,14 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
     });
     const forvoUrl=(word)=>`https://forvo.com/search/${encodeURIComponent(word.split(/[\s,!?]/)[0])}/ga/`;
     return(
-      <div style={{minHeight:"100vh",background:c.bg,color:c.tx,animation:"fadeIn 0.25s ease",paddingBottom:80}}>
+      <div style={{minHeight:"100vh",background:c.bg,color:c.tx,animation:"fadeIn 0.25s ease",paddingBottom:24}}>
         <style>{css}</style>
-        <div style={{background:c.hero,padding:"24px 20px 20px"}}>
+        <div style={{background:c.hero,padding:"20px 20px 20px"}}>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
-            <h1 style={{...hd,fontSize:"1.8rem",color:"#fff"}}>📖 Foclóir</h1>
+            <div style={{display:"flex",alignItems:"center",gap:10}}>
+              <button onClick={()=>setView("home")} style={{display:"flex",alignItems:"center",gap:6,background:"rgba(255,255,255,0.12)",border:"1px solid rgba(255,255,255,0.2)",borderRadius:10,padding:"7px 12px",cursor:"pointer",color:"rgba(255,255,255,0.85)",...bd,fontSize:"0.82rem",fontWeight:600}}>← Baile</button>
+              <h1 style={{...hd,fontSize:"1.6rem",color:"#fff"}}>📖 Foclóir</h1>
+            </div>
             <button onClick={toggle} style={{background:"rgba(255,255,255,0.1)",border:"1px solid rgba(255,255,255,0.2)",borderRadius:8,width:34,height:34,cursor:"pointer",color:"#fff",fontSize:"0.9rem"}}>{dk?"☀️":"🌙"}</button>
           </div>
           <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Cuardach... / Search" style={{width:"100%",padding:"10px 14px",borderRadius:10,border:"none",background:"rgba(255,255,255,0.15)",color:"#fff",fontSize:"0.9rem",fontFamily:"'Lato',sans-serif",outline:"none",boxSizing:"border-box"}}/>
@@ -1403,7 +1366,6 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
           ))}
           {filtered.length===0&&<div style={{textAlign:"center",padding:"40px",...bd,color:c.tx3,fontStyle:"italic"}}>Níor aimsíodh aon rud — Nothing found</div>}
         </div>
-        <BottomNav view={view} setView={setView} setPrevView={setPrevView} c={c} hd={hd} bd={bd}/>
       </div>
     );
   }
@@ -1423,9 +1385,12 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
       {id:"done",   icon:"☘️", name:"Gaeilgeoir",   nameEn:"Irish Speaker",   desc:"All 30 days completed",         unlocked:total===30},
     ];
     return(
-      <div style={{minHeight:"100vh",background:c.bg,color:c.tx,animation:"fadeIn 0.25s ease",paddingBottom:80}}>
+      <div style={{minHeight:"100vh",background:c.bg,color:c.tx,animation:"fadeIn 0.25s ease",paddingBottom:24}}>
         <style>{css}</style>
-        <div style={{background:c.hero,padding:"24px 20px 32px",textAlign:"center"}}>
+        <div style={{background:c.hero,padding:"20px 20px 32px",textAlign:"center"}}>
+          <div style={{display:"flex",justifyContent:"flex-start",marginBottom:16}}>
+            <button onClick={()=>setView("home")} style={{display:"flex",alignItems:"center",gap:6,background:"rgba(255,255,255,0.12)",border:"1px solid rgba(255,255,255,0.2)",borderRadius:10,padding:"7px 12px",cursor:"pointer",color:"rgba(255,255,255,0.85)",...bd,fontSize:"0.82rem",fontWeight:600}}>← Baile</button>
+          </div>
           <h1 style={{...hd,fontSize:"1.4rem",fontWeight:800,color:"#fff",marginBottom:4}}>Mo Dhul Chun Cinn</h1>
           <p style={{...bd,fontSize:"0.82rem",color:"rgba(255,255,255,0.65)",marginBottom:20}}>My Progress</p>
           <div style={{position:"relative",width:120,height:120,margin:"0 auto"}}>
@@ -1517,7 +1482,6 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
             <button onClick={doReset} style={{background:"none",border:`1px solid ${c.bd}`,borderRadius:8,padding:"8px 20px",color:c.tx3,...bd,fontSize:"0.72rem",cursor:"pointer"}}>Reset progress</button>
           </div>
         </div>
-        <BottomNav view={view} setView={setView} setPrevView={setPrevView} c={c} hd={hd} bd={bd}/>
       </div>
     );
   }
@@ -1546,9 +1510,12 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
     ];
     const taskCount=st.tasksDone?st.tasksDone.length:0;
     return(
-      <div style={{minHeight:"100vh",background:c.bg,color:c.tx,paddingBottom:80,animation:"fadeIn 0.25s ease"}}>
+      <div style={{minHeight:"100vh",background:c.bg,color:c.tx,paddingBottom:24,animation:"fadeIn 0.25s ease"}}>
         <style>{css}</style>
-        <div style={{background:c.hero,padding:"24px 20px 20px"}}>
+        <div style={{background:c.hero,padding:"20px 20px 20px"}}>
+          <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:12}}>
+            <button onClick={()=>setView("home")} style={{display:"flex",alignItems:"center",gap:6,background:"rgba(255,255,255,0.12)",border:"1px solid rgba(255,255,255,0.2)",borderRadius:10,padding:"7px 12px",cursor:"pointer",color:"rgba(255,255,255,0.85)",...bd,fontSize:"0.82rem",fontWeight:600}}>← Baile</button>
+          </div>
           <h1 style={{...hd,fontSize:"1.8rem",color:"#fff"}}>⚙️ Socruithe</h1>
           <p style={{...bd,fontSize:"0.78rem",color:"rgba(255,255,255,0.6)",marginTop:4}}>Settings</p>
         </div>
@@ -1761,7 +1728,6 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
           </div>
 
         </div>
-        <BottomNav view={view} setView={setView} setPrevView={setPrevView} c={c} hd={hd} bd={bd}/>
       </div>
     );
   }
@@ -1771,7 +1737,7 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
   // ═══════════════════════════════
   if(view==="ceol"){
     return(
-      <div style={{minHeight:"100vh",background:c.bg,color:c.tx,paddingBottom:88,animation:"rise 0.3s ease"}}>
+      <div style={{minHeight:"100vh",background:c.bg,color:c.tx,paddingBottom:24,animation:"rise 0.3s ease"}}>
         <style>{css}</style>
         {/* Header */}
         <div style={{background:"#1A0A0A",padding:"20px 20px 20px"}}>
@@ -1875,8 +1841,6 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
             The music refused to die. These songs are proof.
           </div>
         </div>
-
-        <BottomNav view={view} setView={setView} setPrevView={setPrevView} c={c} hd={hd} bd={bd}/>
       </div>
     );
   }
@@ -1886,13 +1850,16 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
   if(view==="map"){
     const isNext=(day)=>day===nextDay&&!st.done.includes(day);
     return (
-      <div style={{minHeight:"100vh",background:c.bg,color:c.tx,paddingBottom:80,animation:"rise 0.3s ease"}}>
+      <div style={{minHeight:"100vh",background:c.bg,color:c.tx,paddingBottom:24,animation:"rise 0.3s ease"}}>
         <style>{css}</style>
 
         {/* ── HERO HEADER ── */}
-        <div style={{background:c.hero,padding:"24px 20px 28px"}}>
+        <div style={{background:c.hero,padding:"20px 20px 28px"}}>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:18}}>
-            <h1 style={{...hd,fontSize:"1.3rem",fontWeight:800,color:"#fff",margin:0}}>☘️ 30 Lá</h1>
+            <div style={{display:"flex",alignItems:"center",gap:10}}>
+              <button onClick={()=>setView("home")} style={{display:"flex",alignItems:"center",gap:6,background:"rgba(255,255,255,0.12)",border:"1px solid rgba(255,255,255,0.2)",borderRadius:10,padding:"7px 12px",cursor:"pointer",color:"rgba(255,255,255,0.85)",...bd,fontSize:"0.82rem",fontWeight:600}}>← Baile</button>
+              <h1 style={{...hd,fontSize:"1.3rem",fontWeight:800,color:"#fff",margin:0}}>☘️ 30 Lá</h1>
+            </div>
             <button onClick={toggle} style={{background:"rgba(255,255,255,0.15)",border:"none",borderRadius:10,width:32,height:32,cursor:"pointer",color:"#fff",fontSize:"0.85rem"}}>{dk?"☀️":"🌙"}</button>
           </div>
           {/* Big progress number */}
@@ -2003,9 +1970,8 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
             <div style={{...bd,fontSize:"0.68rem",color:c.tx3,opacity:0.45,marginBottom:14}}>☘️ Gaeltacht Connect — Built in Ireland</div>
             <button onClick={doReset} style={{background:"none",border:"none",color:c.tx3,...bd,fontSize:"0.65rem",cursor:"pointer",opacity:0.3,textDecoration:"underline"}}>Reset progress</button>
           </div>
-          <div style={{height:40}}/>
+          <div style={{height:16}}/>
         </div>
-        <BottomNav view={view} setView={setView} setPrevView={setPrevView} c={c} hd={hd} bd={bd}/>
       </div>
     );
   }
@@ -2021,7 +1987,7 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
   const histFact = getHistoryFact(today);
 
   return(
-    <div style={{minHeight:"100vh",background:c.bg,color:c.tx,display:"flex",flexDirection:"column",paddingBottom:72}}>
+    <div style={{minHeight:"100vh",background:c.bg,color:c.tx,display:"flex",flexDirection:"column",paddingBottom:16}}>
       <style>{css}</style>
 
       {/* ── HEADER ── */}
@@ -2065,6 +2031,28 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
           </div>
         </div>
 
+        {/* ── NEW USER WELCOME ── */}
+        {total===0&&(
+          <div style={{background:`linear-gradient(135deg,${c.acc}18,${c.gold}10)`,border:`1.5px solid ${c.acc}40`,borderRadius:20,padding:"20px 20px 18px",position:"relative",overflow:"hidden",animation:"slide-up 0.5s ease"}}>
+            <div style={{position:"absolute",right:-8,top:-8,fontSize:"5rem",opacity:0.07,lineHeight:1,pointerEvents:"none"}}>☘️</div>
+            <div style={{...bd,fontSize:"0.6rem",color:c.acc,letterSpacing:"0.14em",textTransform:"uppercase",fontWeight:700,marginBottom:8}}>Fáilte — Welcome</div>
+            <div style={{...hd,fontSize:"1.3rem",fontWeight:800,color:c.tx,lineHeight:1.25,marginBottom:10}}>
+              Tosaigh do thuras Gaeilge
+            </div>
+            <p style={{...bd,fontSize:"0.82rem",color:c.tx2,lineHeight:1.7,marginBottom:16}}>
+              30 real-world challenges — no grammar tables, no boring tests. Each day teaches you one living phrase from Irish history, then sends you out to use it.
+            </p>
+            <button onClick={()=>{haptic();setPrevView("home");setSelDay(1);setView("day");}} style={{
+              display:"inline-flex",alignItems:"center",gap:8,
+              background:c.acc,border:"none",borderRadius:12,
+              padding:"12px 22px",color:"#fff",cursor:"pointer",
+              ...hd,fontSize:"1rem",fontWeight:700,letterSpacing:"0.01em",
+            }}>
+              Tosaigh Lá 1 →
+            </button>
+          </div>
+        )}
+
         {/* ── 30 LÁ — Big featured button ── */}
         <button onClick={()=>{haptic();setPrevView("home");setView("map");}} style={{
           width:"100%",border:"none",cursor:"pointer",padding:"22px 22px 20px",textAlign:"left",
@@ -2089,15 +2077,23 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
 
         {/* ── 2-COL: Ceol + Foclóir ── */}
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
-          <button onClick={()=>{haptic();setPrevView("home");setView("ceol");}} style={{background:"linear-gradient(145deg,#1A0A0A,#2D1515)",borderRadius:18,border:"none",cursor:"pointer",padding:"20px 16px",textAlign:"left",boxShadow:"0 4px 20px rgba(0,0,0,0.35)"}}>
+          <button onClick={()=>{haptic();setPrevView("home");setView("ceol");}} style={{
+            background:dk?"linear-gradient(145deg,#1A0A0A,#2D1515)":"linear-gradient(145deg,#4A1010,#7A2020)",
+            borderRadius:18,border:"none",cursor:"pointer",padding:"20px 16px",textAlign:"left",
+            boxShadow:dk?"0 4px 20px rgba(0,0,0,0.35)":"0 4px 20px rgba(120,20,20,0.25)",
+          }}>
             <div style={{fontSize:"1.7rem",marginBottom:12}}>🎵</div>
             <div style={{...hd,fontSize:"1.1rem",fontWeight:800,color:"#fff",marginBottom:3}}>Ceol</div>
-            <div style={{...bd,fontSize:"0.62rem",color:"rgba(255,255,255,0.4)"}}>8 amhráin · Irish music</div>
+            <div style={{...bd,fontSize:"0.62rem",color:"rgba(255,255,255,0.5)"}}>8 amhráin · Irish music</div>
           </button>
-          <button onClick={()=>{haptic();setPrevView("home");setView("dict");}} style={{background:"linear-gradient(145deg,#0D1A3A,#152A5A)",borderRadius:18,border:"none",cursor:"pointer",padding:"20px 16px",textAlign:"left",boxShadow:"0 4px 20px rgba(0,0,0,0.3)"}}>
+          <button onClick={()=>{haptic();setPrevView("home");setView("dict");}} style={{
+            background:dk?"linear-gradient(145deg,#0D1A3A,#152A5A)":"linear-gradient(145deg,#102040,#1A3570)",
+            borderRadius:18,border:"none",cursor:"pointer",padding:"20px 16px",textAlign:"left",
+            boxShadow:dk?"0 4px 20px rgba(0,0,0,0.3)":"0 4px 20px rgba(20,50,120,0.2)",
+          }}>
             <div style={{fontSize:"1.7rem",marginBottom:12}}>📖</div>
             <div style={{...hd,fontSize:"1.1rem",fontWeight:800,color:"#fff",marginBottom:3}}>Foclóir</div>
-            <div style={{...bd,fontSize:"0.62rem",color:"rgba(255,255,255,0.4)"}}>{VOCAB.length} focal · dictionary</div>
+            <div style={{...bd,fontSize:"0.62rem",color:"rgba(255,255,255,0.5)"}}>{VOCAB.length} focal · dictionary</div>
           </button>
         </div>
 
@@ -2161,7 +2157,6 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
         )}
 
       </div>
-      <BottomNav view={view} setView={setView} setPrevView={setPrevView} c={c} hd={hd} bd={bd}/>
     </div>
   );
 }
