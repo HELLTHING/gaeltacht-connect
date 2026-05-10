@@ -1977,182 +1977,222 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
   }
 
   // ═══════════════════════════════
-  // HOME VIEW — Clean menu
+  // HOME VIEW — App menu
   // ═══════════════════════════════
   const today = new Date();
   const dailyC = getDailyChallenge(DAILY_POOL, today);
   const wod = getWordOfDay(VOCAB, today);
   const dailyDoneToday = st?.dailyLog?.[todayKey()] || false;
-  const irishSeason = getIrishSeason(today);
-  const histFact = getHistoryFact(today);
 
   return(
-    <div style={{minHeight:"100vh",background:c.bg,color:c.tx,display:"flex",flexDirection:"column",paddingBottom:16}}>
+    <div style={{minHeight:"100vh",background:c.bg,color:c.tx,display:"flex",flexDirection:"column"}}>
       <style>{css}</style>
 
-      {/* ── HEADER ── */}
-      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"18px 20px 14px"}}>
-        <div style={{display:"flex",alignItems:"center",gap:10}}>
-          <span style={{fontSize:"1.7rem",lineHeight:1}}>☘️</span>
-          <div>
-            <div style={{...hd,fontSize:"1.15rem",fontWeight:800,color:c.tx,lineHeight:1.1}}>Gaeltacht Connect</div>
-            <div style={{...bd,fontSize:"0.6rem",color:c.tx3,fontStyle:"italic"}}>The old words are listening.</div>
-          </div>
+      {/* ══════════════════════════════════
+          HERO — brand + progress
+      ══════════════════════════════════ */}
+      <div style={{
+        background:"linear-gradient(175deg,#081F12 0%,#0E2A1C 45%,#1B4332 100%)",
+        padding:"0 0 32px",position:"relative",overflow:"hidden",
+        flexShrink:0,
+      }}>
+        {/* decorative shamrock */}
+        <div style={{position:"absolute",right:-28,top:16,fontSize:"14rem",opacity:0.04,lineHeight:1,pointerEvents:"none",transform:"rotate(-8deg)"}}>☘</div>
+
+        {/* top controls */}
+        <div style={{display:"flex",justifyContent:"flex-end",gap:6,padding:"16px 18px 0"}}>
+          <button onClick={toggle} style={{background:"rgba(255,255,255,0.08)",border:"1px solid rgba(255,255,255,0.12)",borderRadius:9,width:34,height:34,cursor:"pointer",color:"rgba(255,255,255,0.65)",fontSize:"0.85rem",display:"flex",alignItems:"center",justifyContent:"center"}}>{dk?"☀️":"🌙"}</button>
+          <button onClick={()=>setView("settings")} style={{background:"rgba(255,255,255,0.08)",border:"1px solid rgba(255,255,255,0.12)",borderRadius:9,width:34,height:34,cursor:"pointer",color:"rgba(255,255,255,0.65)",fontSize:"0.9rem",display:"flex",alignItems:"center",justifyContent:"center"}}>⚙️</button>
         </div>
-        <div style={{display:"flex",gap:6}}>
-          <button onClick={toggle} style={{background:"none",border:`1px solid ${c.bd}`,borderRadius:8,width:34,height:34,cursor:"pointer",color:c.tx3,fontSize:"0.9rem",display:"flex",alignItems:"center",justifyContent:"center"}}>{dk?"☀️":"🌙"}</button>
-          <button onClick={()=>setView("settings")} style={{background:"none",border:`1px solid ${c.bd}`,borderRadius:8,width:34,height:34,cursor:"pointer",color:c.tx3,fontSize:"1rem",display:"flex",alignItems:"center",justifyContent:"center"}}>⚙️</button>
+
+        {/* brand */}
+        <div style={{textAlign:"center",padding:"20px 24px 0"}}>
+          <div style={{fontSize:"3rem",lineHeight:1,marginBottom:14,filter:"drop-shadow(0 0 24px rgba(47,178,100,0.35))"}}>☘️</div>
+          <div style={{...hd,fontSize:"2.1rem",fontWeight:800,color:"#fff",letterSpacing:"0.01em",lineHeight:1.05,marginBottom:8}}>
+            Gaeltacht Connect
+          </div>
+          <div style={{...bd,fontSize:"0.65rem",color:"rgba(255,255,255,0.38)",letterSpacing:"0.22em",textTransform:"uppercase",marginBottom:26}}>
+            An Ghaeilge Bheo · The Living Irish
+          </div>
+
+          {/* progress pill */}
+          <div style={{
+            display:"inline-flex",alignItems:"center",gap:16,
+            background:"rgba(0,0,0,0.3)",backdropFilter:"blur(8px)",
+            border:"1px solid rgba(255,255,255,0.1)",
+            borderRadius:50,padding:"10px 22px",marginBottom:20,
+          }}>
+            <div style={{textAlign:"center"}}>
+              <div style={{...hd,fontSize:"1.4rem",fontWeight:800,color:"#fff",lineHeight:1}}>{total}</div>
+              <div style={{...bd,fontSize:"0.55rem",color:"rgba(255,255,255,0.38)",letterSpacing:"0.08em",textTransform:"uppercase",marginTop:1}}>lá déanta</div>
+            </div>
+            <div style={{width:1,height:28,background:"rgba(255,255,255,0.12)"}}/>
+            <div style={{textAlign:"center"}}>
+              <div style={{...hd,fontSize:"1.4rem",fontWeight:800,color:"rgba(255,255,255,0.35)",lineHeight:1}}>30</div>
+              <div style={{...bd,fontSize:"0.55rem",color:"rgba(255,255,255,0.25)",letterSpacing:"0.08em",textTransform:"uppercase",marginTop:1}}>lá iomlán</div>
+            </div>
+            {st.streak>=2&&<>
+              <div style={{width:1,height:28,background:"rgba(255,255,255,0.12)"}}/>
+              <div style={{textAlign:"center"}}>
+                <div style={{...hd,fontSize:"1.4rem",fontWeight:800,color:"#D4AA30",lineHeight:1}}>🔥{st.streak}</div>
+                <div style={{...bd,fontSize:"0.55rem",color:"rgba(255,255,255,0.38)",letterSpacing:"0.08em",textTransform:"uppercase",marginTop:1}}>sraith</div>
+              </div>
+            </>}
+          </div>
+
+          {/* progress bar */}
+          <div style={{height:3,borderRadius:2,background:"rgba(255,255,255,0.08)",overflow:"hidden",maxWidth:280,margin:"0 auto"}}>
+            <div style={{width:`${pct*100}%`,height:"100%",background:"linear-gradient(90deg,#40916C,#74C69D)",borderRadius:2,transition:"width 1.2s ease"}}/>
+          </div>
         </div>
       </div>
 
-      <div style={{flex:1,maxWidth:520,width:"100%",margin:"0 auto",padding:"0 16px",display:"flex",flexDirection:"column",gap:12}}>
+      {/* ══════════════════════════════════
+          MENU BODY
+      ══════════════════════════════════ */}
+      <div style={{flex:1,maxWidth:520,width:"100%",margin:"0 auto",padding:"20px 16px 24px",display:"flex",flexDirection:"column",gap:14}}>
 
-        {/* ── PROGRESS HERO ── */}
-        <div style={{background:c.hero,borderRadius:22,padding:"22px 22px 18px",color:"#fff",position:"relative",overflow:"hidden",boxShadow:"0 8px 32px rgba(27,67,50,0.28)"}}>
-          <div style={{position:"absolute",right:-16,top:-16,fontSize:"7rem",opacity:0.07,lineHeight:1,pointerEvents:"none"}}>☘️</div>
-          <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:16}}>
-            <div>
-              <div style={{...bd,fontSize:"0.58rem",color:"rgba(255,255,255,0.5)",letterSpacing:"0.12em",textTransform:"uppercase",marginBottom:5}}>Do dhul chun cinn</div>
-              <div style={{...hd,fontSize:"3rem",fontWeight:800,color:"#fff",lineHeight:1}}>
-                {total}<span style={{fontSize:"1.3rem",fontWeight:400,opacity:0.45}}> / 30</span>
-              </div>
-              <div style={{...bd,fontSize:"0.72rem",color:"rgba(255,255,255,0.55)",marginTop:4}}>
-                {total===0?"Tosaigh anois — begin now":total<10?"You've begun. That matters.":total<20?"You're reviving something real.":total<30?`${30-total} days to go`:"Tá Gaeilge agat! 🏆"}
-              </div>
-            </div>
-            <div style={{textAlign:"right",flexShrink:0}}>
-              {st.streak>=1&&<div style={{...hd,fontSize:"1.8rem",color:c.gold,lineHeight:1}}>🔥 {st.streak}</div>}
-              {st.streak>=1&&<div style={{...bd,fontSize:"0.52rem",color:"rgba(255,255,255,0.4)",textTransform:"uppercase",letterSpacing:"0.08em",marginTop:2}}>day streak</div>}
-              {st.bonus.length>0&&<div style={{...bd,fontSize:"0.7rem",color:c.gold,marginTop:8}}>⭐ {st.bonus.length}</div>}
-            </div>
-          </div>
-          <div style={{height:5,borderRadius:3,background:"rgba(255,255,255,0.15)"}}>
-            <div style={{width:`${pct*100}%`,height:"100%",background:"rgba(255,255,255,0.88)",borderRadius:3,transition:"width 1s ease"}}/>
-          </div>
-        </div>
-
-        {/* ── NEW USER WELCOME ── */}
-        {total===0&&(
-          <div style={{background:`linear-gradient(135deg,${c.acc}18,${c.gold}10)`,border:`1.5px solid ${c.acc}40`,borderRadius:20,padding:"20px 20px 18px",position:"relative",overflow:"hidden",animation:"slide-up 0.5s ease"}}>
-            <div style={{position:"absolute",right:-8,top:-8,fontSize:"5rem",opacity:0.07,lineHeight:1,pointerEvents:"none"}}>☘️</div>
-            <div style={{...bd,fontSize:"0.6rem",color:c.acc,letterSpacing:"0.14em",textTransform:"uppercase",fontWeight:700,marginBottom:8}}>Fáilte — Welcome</div>
-            <div style={{...hd,fontSize:"1.3rem",fontWeight:800,color:c.tx,lineHeight:1.25,marginBottom:10}}>
-              Tosaigh do thuras Gaeilge
-            </div>
-            <p style={{...bd,fontSize:"0.82rem",color:c.tx2,lineHeight:1.7,marginBottom:16}}>
-              30 real-world challenges — no grammar tables, no boring tests. Each day teaches you one living phrase from Irish history, then sends you out to use it.
-            </p>
-            <button onClick={()=>{haptic();setPrevView("home");setSelDay(1);setView("day");}} style={{
-              display:"inline-flex",alignItems:"center",gap:8,
-              background:c.acc,border:"none",borderRadius:12,
-              padding:"12px 22px",color:"#fff",cursor:"pointer",
-              ...hd,fontSize:"1rem",fontWeight:700,letterSpacing:"0.01em",
-            }}>
-              Tosaigh Lá 1 →
-            </button>
-          </div>
-        )}
-
-        {/* ── 30 LÁ — Big featured button ── */}
-        <button onClick={()=>{haptic();setPrevView("home");setView("map");}} style={{
-          width:"100%",border:"none",cursor:"pointer",padding:"22px 22px 20px",textAlign:"left",
-          borderRadius:20,position:"relative",overflow:"hidden",
-          background:allDone?"linear-gradient(135deg,#C9A227,#A67C2E)":"linear-gradient(135deg,#1B4332 0%,#2D6A4F 100%)",
-          boxShadow:allDone?"0 6px 28px rgba(201,162,39,0.4)":"0 6px 28px rgba(27,67,50,0.4)",
+        {/* PRIMARY CTA */}
+        <button onClick={()=>{
+          haptic([10,20,10]);
+          setPrevView("home");
+          if(total===0){setSelDay(1);setView("day");}
+          else if(allDone){setView("map");}
+          else{setSelDay(nextDay);setView("day");}
+        }} style={{
+          width:"100%",border:"none",borderRadius:16,cursor:"pointer",
+          padding:"18px 22px",textAlign:"left",
+          background:allDone
+            ?"linear-gradient(135deg,#B8860B,#D4AA30)"
+            :total===0
+              ?"linear-gradient(135deg,#1B4332,#2D6A4F)"
+              :"linear-gradient(135deg,#1B4332,#2D6A4F)",
+          boxShadow:"0 6px 24px rgba(27,67,50,0.45)",
+          display:"flex",alignItems:"center",gap:16,
+          animation:"rise 0.35s ease",
         }}>
-          <div style={{position:"absolute",right:-12,bottom:-20,fontSize:"6rem",opacity:0.1,lineHeight:1,pointerEvents:"none"}}>☘️</div>
-          <div style={{...bd,fontSize:"0.58rem",color:"rgba(255,255,255,0.5)",letterSpacing:"0.14em",textTransform:"uppercase",marginBottom:6}}>30 lá · 30 days</div>
-          <div style={{...hd,fontSize:"1.55rem",fontWeight:800,color:"#fff",lineHeight:1.15,marginBottom:4}}>
-            {allDone?"Tá Gaeilge agat! 🏆":total===0?"Tosaigh anois →":"Filleadh ar aghaidh →"}
+          <div style={{
+            width:52,height:52,borderRadius:14,
+            background:"rgba(255,255,255,0.12)",
+            display:"flex",alignItems:"center",justifyContent:"center",
+            fontSize:"1.6rem",flexShrink:0,
+          }}>
+            {allDone?"🏆":total===0?"☘️":"▶"}
           </div>
-          <div style={{...bd,fontSize:"0.75rem",color:"rgba(255,255,255,0.55)",marginBottom:16}}>
-            {allDone?"All 30 days complete":total===0?"Begin your Irish journey":"Continue where you left off"}
+          <div style={{flex:1}}>
+            <div style={{...bd,fontSize:"0.56rem",color:"rgba(255,255,255,0.45)",letterSpacing:"0.16em",textTransform:"uppercase",marginBottom:4}}>
+              {allDone?"Críochnaithe":total===0?"Tosaigh anois":"Lean ar aghaidh"}
+            </div>
+            <div style={{...hd,fontSize:"1.2rem",fontWeight:800,color:"#fff",lineHeight:1.15}}>
+              {allDone?"Tá Gaeilge agat! 🏆":total===0?"Tosaigh Lá 1 →":`Lá ${nextDay} — ${CH[nextDay-1]?.t||""}`}
+            </div>
+            <div style={{...bd,fontSize:"0.7rem",color:"rgba(255,255,255,0.5)",marginTop:3}}>
+              {allDone?"All 30 days complete":total===0?"Begin your Irish journey":CH[nextDay-1]?.e||""}
+            </div>
           </div>
-          <div style={{display:"flex",gap:3,flexWrap:"wrap"}}>
-            {Array.from({length:30},(_,i)=>(
-              <div key={i} style={{width:8,height:8,borderRadius:2,background:st.done.includes(i+1)?"rgba(255,255,255,0.9)":i+1===nextDay?"rgba(255,255,255,0.38)":"rgba(255,255,255,0.1)"}}/>
-            ))}
-          </div>
+          <div style={{color:"rgba(255,255,255,0.4)",fontSize:"1.4rem",flexShrink:0}}>›</div>
         </button>
 
-        {/* ── 2-COL: Ceol + Foclóir ── */}
-        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
-          <button onClick={()=>{haptic();setPrevView("home");setView("ceol");}} style={{
-            background:dk?"linear-gradient(145deg,#1A0A0A,#2D1515)":"linear-gradient(145deg,#4A1010,#7A2020)",
-            borderRadius:18,border:"none",cursor:"pointer",padding:"20px 16px",textAlign:"left",
-            boxShadow:dk?"0 4px 20px rgba(0,0,0,0.35)":"0 4px 20px rgba(120,20,20,0.25)",
-          }}>
-            <div style={{fontSize:"1.7rem",marginBottom:12}}>🎵</div>
-            <div style={{...hd,fontSize:"1.1rem",fontWeight:800,color:"#fff",marginBottom:3}}>Ceol</div>
-            <div style={{...bd,fontSize:"0.62rem",color:"rgba(255,255,255,0.5)"}}>8 amhráin · Irish music</div>
-          </button>
-          <button onClick={()=>{haptic();setPrevView("home");setView("dict");}} style={{
-            background:dk?"linear-gradient(145deg,#0D1A3A,#152A5A)":"linear-gradient(145deg,#102040,#1A3570)",
-            borderRadius:18,border:"none",cursor:"pointer",padding:"20px 16px",textAlign:"left",
-            boxShadow:dk?"0 4px 20px rgba(0,0,0,0.3)":"0 4px 20px rgba(20,50,120,0.2)",
-          }}>
-            <div style={{fontSize:"1.7rem",marginBottom:12}}>📖</div>
-            <div style={{...hd,fontSize:"1.1rem",fontWeight:800,color:"#fff",marginBottom:3}}>Foclóir</div>
-            <div style={{...bd,fontSize:"0.62rem",color:"rgba(255,255,255,0.5)"}}>{VOCAB.length} focal · dictionary</div>
-          </button>
-        </div>
-
-        {/* ── DAILY CHALLENGE — compact ── */}
+        {/* MENU LIST */}
         <div style={{background:c.card,border:`1px solid ${c.bd}`,borderRadius:18,overflow:"hidden",boxShadow:c.shadow}}>
-          <div style={{height:3,background:TYPE_CLR[dailyC.tp]||c.acc}}/>
-          <div style={{padding:"14px 16px",display:"flex",gap:12,alignItems:"center"}}>
-            <div style={{width:42,height:42,borderRadius:12,background:(TYPE_CLR[dailyC.tp]||c.acc)+"18",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"1.2rem",flexShrink:0}}>{TYPE_ICON[dailyC.tp]}</div>
-            <div style={{flex:1,minWidth:0}}>
-              <div style={{...bd,fontSize:"0.52rem",color:TYPE_CLR[dailyC.tp]||c.acc,letterSpacing:"0.12em",textTransform:"uppercase",fontWeight:700,marginBottom:2}}>Dúshlán an Lae</div>
-              <div style={{...hd,fontSize:"0.92rem",fontWeight:700,color:c.tx,lineHeight:1.25}}>{dailyC.title}</div>
-              <div style={{...bd,fontSize:"0.72rem",color:c.tx3,marginTop:2,lineHeight:1.5,overflow:"hidden",display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical"}}>{dailyC.ch}</div>
-            </div>
-            <button onClick={()=>{if(!dailyDoneToday){haptic([15,30,15]);markDailyDone();}}}
-              style={{flexShrink:0,width:40,height:40,borderRadius:12,background:dailyDoneToday?c.doneBg:(TYPE_CLR[dailyC.tp]||c.acc),border:dailyDoneToday?`1px solid ${c.doneBd}`:"none",display:"flex",alignItems:"center",justifyContent:"center",cursor:dailyDoneToday?"default":"pointer",fontSize:"1rem"}}>
-              {dailyDoneToday?"✅":"→"}
+          {[
+            {
+              icon:"☘️",iconBg:"#1B4332",
+              label:"30 Lá",sub:"The 30-Day Irish Challenge",
+              badge:total>0?`${total}/30`:null,
+              action:()=>{haptic();setPrevView("home");setView("map");},
+            },
+            {
+              icon:"🎵",iconBg:dk?"#4A1010":"#5A1A1A",
+              label:"Ceol",sub:"Irish music · 8 songs & stories",
+              action:()=>{haptic();setPrevView("home");setView("ceol");},
+            },
+            {
+              icon:"📖",iconBg:dk?"#0D1A3A":"#102050",
+              label:"Foclóir",sub:`Dictionary · ${VOCAB.length} words`,
+              action:()=>{haptic();setPrevView("home");setView("dict");},
+            },
+            {
+              icon:TYPE_ICON[dailyC.tp]||"🎯",iconBg:TYPE_CLR[dailyC.tp]||c.acc,
+              label:"Dúshlán an Lae",sub:dailyDoneToday?"✅ Done today — "+dailyC.title:dailyC.title,
+              badge:dailyDoneToday?"✓":null,badgeGreen:true,
+              action:()=>{if(!dailyDoneToday){haptic([15,30,15]);markDailyDone();}},
+            },
+            {
+              icon:"📊",iconBg:"#3A2A6A",
+              label:"Staitisticí",sub:"My progress & achievements",
+              action:()=>{haptic();setPrevView("home");setView("stats");},
+            },
+          ].map((item,i,arr)=>(
+            <button key={i} onClick={item.action} style={{
+              width:"100%",display:"flex",alignItems:"center",gap:14,
+              padding:"14px 16px",background:"none",border:"none",
+              borderBottom:i<arr.length-1?`1px solid ${c.bd}`:"none",
+              cursor:"pointer",textAlign:"left",transition:"background 0.15s",
+            }}>
+              <div style={{
+                width:42,height:42,borderRadius:12,flexShrink:0,
+                background:item.iconBg,
+                display:"flex",alignItems:"center",justifyContent:"center",
+                fontSize:"1.15rem",
+              }}>{item.icon}</div>
+              <div style={{flex:1,minWidth:0}}>
+                <div style={{...hd,fontSize:"1rem",fontWeight:700,color:c.tx,lineHeight:1.2}}>{item.label}</div>
+                <div style={{...bd,fontSize:"0.68rem",color:c.tx3,marginTop:2,overflow:"hidden",whiteSpace:"nowrap",textOverflow:"ellipsis"}}>{item.sub}</div>
+              </div>
+              {item.badge&&(
+                <div style={{
+                  ...bd,fontSize:"0.62rem",fontWeight:700,flexShrink:0,
+                  color:item.badgeGreen?"#fff":c.acc,
+                  background:item.badgeGreen?"#2D6A4F":c.acc+"18",
+                  borderRadius:8,padding:"3px 8px",
+                  border:`1px solid ${item.badgeGreen?"#2D6A4F":c.acc+"33"}`,
+                }}>{item.badge}</div>
+              )}
+              {!item.badge&&<div style={{color:c.tx3,fontSize:"1.1rem",opacity:0.4,flexShrink:0}}>›</div>}
             </button>
-          </div>
+          ))}
         </div>
 
-        {/* ── BOTTOM ROW: Stats + Focal ── */}
-        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
-          <button onClick={()=>{haptic();setPrevView("home");setView("stats");}} style={{background:c.card,border:`1px solid ${c.bd}`,borderRadius:16,padding:"16px 14px",textAlign:"left",cursor:"pointer",boxShadow:c.shadow}}>
-            <div style={{fontSize:"1.4rem",marginBottom:8}}>📊</div>
-            <div style={{...hd,fontSize:"1rem",fontWeight:700,color:c.tx,marginBottom:2}}>Staitisticí</div>
-            <div style={{...bd,fontSize:"0.6rem",color:c.tx3}}>Progress & achievements</div>
-          </button>
-          <div style={{background:c.card,border:`1px solid ${c.bd}`,borderRadius:16,padding:"16px 14px",boxShadow:c.shadow}}>
-            <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:8}}>
-              <div style={{...bd,fontSize:"0.52rem",color:c.tx3,letterSpacing:"0.1em",textTransform:"uppercase"}}>Focal an Lae</div>
-              <button onClick={()=>speak(wod.p)} style={{background:"none",border:"none",cursor:"pointer",fontSize:"0.9rem",padding:0,lineHeight:1,opacity:speakLoading?0.4:1}}>{speakLoading?"⏳":"🔊"}</button>
-            </div>
-            <div style={{...hd,fontSize:"1.05rem",fontWeight:700,color:c.acc,fontStyle:"italic",lineHeight:1.2}}>{wod.p}</div>
-            <div style={{...bd,fontSize:"0.65rem",color:c.tx3,marginTop:3}}>{wod.m}</div>
+        {/* FOCAL AN LAE */}
+        <div style={{
+          background:c.card,border:`1px solid ${c.bd}`,borderRadius:16,
+          padding:"14px 16px 13px",boxShadow:c.shadow,
+          display:"flex",alignItems:"center",gap:14,
+        }}>
+          <div style={{width:42,height:42,borderRadius:12,background:c.acc+"15",border:`1px solid ${c.acc}22`,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,fontSize:"1.1rem"}}>📝</div>
+          <div style={{flex:1,minWidth:0}}>
+            <div style={{...bd,fontSize:"0.54rem",color:c.tx3,letterSpacing:"0.12em",textTransform:"uppercase",marginBottom:3}}>Focal an Lae</div>
+            <div style={{...hd,fontSize:"1.05rem",fontWeight:700,color:c.acc,fontStyle:"italic"}}>{wod.p}</div>
+            <div style={{...bd,fontSize:"0.68rem",color:c.tx3,marginTop:1}}>{wod.m} · /{wod.pr}/</div>
           </div>
+          <button onClick={()=>speak(wod.p)} style={{
+            background:c.acc+"15",border:`1px solid ${c.acc}22`,
+            borderRadius:10,width:38,height:38,flexShrink:0,
+            display:"flex",alignItems:"center",justifyContent:"center",
+            cursor:"pointer",fontSize:"1rem",opacity:speakLoading?0.4:1,
+          }}>{speakLoading?"⏳":"🔊"}</button>
         </div>
 
-        {/* ── FÍRIC AN LAE ── */}
-        <div style={{background:c.card,border:`1px solid ${c.bd}`,borderRadius:16,padding:"14px 16px",boxShadow:c.shadow,position:"relative",overflow:"hidden"}}>
-          <div style={{position:"absolute",top:0,left:0,right:0,height:3,background:`linear-gradient(90deg,${c.gold},${c.gold}55)`}}/>
-          <div style={{...bd,fontSize:"0.52rem",color:c.gold,letterSpacing:"0.12em",textTransform:"uppercase",fontWeight:700,marginBottom:7}}>
-            {irishSeason.icon} Fíric an Lae · {irishSeason.name}
-          </div>
-          <p style={{...bd,fontSize:"0.8rem",color:c.tx2,lineHeight:1.75,margin:0}}>{histFact}</p>
-        </div>
-
-        {/* ── PWA INSTALL ── */}
+        {/* PWA INSTALL */}
         {installPrompt&&!installed&&(
           <button onClick={async()=>{
             installPrompt.prompt();
             const{outcome}=await installPrompt.userChoice;
             if(outcome==="accepted"){setInstalled(true);setInstallPrompt(null);}
-          }} style={{width:"100%",padding:"14px 18px",borderRadius:16,background:`linear-gradient(135deg,${c.acc},#2D6A4F)`,border:"none",color:"#fff",display:"flex",alignItems:"center",gap:12,cursor:"pointer",boxShadow:`0 4px 20px ${c.acc}44`}}>
-            <span style={{fontSize:"1.4rem"}}>📲</span>
+          }} style={{
+            width:"100%",padding:"13px 18px",borderRadius:14,
+            background:`linear-gradient(135deg,${c.acc},#2D6A4F)`,
+            border:"none",color:"#fff",
+            display:"flex",alignItems:"center",gap:12,cursor:"pointer",
+            boxShadow:`0 4px 16px ${c.acc}44`,
+          }}>
+            <span style={{fontSize:"1.3rem"}}>📲</span>
             <div style={{textAlign:"left",flex:1}}>
-              <div style={{...hd,fontSize:"0.95rem",fontWeight:700}}>Suiteáil an aip</div>
-              <div style={{...bd,fontSize:"0.68rem",opacity:0.8,marginTop:2}}>Install · Works offline</div>
+              <div style={{...hd,fontSize:"0.9rem",fontWeight:700}}>Suiteáil an aip</div>
+              <div style={{...bd,fontSize:"0.65rem",opacity:0.75,marginTop:1}}>Install · Works offline</div>
             </div>
-            <span style={{opacity:0.7}}>→</span>
+            <span style={{opacity:0.6,fontSize:"1.1rem"}}>›</span>
           </button>
         )}
 
