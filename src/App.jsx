@@ -1092,7 +1092,7 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
         {/* Exit button */}
         <button onClick={()=>{setView(prevView||"home");setQuiz(null);setQuizDone(false);}} style={{position:"fixed",top:16,left:16,background:c.card,border:`1px solid ${c.bd}`,borderRadius:10,padding:"8px 14px",cursor:"pointer",display:"flex",alignItems:"center",gap:6,color:c.tx,...bd,fontSize:"0.85rem",fontWeight:600,zIndex:10}}>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
-          Ar ais
+          Ar ais <span style={{opacity:0.5,fontWeight:400,fontSize:"0.75rem"}}>· Back</span>
         </button>
         <div style={{maxWidth:420,width:"100%"}}>
           {!quizDone?(
@@ -1100,7 +1100,7 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
               {/* Header */}
               <div style={{textAlign:"center",marginBottom:28,animation:"rise 0.5s ease"}}>
                 <div style={{...bd,fontSize:"0.7rem",color:c.tx3,letterSpacing:"0.14em",textTransform:"uppercase",marginBottom:8}}>
-                  {quizType==="daily"?"Cluiche an Lae":`Seachtain ${weekNum} · Quiz`} · {quizIdx+1} / {quiz.length}
+                  {quizType==="daily"?"Cluiche an Lae · Daily Quiz":`Seachtain ${weekNum} · Week Quiz`} · {quizIdx+1} / {quiz.length}
                 </div>
                 <h2 style={{...hd,fontSize:"1.3rem",fontWeight:700,color:c.tx}}>What does this mean?</h2>
               </div>
@@ -1117,7 +1117,7 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
                 <div style={{...hd,fontSize:"1.8rem",fontWeight:700,color:c.acc,marginBottom:8}}>{q.phrase}</div>
                 <button onClick={()=>speak(q.phrase)} style={{background:"none",border:`1px solid ${c.phraseBd}`,borderRadius:20,padding:"5px 14px",color:c.acc,...bd,fontSize:"0.8rem",cursor:"pointer",display:"inline-flex",alignItems:"center",gap:6}}>
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M15.54 8.46a5 5 0 010 7.07" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round"/></svg>
-                  Éist
+                  Éist · Listen
                 </button>
               </div>
 
@@ -1217,8 +1217,8 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
         {locked?(
           <div style={{padding:"100px 32px",textAlign:"center",animation:"rise 0.5s ease"}}>
             <div style={{fontSize:"3rem",marginBottom:16,opacity:0.4}}>🔒</div>
-            <div style={{...hd,fontSize:"1.3rem",color:c.tx3,marginBottom:8}}>Glasáilte</div>
-            <p style={{...bd,fontSize:"0.9rem",color:c.tx3}}>Complete Lá {ch.day-1} first.</p>
+            <div style={{...hd,fontSize:"1.3rem",color:c.tx3,marginBottom:4}}>Glasáilte <span style={{fontWeight:400,fontSize:"0.9rem",opacity:0.6}}>· Locked</span></div>
+            <p style={{...bd,fontSize:"0.9rem",color:c.tx3}}>Complete Day {ch.day-1} first.</p>
           </div>
         ):(
           <div style={{maxWidth:520,margin:"0 auto",padding:"0 20px 20px",animation:"rise 0.4s ease"}}>
@@ -1278,7 +1278,7 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
               </div>
               {done&&!bDone&&(
                 <button onClick={()=>doBonus(ch.day)} style={{background:"none",border:`1px solid ${c.gold}88`,borderRadius:8,padding:"6px 14px",color:c.gold,...bd,fontSize:"0.78rem",fontWeight:700,cursor:"pointer",flexShrink:0}}>
-                  Déanta
+                  Déanta · Done
                 </button>
               )}
               {bDone&&<span style={{fontSize:"1.1rem"}}>✅</span>}
@@ -1453,7 +1453,7 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
         <div style={{background:c.hero,padding:"20px 20px 20px"}}>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
             <div style={{display:"flex",alignItems:"center",gap:10}}>
-              <button onClick={()=>setView("home")} style={{display:"flex",alignItems:"center",gap:6,background:"rgba(255,255,255,0.12)",border:"1px solid rgba(255,255,255,0.2)",borderRadius:10,padding:"7px 12px",cursor:"pointer",color:"rgba(255,255,255,0.85)",...bd,fontSize:"0.82rem",fontWeight:600}}>← Baile</button>
+              <button onClick={()=>setView("home")} style={{display:"flex",alignItems:"center",gap:6,background:"rgba(255,255,255,0.12)",border:"1px solid rgba(255,255,255,0.2)",borderRadius:10,padding:"7px 12px",cursor:"pointer",color:"rgba(255,255,255,0.85)",...bd,fontSize:"0.82rem",fontWeight:600}}>← Baile <span style={{opacity:0.5,fontWeight:400,fontSize:"0.72rem"}}>· Home</span></button>
               <h1 style={{...hd,fontSize:"1.6rem",color:"#fff"}}>📖 Foclóir</h1>
             </div>
             <button onClick={toggle} style={{background:"rgba(255,255,255,0.1)",border:"1px solid rgba(255,255,255,0.2)",borderRadius:8,width:34,height:34,cursor:"pointer",color:"#fff",fontSize:"0.9rem"}}>{theme==="coill"?"🌲":theme==="parchment"?"📜":"🌙"}</button>
@@ -1509,7 +1509,7 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
         <style>{css}</style>
         <div style={{background:c.hero,padding:"20px 20px 32px",textAlign:"center"}}>
           <div style={{display:"flex",justifyContent:"flex-start",marginBottom:16}}>
-            <button onClick={()=>setView("home")} style={{display:"flex",alignItems:"center",gap:6,background:"rgba(255,255,255,0.12)",border:"1px solid rgba(255,255,255,0.2)",borderRadius:10,padding:"7px 12px",cursor:"pointer",color:"rgba(255,255,255,0.85)",...bd,fontSize:"0.82rem",fontWeight:600}}>← Baile</button>
+            <button onClick={()=>setView("home")} style={{display:"flex",alignItems:"center",gap:6,background:"rgba(255,255,255,0.12)",border:"1px solid rgba(255,255,255,0.2)",borderRadius:10,padding:"7px 12px",cursor:"pointer",color:"rgba(255,255,255,0.85)",...bd,fontSize:"0.82rem",fontWeight:600}}>← Baile <span style={{opacity:0.5,fontWeight:400,fontSize:"0.72rem"}}>· Home</span></button>
           </div>
           <h1 style={{...hd,fontSize:"1.4rem",fontWeight:800,color:"#fff",marginBottom:4}}>Mo Dhul Chun Cinn</h1>
           <p style={{...bd,fontSize:"0.82rem",color:"rgba(255,255,255,0.65)",marginBottom:20}}>My Progress</p>
@@ -1634,10 +1634,9 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
         <style>{css}</style>
         <div style={{background:c.hero,padding:"20px 20px 20px"}}>
           <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:12}}>
-            <button onClick={()=>setView("home")} style={{display:"flex",alignItems:"center",gap:6,background:"rgba(255,255,255,0.12)",border:"1px solid rgba(255,255,255,0.2)",borderRadius:10,padding:"7px 12px",cursor:"pointer",color:"rgba(255,255,255,0.85)",...bd,fontSize:"0.82rem",fontWeight:600}}>← Baile</button>
+            <button onClick={()=>setView("home")} style={{display:"flex",alignItems:"center",gap:6,background:"rgba(255,255,255,0.12)",border:"1px solid rgba(255,255,255,0.2)",borderRadius:10,padding:"7px 12px",cursor:"pointer",color:"rgba(255,255,255,0.85)",...bd,fontSize:"0.82rem",fontWeight:600}}>← Baile <span style={{opacity:0.5,fontWeight:400,fontSize:"0.72rem"}}>· Home</span></button>
           </div>
-          <h1 style={{...hd,fontSize:"1.8rem",color:"#fff"}}>⚙️ Socruithe</h1>
-          <p style={{...bd,fontSize:"0.78rem",color:"rgba(255,255,255,0.6)",marginTop:4}}>Settings</p>
+          <h1 style={{...hd,fontSize:"1.8rem",color:"#fff"}}>⚙️ Socruithe <span style={{fontWeight:400,fontSize:"1.1rem",opacity:0.55}}>· Settings</span></h1>
         </div>
         <div style={{maxWidth:500,margin:"0 auto",padding:"20px 16px"}}>
 
@@ -1872,7 +1871,7 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
           <div style={{maxWidth:520,margin:"0 auto"}}>
             <button onClick={()=>{stopMelody();setPlayingSong(null);setOpenSong(null);setView(prevView||"home");}}
               style={{display:"flex",alignItems:"center",gap:6,background:"rgba(255,255,255,0.1)",border:"1px solid rgba(255,255,255,0.2)",borderRadius:10,padding:"7px 14px",cursor:"pointer",color:"rgba(255,255,255,0.8)",...bd,fontSize:"0.85rem",marginBottom:16}}>
-              ← Ar ais
+              ← Ar ais <span style={{opacity:0.5,fontWeight:400,fontSize:"0.72rem"}}>· Back</span>
             </button>
             <div style={{...bd,fontSize:"0.7rem",color:"rgba(255,255,255,0.45)",letterSpacing:"0.14em",textTransform:"uppercase",marginBottom:6}}>Ceol na hÉireann</div>
             <h1 style={{...hd,fontSize:"1.7rem",fontWeight:700,color:"#fff",margin:"0 0 6px",lineHeight:1.2}}>Irish Music</h1>
@@ -1985,8 +1984,8 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
         <div style={{background:c.hero,padding:"20px 20px 28px"}}>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:18}}>
             <div style={{display:"flex",alignItems:"center",gap:10}}>
-              <button onClick={()=>setView("home")} style={{display:"flex",alignItems:"center",gap:6,background:"rgba(255,255,255,0.12)",border:"1px solid rgba(255,255,255,0.2)",borderRadius:10,padding:"7px 12px",cursor:"pointer",color:"rgba(255,255,255,0.85)",...bd,fontSize:"0.82rem",fontWeight:600}}>← Baile</button>
-              <h1 style={{...hd,fontSize:"1.3rem",fontWeight:800,color:"#fff",margin:0}}>☘️ 30 Lá</h1>
+              <button onClick={()=>setView("home")} style={{display:"flex",alignItems:"center",gap:6,background:"rgba(255,255,255,0.12)",border:"1px solid rgba(255,255,255,0.2)",borderRadius:10,padding:"7px 12px",cursor:"pointer",color:"rgba(255,255,255,0.85)",...bd,fontSize:"0.82rem",fontWeight:600}}>← Baile <span style={{opacity:0.5,fontWeight:400,fontSize:"0.72rem"}}>· Home</span></button>
+              <h1 style={{...hd,fontSize:"1.3rem",fontWeight:800,color:"#fff",margin:0}}>☘️ 30 Lá <span style={{fontWeight:400,fontSize:"0.9rem",opacity:0.5}}>· Days</span></h1>
             </div>
             <button onClick={toggle} style={{background:"rgba(255,255,255,0.15)",border:"none",borderRadius:10,width:32,height:32,cursor:"pointer",color:"#fff",fontSize:"0.85rem"}}>{theme==="coill"?"🌲":theme==="parchment"?"📜":"🌙"}</button>
           </div>
