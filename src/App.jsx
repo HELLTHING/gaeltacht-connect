@@ -806,6 +806,16 @@ const makeQuiz = (done) => {
   });
 };
 
+// Celebration proverbs — cycle by day number
+const CELEB_PROV = [
+  {ga:"Mol an óige agus tiocfaidh sí",en:"Praise the young and they will flourish"},
+  {ga:"Is fearr Gaeilge briste ná Béarla cliste",en:"Broken Irish beats clever English"},
+  {ga:"Giorraíonn beirt bóthar",en:"Two people shorten a road"},
+  {ga:"Maireann croí éadrom i bhfad",en:"A light heart lives long"},
+  {ga:"Ní neart go cur le chéile",en:"No strength without unity"},
+  {ga:"An rud is annamh is iontach",en:"What is rare is wonderful"},
+];
+
 // Confetti component
 const Confetti = () => {
   const pieces = Array.from({length:50},(_,i)=>({
@@ -867,7 +877,7 @@ export default function App() {
   },[]);
 
   useEffect(()=>{(async()=>{
-    const s=await loadS();
+    const [s]=await Promise.all([loadS(),new Promise(r=>setTimeout(r,1700))]);
     if(s){setSt(s);if(s.theme&&THEMES[s.theme])setTheme(s.theme);}
     else{const i={done:[],bonus:[],tasksDone:[],streak:0,best:0,theme:"coill",onboarded:true,started:new Date().toISOString(),dailyLog:{},county:null,notifEnabled:false};await saveS(i);setSt(i)}
     setLoading(false);
@@ -991,7 +1001,52 @@ export default function App() {
     setView("home");setSelDay(null);
   };
 
-  if(loading) return (<div style={{minHeight:"100vh",background:"#1B4332"}}/>);
+  if(loading) return (
+    <div style={{
+      minHeight:"100vh",
+      background:`linear-gradient(180deg,${c.bg2||"#0D1F0F"} 0%,${c.bg} 60%)`,
+      display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",
+      position:"fixed",inset:0,
+    }}>
+      <style>{`
+        @keyframes shamrockIn{0%{transform:scale(0) rotate(-20deg);opacity:0}65%{transform:scale(1.18) rotate(6deg);opacity:1}100%{transform:scale(1) rotate(0deg);opacity:1}}
+        @keyframes fadeUpIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+        @keyframes goldPulse{0%,100%{box-shadow:0 0 30px rgba(200,150,62,0.15),0 12px 40px rgba(0,0,0,0.5)}50%{box-shadow:0 0 60px rgba(200,150,62,0.35),0 12px 40px rgba(0,0,0,0.5)}}
+        .sp-sh{animation:shamrockIn 0.9s cubic-bezier(0.34,1.56,0.64,1) both}
+        .sp-t1{animation:fadeUpIn 0.7s 0.55s ease both;opacity:0}
+        .sp-t2{animation:fadeUpIn 0.6s 0.85s ease both;opacity:0}
+        .sp-dv{animation:fadeUpIn 0.5s 1.1s ease both;opacity:0}
+      `}</style>
+
+      <div className="sp-sh" style={{
+        width:90,height:90,borderRadius:28,
+        background:"linear-gradient(145deg,#0E2A1C,#1B4332)",
+        border:`2px solid ${c.gold}66`,
+        animation:"shamrockIn 0.9s cubic-bezier(0.34,1.56,0.64,1) both, goldPulse 2s 0.9s ease-in-out infinite",
+        display:"flex",alignItems:"center",justifyContent:"center",
+        fontSize:"2.9rem",marginBottom:26,
+      }}>☘️</div>
+
+      <div className="sp-t1" style={{
+        fontFamily:"'Playfair Display',Georgia,serif",
+        fontSize:"2.2rem",fontWeight:900,color:c.tx,
+        letterSpacing:"-0.025em",lineHeight:1,marginBottom:11,textAlign:"center",
+      }}>Gaeltacht Connect</div>
+
+      <div className="sp-t2" style={{
+        fontFamily:"'Lato',system-ui,sans-serif",
+        fontSize:"0.55rem",color:c.gold,
+        letterSpacing:"0.32em",textTransform:"uppercase",fontWeight:700,
+        marginBottom:28,
+      }}>An Ghaeilge Bheo</div>
+
+      <div className="sp-dv" style={{display:"flex",alignItems:"center",gap:11,width:190}}>
+        <div style={{flex:1,height:1,background:`linear-gradient(90deg,transparent,${c.gold}55)`}}/>
+        <div style={{color:c.gold,fontSize:"0.75rem",opacity:0.7,letterSpacing:"0.05em"}}>✦ ✦ ✦</div>
+        <div style={{flex:1,height:1,background:`linear-gradient(90deg,${c.gold}55,transparent)`}}/>
+      </div>
+    </div>
+  );
   if(!st)return null;
 
   const total=st.done.length;
@@ -1278,57 +1333,95 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
         )}
 
         {/* ── CELEBRATIONS ── */}
-        {celeb==="day"&&(
+        {celeb==="day"&&(()=>{
+          const prov=CELEB_PROV[(selDay||1)%CELEB_PROV.length];
+          return(
           <>
             <Confetti/>
-            <div onClick={()=>setCeleb(null)} style={{position:"fixed",inset:0,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",background:"rgba(27,67,50,0.96)",zIndex:100,backdropFilter:"blur(8px)"}}>
-              {/* Radiating rings */}
-              <div style={{position:"absolute",width:260,height:260,borderRadius:"50%",border:"1px solid rgba(255,255,255,0.08)",animation:"pulse-ring 2s ease-out infinite"}}/>
-              <div style={{position:"absolute",width:200,height:200,borderRadius:"50%",border:"1px solid rgba(255,255,255,0.12)",animation:"pulse-ring 2s 0.4s ease-out infinite"}}/>
-              <div style={{position:"absolute",width:140,height:140,borderRadius:"50%",border:"1px solid rgba(255,255,255,0.18)",animation:"pulse-ring 2s 0.8s ease-out infinite"}}/>
+            <div onClick={()=>setCeleb(null)} style={{position:"fixed",inset:0,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",background:c.celebBg,zIndex:100,backdropFilter:"blur(10px)"}}>
 
-              <div style={{textAlign:"center",animation:"pop 0.6s cubic-bezier(0.34,1.56,0.64,1)",padding:"0 32px",position:"relative"}}>
-                {/* Big shamrock */}
-                <div style={{fontSize:"5rem",marginBottom:8,animation:"shamrock-spin 0.8s cubic-bezier(0.34,1.56,0.64,1) both"}}>☘️</div>
+              {/* Outer glow rings */}
+              <div style={{position:"absolute",width:340,height:340,borderRadius:"50%",border:`1px solid ${c.gold}18`,animation:"pulse-ring 2.4s ease-out infinite"}}/>
+              <div style={{position:"absolute",width:240,height:240,borderRadius:"50%",border:`1px solid ${c.gold}28`,animation:"pulse-ring 2.4s 0.5s ease-out infinite"}}/>
+              <div style={{position:"absolute",width:160,height:160,borderRadius:"50%",border:`1px solid ${c.gold}40`,animation:"pulse-ring 2.4s 1s ease-out infinite"}}/>
 
-                {/* Main title */}
-                <div style={{...hd,fontSize:"3rem",color:"#fff",marginBottom:6,letterSpacing:"0.02em"}}>Maith thú!</div>
-                <div style={{...bd,fontSize:"0.88rem",color:"rgba(255,255,255,0.55)",fontStyle:"italic",marginBottom:20}}>Well done!</div>
+              {/* Gold sparkle dots */}
+              {[0,45,90,135,180,225,270,315].map((deg,i)=>(
+                <div key={i} style={{
+                  position:"absolute",
+                  width:7,height:7,borderRadius:"50%",
+                  background:c.gold,
+                  boxShadow:`0 0 10px ${c.gold}`,
+                  left:`calc(50% + ${Math.cos(deg*Math.PI/180)*130}px - 3.5px)`,
+                  top:`calc(50% + ${Math.sin(deg*Math.PI/180)*130}px - 3.5px)`,
+                  animation:`shimmer 1.8s ${i*0.18}s ease-in-out infinite`,
+                }}/>
+              ))}
 
-                {/* Day pill */}
-                <div style={{display:"inline-block",background:"rgba(255,255,255,0.12)",border:"1px solid rgba(255,255,255,0.2)",borderRadius:20,padding:"8px 24px",marginBottom:16}}>
-                  <span style={{...hd,fontSize:"1.1rem",color:"#fff"}}>Lá {selDay}</span>
-                  <span style={{...bd,fontSize:"0.82rem",color:"rgba(255,255,255,0.55)",marginLeft:8}}>of 30</span>
+              <div style={{textAlign:"center",animation:"pop 0.7s cubic-bezier(0.34,1.56,0.64,1)",padding:"0 28px",position:"relative",zIndex:1,maxWidth:340}}>
+
+                {/* Big shamrock with golden glow */}
+                <div style={{
+                  fontSize:"6.5rem",marginBottom:10,lineHeight:1,
+                  animation:"shamrock-spin 0.9s cubic-bezier(0.34,1.56,0.64,1) both",
+                  filter:`drop-shadow(0 0 24px ${c.gold}80)`,
+                }}>☘️</div>
+
+                {/* Main headline */}
+                <div style={{...hd,fontSize:"3.2rem",fontWeight:900,color:"#fff",lineHeight:1,marginBottom:4,
+                  textShadow:`0 0 40px ${c.gold}60`}}>Maith thú!</div>
+                <div style={{...bd,fontSize:"0.85rem",color:`${c.gold}CC`,fontStyle:"italic",letterSpacing:"0.05em",marginBottom:20}}>
+                  — Well done! —
                 </div>
 
-                {/* Streak bonus */}
-                {st.streak>=2&&(
-                  <div style={{...bd,fontSize:"0.88rem",color:c.gold,marginBottom:12}}>
-                    🔥 {st.streak} day streak!
+                {/* Day + streak row */}
+                <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:10,marginBottom:18,flexWrap:"wrap"}}>
+                  <div style={{background:"rgba(255,255,255,0.1)",border:"1px solid rgba(255,255,255,0.18)",borderRadius:22,padding:"7px 20px"}}>
+                    <span style={{...hd,fontSize:"1.05rem",color:"#fff"}}>Lá {selDay}</span>
+                    <span style={{...bd,fontSize:"0.78rem",color:"rgba(255,255,255,0.45)",marginLeft:7}}>/ 30</span>
                   </div>
-                )}
+                  {st.streak>=2&&(
+                    <div style={{background:`${c.gold}20`,border:`1px solid ${c.gold}40`,borderRadius:22,padding:"7px 16px"}}>
+                      <span style={{...bd,fontSize:"0.88rem",color:c.gold}}>🔥 {st.streak} lá streak</span>
+                    </div>
+                  )}
+                </div>
 
                 {/* Week milestone */}
                 {[7,14,21].includes(selDay)&&(
-                  <div style={{background:"rgba(201,162,39,0.15)",border:"1px solid rgba(201,162,39,0.3)",borderRadius:12,padding:"10px 20px",marginBottom:12}}>
-                    <div style={{...hd,fontSize:"1rem",color:c.gold}}>Week {selDay/7} complete! 🏆</div>
-                    <div style={{...bd,fontSize:"0.75rem",color:"rgba(255,255,255,0.5)",marginTop:4}}>Quiz coming up…</div>
+                  <div style={{background:`${c.gold}18`,border:`1px solid ${c.gold}40`,borderRadius:14,padding:"11px 20px",marginBottom:14}}>
+                    <div style={{...hd,fontSize:"1rem",color:c.gold}}>⭐ Week {selDay/7} complete!</div>
+                    <div style={{...bd,fontSize:"0.73rem",color:"rgba(255,255,255,0.45)",marginTop:3}}>Quiz coming up…</div>
                   </div>
                 )}
 
                 {/* 30 days! */}
                 {selDay===30&&(
-                  <div style={{background:"rgba(201,162,39,0.2)",border:"1px solid rgba(201,162,39,0.4)",borderRadius:12,padding:"12px 20px",marginBottom:12}}>
-                    <div style={{...hd,fontSize:"1.2rem",color:c.gold}}>Tá Gaeilge agat! 🎊</div>
-                    <div style={{...bd,fontSize:"0.78rem",color:"rgba(255,255,255,0.6)",marginTop:4}}>You have Irish. All 30 days done.</div>
+                  <div style={{background:`${c.gold}20`,border:`1px solid ${c.gold}50`,borderRadius:14,padding:"13px 20px",marginBottom:14}}>
+                    <div style={{...hd,fontSize:"1.3rem",color:c.gold}}>Tá Gaeilge agat! 🏆</div>
+                    <div style={{...bd,fontSize:"0.78rem",color:"rgba(255,255,255,0.55)",marginTop:4}}>All 30 days. You did it.</div>
                   </div>
                 )}
 
-                <div style={{...bd,fontSize:"0.7rem",color:"rgba(255,255,255,0.3)",marginTop:24}}>tap to continue</div>
+                {/* Irish proverb */}
+                <div style={{
+                  borderTop:"1px solid rgba(255,255,255,0.1)",
+                  paddingTop:16,marginTop:4,
+                }}>
+                  <div style={{...hd,fontSize:"0.95rem",fontStyle:"italic",color:`${c.gold}DD`,lineHeight:1.4,marginBottom:5}}>
+                    "{prov.ga}"
+                  </div>
+                  <div style={{...bd,fontSize:"0.62rem",color:"rgba(255,255,255,0.35)",letterSpacing:"0.04em"}}>
+                    {prov.en}
+                  </div>
+                </div>
+
+                <div style={{...bd,fontSize:"0.65rem",color:"rgba(255,255,255,0.25)",marginTop:22,letterSpacing:"0.08em"}}>tap to continue</div>
               </div>
             </div>
           </>
-        )}
+          );
+        })()}
         {celeb==="bonus"&&(
           <div style={{position:"fixed",top:20,left:"50%",transform:"translateX(-50%)",zIndex:100,background:c.card,border:`1px solid ${c.gold}44`,borderRadius:12,padding:"10px 24px",...hd,fontSize:"0.9rem",color:c.gold,animation:"pop 0.3s",boxShadow:c.shadow}}>
             ⭐ Bonus déanta!
