@@ -122,23 +122,23 @@ const THEMES = {
     hero:"#1B4332",
     ink:"#1B4332",
   },
-  oiche: {   // Oíche = Midnight — very dark, emerald accents
+  oiche: {   // Farraige = Atlantic Ocean — deep blue, Irish sea
     dark:true,
-    bg:"#080C08",bg2:"#0C120C",card:"#0F160F",cardAlt:"#131A13",
-    phrase:"#141E14",phraseBd:"#2A4030",
-    tx:"#E8F0E8",tx2:"#B0C4B0",tx3:"#607060",
-    acc:"#6FCF97",acc2:"#4AB87A",gold:"#D4AA30",green:"#6FCF97",
-    bd:"#1E2E1E",shadow:"0 2px 12px rgba(0,0,0,0.5)",
-    doneBg:"#0E2018",doneBd:"#1E4030",doneTx:"#6FCF97",
-    nextBd:"#6FCF97",
-    tipBg:"#14140A",tipBd:"#2A2810",tipTx:"#C8B870",
-    btn:"#2D6A4F",btnTx:"#fff",
-    progBg:"#111811",progFill:"linear-gradient(90deg,#2D6A4F,#D4AA30)",
-    celebBg:"rgba(8,12,8,0.96)",
-    dotOn:"#6FCF97",dotOff:"#1E2E1E",dotDone:"#6FCF97",
-    nav:"#0F160F",navBd:"#1E2E1E",
-    hero:"#0A1A10",
-    ink:"#1E2E1E",
+    bg:"#050C12",bg2:"#081018",card:"#0C1620",cardAlt:"#101C28",
+    phrase:"#101C28",phraseBd:"rgba(79,172,219,0.3)",
+    tx:"#E4EEF8",tx2:"#A8C4D8",tx3:"rgba(228,238,248,0.4)",
+    acc:"#4FACDB",acc2:"#3A8BB8",gold:"#7ECFEA",green:"#4FACDB",
+    bd:"rgba(79,172,219,0.18)",shadow:"0 2px 20px rgba(0,0,0,0.45)",
+    doneBg:"rgba(27,67,100,0.3)",doneBd:"rgba(45,100,150,0.4)",doneTx:"#7ECFEA",
+    nextBd:"#4FACDB",
+    tipBg:"rgba(79,172,219,0.08)",tipBd:"rgba(79,172,219,0.2)",tipTx:"#7ECFEA",
+    btn:"#1A4060",btnTx:"#E4EEF8",
+    progBg:"rgba(255,255,255,0.08)",progFill:"linear-gradient(90deg,#1A4060,#4FACDB)",
+    celebBg:"rgba(5,12,18,0.96)",
+    dotOn:"#4FACDB",dotOff:"rgba(255,255,255,0.12)",dotDone:"#7ECFEA",
+    nav:"#0C1620",navBd:"rgba(79,172,219,0.18)",
+    hero:"#071015",
+    ink:"rgba(79,172,219,0.3)",
   },
 };
 
@@ -1456,7 +1456,7 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
               <button onClick={()=>setView("home")} style={{display:"flex",alignItems:"center",gap:6,background:"rgba(255,255,255,0.12)",border:"1px solid rgba(255,255,255,0.2)",borderRadius:10,padding:"7px 12px",cursor:"pointer",color:"rgba(255,255,255,0.85)",...bd,fontSize:"0.82rem",fontWeight:600}}>← Baile <span style={{opacity:0.5,fontWeight:400,fontSize:"0.72rem"}}>· Home</span></button>
               <h1 style={{...hd,fontSize:"1.6rem",color:"#fff"}}>📖 Foclóir</h1>
             </div>
-            <button onClick={toggle} style={{background:"rgba(255,255,255,0.1)",border:"1px solid rgba(255,255,255,0.2)",borderRadius:8,width:34,height:34,cursor:"pointer",color:"#fff",fontSize:"0.9rem"}}>{theme==="coill"?"🌲":theme==="parchment"?"📜":"🌙"}</button>
+            <button onClick={toggle} style={{background:"rgba(255,255,255,0.1)",border:"1px solid rgba(255,255,255,0.2)",borderRadius:8,width:34,height:34,cursor:"pointer",color:"#fff",fontSize:"0.9rem"}}>{theme==="coill"?"🌲":theme==="parchment"?"📜":"🌊"}</button>
           </div>
           <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Cuardach... / Search" style={{width:"100%",padding:"10px 14px",borderRadius:10,border:"none",background:"rgba(255,255,255,0.15)",color:"#fff",fontSize:"0.9rem",fontFamily:"'Lato',sans-serif",outline:"none",boxSizing:"border-box"}}/>
         </div>
@@ -1647,7 +1647,7 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
               {[
                 {key:"coill",icon:"🌲",name:"Coill",sub:"Forest"},
                 {key:"parchment",icon:"📜",name:"Lámhscríbhinn",sub:"Manuscript"},
-                {key:"oiche",icon:"🌙",name:"Oíche",sub:"Midnight"},
+                {key:"oiche",icon:"🌊",name:"Farraige",sub:"Atlantic"},
               ].map((t,i)=>(
                 <button key={t.key} onClick={async()=>{setTheme(t.key);if(st)await save({...st,theme:t.key});}} style={{
                   border:"none",
@@ -1987,7 +1987,7 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
               <button onClick={()=>setView("home")} style={{display:"flex",alignItems:"center",gap:6,background:"rgba(255,255,255,0.12)",border:"1px solid rgba(255,255,255,0.2)",borderRadius:10,padding:"7px 12px",cursor:"pointer",color:"rgba(255,255,255,0.85)",...bd,fontSize:"0.82rem",fontWeight:600}}>← Baile <span style={{opacity:0.5,fontWeight:400,fontSize:"0.72rem"}}>· Home</span></button>
               <h1 style={{...hd,fontSize:"1.3rem",fontWeight:800,color:"#fff",margin:0}}>☘️ 30 Lá <span style={{fontWeight:400,fontSize:"0.9rem",opacity:0.5}}>· Days</span></h1>
             </div>
-            <button onClick={toggle} style={{background:"rgba(255,255,255,0.15)",border:"none",borderRadius:10,width:32,height:32,cursor:"pointer",color:"#fff",fontSize:"0.85rem"}}>{theme==="coill"?"🌲":theme==="parchment"?"📜":"🌙"}</button>
+            <button onClick={toggle} style={{background:"rgba(255,255,255,0.15)",border:"none",borderRadius:10,width:32,height:32,cursor:"pointer",color:"#fff",fontSize:"0.85rem"}}>{theme==="coill"?"🌲":theme==="parchment"?"📜":"🌊"}</button>
           </div>
           {/* Big progress number */}
           <div style={{textAlign:"center",marginBottom:14}}>
@@ -2127,7 +2127,7 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
           backdropFilter:"blur(8px)",
           border:`1px solid ${c.bd}`,borderRadius:10,width:38,height:38,cursor:"pointer",
           color:c.tx3,fontSize:"0.9rem",display:"flex",alignItems:"center",justifyContent:"center",
-        }}>{theme==="coill"?"🌲":theme==="parchment"?"📜":"🌙"}</button>
+        }}>{theme==="coill"?"🌲":theme==="parchment"?"📜":"🌊"}</button>
         <button onClick={()=>setView("settings")} style={{
           background:c.dark?"rgba(0,0,0,0.55)":"rgba(255,255,255,0.85)",
           backdropFilter:"blur(8px)",
