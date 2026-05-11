@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { FionnSays } from "./Fionn";
 
 const CH = [
@@ -787,15 +787,25 @@ const COUNTIES=[
 // IrishTip — gold "?" button that shows English translation on tap
 const IrishTip = ({en}) => {
   const [open,setOpen]=useState(false);
+  const wrapRef=useRef(null);
   useEffect(()=>{
     if(!open)return;
-    const close=()=>setOpen(false);
-    const t=setTimeout(()=>document.addEventListener("click",close),0);
-    return()=>{clearTimeout(t);document.removeEventListener("click",close);};
+    const handler=(e)=>{
+      if(wrapRef.current&&!wrapRef.current.contains(e.target))setOpen(false);
+    };
+    const t=setTimeout(()=>{
+      document.addEventListener("click",handler);
+      document.addEventListener("touchstart",handler);
+    },0);
+    return()=>{
+      clearTimeout(t);
+      document.removeEventListener("click",handler);
+      document.removeEventListener("touchstart",handler);
+    };
   },[open]);
   return(
-    <span style={{position:"relative",display:"inline-flex",alignItems:"center",verticalAlign:"middle",marginLeft:5}}>
-      <button onClick={e=>{e.stopPropagation();setOpen(o=>!o);}} style={{
+    <span ref={wrapRef} style={{position:"relative",display:"inline-flex",alignItems:"center",verticalAlign:"middle",marginLeft:5}}>
+      <button onClick={()=>setOpen(o=>!o)} style={{
         width:20,height:20,borderRadius:"50%",
         background:"rgba(200,150,62,0.22)",
         border:"1.5px solid rgba(200,150,62,0.65)",
