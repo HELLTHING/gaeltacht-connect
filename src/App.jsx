@@ -1126,6 +1126,9 @@ export default function App() {
 @keyframes shamrock-spin{0%{transform:scale(0) rotate(-30deg)}60%{transform:scale(1.2) rotate(8deg)}100%{transform:scale(1) rotate(0deg)}}
 @keyframes slide-up{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
 @keyframes pulse-ring{0%{transform:scale(1);opacity:0.6}100%{transform:scale(1.6);opacity:0}}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-5px)}40%{transform:translateX(5px)}60%{transform:translateX(-3px)}80%{transform:translateX(3px)}}
+@keyframes correctPop{0%{transform:scale(1)}50%{transform:scale(1.04)}100%{transform:scale(1)}}
+@keyframes goldGlow{0%,100%{box-shadow:0 0 20px rgba(200,150,62,0.12)}50%{box-shadow:0 0 40px rgba(200,150,62,0.3)}}
 html{-webkit-font-smoothing:antialiased}
 button:active{opacity:0.85;transform:scale(0.98)!important}
 `;
@@ -1142,50 +1145,75 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
   if(view==="quiz"&&quiz){
     const q=quiz[quizIdx];
     const weekNum=Math.max(1,Math.ceil((total||1)/7));
+    const qPct=Math.round((quizIdx/quiz.length)*100);
     return(
-      <div style={{minHeight:"100vh",background:c.bg,color:c.tx,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"32px 24px"}}>
+      <div style={{minHeight:"100vh",background:c.bg,color:c.tx,display:"flex",flexDirection:"column"}}>
         <style>{css}</style>
-        {/* Exit button */}
-        <button onClick={()=>{setView(prevView||"home");setQuiz(null);setQuizDone(false);}} style={{position:"fixed",top:16,left:16,background:c.card,border:`1px solid ${c.bd}`,borderRadius:10,padding:"8px 14px",cursor:"pointer",display:"flex",alignItems:"center",gap:6,color:c.tx,...bd,fontSize:"0.85rem",fontWeight:600,zIndex:10}}>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
-          Ar ais <span style={{opacity:0.5,fontWeight:400,fontSize:"0.75rem"}}>· Back</span>
-        </button>
-        <div style={{maxWidth:420,width:"100%"}}>
+
+        {/* ── TOP BAR ── */}
+        <div style={{display:"flex",alignItems:"center",padding:"14px 16px",gap:10,borderBottom:`1px solid ${c.bd}`,background:c.card}}>
+          <button onClick={()=>{setView(prevView||"home");setQuiz(null);setQuizDone(false);}}
+            style={{background:"none",border:"none",cursor:"pointer",color:c.tx3,padding:"6px 4px",display:"flex",alignItems:"center",flexShrink:0}}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+          </button>
+          <div style={{flex:1,height:7,borderRadius:4,background:c.progBg,overflow:"hidden"}}>
+            <div style={{
+              width:`${qPct}%`,height:"100%",
+              background:`linear-gradient(90deg,${c.acc},${c.gold})`,
+              borderRadius:4,transition:"width 0.45s ease",
+            }}/>
+          </div>
+          <div style={{...bd,fontSize:"0.78rem",color:c.tx3,flexShrink:0,fontWeight:700,minWidth:30,textAlign:"right"}}>
+            {quizIdx+1}<span style={{opacity:0.4,fontWeight:400}}>/{quiz.length}</span>
+          </div>
+        </div>
+
+        <div style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"24px 20px 40px",maxWidth:480,width:"100%",margin:"0 auto"}}>
           {!quizDone?(
             <>
-              {/* Header */}
-              <div style={{textAlign:"center",marginBottom:28,animation:"rise 0.5s ease"}}>
-                <div style={{...bd,fontSize:"0.7rem",color:c.tx3,letterSpacing:"0.14em",textTransform:"uppercase",marginBottom:8}}>
-                  {quizType==="daily"?"Cluiche an Lae · Daily Quiz":`Seachtain ${weekNum} · Week Quiz`} · {quizIdx+1} / {quiz.length}
-                </div>
-                <h2 style={{...hd,fontSize:"1.3rem",fontWeight:700,color:c.tx}}>What does this mean?</h2>
-              </div>
-
-              {/* Progress dots */}
-              <div style={{display:"flex",justifyContent:"center",gap:6,marginBottom:28}}>
-                {quiz.map((_,i)=>(
-                  <div key={i} style={{width:8,height:8,borderRadius:"50%",background:i<quizIdx?c.acc:i===quizIdx?c.acc:c.bd,opacity:i===quizIdx?1:i<quizIdx?0.8:0.3}}/>
-                ))}
+              {/* Type label */}
+              <div style={{...bd,fontSize:"0.62rem",color:c.tx3,letterSpacing:"0.15em",textTransform:"uppercase",marginBottom:22,textAlign:"center"}}>
+                {quizType==="daily"?"Cluiche an Lae · Daily Quiz":`Seachtain ${weekNum} · Week Quiz`}
               </div>
 
               {/* Phrase card */}
-              <div style={{background:c.phrase,border:`1.5px solid ${c.phraseBd}`,borderRadius:16,padding:"32px 24px",marginBottom:20,textAlign:"center",animation:"pop 0.4s ease"}}>
-                <div style={{...hd,fontSize:"1.8rem",fontWeight:700,color:c.acc,marginBottom:8}}>{q.phrase}</div>
-                <button onClick={()=>speak(q.phrase)} style={{background:"none",border:`1px solid ${c.phraseBd}`,borderRadius:20,padding:"5px 14px",color:c.acc,...bd,fontSize:"0.8rem",cursor:"pointer",display:"inline-flex",alignItems:"center",gap:6}}>
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M15.54 8.46a5 5 0 010 7.07" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round"/></svg>
+              <div style={{
+                width:"100%",
+                background:`linear-gradient(160deg,${c.phrase},${c.card})`,
+                border:`2px solid ${c.phraseBd}`,borderRadius:22,
+                padding:"28px 24px 24px",marginBottom:22,textAlign:"center",
+                animation:"pop 0.45s cubic-bezier(0.34,1.56,0.64,1)",
+                boxShadow:`0 8px 32px rgba(0,0,0,0.18),inset 0 1px 0 ${c.gold}20`,
+                position:"relative",overflow:"hidden",
+              }}>
+                <div style={{position:"absolute",top:0,left:0,right:0,height:2,background:`linear-gradient(90deg,transparent 0%,${c.gold} 50%,transparent 100%)`}}/>
+                <div style={{...hd,fontSize:"2.2rem",fontWeight:700,color:c.acc,lineHeight:1.25,marginBottom:8}}>{q.phrase}</div>
+                <div style={{...bd,fontSize:"0.74rem",color:c.tx3,fontStyle:"italic",marginBottom:14,letterSpacing:"0.04em"}}>/{q.pr}/</div>
+                <button onClick={()=>speak(q.phrase)} style={{
+                  background:c.phraseBd,border:"none",borderRadius:20,
+                  padding:"6px 16px",color:c.acc,...bd,fontSize:"0.78rem",
+                  cursor:"pointer",display:"inline-flex",alignItems:"center",gap:6,
+                }}>
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M15.54 8.46a5 5 0 010 7.07" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round"/></svg>
                   Éist · Listen
                 </button>
               </div>
 
+              {/* Question */}
+              <div style={{...hd,fontSize:"1rem",fontWeight:600,color:c.tx,textAlign:"center",marginBottom:18,opacity:0.75}}>
+                Cad is brí leis seo? · What does this mean?
+              </div>
+
               {/* Options */}
-              <div style={{display:"flex",flexDirection:"column",gap:10,marginBottom:24}}>
+              <div style={{width:"100%",display:"flex",flexDirection:"column",gap:10}}>
                 {q.opts.map((opt,i)=>{
                   const picked=quizPicked!==null;
                   const correct=opt===q.answer;
                   const chosen=opt===quizPicked;
                   let bg=c.card,border=`1.5px solid ${c.bd}`,txColor=c.tx;
-                  if(picked&&correct){bg=c.doneBg;border=`1.5px solid ${c.doneBd}`;txColor=c.doneTx;}
-                  else if(picked&&chosen&&!correct){bg="#FEE2E2";border="1.5px solid #FCA5A5";txColor="#991B1B";}
+                  let anim="";
+                  if(picked&&correct){bg=c.doneBg;border=`1.5px solid ${c.doneBd}`;txColor=c.doneTx;if(chosen)anim="correctPop 0.35s ease";}
+                  else if(picked&&chosen&&!correct){bg="rgba(254,226,226,0.9)";border="1.5px solid #FCA5A5";txColor="#991B1B";anim="shake 0.4s ease";}
                   return(
                     <button key={i} onClick={()=>{
                       if(quizPicked!==null)return;
@@ -1201,11 +1229,20 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
                         }
                       },1000);
                     }} style={{
-                      background:bg,border,borderRadius:12,padding:"14px 18px",
+                      background:bg,border,borderRadius:14,padding:"16px 18px",
                       color:txColor,...bd,fontSize:"0.95rem",cursor:picked?"default":"pointer",
-                      textAlign:"left",transition:"all 0.2s",fontWeight:chosen||correct&&picked?600:400,
+                      textAlign:"left",transition:"background 0.25s,border-color 0.25s,color 0.25s",
+                      fontWeight:picked&&(chosen||correct)?600:400,
+                      display:"flex",alignItems:"center",justifyContent:"space-between",
+                      animation:anim,
                     }}>
-                      {opt}{picked&&correct?" ✓":""}{picked&&chosen&&!correct?" ✗":""}
+                      <span style={{flex:1}}>{opt}</span>
+                      {picked&&correct&&(
+                        <span style={{width:22,height:22,borderRadius:"50%",background:c.doneTx,color:"#fff",display:"inline-flex",alignItems:"center",justifyContent:"center",fontSize:"0.72rem",fontWeight:800,flexShrink:0,marginLeft:10}}>✓</span>
+                      )}
+                      {picked&&chosen&&!correct&&(
+                        <span style={{width:22,height:22,borderRadius:"50%",background:"#DC2626",color:"#fff",display:"inline-flex",alignItems:"center",justifyContent:"center",fontSize:"0.72rem",fontWeight:800,flexShrink:0,marginLeft:10}}>✗</span>
+                      )}
                     </button>
                   );
                 })}
@@ -1213,20 +1250,63 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
             </>
           ):(
             /* Quiz results */
-            <div style={{textAlign:"center",animation:"pop 0.5s ease"}}>
-              <div style={{fontSize:"3.5rem",marginBottom:16}}>{quizScore===quiz.length?"🏆":quizScore>=2?"🌟":"💪"}</div>
-              <h2 style={{...hd,fontSize:"1.8rem",fontWeight:700,color:c.acc,marginBottom:8}}>
-                {quizScore}/{quiz.length}
+            <div style={{textAlign:"center",animation:"riseStrong 0.55s ease",width:"100%"}}>
+              {quizScore===quiz.length&&<Confetti/>}
+
+              {/* Score circle */}
+              <div style={{
+                width:110,height:110,borderRadius:"50%",
+                border:`4px solid ${quizScore===quiz.length?c.gold:quizScore>=Math.ceil(quiz.length/2)?c.acc:c.bd}`,
+                background:quizScore===quiz.length?`${c.gold}12`:quizScore>=Math.ceil(quiz.length/2)?`${c.acc}10`:c.cardAlt,
+                display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",
+                margin:"0 auto 24px",
+                boxShadow:quizScore===quiz.length?`0 0 40px ${c.gold}40,0 8px 24px rgba(0,0,0,0.2)`:"0 4px 20px rgba(0,0,0,0.15)",
+                animation:"pop 0.6s cubic-bezier(0.34,1.56,0.64,1) 0.05s both",
+              }}>
+                <span style={{...hd,fontSize:"2.5rem",fontWeight:900,color:quizScore===quiz.length?c.gold:c.acc,lineHeight:1}}>
+                  {quizScore}
+                </span>
+                <span style={{...bd,fontSize:"0.62rem",color:c.tx3,letterSpacing:"0.04em"}}>of {quiz.length}</span>
+              </div>
+
+              <h2 style={{...hd,fontSize:"2rem",fontWeight:700,color:quizScore===quiz.length?c.gold:c.acc,marginBottom:10}}>
+                {quizScore===quiz.length?"Ar fheabhas!":quizScore>=Math.ceil(quiz.length/2)?"Maith go leor!":"Coinnigh ort!"}
               </h2>
-              <p style={{...bd,fontSize:"1rem",color:c.tx2,marginBottom:6}}>
-                {quizScore===quiz.length?"Ar fheabhas! Perfect score!":quizScore>=2?"Maith go leor! Well done!":"Coinnigh ort! Keep going!"}
+              <p style={{...bd,fontSize:"0.95rem",color:c.tx2,marginBottom:4}}>
+                {quizScore===quiz.length?"Perfect score! You really know your Irish!":quizScore>=Math.ceil(quiz.length/2)?"Well done — keep practising!":"Practice makes perfect, coinnigh ort!"}
               </p>
-              <p style={{...bd,fontSize:"0.85rem",color:c.tx3,fontStyle:"italic",marginBottom:32}}>
-                {quizScore===quiz.length?"You really know your Irish!":"Practice makes perfect — keep speaking!"}
-              </p>
-              <button onClick={()=>{setView("home");setQuiz(null);}} style={{width:"100%",padding:"16px",borderRadius:14,background:c.btn,border:"none",color:c.btnTx,...hd,fontSize:"1rem",fontWeight:700,cursor:"pointer"}}>
-                Ar aghaidh! — Continue →
-              </button>
+
+              <div style={{
+                margin:"18px 0 28px",padding:"16px 20px",
+                borderTop:`1px solid ${c.bd}`,borderBottom:`1px solid ${c.bd}`,
+              }}>
+                <div style={{...hd,fontSize:"0.92rem",fontStyle:"italic",color:c.gold,lineHeight:1.5}}>
+                  {quizScore===quiz.length?'"Is fearr Gaeilge briste ná Béarla cliste"':quizScore>=Math.ceil(quiz.length/2)?'"Mol an óige agus tiocfaidh sí"':'"Ní neart go cur le chéile"'}
+                </div>
+                <div style={{...bd,fontSize:"0.65rem",color:c.tx3,marginTop:5,opacity:0.6}}>
+                  {quizScore===quiz.length?"Broken Irish beats clever English":quizScore>=Math.ceil(quiz.length/2)?"Praise the young and they will flourish":"No strength without unity"}
+                </div>
+              </div>
+
+              <div style={{display:"flex",flexDirection:"column",gap:10}}>
+                <button onClick={()=>{setView("home");setQuiz(null);}} style={{
+                  width:"100%",padding:"16px",borderRadius:14,background:c.btn,border:"none",
+                  color:c.btnTx,...hd,fontSize:"1rem",fontWeight:700,cursor:"pointer",
+                  display:"flex",alignItems:"center",justifyContent:"center",gap:8,
+                }}>
+                  ☘️ Ar aghaidh — Continue
+                </button>
+                <button onClick={()=>{
+                  const nq=quizType==="daily"?getDailyVocabQuiz(VOCAB,new Date()):makeQuiz(st.done);
+                  setQuiz(nq);setQuizIdx(0);setQuizScore(0);setQuizPicked(null);setQuizDone(false);
+                }} style={{
+                  width:"100%",padding:"13px",borderRadius:14,
+                  background:"none",border:`1px solid ${c.bd}`,
+                  color:c.tx3,...bd,fontSize:"0.88rem",cursor:"pointer",
+                }}>
+                  Arís — Try again
+                </button>
+              </div>
             </div>
           )}
         </div>
@@ -1294,24 +1374,34 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
 
                 {/* ── SCÉAL ── Story of the day */}
                 {ch.story&&(
-                  <div style={{borderLeft:`3px solid ${dayColor}`,paddingLeft:14,marginBottom:20}}>
-                    {ch.story.split("\n\n").map((para,i)=>(
-                      <p key={i} style={{...bd,fontSize:"0.92rem",color:c.tx2,lineHeight:1.8,margin:i>0?"12px 0 0":"0"}}>{para}</p>
-                    ))}
+                  <div style={{marginBottom:20}}>
+                    <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:12}}>
+                      <div style={{height:1.5,flex:1,background:`linear-gradient(90deg,${dayColor}55,transparent)`}}/>
+                      <span style={{...bd,fontSize:"0.55rem",color:dayColor,letterSpacing:"0.18em",textTransform:"uppercase",fontWeight:700,opacity:0.9}}>Stair · History</span>
+                      <div style={{height:1.5,flex:1,background:`linear-gradient(90deg,transparent,${dayColor}55)`}}/>
+                    </div>
+                    <div style={{borderLeft:`3px solid ${dayColor}`,paddingLeft:16,paddingRight:2}}>
+                      {ch.story.split("\n\n").map((para,i)=>(
+                        <p key={i} style={{...bd,fontSize:"0.9rem",color:c.tx2,lineHeight:1.85,margin:i>0?"14px 0 0":"0"}}>{para}</p>
+                      ))}
+                    </div>
                   </div>
                 )}
 
                 {/* Big phrase */}
-                <div style={{textAlign:"center",borderTop:`1px solid ${c.bd}`,borderBottom:`1px solid ${c.bd}`,padding:"24px 8px",margin:"0 0 20px"}}>
+                <div style={{textAlign:"center",padding:"28px 8px 24px",margin:"0 0 20px",position:"relative",background:`radial-gradient(ellipse at center,${c.gold}09 0%,transparent 70%)`}}>
+                  <div style={{position:"absolute",top:0,left:"10%",right:"10%",height:"1.5px",background:`linear-gradient(90deg,transparent,${c.gold}70,transparent)`}}/>
+                  <div style={{position:"absolute",bottom:0,left:"10%",right:"10%",height:"1.5px",background:`linear-gradient(90deg,transparent,${c.gold}70,transparent)`}}/>
+                  <div style={{...bd,fontSize:"0.55rem",color:c.gold,letterSpacing:"0.22em",textTransform:"uppercase",marginBottom:14,opacity:0.7}}>✦ An Frása ✦</div>
                   <div style={{...hd,fontSize:"2.4rem",fontWeight:700,fontStyle:"italic",color:c.acc,lineHeight:1.2,marginBottom:10,display:"flex",alignItems:"center",justifyContent:"center",flexWrap:"wrap",gap:4}}>
                     {ch.p}<IrishTip en={ch.m}/>
                   </div>
-                  <div style={{...bd,fontSize:"0.88rem",color:c.tx3,letterSpacing:"0.05em",marginBottom:8}}>{ch.pr}</div>
-                  <button onClick={()=>speak(ch.p)} style={{background:c.phrase,border:`1px solid ${c.phraseBd}`,borderRadius:20,padding:"7px 18px",color:c.acc,...bd,fontSize:"0.85rem",cursor:"pointer",display:"inline-flex",alignItems:"center",gap:7,marginBottom:8}}>
+                  <div style={{...bd,fontSize:"0.84rem",color:c.tx3,letterSpacing:"0.06em",marginBottom:14,fontStyle:"italic"}}>/ {ch.pr} /</div>
+                  <button onClick={()=>speak(ch.p)} style={{background:c.phrase,border:`1px solid ${c.phraseBd}`,borderRadius:20,padding:"7px 18px",color:c.acc,...bd,fontSize:"0.85rem",cursor:"pointer",display:"inline-flex",alignItems:"center",gap:7,marginBottom:10}}>
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M15.54 8.46a5 5 0 010 7.07" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round"/></svg>
                     Éist le fuaim <span style={{opacity:0.55,fontSize:"0.75rem"}}>· Listen</span>
                   </button>
-                  <div style={{...bd,fontSize:"0.95rem",color:c.tx2,fontStyle:"italic"}}>"{ch.m}"</div>
+                  <div style={{...hd,fontSize:"1rem",color:c.tx2,fontStyle:"italic",opacity:0.8}}>"{ch.m}"</div>
                 </div>
 
                 {/* Challenge */}
@@ -1922,7 +2012,7 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
       <div style={{minHeight:"100vh",background:c.bg,color:c.tx,paddingBottom:24,animation:"rise 0.3s ease"}}>
         <style>{css}</style>
         {/* Header */}
-        <div style={{background:"#1A0A0A",padding:"20px 20px 20px"}}>
+        <div style={{background:c.hero,padding:"20px 20px 20px"}}>
           <div style={{maxWidth:520,margin:"0 auto"}}>
             <button onClick={()=>{stopMelody();setPlayingSong(null);setOpenSong(null);setView(prevView||"home");}}
               style={{display:"flex",alignItems:"center",gap:6,background:"rgba(255,255,255,0.1)",border:"1px solid rgba(255,255,255,0.2)",borderRadius:10,padding:"7px 14px",cursor:"pointer",color:"rgba(255,255,255,0.8)",...bd,fontSize:"0.85rem",marginBottom:16}}>
@@ -2116,25 +2206,25 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
                     const cc=CAT_CLR[ch.cat]||c.acc;
                     return (
                       <button key={ch.day} onClick={()=>{setPrevView("map");setSelDay(ch.day);setView("day")}} style={{
-                        background:dn?`${c.acc}10`:c.card,
-                        border:here?`2px solid ${cc}`:`1px solid ${dn?c.acc+"28":c.bd}`,
+                        background:here?`${cc}12`:dn?`${c.acc}08`:c.card,
+                        border:here?`2px solid ${cc}`:dn?`1px solid ${c.acc}30`:`1px solid ${c.bd}`,
                         borderRadius:14,padding:0,cursor:lk?"not-allowed":"pointer",
-                        opacity:lk?0.28:1,textAlign:"left",width:"100%",
-                        boxShadow:here?`0 4px 18px ${cc}35`:nx?c.shadow:"none",
+                        opacity:lk?0.25:1,textAlign:"left",width:"100%",
+                        boxShadow:here?`0 6px 22px ${cc}40,0 2px 8px rgba(0,0,0,0.1)`:dn?"none":nx?c.shadow:"none",
                         overflow:"hidden",transition:"all 0.2s",
                       }}>
-                        <div style={{height:3,background:dn?c.acc:lk?"transparent":cc}}/>
-                        <div style={{padding:"10px 12px 11px"}}>
+                        <div style={{height:here?4:3,background:here?cc:dn?c.acc:lk?"transparent":cc,opacity:here?1:dn?0.7:0.5}}/>
+                        <div style={{padding:"10px 12px 12px"}}>
                           <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:7}}>
-                            <span style={{fontSize:"1.05rem"}}>{lk?"🔒":dn?"✅":CATS[ch.cat]}</span>
+                            <span style={{fontSize:"1.1rem"}}>{lk?"🔒":dn?"✅":CATS[ch.cat]}</span>
                             <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:2}}>
-                              {bn&&<span style={{fontSize:"0.6rem"}}>⭐</span>}
-                              {here&&<span style={{...bd,fontSize:"0.52rem",background:cc,color:"#fff",borderRadius:4,padding:"1px 5px",fontWeight:700,letterSpacing:"0.05em"}}>NEXT</span>}
+                              {bn&&<span style={{fontSize:"0.62rem",lineHeight:1}}>⭐</span>}
+                              {here&&<span style={{...bd,fontSize:"0.54rem",background:cc,color:"#fff",borderRadius:5,padding:"2px 6px",fontWeight:800,letterSpacing:"0.06em"}}>NEXT</span>}
                             </div>
                           </div>
-                          <div style={{...bd,fontSize:"0.58rem",color:c.tx3,letterSpacing:"0.07em",textTransform:"uppercase",marginBottom:3}}>Lá {ch.day}</div>
-                          <div style={{...hd,fontSize:"0.85rem",fontWeight:700,color:dn?c.acc:nx?c.tx:c.tx3,lineHeight:1.2,marginBottom:2}}>{ch.t}</div>
-                          <div style={{...bd,fontSize:"0.67rem",color:c.tx3,fontStyle:"italic"}}>{ch.e}</div>
+                          <div style={{...bd,fontSize:"0.58rem",color:here?cc:c.tx3,letterSpacing:"0.07em",textTransform:"uppercase",marginBottom:3,fontWeight:here?700:400}}>Lá {ch.day}</div>
+                          <div style={{...hd,fontSize:"0.86rem",fontWeight:700,color:here?cc:dn?c.acc:nx?c.tx:c.tx3,lineHeight:1.2,marginBottom:2}}>{ch.t}</div>
+                          <div style={{...bd,fontSize:"0.67rem",color:c.tx3,fontStyle:"italic",lineHeight:1.3}}>{ch.e}</div>
                         </div>
                       </button>
                     );
