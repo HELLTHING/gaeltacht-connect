@@ -804,15 +804,17 @@ const IrishTip = ({en}) => {
     };
   },[open]);
   return(
-    <span ref={wrapRef} style={{position:"relative",display:"inline-flex",alignItems:"center",verticalAlign:"middle",marginLeft:5}}>
+    <span ref={wrapRef} style={{position:"relative",display:"inline-flex",alignItems:"center",verticalAlign:"middle",marginLeft:10}}>
       <button onClick={()=>setOpen(o=>!o)} style={{
-        width:20,height:20,borderRadius:"50%",
+        width:22,height:22,borderRadius:"50%",
         background:"rgba(200,150,62,0.22)",
         border:"1.5px solid rgba(200,150,62,0.65)",
         color:"#C8963E",fontSize:"0.65rem",fontWeight:800,
         cursor:"pointer",display:"inline-flex",alignItems:"center",justifyContent:"center",
         flexShrink:0,padding:0,lineHeight:1,
         boxShadow:"0 0 8px rgba(200,150,62,0.25)",
+        WebkitTapHighlightColor:"transparent",
+        touchAction:"manipulation",
       }}>?</button>
       {open&&(
         <span style={{
