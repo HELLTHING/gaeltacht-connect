@@ -784,6 +784,50 @@ const COUNTIES=[
   {en:"Wicklow",ga:"Cill Mhantáin",pr:"kill WAN-tawn",g:false},
 ];
 
+// IrishTip — gold "?" button that shows English translation on tap
+const IrishTip = ({en}) => {
+  const [open,setOpen]=useState(false);
+  useEffect(()=>{
+    if(!open)return;
+    const close=()=>setOpen(false);
+    const t=setTimeout(()=>document.addEventListener("click",close),0);
+    return()=>{clearTimeout(t);document.removeEventListener("click",close);};
+  },[open]);
+  return(
+    <span style={{position:"relative",display:"inline-flex",alignItems:"center",verticalAlign:"middle",marginLeft:5}}>
+      <button onClick={e=>{e.stopPropagation();setOpen(o=>!o);}} style={{
+        width:20,height:20,borderRadius:"50%",
+        background:"rgba(200,150,62,0.22)",
+        border:"1.5px solid rgba(200,150,62,0.65)",
+        color:"#C8963E",fontSize:"0.65rem",fontWeight:800,
+        cursor:"pointer",display:"inline-flex",alignItems:"center",justifyContent:"center",
+        flexShrink:0,padding:0,lineHeight:1,
+        boxShadow:"0 0 8px rgba(200,150,62,0.25)",
+      }}>?</button>
+      {open&&(
+        <span style={{
+          position:"absolute",bottom:"calc(100% + 9px)",left:"50%",transform:"translateX(-50%)",
+          background:"#0E1F10",color:"#F0EDE4",
+          padding:"8px 14px",borderRadius:10,
+          fontSize:"0.82rem",whiteSpace:"nowrap",
+          boxShadow:"0 6px 24px rgba(0,0,0,0.6)",zIndex:999,
+          border:"1px solid rgba(200,150,62,0.4)",
+          fontFamily:"'Lato',system-ui,sans-serif",fontWeight:500,
+          pointerEvents:"none",display:"block",
+        }}>
+          {en}
+          <span style={{
+            position:"absolute",top:"100%",left:"50%",transform:"translateX(-50%)",
+            width:0,height:0,
+            borderLeft:"6px solid transparent",borderRight:"6px solid transparent",
+            borderTop:"6px solid #0E1F10",display:"block",
+          }}/>
+        </span>
+      )}
+    </span>
+  );
+};
+
 // Back button — shared across all secondary views
 const BackBtn = ({onClick,c,bd,label="← Ar ais"}) => (
   <button onClick={onClick} style={{
@@ -1038,7 +1082,7 @@ export default function App() {
         fontSize:"0.55rem",color:c.gold,
         letterSpacing:"0.32em",textTransform:"uppercase",fontWeight:700,
         marginBottom:28,
-      }}>An Ghaeilge Bheo</div>
+      }}>An Ghaeilge Bheo<IrishTip en="The Living Irish"/></div>
 
       <div className="sp-dv" style={{display:"flex",alignItems:"center",gap:11,width:190}}>
         <div style={{flex:1,height:1,background:`linear-gradient(90deg,transparent,${c.gold}55)`}}/>
@@ -1247,13 +1291,13 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
 
                 {/* Big phrase */}
                 <div style={{textAlign:"center",borderTop:`1px solid ${c.bd}`,borderBottom:`1px solid ${c.bd}`,padding:"24px 8px",margin:"0 0 20px"}}>
-                  <div style={{...hd,fontSize:"2.4rem",fontWeight:700,fontStyle:"italic",color:c.acc,lineHeight:1.2,marginBottom:10}}>
-                    {ch.p}
+                  <div style={{...hd,fontSize:"2.4rem",fontWeight:700,fontStyle:"italic",color:c.acc,lineHeight:1.2,marginBottom:10,display:"flex",alignItems:"center",justifyContent:"center",flexWrap:"wrap",gap:4}}>
+                    {ch.p}<IrishTip en={ch.m}/>
                   </div>
                   <div style={{...bd,fontSize:"0.88rem",color:c.tx3,letterSpacing:"0.05em",marginBottom:8}}>{ch.pr}</div>
                   <button onClick={()=>speak(ch.p)} style={{background:c.phrase,border:`1px solid ${c.phraseBd}`,borderRadius:20,padding:"7px 18px",color:c.acc,...bd,fontSize:"0.85rem",cursor:"pointer",display:"inline-flex",alignItems:"center",gap:7,marginBottom:8}}>
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M15.54 8.46a5 5 0 010 7.07" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round"/></svg>
-                    Éist le fuaim
+                    Éist le fuaim <span style={{opacity:0.55,fontSize:"0.75rem"}}>· Listen</span>
                   </button>
                   <div style={{...bd,fontSize:"0.95rem",color:c.tx2,fontStyle:"italic"}}>"{ch.m}"</div>
                 </div>
@@ -1369,9 +1413,8 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
 
                 {/* Main headline */}
                 <div style={{...hd,fontSize:"3.2rem",fontWeight:900,color:"#fff",lineHeight:1,marginBottom:4,
-                  textShadow:`0 0 40px ${c.gold}60`}}>Maith thú!</div>
-                <div style={{...bd,fontSize:"0.85rem",color:`${c.gold}CC`,fontStyle:"italic",letterSpacing:"0.05em",marginBottom:20}}>
-                  — Well done! —
+                  textShadow:`0 0 40px ${c.gold}60`,display:"flex",alignItems:"center",justifyContent:"center"}}>
+                  Maith thú!<IrishTip en="Well done! / You're good!"/>
                 </div>
 
                 {/* Day + streak row */}
@@ -1398,7 +1441,7 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
                 {/* 30 days! */}
                 {selDay===30&&(
                   <div style={{background:`${c.gold}20`,border:`1px solid ${c.gold}50`,borderRadius:14,padding:"13px 20px",marginBottom:14}}>
-                    <div style={{...hd,fontSize:"1.3rem",color:c.gold}}>Tá Gaeilge agat! 🏆</div>
+                    <div style={{...hd,fontSize:"1.3rem",color:c.gold,display:"flex",alignItems:"center",gap:4}}>Tá Gaeilge agat! 🏆<IrishTip en="You have Irish!"/></div>
                     <div style={{...bd,fontSize:"0.78rem",color:"rgba(255,255,255,0.55)",marginTop:4}}>All 30 days. You did it.</div>
                   </div>
                 )}
@@ -1578,7 +1621,7 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
               :total<10?"You've started. That's more than most."
               :total<20?"You're not just learning — you're reviving."
               :total<30?"Almost there. The language is proud of you."
-              :"Tá Gaeilge agat. You did it. 🏆"}
+              :<span>Tá Gaeilge agat<IrishTip en="You have Irish!"/>. You did it. 🏆</span>}
             </p>
           </div>
           {/* ── QUIZ BUTTON ── */}
@@ -2151,8 +2194,8 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
           Gaeltacht Connect
         </div>
 
-        <div style={{...bd,fontSize:"0.55rem",color:c.gold,letterSpacing:"0.3em",textTransform:"uppercase",fontWeight:700}}>
-          An Ghaeilge Bheo
+        <div style={{...bd,fontSize:"0.55rem",color:c.gold,letterSpacing:"0.3em",textTransform:"uppercase",fontWeight:700,display:"flex",alignItems:"center",justifyContent:"center"}}>
+          An Ghaeilge Bheo<IrishTip en="The Living Irish"/>
         </div>
 
         {/* Celtic ornament divider */}
@@ -2220,7 +2263,7 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
           }}>🎵</div>
           <div style={{flex:1}}>
             <div style={{...bd,fontSize:"0.48rem",color:"#E07070",letterSpacing:"0.2em",textTransform:"uppercase",fontWeight:700,marginBottom:4}}>Ceol · Music</div>
-            <div style={{...hd,fontSize:"1.05rem",fontWeight:700,color:c.tx,lineHeight:1.2}}>Ceol Traidisiúnta</div>
+            <div style={{...hd,fontSize:"1.05rem",fontWeight:700,color:c.tx,lineHeight:1.2,display:"flex",alignItems:"center"}}>Ceol Traidisiúnta<IrishTip en="Traditional Irish Music"/></div>
             <div style={{...bd,fontSize:"0.62rem",color:c.tx3,marginTop:3}}>Irish Traditional Music · 8 amhráin</div>
           </div>
           <div style={{color:c.gold,fontSize:"1.2rem",lineHeight:1,opacity:0.7}}>›</div>
@@ -2241,7 +2284,7 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
           }}>📖</div>
           <div style={{flex:1}}>
             <div style={{...bd,fontSize:"0.48rem",color:"#7090D4",letterSpacing:"0.2em",textTransform:"uppercase",fontWeight:700,marginBottom:4}}>Foclóir · Dictionary</div>
-            <div style={{...hd,fontSize:"1.05rem",fontWeight:700,color:c.tx,lineHeight:1.2}}>Focal na Gaeilge</div>
+            <div style={{...hd,fontSize:"1.05rem",fontWeight:700,color:c.tx,lineHeight:1.2,display:"flex",alignItems:"center"}}>Focal na Gaeilge<IrishTip en="Words of Irish"/></div>
             <div style={{...bd,fontSize:"0.62rem",color:c.tx3,marginTop:3}}>Irish-English Dictionary · {VOCAB.length} focal</div>
           </div>
           <div style={{color:c.gold,fontSize:"1.2rem",lineHeight:1,opacity:0.7}}>›</div>
@@ -2263,7 +2306,7 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
             boxShadow:"0 4px 14px rgba(0,0,0,0.3)",
           }}>{dailyDoneToday?"✅":TYPE_ICON[dailyC.tp]||"🎯"}</div>
           <div style={{flex:1,minWidth:0}}>
-            <div style={{...bd,fontSize:"0.48rem",color:dailyDoneToday?c.doneTx:c.gold,letterSpacing:"0.2em",textTransform:"uppercase",fontWeight:700,marginBottom:4}}>Dúshlán an Lae</div>
+            <div style={{...bd,fontSize:"0.48rem",color:dailyDoneToday?c.doneTx:c.gold,letterSpacing:"0.2em",textTransform:"uppercase",fontWeight:700,marginBottom:4,display:"flex",alignItems:"center"}}>Dúshlán an Lae<IrishTip en="Challenge of the Day"/></div>
             <div style={{...hd,fontSize:"1.05rem",fontWeight:700,color:c.tx,lineHeight:1.2}}>{dailyC.title}</div>
             <div style={{...bd,fontSize:"0.6rem",color:c.tx3,marginTop:3,overflow:"hidden",whiteSpace:"nowrap",textOverflow:"ellipsis"}}>
               {dailyDoneToday?"✓ Déanta inniu — well done!":"Tap to mark complete"}
@@ -2289,7 +2332,7 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
           }}>📊</div>
           <div style={{flex:1}}>
             <div style={{...bd,fontSize:"0.48rem",color:"#A070D4",letterSpacing:"0.2em",textTransform:"uppercase",fontWeight:700,marginBottom:4}}>Staitisticí · Stats</div>
-            <div style={{...hd,fontSize:"1.05rem",fontWeight:700,color:c.tx,lineHeight:1.2}}>Do Dhul Chun Cinn</div>
+            <div style={{...hd,fontSize:"1.05rem",fontWeight:700,color:c.tx,lineHeight:1.2,display:"flex",alignItems:"center"}}>Do Dhul Chun Cinn<IrishTip en="Your Progress"/></div>
             <div style={{...bd,fontSize:"0.62rem",color:c.tx3,marginTop:3}}>
               {st.best>=1?`Best streak: ${st.best} lá 🔥`:"Progress & achievements"}
             </div>
@@ -2306,7 +2349,7 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
         }}>
           <div style={{fontSize:"1.4rem",lineHeight:1,opacity:0.8}}>💬</div>
           <div style={{flex:1,minWidth:0}}>
-            <div style={{...bd,fontSize:"0.48rem",color:c.gold,letterSpacing:"0.2em",textTransform:"uppercase",fontWeight:700,marginBottom:4}}>Focal an Lae</div>
+            <div style={{...bd,fontSize:"0.48rem",color:c.gold,letterSpacing:"0.2em",textTransform:"uppercase",fontWeight:700,marginBottom:4,display:"flex",alignItems:"center"}}>Focal an Lae<IrishTip en="Word of the Day"/></div>
             <div style={{...hd,fontSize:"1rem",fontWeight:700,color:c.acc,fontStyle:"italic",lineHeight:1.2}}>{wod.p}</div>
             <div style={{...bd,fontSize:"0.6rem",color:c.tx3,marginTop:3}}>{wod.m}</div>
           </div>
