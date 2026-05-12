@@ -387,27 +387,21 @@ async function speakIrish(text) {
   // 1. Session memory cache (instant)
   if (_audioCache.has(text)) {
     _currentAudio = new Audio(_audioCache.get(text));
-    return _currentAudio.play().catch(()=>{});
+    await _currentAudio.play().catch(()=>{});
+    return true;
   }
-  // 2. IndexedDB → abair.ie Connacht neural TTS (best quality)
+  // 2. IndexedDB → abair.ie Connacht neural TTS
   try {
     let blob = await _idbGet(text);
     if (!blob) blob = await _fetchAndCacheAudio(text);
     const url = URL.createObjectURL(blob);
     _audioCache.set(text, url);
     _currentAudio = new Audio(url);
-    return _currentAudio.play().catch(()=>{});
-  } catch {}
-  // 3. Web Speech API — prefer ga-IE, fall back to en-IE / en-GB
-  if (window.speechSynthesis) {
-    window.speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(text);
-    const voice = _bestSpeechVoice();
-    if (voice) u.voice = voice;
-    u.lang = voice?.lang || 'ga-IE';
-    u.rate = 0.78;
-    u.pitch = 1.05;
-    window.speechSynthesis.speak(u);
+    await _currentAudio.play().catch(()=>{});
+    return true;
+  } catch {
+    // abair.ie failed — no browser fallback (it pronounces Irish wrong)
+    return false;
   }
 }
 
@@ -921,6 +915,7 @@ export default function App() {
   const [installPrompt,setInstallPrompt]=useState(null);
   const [installed,setInstalled]=useState(false);
   const [speakLoading,setSpeakLoading]=useState(false);
+  const [speakError,setSpeakError]=useState(false);
   const c = THEMES[theme]||THEMES.coill;
   const dk = c.dark; // keep dk as a convenience boolean for backward compat
 
@@ -953,8 +948,10 @@ export default function App() {
 
   const speak=useCallback(async(text)=>{
     setSpeakLoading(true);
-    await speakIrish(text);
+    setSpeakError(false);
+    const ok=await speakIrish(text);
     setSpeakLoading(false);
+    if(!ok)setSpeakError(true);
   },[]);
 
   const markDailyDone=useCallback(async()=>{
@@ -1397,9 +1394,13 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
                     {ch.p}<IrishTip en={ch.m}/>
                   </div>
                   <div style={{...bd,fontSize:"0.84rem",color:c.tx3,letterSpacing:"0.06em",marginBottom:14,fontStyle:"italic"}}>/ {ch.pr} /</div>
-                  <button onClick={()=>speak(ch.p)} style={{background:c.phrase,border:`1px solid ${c.phraseBd}`,borderRadius:20,padding:"7px 18px",color:c.acc,...bd,fontSize:"0.85rem",cursor:"pointer",display:"inline-flex",alignItems:"center",gap:7,marginBottom:10}}>
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M15.54 8.46a5 5 0 010 7.07" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round"/></svg>
-                    Éist le fuaim <span style={{opacity:0.55,fontSize:"0.75rem"}}>· Listen</span>
+                  <button onClick={()=>speak(ch.p)} style={{background:speakError?"rgba(220,38,38,0.08)":c.phrase,border:`1px solid ${speakError?"rgba(220,38,38,0.35)":c.phraseBd}`,borderRadius:20,padding:"7px 18px",color:speakError?"#DC2626":c.acc,...bd,fontSize:"0.85rem",cursor:"pointer",display:"inline-flex",alignItems:"center",gap:7,marginBottom:10,transition:"all 0.2s"}}>
+                    {speakLoading
+                      ?<><span style={{fontSize:"0.9rem",animation:"breathe 0.8s ease infinite"}}>⏳</span> Ag lódáil…</>
+                      :speakError
+                      ?<><span>⚠️</span> Níl fáil ar ghuth · Retry</>
+                      :<><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M15.54 8.46a5 5 0 010 7.07" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round"/></svg>Éist le fuaim <span style={{opacity:0.55,fontSize:"0.75rem"}}>· Listen</span></>
+                    }
                   </button>
                   <div style={{...hd,fontSize:"1rem",color:c.tx2,fontStyle:"italic",opacity:0.8}}>"{ch.m}"</div>
                 </div>
@@ -1625,7 +1626,7 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
                 <div style={{...bd,fontSize:"0.82rem",color:c.tx2}}>{w.m}</div>
               </div>
               <button onClick={()=>speak(w.p)} style={{background:c.cardAlt,border:`1px solid ${c.bd}`,borderRadius:8,width:34,height:34,flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",fontSize:"0.95rem",opacity:speakLoading?0.5:1}}>
-                {speakLoading?"⏳":"🔊"}
+                {speakLoading?"⏳":speakError?"⚠️":"🔊"}
               </button>
             </div>
           ))}
@@ -2014,16 +2015,14 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
         {/* Header */}
         <div style={{background:c.hero,padding:"20px 20px 20px"}}>
           <div style={{maxWidth:520,margin:"0 auto"}}>
-            <button onClick={()=>{stopMelody();setPlayingSong(null);setOpenSong(null);setView(prevView||"home");}}
+            <button onClick={()=>{setOpenSong(null);setView(prevView||"home");}}
               style={{display:"flex",alignItems:"center",gap:6,background:"rgba(255,255,255,0.1)",border:"1px solid rgba(255,255,255,0.2)",borderRadius:10,padding:"7px 14px",cursor:"pointer",color:"rgba(255,255,255,0.8)",...bd,fontSize:"0.85rem",marginBottom:16}}>
               ← Ar ais <span style={{opacity:0.5,fontWeight:400,fontSize:"0.72rem"}}>· Back</span>
             </button>
             <div style={{...bd,fontSize:"0.7rem",color:"rgba(255,255,255,0.45)",letterSpacing:"0.14em",textTransform:"uppercase",marginBottom:6}}>Ceol na hÉireann</div>
             <h1 style={{...hd,fontSize:"1.7rem",fontWeight:700,color:"#fff",margin:"0 0 6px",lineHeight:1.2}}>Irish Music</h1>
             <p style={{...bd,fontSize:"0.82rem",color:"rgba(255,255,255,0.5)",margin:0}}>
-              {playingSong
-                ? `♪ Playing — ${SONGS.find(s=>s.id===playingSong)?.title||""}`
-                : "Tap a song · hear the melody in-app"}
+              Tap a song · full recording on YouTube
             </p>
           </div>
         </div>
@@ -2031,21 +2030,17 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
         <div style={{maxWidth:520,margin:"0 auto",padding:"20px 16px",display:"flex",flexDirection:"column",gap:12}}>
           {SONGS.map(song=>{
             const isOpen=openSong===song.id;
-            const isPlaying=playingSong===song.id;
             return(
-              <div key={song.id} style={{borderRadius:16,overflow:"hidden",border:`1.5px solid ${isPlaying?song.color:c.bd}`,background:c.card,transition:"border-color 0.3s"}}>
+              <div key={song.id} style={{borderRadius:16,overflow:"hidden",border:`1.5px solid ${isOpen?song.color:c.bd}`,background:c.card,transition:"border-color 0.3s"}}>
                 {/* Song header */}
-                <button onClick={()=>{
-                    if(isOpen){setOpenSong(null);}
-                    else{if(playingSong&&playingSong!==song.id){stopMelody();setPlayingSong(null);}setOpenSong(song.id);playSound('open');}
-                  }}
-                  style={{width:"100%",background:isOpen||isPlaying?song.color+"1A":"transparent",border:"none",cursor:"pointer",padding:"16px",display:"flex",alignItems:"center",gap:14,textAlign:"left"}}>
-                  <div style={{width:52,height:52,borderRadius:12,background:isPlaying?song.color:song.color+"CC",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"1.5rem",flexShrink:0,transition:"all 0.3s",...(isPlaying?{animation:"breathe 1.5s ease infinite"}:{})}}>
-                    {isPlaying?"♪":song.emoji}
+                <button onClick={()=>{setOpenSong(isOpen?null:song.id);playSound('open');}}
+                  style={{width:"100%",background:isOpen?song.color+"18":"transparent",border:"none",cursor:"pointer",padding:"16px",display:"flex",alignItems:"center",gap:14,textAlign:"left"}}>
+                  <div style={{width:52,height:52,borderRadius:12,background:song.color+"CC",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"1.5rem",flexShrink:0}}>
+                    {song.emoji}
                   </div>
                   <div style={{flex:1,minWidth:0}}>
-                    <div style={{...hd,fontSize:"0.97rem",fontWeight:700,color:isPlaying?song.color:c.tx,marginBottom:3,lineHeight:1.2}}>{song.title}</div>
-                    <div style={{...bd,fontSize:"0.78rem",color:c.tx3}}>{isPlaying?"Ag seinm anois · Playing now":song.en}</div>
+                    <div style={{...hd,fontSize:"0.97rem",fontWeight:700,color:isOpen?song.color:c.tx,marginBottom:3,lineHeight:1.2}}>{song.title}</div>
+                    <div style={{...bd,fontSize:"0.78rem",color:c.tx3}}>{song.en}</div>
                   </div>
                   <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:4,flexShrink:0}}>
                     <div style={{...bd,fontSize:"0.65rem",color:song.color,background:song.color+"18",padding:"3px 8px",borderRadius:20,border:`1px solid ${song.color}44`,whiteSpace:"nowrap"}}>{song.era}</div>
@@ -2057,28 +2052,18 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
                 {isOpen&&(
                   <div style={{borderTop:`1px solid ${c.bd}`,animation:"pop 0.2s ease"}}>
 
-                    {/* ── Play melody button ── */}
-                    <div style={{padding:"14px 16px 0"}}>
-                      <button onClick={()=>{
-                        if(isPlaying){stopMelody();setPlayingSong(null);}
-                        else{
-                          if(playingSong){stopMelody();setPlayingSong(null);}
-                          setPlayingSong(song.id);
-                          playMelody(song.id,()=>setPlayingSong(null));
-                        }
-                      }} style={{width:"100%",padding:"13px",borderRadius:12,background:isPlaying?song.color+"22":song.color,border:`1.5px solid ${song.color}`,color:isPlaying?song.color:"#fff",...hd,fontSize:"0.95rem",fontWeight:700,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:8,transition:"all 0.2s"}}>
-                        {isPlaying
-                          ? <><span style={{fontSize:"1.1rem"}}>⏹</span> Stop</>
-                          : <><span style={{fontSize:"1.1rem"}}>▶</span> Séinn an fonn · Play melody</>}
-                      </button>
-                      <div style={{...bd,fontSize:"0.65rem",color:c.tx3,textAlign:"center",marginTop:5,opacity:0.7}}>
-                        🎶 Synthesised Celtic melody · no internet needed
-                      </div>
+                    {/* YouTube — primary CTA */}
+                    <div style={{padding:"16px 16px 12px"}}>
+                      <a href={`https://www.youtube.com/results?search_query=${song.yt}`} target="_blank" rel="noopener noreferrer"
+                        style={{display:"flex",alignItems:"center",justifyContent:"center",gap:10,width:"100%",padding:"14px",borderRadius:14,background:"#FF0000",color:"#fff",textDecoration:"none",...hd,fontSize:"1rem",fontWeight:700,boxShadow:"0 4px 16px rgba(255,0,0,0.3)"}}>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.2a3 3 0 00-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 00.5 6.2C0 8.1 0 12 0 12s0 3.9.5 5.8a3 3 0 002.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 002.1-2.1C24 15.9 24 12 24 12s0-3.9-.5-5.8zM9.8 15.5V8.5l6.3 3.5-6.3 3.5z"/></svg>
+                        Éist ar YouTube · Listen
+                      </a>
                     </div>
 
                     {/* Story */}
-                    <div style={{padding:"14px 16px 0"}}>
-                      <div style={{...bd,fontSize:"0.82rem",color:c.tx2,lineHeight:1.7,marginBottom:14}}>{song.story}</div>
+                    <div style={{padding:"0 16px 12px"}}>
+                      <div style={{...bd,fontSize:"0.82rem",color:c.tx2,lineHeight:1.75}}>{song.story}</div>
                     </div>
 
                     {/* Lyrics */}
@@ -2089,18 +2074,9 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
                     </div>
 
                     {/* Lesson */}
-                    <div style={{margin:"0 16px 12px",background:c.tipBg,border:`1px solid ${c.tipBd}`,borderRadius:12,padding:"12px 14px"}}>
+                    <div style={{margin:"0 16px 16px",background:c.tipBg,border:`1px solid ${c.tipBd}`,borderRadius:12,padding:"12px 14px"}}>
                       <div style={{...bd,fontSize:"0.68rem",color:c.tipTx,letterSpacing:"0.1em",textTransform:"uppercase",marginBottom:6}}>Irish lesson</div>
                       <div style={{...bd,fontSize:"0.83rem",color:c.tipTx,lineHeight:1.5}}>{song.lesson}</div>
-                    </div>
-
-                    {/* YouTube — full recording */}
-                    <div style={{padding:"0 16px 16px"}}>
-                      <a href={`https://www.youtube.com/results?search_query=${song.yt}`} target="_blank" rel="noopener noreferrer"
-                        style={{display:"flex",alignItems:"center",justifyContent:"center",gap:8,width:"100%",padding:"11px",borderRadius:12,background:"#FF0000",color:"#fff",textDecoration:"none",...bd,fontSize:"0.82rem",fontWeight:700}}>
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.2a3 3 0 00-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 00.5 6.2C0 8.1 0 12 0 12s0 3.9.5 5.8a3 3 0 002.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 002.1-2.1C24 15.9 24 12 24 12s0-3.9-.5-5.8zM9.8 15.5V8.5l6.3 3.5-6.3 3.5z"/></svg>
-                        Full recording on YouTube →
-                      </a>
                     </div>
                   </div>
                 )}
@@ -2460,7 +2436,7 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
             border:`1px solid ${c.dark?c.gold+"40":c.bd}`,
             borderRadius:11,padding:"9px 11px",cursor:"pointer",fontSize:"1rem",
             lineHeight:1,opacity:speakLoading?0.4:1,color:c.gold,flexShrink:0,
-          }}>{speakLoading?"⏳":"🔊"}</button>
+          }}>{speakLoading?"⏳":speakError?"⚠️":"🔊"}</button>
         </div>
 
         {/* PWA INSTALL */}
