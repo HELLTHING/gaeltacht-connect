@@ -2526,46 +2526,79 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
         }}>⚙️</button>
       </div>
 
-      {/* ── HERO BRANDING ── */}
-      <div style={{textAlign:"center",padding:"48px 24px 24px",animation:"rise 0.5s ease"}}>
-        <div style={{
-          display:"inline-flex",alignItems:"center",justifyContent:"center",
-          width:80,height:80,borderRadius:26,
-          background:"linear-gradient(145deg,#0E2A1C 0%,#1B4332 100%)",
-          border:`2px solid ${c.dark?"rgba(200,150,62,0.35)":"rgba(27,67,50,0.3)"}`,
-          boxShadow:`0 0 40px ${c.dark?"rgba(200,150,62,0.15)":"rgba(27,67,50,0.15)"}, 0 12px 32px rgba(0,0,0,0.25)`,
-          fontSize:"2.6rem",marginBottom:18,
-        }}>☘️</div>
+      {/* ── STORY HERO ── */}
+      {(()=>{
+        const todayCh=CH[nextDay-1];
+        const raw=todayCh?.story||"";
+        const sentences=raw.split(". ");
+        const excerpt=(sentences.slice(0,2).join(". ")+(sentences.length>1?".":"")).slice(0,220);
+        return(
+          <div style={{padding:"56px 16px 8px",animation:"rise 0.5s ease"}}>
+            {/* branding + streak strip */}
+            <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:12}}>
+              <span style={{fontSize:"1.1rem"}}>☘️</span>
+              <span style={{...bd,fontSize:"0.7rem",fontWeight:700,color:c.tx3,letterSpacing:"0.04em"}}>Gaeltacht Connect</span>
+              {st?.streak>=1&&(
+                <div style={{marginLeft:"auto",display:"flex",alignItems:"center",gap:5,
+                  background:"rgba(255,120,0,0.12)",border:"1px solid rgba(255,120,0,0.3)",
+                  borderRadius:20,padding:"4px 11px"}}>
+                  <span style={{fontSize:"0.9rem"}}>🔥</span>
+                  <span style={{...bd,fontSize:"0.72rem",fontWeight:800,color:"#FF7A00"}}>{st.streak} lá</span>
+                </div>
+              )}
+            </div>
 
-        <div style={{...hd,fontSize:"2.1rem",fontWeight:900,color:c.tx,lineHeight:1,letterSpacing:"-0.03em",marginBottom:10}}>
-          Gaeltacht Connect
-        </div>
+            {/* Story card — the hero */}
+            <div onClick={()=>{haptic([10,20,10]);setPrevView("home");if(allDone){setView("map");}else{setSelDay(nextDay);setView("day");}}}
+              style={{
+                borderRadius:22,
+                background:"linear-gradient(160deg,#071410,#0D2218)",
+                border:"1px solid rgba(200,150,62,0.38)",
+                padding:"20px 18px 16px",
+                position:"relative",overflow:"hidden",
+                boxShadow:"0 10px 40px rgba(0,0,0,0.45)",
+                cursor:"pointer",WebkitTapHighlightColor:"transparent",
+              }}>
 
-        <div style={{...bd,fontSize:"0.55rem",color:c.gold,letterSpacing:"0.3em",textTransform:"uppercase",fontWeight:700,display:"flex",alignItems:"center",justifyContent:"center"}}>
-          An Ghaeilge Bheo <span style={{fontStyle:"italic",opacity:0.65,marginLeft:7,letterSpacing:"0.01em",textTransform:"none",fontSize:"0.6rem"}}>The Living Irish</span>
-        </div>
+              {/* decorative quote */}
+              <div style={{position:"absolute",top:4,right:14,fontSize:"6rem",lineHeight:1,
+                color:"rgba(200,150,62,0.07)",...hd,userSelect:"none",pointerEvents:"none"}}>"</div>
 
-        {/* Streak bar */}
-        {st?.streak>=1&&(
-          <div style={{
-            display:"inline-flex",alignItems:"center",gap:8,
-            marginTop:14,padding:"8px 18px",borderRadius:20,
-            background:c.dark?"rgba(255,120,0,0.12)":"rgba(255,120,0,0.08)",
-            border:"1.5px solid rgba(255,120,0,0.35)",
-          }}>
-            <span style={{fontSize:"1.3rem",animation:st.streak>=7?"goldGlow 2s ease infinite":"none"}}>🔥</span>
-            <div style={{textAlign:"left"}}>
-              <div style={{...bd,fontSize:"0.75rem",fontWeight:800,color:"#FF7A00",lineHeight:1}}>
-                {st.streak} {st.streak===1?"lá":"lá"} as a chéile
+              {/* day chip */}
+              <div style={{display:"inline-flex",alignItems:"center",gap:6,
+                background:"rgba(200,150,62,0.12)",border:"1px solid rgba(200,150,62,0.28)",
+                borderRadius:20,padding:"3px 11px",marginBottom:12}}>
+                <span style={{...bd,fontSize:"0.5rem",color:c.gold,letterSpacing:"0.18em",textTransform:"uppercase",fontWeight:700}}>
+                  {allDone?"Tá Gaeilge agat 🏆":`Lá ${nextDay} · ${todayCh?.e||""}`}
+                </span>
               </div>
-              <div style={{...bd,fontSize:"0.58rem",color:c.tx3,lineHeight:1,marginTop:2}}>
-                {st.streak} day streak · {st.streak===st.best?"personal best 🏆":"keep going!"}
+
+              {/* excerpt */}
+              <p style={{...bd,fontSize:"0.88rem",color:"rgba(240,237,228,0.84)",lineHeight:1.74,
+                margin:"0 0 14px",position:"relative",zIndex:1}}>
+                {excerpt}
+              </p>
+
+              {/* phrase bar */}
+              <div style={{borderTop:"1px solid rgba(200,150,62,0.18)",paddingTop:12,
+                display:"flex",alignItems:"center",justifyContent:"space-between",gap:12}}>
+                <div>
+                  <div style={{...hd,fontSize:"1.65rem",fontWeight:700,color:"#C8963E",fontStyle:"italic",lineHeight:1.1}}>
+                    {todayCh?.p}
+                  </div>
+                  <div style={{...bd,fontSize:"0.67rem",color:"rgba(200,150,62,0.5)",marginTop:3}}>
+                    {todayCh?.m} · /{todayCh?.pr}/
+                  </div>
+                </div>
+                <div style={{...bd,fontSize:"0.75rem",fontWeight:700,
+                  color:missionLesson?"#6FCF97":"rgba(200,150,62,0.75)",flexShrink:0}}>
+                  {missionLesson?"✓ Read":"Léigh →"}
+                </div>
               </div>
             </div>
           </div>
-        )}
-
-      </div>
+        );
+      })()}
 
       {/* ── MENU ── */}
       <div style={{flex:1,maxWidth:520,width:"100%",margin:"0 auto",padding:"4px 16px 32px",display:"flex",flexDirection:"column",gap:7}}>
