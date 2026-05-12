@@ -926,7 +926,7 @@ export default function App() {
   const [flashPicked,setFlashPicked]=useState(null);
   const [flashDone,setFlashDone]=useState(false);
   const [flashScore,setFlashScore]=useState(0);
-  const [flashTimeLeft,setFlashTimeLeft]=useState(5);
+  const [flashTimeLeft,setFlashTimeLeft]=useState(8);
   const [flashBest,setFlashBest]=useState(()=>parseInt(localStorage.getItem("flashBest")||"0"));
   const flashTimerRef=useRef(null);
   const c = THEMES[theme]||THEMES.coill;
@@ -1005,9 +1005,16 @@ export default function App() {
       return{irish:item.p,correct:item.m,options};
     });
     setFlashQ(questions);setFlashIdx(0);setFlashPicked(null);
-    setFlashDone(false);setFlashScore(0);setFlashTimeLeft(5);
+    setFlashDone(false);setFlashScore(0);setFlashTimeLeft(8);
     setView("flash");
   },[]);
+
+  const earnXP=useCallback(async(amount,logKey)=>{
+    if(!st)return;
+    const xp=(st.xp||0)+amount;
+    const dl=logKey?{...(st.dailyLog||{}),[logKey]:true}:(st.dailyLog||{});
+    await save({...st,xp,dailyLog:dl});
+  },[st,save]);
 
   const scheduleNotif=useCallback(()=>{
     if(Notification.permission!=="granted")return;
@@ -1172,7 +1179,7 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
   // ═══════════════════════════════
   if(view==="flash"){
     const fq=flashQ[flashIdx];
-    const FLASH_SEC=5;
+    const FLASH_SEC=8;
     const pct=flashDone?0:(flashTimeLeft/FLASH_SEC)*100;
     const timerColor=flashTimeLeft<=2?"#DC2626":flashTimeLeft<=3?"#F59E0B":c.acc;
 
@@ -1273,6 +1280,7 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
                         const best=Math.max(flashBest,newScore);
                         setFlashBest(best);
                         localStorage.setItem("flashBest",String(best));
+                        earnXP(newScore*10, todayKey()+"_flash");
                         setFlashScore(newScore);setFlashDone(true);
                       } else {
                         setFlashScore(newScore);
@@ -1309,6 +1317,7 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
                 if(flashIdx+1>=10){
                   const best=Math.max(flashBest,newScore);
                   setFlashBest(best);localStorage.setItem("flashBest",String(best));
+                  earnXP(newScore*10, todayKey()+"_flash");
                   setFlashScore(newScore);setFlashDone(true);
                 } else {
                   setFlashIdx(i=>i+1);setFlashPicked(null);setFlashTimeLeft(FLASH_SEC);
@@ -1407,7 +1416,8 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
                           const finalScore=quizScore+(opt===q.answer?1:0);
                           setQuizDone(true);
                           if(finalScore===quiz.length){playSound('bonus');haptic([30,50,30,50,100]);}
-                          if(quizType==="daily") saveDailyQuizScore(finalScore);
+                          if(quizType==="daily"){saveDailyQuizScore(finalScore);earnXP(finalScore*15);}
+                          else{earnXP(finalScore*10);}
                         }
                       },1000);
                     }} style={{
@@ -1505,6 +1515,11 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
     const bDone=st.bonus.includes(ch.day);
     const locked=ch.day>1&&!st.done.includes(ch.day-1)&&!done;
     const dayColor=CAT_CLR[ch.cat]||c.acc;
+    // mark lesson opened for today's day (for mission tracking)
+    const todayDayNum=CH.findIndex(d=>!st.done.includes(d.day))+1||CH.length;
+    if(selDay===todayDayNum&&!st.dailyLog?.[todayKey()+"_lesson"]){
+      earnXP(20, todayKey()+"_lesson");
+    }
 
     return(
       <div style={{minHeight:"100vh",background:c.bg,color:c.tx,paddingBottom:24}}>
@@ -2434,6 +2449,13 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
   const dailyC = getDailyChallenge(DAILY_POOL, today);
   const wod = getWordOfDay(VOCAB, today);
   const dailyDoneToday = st?.dailyLog?.[todayKey()] || false;
+  const missionLesson = !!(st?.dailyLog?.[todayKey()+"_lesson"]);
+  const missionFlash  = !!(st?.dailyLog?.[todayKey()+"_flash"]);
+  const missionQuiz   = !!(st?.dailyLog?.[todayKey()+"_vq"]);
+  const missionsToday = [missionLesson, missionFlash, missionQuiz].filter(Boolean).length;
+  const xp = st?.xp || 0;
+  const level = Math.floor(xp / 100) + 1;
+  const levelPct = xp % 100;
 
 
   return(
@@ -2509,6 +2531,82 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
 
       {/* ── MENU ── */}
       <div style={{flex:1,maxWidth:520,width:"100%",margin:"0 auto",padding:"4px 16px 32px",display:"flex",flexDirection:"column",gap:7}}>
+
+        {/* XP LEVEL BAR */}
+        <div style={{
+          borderRadius:14,
+          background:c.dark?"rgba(255,255,255,0.04)":"rgba(0,0,0,0.03)",
+          border:`1px solid ${c.bd}`,
+          padding:"10px 14px",display:"flex",alignItems:"center",gap:12,
+        }}>
+          <div style={{
+            ...bd,fontSize:"0.7rem",fontWeight:800,color:c.gold,
+            background:`${c.gold}18`,border:`1px solid ${c.gold}35`,
+            borderRadius:8,padding:"4px 10px",flexShrink:0,whiteSpace:"nowrap",
+          }}>Leibhéal {level}</div>
+          <div style={{flex:1}}>
+            <div style={{display:"flex",justifyContent:"space-between",...bd,fontSize:"0.58rem",color:c.tx3,marginBottom:4}}>
+              <span>{missionsToday}/3 inniu · today</span>
+              <span>{xp} XP</span>
+            </div>
+            <div style={{height:5,background:c.dark?"rgba(255,255,255,0.08)":"rgba(0,0,0,0.08)",borderRadius:3,overflow:"hidden"}}>
+              <div style={{
+                height:"100%",width:`${levelPct}%`,borderRadius:3,
+                background:`linear-gradient(90deg,${c.acc},${c.gold})`,
+                transition:"width 0.6s ease",
+              }}/>
+            </div>
+          </div>
+        </div>
+
+        {/* MISEAN AN LAE · TODAY'S MISSIONS */}
+        <div style={{
+          borderRadius:18,
+          background:c.dark?`linear-gradient(135deg,rgba(200,150,62,0.07),rgba(200,150,62,0.02))`:c.cardAlt,
+          border:`1.5px solid ${c.gold}35`,
+          padding:"14px 14px 10px",
+        }}>
+          <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:10}}>
+            <div style={{...bd,fontSize:"0.52rem",color:c.gold,letterSpacing:"0.2em",textTransform:"uppercase",fontWeight:700}}>
+              Misean an Lae · Today's Missions
+            </div>
+            <div style={{...bd,fontSize:"0.7rem",color:missionsToday===3?c.doneTx:c.tx3,fontWeight:700}}>
+              {missionsToday===3?"✓ Críochnaithe!":missionsToday+"/3"}
+            </div>
+          </div>
+          <div style={{display:"flex",flexDirection:"column",gap:6}}>
+            {[
+              {icon:"📖", label:allDone?"Athbhreithnigh · Review":`Lá ${nextDay} — ${CH[nextDay-1]?.t||""}`, sub:allDone?"Review your Irish":"Open today's lesson · +20 XP", done:missionLesson,
+                action:()=>{haptic([10,20,10]);setPrevView("home");if(allDone){setView("map");}else{setSelDay(nextDay);setView("day");}}},
+              {icon:"⚡", label:"Word Flash · Focal Flash", sub:"Quick-fire vocabulary · +up to 100 XP", done:missionFlash,
+                action:()=>{haptic([10,20,10]);startFlash();}},
+              {icon:"🎯", label:"Cuardach · Daily Quiz", sub:"Test today's vocabulary · +XP", done:missionQuiz,
+                action:()=>{haptic([15,30,15]);startDailyQuiz();}},
+            ].map(({icon,label,sub,done,action},i)=>(
+              <button key={i} onClick={action} style={{
+                display:"flex",alignItems:"center",gap:12,
+                background:done?(c.dark?"rgba(111,207,151,0.1)":"rgba(27,67,50,0.06)"):"transparent",
+                border:`1px solid ${done?c.doneBd:c.bd}`,
+                borderRadius:12,padding:"10px 12px",cursor:"pointer",textAlign:"left",
+                transition:"all 0.2s",
+              }}>
+                <div style={{
+                  width:36,height:36,borderRadius:10,flexShrink:0,
+                  background:done?"rgba(111,207,151,0.15)":c.dark?"rgba(255,255,255,0.06)":"rgba(0,0,0,0.05)",
+                  border:`1px solid ${done?"rgba(111,207,151,0.3)":c.bd}`,
+                  display:"flex",alignItems:"center",justifyContent:"center",
+                  fontSize:"1rem",
+                }}>{done?"✅":icon}</div>
+                <div style={{flex:1,minWidth:0}}>
+                  <div style={{...bd,fontSize:"0.82rem",fontWeight:700,color:done?c.doneTx:c.tx,lineHeight:1.2,
+                    overflow:"hidden",whiteSpace:"nowrap",textOverflow:"ellipsis"}}>{label}</div>
+                  <div style={{...bd,fontSize:"0.6rem",color:c.tx3,marginTop:2}}>{done?"Déanta inniu · Done":sub}</div>
+                </div>
+                {!done&&<div style={{color:c.gold,opacity:0.6,fontSize:"1rem",flexShrink:0}}>›</div>}
+              </button>
+            ))}
+          </div>
+        </div>
 
         {/* 30 LÁ */}
         <button onClick={()=>{
