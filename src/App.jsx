@@ -928,6 +928,8 @@ export default function App() {
   const [flashScore,setFlashScore]=useState(0);
   const [flashTimeLeft,setFlashTimeLeft]=useState(8);
   const [flashBest,setFlashBest]=useState(()=>parseInt(localStorage.getItem("flashBest")||"0"));
+  const [flashCombo,setFlashCombo]=useState(0);
+  const [flashFX,setFlashFX]=useState([]); // floating XP/combo popups
   const flashTimerRef=useRef(null);
   const c = THEMES[theme]||THEMES.coill;
   const dk = c.dark; // keep dk as a convenience boolean for backward compat
@@ -1164,6 +1166,9 @@ export default function App() {
 @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-5px)}40%{transform:translateX(5px)}60%{transform:translateX(-3px)}80%{transform:translateX(3px)}}
 @keyframes correctPop{0%{transform:scale(1)}50%{transform:scale(1.04)}100%{transform:scale(1)}}
 @keyframes goldGlow{0%,100%{box-shadow:0 0 20px rgba(200,150,62,0.12)}50%{box-shadow:0 0 40px rgba(200,150,62,0.3)}}
+@keyframes floatUp{0%{opacity:1;transform:translateY(0) scale(1)}60%{opacity:1;transform:translateY(-44px) scale(1.08)}100%{opacity:0;transform:translateY(-80px) scale(0.9)}}
+@keyframes comboBurst{0%{transform:scale(0.4);opacity:0}50%{transform:scale(1.2);opacity:1}80%{transform:scale(0.95)}100%{transform:scale(1);opacity:1}}
+@keyframes bgFlashGreen{0%,100%{background-color:transparent}40%{background-color:rgba(34,197,94,0.18)}}
 html{-webkit-font-smoothing:antialiased}
 button:active{opacity:0.85;transform:scale(0.98)!important}
 `;
@@ -1184,8 +1189,35 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
     const timerColor=flashTimeLeft<=2?"#DC2626":flashTimeLeft<=3?"#F59E0B":c.acc;
 
     return(
-      <div style={{minHeight:"100dvh",display:"flex",flexDirection:"column",background:c.bg,color:c.tx}}>
+      <div style={{minHeight:"100dvh",display:"flex",flexDirection:"column",background:c.bg,color:c.tx,position:"relative",overflow:"hidden"}}>
         <style>{`${css} @keyframes flashPop{0%{transform:scale(0.94);opacity:0}100%{transform:scale(1);opacity:1}}`}</style>
+
+        {/* Floating XP / combo effects */}
+        {flashFX.map(fx=>(
+          <div key={fx.id} style={{
+            position:"absolute",top:"42%",left:"50%",transform:"translateX(-50%)",
+            pointerEvents:"none",zIndex:99,
+            animation:`floatUp 0.9s ease forwards`,
+            ...bd,fontWeight:900,
+            fontSize:fx.type==="combo"?"1.3rem":"1rem",
+            color:fx.type==="combo"?"#FF7A00":c.gold,
+            textShadow:`0 0 20px ${fx.type==="combo"?"rgba(255,122,0,0.8)":"rgba(200,150,62,0.8)"}`,
+            whiteSpace:"nowrap",
+            ...(fx.type==="combo"?{animation:"comboBurst 0.35s ease forwards, floatUp 0.9s 0.15s ease forwards"}:{}),
+          }}>{fx.text}</div>
+        ))}
+
+        {/* Combo streak badge */}
+        {flashCombo>=3&&!flashDone&&(
+          <div style={{
+            position:"absolute",top:70,right:16,zIndex:50,
+            background:"linear-gradient(135deg,#FF7A00,#FF4500)",
+            borderRadius:12,padding:"6px 12px",
+            ...bd,fontSize:"0.75rem",fontWeight:800,color:"#fff",
+            boxShadow:"0 4px 16px rgba(255,100,0,0.5)",
+            animation:"comboBurst 0.35s ease",
+          }}>🔥 {flashCombo}× Combo!</div>
+        )}
 
         {/* Header */}
         <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"14px 16px 0"}}>
@@ -1272,8 +1304,19 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
                     clearInterval(flashTimerRef.current);
                     setFlashPicked(opt);
                     const correct=opt===fq.correct;
-                    if(correct){playSound("correct");haptic([10,20]);}
-                    else{playSound("wrong");haptic([30,20,30]);}
+                    const newCombo=correct?flashCombo+1:0;
+                    setFlashCombo(newCombo);
+                    const multiplier=newCombo>=3?2:1;
+                    const xpEarned=correct?10*multiplier:0;
+                    if(correct){
+                      playSound("correct");haptic([10,20]);
+                      const fxId=Date.now();
+                      const fxItems=[{id:fxId,text:`+${xpEarned} XP`,type:"xp"}];
+                      if(newCombo===3)fxItems.push({id:fxId+1,text:"🔥 Combo ×2!",type:"combo"});
+                      if(newCombo>3)fxItems.push({id:fxId+1,text:`🔥 ×${newCombo}`,type:"combo"});
+                      setFlashFX(fx=>[...fx,...fxItems]);
+                      setTimeout(()=>setFlashFX(fx=>fx.filter(f=>!fxItems.find(x=>x.id===f.id))),900);
+                    } else{playSound("wrong");haptic([30,20,30]);}
                     const newScore=flashScore+(correct?1:0);
                     setTimeout(()=>{
                       if(flashIdx+1>=10){
@@ -1281,18 +1324,18 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
                         setFlashBest(best);
                         localStorage.setItem("flashBest",String(best));
                         earnXP(newScore*10, todayKey()+"_flash");
-                        setFlashScore(newScore);setFlashDone(true);
+                        setFlashScore(newScore);setFlashDone(true);setFlashCombo(0);
                       } else {
                         setFlashScore(newScore);
                         setFlashIdx(i=>i+1);setFlashPicked(null);setFlashTimeLeft(FLASH_SEC);
                       }
-                    },800);
+                    },700);
                   }} style={{
                     background:bg,border,borderRadius:14,padding:"12px 8px",
                     cursor:revealed?"default":"pointer",color:col,
                     ...bd,fontSize:"0.9rem",fontWeight:600,
-                    textAlign:"center",transition:"all 0.2s",
-                    boxShadow:revealed&&isCorrect?`0 0 16px rgba(34,197,94,0.3)`:
+                    textAlign:"center",transition:"background 0.2s, border 0.2s, box-shadow 0.2s",
+                    boxShadow:revealed&&isCorrect?`0 0 20px rgba(34,197,94,0.4)`:
                               revealed&&isPicked?`0 0 16px rgba(220,38,38,0.25)`:"none",
                     animation:revealed&&isPicked&&!isCorrect?"shake 0.4s ease":
                               revealed&&isCorrect?"correctPop 0.35s ease":"none",
@@ -1311,6 +1354,7 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
             onTick={t=>setFlashTimeLeft(t)}
             onExpire={()=>{
               setFlashPicked("__timeout__");
+              setFlashCombo(0);
               playSound("wrong");haptic([30,20,30]);
               const newScore=flashScore;
               setTimeout(()=>{
@@ -2521,12 +2565,6 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
           </div>
         )}
 
-        {/* Celtic ornament divider */}
-        <div style={{display:"flex",alignItems:"center",gap:12,margin:"22px auto 0",maxWidth:220}}>
-          <div style={{flex:1,height:1,background:`linear-gradient(90deg,transparent,${c.gold}55)`}}/>
-          <div style={{color:c.gold,fontSize:"0.8rem",opacity:0.7,letterSpacing:"0.05em"}}>✦ ✦ ✦</div>
-          <div style={{flex:1,height:1,background:`linear-gradient(90deg,${c.gold}55,transparent)`}}/>
-        </div>
       </div>
 
       {/* ── MENU ── */}
@@ -2576,7 +2614,10 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
           </div>
           <div style={{display:"flex",flexDirection:"column",gap:6}}>
             {[
-              {icon:"📖", label:allDone?"Athbhreithnigh · Review":`Lá ${nextDay} — ${CH[nextDay-1]?.t||""}`, sub:allDone?"Review your Irish":"Open today's lesson · +20 XP", done:missionLesson,
+              {icon:"📖", label:allDone?"Athbhreithnigh · Review":`Lá ${nextDay} — ${CH[nextDay-1]?.t||""}`,
+                sub:missionLesson?"Déanta inniu · Done":
+                  (CH[nextDay-1]?.story?.split(". ")[0]?.slice(0,80)+"…")||"Open today's lesson · +20 XP",
+                done:missionLesson,
                 action:()=>{haptic([10,20,10]);setPrevView("home");if(allDone){setView("map");}else{setSelDay(nextDay);setView("day");}}},
               {icon:"⚡", label:"Word Flash · Focal Flash", sub:"Quick-fire vocabulary · +up to 100 XP", done:missionFlash,
                 action:()=>{haptic([10,20,10]);startFlash();}},
@@ -2600,7 +2641,7 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
                 <div style={{flex:1,minWidth:0}}>
                   <div style={{...bd,fontSize:"0.82rem",fontWeight:700,color:done?c.doneTx:c.tx,lineHeight:1.2,
                     overflow:"hidden",whiteSpace:"nowrap",textOverflow:"ellipsis"}}>{label}</div>
-                  <div style={{...bd,fontSize:"0.6rem",color:c.tx3,marginTop:2}}>{done?"Déanta inniu · Done":sub}</div>
+                  <div style={{...bd,fontSize:"0.6rem",color:c.tx3,marginTop:2,lineHeight:1.45}}>{sub}</div>
                 </div>
                 {!done&&<div style={{color:c.gold,opacity:0.6,fontSize:"1rem",flexShrink:0}}>›</div>}
               </button>
