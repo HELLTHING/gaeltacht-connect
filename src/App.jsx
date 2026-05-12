@@ -417,28 +417,24 @@ async function speakIrish(text) {
     return "ok";
   } catch {}
 
-  // 4. Web Speech API — only if an Irish (ga-IE / ga) voice is installed
-  //    Wait for voices to load if needed (getVoices() is async on first call)
+  // 4. Web Speech API — prefer Irish voice, fall back to any voice
   if (window.speechSynthesis) {
     let voices = window.speechSynthesis.getVoices();
     if (!voices.length) {
       await new Promise(resolve => {
-        const h = () => resolve();
-        window.speechSynthesis.addEventListener('voiceschanged', h, {once:true});
+        window.speechSynthesis.addEventListener('voiceschanged', resolve, {once:true});
         setTimeout(resolve, 600);
       });
       voices = window.speechSynthesis.getVoices();
     }
     const irishVoice = voices.find(v=>v.lang==='ga-IE') || voices.find(v=>v.lang==='ga');
-    if (irishVoice) {
-      window.speechSynthesis.cancel();
-      const u = new SpeechSynthesisUtterance(text);
-      u.voice = irishVoice;
-      u.lang = irishVoice.lang;
-      u.rate = 0.82;
-      window.speechSynthesis.speak(u);
-      return "ok";
-    }
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'ga-IE';
+    u.rate = 0.82;
+    if (irishVoice) u.voice = irishVoice;
+    window.speechSynthesis.speak(u);
+    return irishVoice ? "ok" : "ok-accent";
   }
 
   return "no-voice";
@@ -990,7 +986,8 @@ export default function App() {
     setSpeakError(null);
     const result=await speakIrish(text);
     setSpeakLoading(false);
-    if(result!=="ok")setSpeakError(result);
+    if(result!=="ok"&&result!=="ok-accent")setSpeakError(result);
+    else if(result==="ok-accent")setSpeakError("ok-accent");
   },[]);
 
   const markDailyDone=useCallback(async()=>{
@@ -1434,24 +1431,29 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
                   </div>
                   <div style={{...bd,fontSize:"0.84rem",color:c.tx3,letterSpacing:"0.06em",marginBottom:14,fontStyle:"italic"}}>/ {ch.pr} /</div>
                   <button onClick={()=>speak(ch.p)} style={{
-                    background:speakError?`rgba(180,70,0,0.08)`:c.phrase,
-                    border:`1px solid ${speakError?`rgba(180,70,0,0.35)`:c.phraseBd}`,
+                    background:speakError==="no-voice"?`rgba(180,70,0,0.08)`:c.phrase,
+                    border:`1px solid ${speakError==="no-voice"?`rgba(180,70,0,0.35)`:c.phraseBd}`,
                     borderRadius:20,padding:"7px 18px",
-                    color:speakError?`#B44600`:c.acc,
+                    color:speakError==="no-voice"?`#B44600`:c.acc,
                     ...bd,fontSize:"0.85rem",cursor:"pointer",
                     display:"inline-flex",alignItems:"center",gap:7,marginBottom:speakError?6:10,
                     transition:"all 0.2s",
                   }}>
                     {speakLoading
                       ?<><span style={{animation:"breathe 0.8s ease infinite"}}>⏳</span> Ag lódáil…</>
-                      :speakError
+                      :speakError==="no-voice"
                       ?<>🔇 Níl guth Gaeilge · Tap to retry</>
                       :<><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M15.54 8.46a5 5 0 010 7.07" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round"/></svg>Éist le fuaim <span style={{opacity:0.55,fontSize:"0.75rem"}}>· Listen</span></>
                     }
                   </button>
-                  {speakError&&(
+                  {speakError==="no-voice"&&(
                     <div style={{...bd,fontSize:"0.72rem",color:c.tx3,marginBottom:10,lineHeight:1.55,maxWidth:280,textAlign:"center"}}>
                       Install an Irish voice: <strong style={{color:c.tx2}}>iOS</strong> Settings → Accessibility → Spoken Content → Voices → Irish · <strong style={{color:c.tx2}}>Android</strong> Settings → Text-to-speech → Add Irish
+                    </div>
+                  )}
+                  {speakError==="ok-accent"&&(
+                    <div style={{...bd,fontSize:"0.72rem",color:c.tx3,marginBottom:10,lineHeight:1.55,maxWidth:280,textAlign:"center",opacity:0.75}}>
+                      No native Irish voice — approximation only. For real pronunciation, install an Irish voice.
                     </div>
                   )}
                   <div style={{...hd,fontSize:"1rem",color:c.tx2,fontStyle:"italic",opacity:0.8}}>"{ch.m}"</div>
@@ -1678,7 +1680,7 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
                 <div style={{...bd,fontSize:"0.82rem",color:c.tx2}}>{w.m}</div>
               </div>
               <button onClick={()=>speak(w.p)} style={{background:c.cardAlt,border:`1px solid ${c.bd}`,borderRadius:8,width:34,height:34,flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",fontSize:"0.95rem",opacity:speakLoading?0.5:1}}>
-                {speakLoading?"⏳":speakError?"🔇":"🔊"}
+                {speakLoading?"⏳":speakError==="no-voice"?"🔇":"🔊"}
               </button>
             </div>
           ))}
@@ -2488,7 +2490,7 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
             border:`1px solid ${c.dark?c.gold+"40":c.bd}`,
             borderRadius:11,padding:"9px 11px",cursor:"pointer",fontSize:"1rem",
             lineHeight:1,opacity:speakLoading?0.4:1,color:c.gold,flexShrink:0,
-          }}>{speakLoading?"⏳":speakError?"🔇":"🔊"}</button>
+          }}>{speakLoading?"⏳":speakError==="no-voice"?"🔇":"🔊"}</button>
         </div>
 
         {/* PWA INSTALL */}
