@@ -2563,24 +2563,34 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
             <div style={{...bd,fontSize:"0.8rem",color:"rgba(200,150,62,0.5)",marginBottom:12}}>
               {allDone?"You have Irish":todayCh?.m}
             </div>
-            <div style={{...bd,fontSize:"0.78rem",color:"rgba(240,237,228,0.55)",fontStyle:"italic",lineHeight:1.5,maxWidth:280,margin:"0 auto"}}>
-              {storyTeaser}
+            {/* story teaser — the hook */}
+            <div style={{
+              borderLeft:"2px solid rgba(200,150,62,0.45)",
+              paddingLeft:12,marginTop:4,textAlign:"left",
+            }}>
+              <div style={{...bd,fontSize:"0.78rem",color:"rgba(240,237,228,0.82)",
+                lineHeight:1.62,fontStyle:"italic"}}>
+                {storyTeaser}
+              </div>
             </div>
           </div>
           {/* Big action button */}
           <button onClick={()=>{haptic([10,20,10]);setPrevView("home");
             if(allDone){setView("map");}else{setSelDay(nextDay);setView("day");}
           }} style={{
-            width:"100%",padding:"17px",border:"none",cursor:"pointer",
-            background:missionLesson?"rgba(111,207,151,0.12)":"linear-gradient(135deg,#2D6A4F,#1B4332)",
+            width:"100%",padding:"18px",border:"none",cursor:"pointer",
+            background:missionLesson
+              ?"rgba(111,207,151,0.1)"
+              :"linear-gradient(135deg,#2D6A4F,#1B4332)",
             display:"flex",alignItems:"center",justifyContent:"center",gap:8,
-            transition:"opacity 0.15s",
+            animation:missionLesson?"none":"breathe 2.4s ease infinite",
+            boxShadow:missionLesson?"none":"0 4px 20px rgba(27,67,50,0.6)",
           }}>
-            <span style={{...bd,fontSize:"1rem",fontWeight:800,letterSpacing:"0.01em",
+            <span style={{...bd,fontSize:"1.05rem",fontWeight:800,letterSpacing:"0.01em",
               color:missionLesson?c.doneTx:"#fff"}}>
               {missionLesson?"Léigh arís · Read again":total===0?"Tosaigh · Start":"Lean ar aghaidh · Continue"}
             </span>
-            {!missionLesson&&<span style={{fontSize:"1rem",color:"rgba(255,255,255,0.7)"}}>→</span>}
+            {!missionLesson&&<span style={{fontSize:"1.1rem",color:"rgba(255,255,255,0.8)"}}>→</span>}
           </button>
         </div>
 
@@ -2620,19 +2630,29 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
         {/* ── 4-COL NAV ICONS ── */}
         <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:8}}>
           {[
-            {e:"🗺️",l:"30 Lá",s:`${total}/30`,a:()=>{haptic();setPrevView("home");if(allDone){setView("map");}else{setSelDay(nextDay);setView("day");}}},
-            {e:"🎵",l:"Ceol",s:"Music",a:()=>{haptic();setPrevView("home");setView("ceol");}},
-            {e:"📖",l:"Foclóir",s:"Words",a:()=>{haptic();setPrevView("home");setView("dict");}},
-            {e:"📊",l:"Stats",s:st.best>=1?`🔥${st.best}`:"Progress",a:()=>{haptic();setPrevView("home");setView("stats");}},
-          ].map(({e,l,s,a},i)=>(
+            {e:"☘️",l:"30 Lá",s:`${total}/30`,bg:"linear-gradient(135deg,#1B4332,#2D6A4F)",bd:"rgba(111,207,151,0.3)",
+              a:()=>{haptic();setPrevView("home");if(allDone){setView("map");}else{setSelDay(nextDay);setView("day");}}},
+            {e:"🎵",l:"Ceol",s:"Music",bg:"linear-gradient(135deg,#4A0A0A,#8B1A1A)",bd:"rgba(220,80,80,0.3)",
+              a:()=>{haptic();setPrevView("home");setView("ceol");}},
+            {e:"📖",l:"Foclóir",s:"Words",bg:"linear-gradient(135deg,#0A1535,#1A3070)",bd:"rgba(80,130,220,0.3)",
+              a:()=>{haptic();setPrevView("home");setView("dict");}},
+            {e:"📊",l:"Stats",s:st.best>=1?`🔥${st.best}`:"—",bg:"linear-gradient(135deg,#1A0A35,#3A1A6A)",bd:"rgba(140,80,220,0.3)",
+              a:()=>{haptic();setPrevView("home");setView("stats");}},
+          ].map(({e,l,s,bg,bd:ibdColor,a},i)=>(
             <button key={i} onClick={a} style={{
-              border:`1px solid ${c.bd}`,borderRadius:16,padding:"12px 4px",
+              border:`1px solid ${c.bd}`,borderRadius:18,padding:"14px 6px 12px",
               cursor:"pointer",textAlign:"center",background:c.card,
-              display:"flex",flexDirection:"column",alignItems:"center",gap:3,
+              display:"flex",flexDirection:"column",alignItems:"center",gap:6,
+              boxShadow:c.shadow,
             }}>
-              <span style={{fontSize:"1.3rem",lineHeight:1}}>{e}</span>
-              <span style={{...bd,fontSize:"0.68rem",fontWeight:700,color:c.tx}}>{l}</span>
-              <span style={{...bd,fontSize:"0.56rem",color:c.tx3}}>{s}</span>
+              <div style={{
+                width:46,height:46,borderRadius:14,
+                background:bg,border:`1px solid ${ibdColor}`,
+                display:"flex",alignItems:"center",justifyContent:"center",
+                fontSize:"1.4rem",boxShadow:"0 3px 10px rgba(0,0,0,0.3)",
+              }}>{e}</div>
+              <span style={{...bd,fontSize:"0.7rem",fontWeight:700,color:c.tx}}>{l}</span>
+              <span style={{...bd,fontSize:"0.58rem",color:c.tx3}}>{s}</span>
             </button>
           ))}
         </div>
