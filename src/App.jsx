@@ -388,9 +388,9 @@ async function speakIrish(text) {
   if (_audioCache.has(text)) {
     _currentAudio = new Audio(_audioCache.get(text));
     await _currentAudio.play().catch(()=>{});
-    return true;
+    return "ok";
   }
-  // 2. IndexedDB → abair.ie Connacht neural TTS
+  // 2. abair.ie Connacht neural TTS (best quality)
   try {
     let blob = await _idbGet(text);
     if (!blob) blob = await _fetchAndCacheAudio(text);
@@ -398,11 +398,24 @@ async function speakIrish(text) {
     _audioCache.set(text, url);
     _currentAudio = new Audio(url);
     await _currentAudio.play().catch(()=>{});
-    return true;
-  } catch {
-    // abair.ie failed — no browser fallback (it pronounces Irish wrong)
-    return false;
+    return "ok";
+  } catch {}
+  // 3. Web Speech API — ONLY if a real Irish voice (ga-IE / ga) is installed
+  //    Never fall back to English — it pronounces Irish completely wrong
+  if (window.speechSynthesis) {
+    const voices = window.speechSynthesis.getVoices();
+    const irishVoice = voices.find(v => v.lang==='ga-IE') || voices.find(v => v.lang==='ga');
+    if (irishVoice) {
+      window.speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(text);
+      u.voice = irishVoice;
+      u.lang = irishVoice.lang;
+      u.rate = 0.82;
+      window.speechSynthesis.speak(u);
+      return "ok";
+    }
   }
+  return "no-voice"; // no Irish voice available anywhere
 }
 
 // Pre-warm audio cache for all 30 day phrases in the background
@@ -915,7 +928,7 @@ export default function App() {
   const [installPrompt,setInstallPrompt]=useState(null);
   const [installed,setInstalled]=useState(false);
   const [speakLoading,setSpeakLoading]=useState(false);
-  const [speakError,setSpeakError]=useState(false);
+  const [speakError,setSpeakError]=useState(null);
   const c = THEMES[theme]||THEMES.coill;
   const dk = c.dark; // keep dk as a convenience boolean for backward compat
 
@@ -948,10 +961,10 @@ export default function App() {
 
   const speak=useCallback(async(text)=>{
     setSpeakLoading(true);
-    setSpeakError(false);
-    const ok=await speakIrish(text);
+    setSpeakError(null);
+    const result=await speakIrish(text);
     setSpeakLoading(false);
-    if(!ok)setSpeakError(true);
+    if(result!=="ok")setSpeakError(result);
   },[]);
 
   const markDailyDone=useCallback(async()=>{
@@ -1394,14 +1407,27 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
                     {ch.p}<IrishTip en={ch.m}/>
                   </div>
                   <div style={{...bd,fontSize:"0.84rem",color:c.tx3,letterSpacing:"0.06em",marginBottom:14,fontStyle:"italic"}}>/ {ch.pr} /</div>
-                  <button onClick={()=>speak(ch.p)} style={{background:speakError?"rgba(220,38,38,0.08)":c.phrase,border:`1px solid ${speakError?"rgba(220,38,38,0.35)":c.phraseBd}`,borderRadius:20,padding:"7px 18px",color:speakError?"#DC2626":c.acc,...bd,fontSize:"0.85rem",cursor:"pointer",display:"inline-flex",alignItems:"center",gap:7,marginBottom:10,transition:"all 0.2s"}}>
+                  <button onClick={()=>speak(ch.p)} style={{
+                    background:speakError?`rgba(180,70,0,0.08)`:c.phrase,
+                    border:`1px solid ${speakError?`rgba(180,70,0,0.35)`:c.phraseBd}`,
+                    borderRadius:20,padding:"7px 18px",
+                    color:speakError?`#B44600`:c.acc,
+                    ...bd,fontSize:"0.85rem",cursor:"pointer",
+                    display:"inline-flex",alignItems:"center",gap:7,marginBottom:speakError?6:10,
+                    transition:"all 0.2s",
+                  }}>
                     {speakLoading
-                      ?<><span style={{fontSize:"0.9rem",animation:"breathe 0.8s ease infinite"}}>⏳</span> Ag lódáil…</>
+                      ?<><span style={{animation:"breathe 0.8s ease infinite"}}>⏳</span> Ag lódáil…</>
                       :speakError
-                      ?<><span>⚠️</span> Níl fáil ar ghuth · Retry</>
+                      ?<>🔇 Níl guth Gaeilge · Tap to retry</>
                       :<><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M15.54 8.46a5 5 0 010 7.07" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round"/></svg>Éist le fuaim <span style={{opacity:0.55,fontSize:"0.75rem"}}>· Listen</span></>
                     }
                   </button>
+                  {speakError&&(
+                    <div style={{...bd,fontSize:"0.72rem",color:c.tx3,marginBottom:10,lineHeight:1.55,maxWidth:280,textAlign:"center"}}>
+                      Install an Irish voice: <strong style={{color:c.tx2}}>iOS</strong> Settings → Accessibility → Spoken Content → Voices → Irish · <strong style={{color:c.tx2}}>Android</strong> Settings → Text-to-speech → Add Irish
+                    </div>
+                  )}
                   <div style={{...hd,fontSize:"1rem",color:c.tx2,fontStyle:"italic",opacity:0.8}}>"{ch.m}"</div>
                 </div>
 
@@ -1626,7 +1652,7 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
                 <div style={{...bd,fontSize:"0.82rem",color:c.tx2}}>{w.m}</div>
               </div>
               <button onClick={()=>speak(w.p)} style={{background:c.cardAlt,border:`1px solid ${c.bd}`,borderRadius:8,width:34,height:34,flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",fontSize:"0.95rem",opacity:speakLoading?0.5:1}}>
-                {speakLoading?"⏳":speakError?"⚠️":"🔊"}
+                {speakLoading?"⏳":speakError?"🔇":"🔊"}
               </button>
             </div>
           ))}
@@ -2436,7 +2462,7 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
             border:`1px solid ${c.dark?c.gold+"40":c.bd}`,
             borderRadius:11,padding:"9px 11px",cursor:"pointer",fontSize:"1rem",
             lineHeight:1,opacity:speakLoading?0.4:1,color:c.gold,flexShrink:0,
-          }}>{speakLoading?"⏳":speakError?"⚠️":"🔊"}</button>
+          }}>{speakLoading?"⏳":speakError?"🔇":"🔊"}</button>
         </div>
 
         {/* PWA INSTALL */}
