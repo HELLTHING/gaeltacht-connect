@@ -824,6 +824,21 @@ const IrishTip = ({en}) => (
     }}>{en}</span>
 );
 
+// FlashTimer — counts down seconds, calls onTick and onExpire
+const FlashTimer = ({seconds, onTick, onExpire}) => {
+  useEffect(()=>{
+    let t=seconds;
+    onTick(t);
+    const id=setInterval(()=>{
+      t--;
+      if(t<=0){clearInterval(id);onExpire();}
+      else onTick(t);
+    },1000);
+    return()=>clearInterval(id);
+  },[]);
+  return null;
+};
+
 // Back button — shared across all secondary views
 const BackBtn = ({onClick,c,bd,label="← Ar ais"}) => (
   <button onClick={onClick} style={{
@@ -906,6 +921,14 @@ export default function App() {
   const [installed,setInstalled]=useState(false);
   const [speakLoading,setSpeakLoading]=useState(false);
   const [speakError,setSpeakError]=useState(null);
+  const [flashQ,setFlashQ]=useState([]);
+  const [flashIdx,setFlashIdx]=useState(0);
+  const [flashPicked,setFlashPicked]=useState(null);
+  const [flashDone,setFlashDone]=useState(false);
+  const [flashScore,setFlashScore]=useState(0);
+  const [flashTimeLeft,setFlashTimeLeft]=useState(5);
+  const [flashBest,setFlashBest]=useState(()=>parseInt(localStorage.getItem("flashBest")||"0"));
+  const flashTimerRef=useRef(null);
   const c = THEMES[theme]||THEMES.coill;
   const dk = c.dark; // keep dk as a convenience boolean for backward compat
 
@@ -968,6 +991,23 @@ export default function App() {
     const dl={...(st.dailyLog||{}),[k]:score};
     await save({...st,dailyLog:dl});
   },[st,save]);
+
+  const startFlash=useCallback(()=>{
+    const pool=[
+      ...CH.map(d=>({p:d.p,m:d.m})),
+      ...VOCAB.filter(v=>v.m.length<20),
+    ];
+    const shuffled=[...pool].sort(()=>Math.random()-0.5).slice(0,10);
+    const questions=shuffled.map(item=>{
+      const wrong=pool.filter(x=>x.p!==item.p&&x.m!==item.m)
+        .sort(()=>Math.random()-0.5).slice(0,3).map(x=>x.m);
+      const options=[...wrong,item.m].sort(()=>Math.random()-0.5);
+      return{irish:item.p,correct:item.m,options};
+    });
+    setFlashQ(questions);setFlashIdx(0);setFlashPicked(null);
+    setFlashDone(false);setFlashScore(0);setFlashTimeLeft(5);
+    setView("flash");
+  },[]);
 
   const scheduleNotif=useCallback(()=>{
     if(Notification.permission!=="granted")return;
@@ -1127,6 +1167,160 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
   // ═══════════════════════════════
   // ONBOARDING
   // ═══════════════════════════════
+  // ═══════════════════════════════
+  // WORD FLASH VIEW
+  // ═══════════════════════════════
+  if(view==="flash"){
+    const fq=flashQ[flashIdx];
+    const FLASH_SEC=5;
+    const pct=flashDone?0:(flashTimeLeft/FLASH_SEC)*100;
+    const timerColor=flashTimeLeft<=2?"#DC2626":flashTimeLeft<=3?"#F59E0B":c.acc;
+
+    return(
+      <div style={{minHeight:"100dvh",display:"flex",flexDirection:"column",background:c.bg,color:c.tx}}>
+        <style>{`${css} @keyframes flashPop{0%{transform:scale(0.94);opacity:0}100%{transform:scale(1);opacity:1}}`}</style>
+
+        {/* Header */}
+        <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"14px 16px 0"}}>
+          <button onClick={()=>{clearInterval(flashTimerRef.current);setView("home");}} style={{
+            background:c.dark?"rgba(255,255,255,0.08)":"rgba(0,0,0,0.06)",border:`1px solid ${c.bd}`,
+            borderRadius:10,padding:"7px 13px",cursor:"pointer",color:c.tx3,...bd,fontSize:"0.82rem",
+          }}>← Baile</button>
+          <div style={{...bd,fontSize:"0.7rem",color:c.tx3,letterSpacing:"0.12em",textTransform:"uppercase"}}>
+            Word Flash
+          </div>
+          <div style={{
+            ...bd,fontSize:"0.8rem",fontWeight:700,color:c.gold,
+            background:`${c.gold}18`,border:`1px solid ${c.gold}40`,
+            borderRadius:9,padding:"5px 11px",
+          }}>🏆 {flashBest}</div>
+        </div>
+
+        {flashDone?(
+          // ── RESULTS ──
+          <div style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"24px 20px",textAlign:"center"}}>
+            <div style={{fontSize:"4rem",marginBottom:16,animation:"correctPop 0.5s ease"}}>
+              {flashScore>=9?"🏆":flashScore>=7?"⭐":flashScore>=5?"👏":"💪"}
+            </div>
+            <div style={{...hd,fontSize:"2.6rem",fontWeight:900,color:c.acc,marginBottom:6}}>{flashScore}/10</div>
+            <div style={{...bd,fontSize:"0.85rem",color:c.tx3,marginBottom:6}}>
+              {flashScore>=9?"Foirfe! · Perfect!":flashScore>=7?"An-mhaith! · Very good!":flashScore>=5?"Go maith! · Good!":"Arís! · Keep trying!"}
+            </div>
+            {flashScore>flashBest&&<div style={{...bd,fontSize:"0.78rem",color:c.gold,fontWeight:700,marginBottom:20}}>✦ New best! · Taifead nua!</div>}
+            {flashScore<=flashBest&&flashBest>0&&<div style={{...bd,fontSize:"0.72rem",color:c.tx3,marginBottom:20}}>Best: {flashBest}/10</div>}
+            <button onClick={startFlash} style={{
+              background:`linear-gradient(135deg,${c.acc},${c.gold})`,
+              border:"none",borderRadius:16,padding:"14px 36px",cursor:"pointer",
+              color:"#fff",...hd,fontSize:"1rem",fontWeight:700,
+              boxShadow:`0 6px 20px ${c.acc}50`,
+            }}>Arís · Play again</button>
+          </div>
+        ):(fq&&(
+          // ── QUESTION ──
+          <div style={{flex:1,display:"flex",flexDirection:"column",padding:"16px 16px 24px"}}>
+            {/* Progress + timer */}
+            <div style={{marginBottom:12}}>
+              <div style={{display:"flex",justifyContent:"space-between",...bd,fontSize:"0.68rem",color:c.tx3,marginBottom:5}}>
+                <span>{flashIdx+1} / 10</span>
+                <span style={{color:timerColor,fontWeight:700}}>{flashPicked?"":`${flashTimeLeft}s`}</span>
+              </div>
+              <div style={{height:3,background:c.dark?"rgba(255,255,255,0.1)":"rgba(0,0,0,0.08)",borderRadius:3,overflow:"hidden"}}>
+                <div style={{
+                  height:"100%",width:`${pct}%`,borderRadius:3,
+                  background:`linear-gradient(90deg,${timerColor},${timerColor}AA)`,
+                  transition:"width 1s linear",
+                }}/>
+              </div>
+            </div>
+
+            {/* Question card */}
+            <div key={flashIdx} style={{
+              flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",
+              background:c.dark?`linear-gradient(160deg,${c.card},${c.gold}08)`:c.card,
+              border:`1px solid ${c.gold}40`,borderRadius:24,
+              padding:"28px 20px",marginBottom:18,
+              animation:"flashPop 0.3s cubic-bezier(0.175,0.885,0.32,1.275)",
+              boxShadow:c.shadow,
+            }}>
+              <div style={{...bd,fontSize:"0.52rem",color:c.gold,letterSpacing:"0.25em",textTransform:"uppercase",marginBottom:14,opacity:0.7}}>
+                Cad é an Béarla? · What's the English?
+              </div>
+              <div style={{...hd,fontSize:"2.2rem",fontWeight:700,color:c.acc,textAlign:"center",fontStyle:"italic",lineHeight:1.2}}>
+                {fq.irish}
+              </div>
+            </div>
+
+            {/* Options */}
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+              {fq.options.map((opt,i)=>{
+                const isCorrect=opt===fq.correct;
+                const isPicked=flashPicked===opt;
+                const revealed=flashPicked!==null;
+                let bg=c.card, border=`1px solid ${c.bd}`, col=c.tx;
+                if(revealed&&isCorrect){bg=`rgba(34,197,94,0.18)`;border=`2px solid #22C55E`;col="#22C55E";}
+                else if(revealed&&isPicked&&!isCorrect){bg=`rgba(220,38,38,0.15)`;border=`2px solid #DC2626`;col="#DC2626";}
+                return(
+                  <button key={i} onClick={()=>{
+                    if(flashPicked!==null)return;
+                    clearInterval(flashTimerRef.current);
+                    setFlashPicked(opt);
+                    const correct=opt===fq.correct;
+                    if(correct){playSound("correct");haptic([10,20]);}
+                    else{playSound("wrong");haptic([30,20,30]);}
+                    const newScore=flashScore+(correct?1:0);
+                    setTimeout(()=>{
+                      if(flashIdx+1>=10){
+                        const best=Math.max(flashBest,newScore);
+                        setFlashBest(best);
+                        localStorage.setItem("flashBest",String(best));
+                        setFlashScore(newScore);setFlashDone(true);
+                      } else {
+                        setFlashScore(newScore);
+                        setFlashIdx(i=>i+1);setFlashPicked(null);setFlashTimeLeft(FLASH_SEC);
+                      }
+                    },800);
+                  }} style={{
+                    background:bg,border,borderRadius:14,padding:"12px 8px",
+                    cursor:revealed?"default":"pointer",color:col,
+                    ...bd,fontSize:"0.9rem",fontWeight:600,
+                    textAlign:"center",transition:"all 0.2s",
+                    boxShadow:revealed&&isCorrect?`0 0 16px rgba(34,197,94,0.3)`:
+                              revealed&&isPicked?`0 0 16px rgba(220,38,38,0.25)`:"none",
+                    animation:revealed&&isPicked&&!isCorrect?"shake 0.4s ease":
+                              revealed&&isCorrect?"correctPop 0.35s ease":"none",
+                  }}>{opt}</button>
+                );
+              })}
+            </div>
+          </div>
+        ))}
+
+        {/* Flash timer useEffect trigger */}
+        {view==="flash"&&!flashDone&&flashPicked===null&&fq&&(
+          <FlashTimer
+            key={flashIdx}
+            seconds={FLASH_SEC}
+            onTick={t=>setFlashTimeLeft(t)}
+            onExpire={()=>{
+              setFlashPicked("__timeout__");
+              playSound("wrong");haptic([30,20,30]);
+              const newScore=flashScore;
+              setTimeout(()=>{
+                if(flashIdx+1>=10){
+                  const best=Math.max(flashBest,newScore);
+                  setFlashBest(best);localStorage.setItem("flashBest",String(best));
+                  setFlashScore(newScore);setFlashDone(true);
+                } else {
+                  setFlashIdx(i=>i+1);setFlashPicked(null);setFlashTimeLeft(FLASH_SEC);
+                }
+              },700);
+            }}
+          />
+        )}
+      </div>
+    );
+  }
+
   // ═══════════════════════════════
   // QUIZ VIEW
   // ═══════════════════════════════
@@ -2267,7 +2461,7 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
       </div>
 
       {/* ── HERO BRANDING ── */}
-      <div style={{textAlign:"center",padding:"52px 24px 28px",animation:"rise 0.5s ease"}}>
+      <div style={{textAlign:"center",padding:"48px 24px 24px",animation:"rise 0.5s ease"}}>
         <div style={{
           display:"inline-flex",alignItems:"center",justifyContent:"center",
           width:80,height:80,borderRadius:26,
@@ -2282,8 +2476,28 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
         </div>
 
         <div style={{...bd,fontSize:"0.55rem",color:c.gold,letterSpacing:"0.3em",textTransform:"uppercase",fontWeight:700,display:"flex",alignItems:"center",justifyContent:"center"}}>
-          An Ghaeilge Bheo<IrishTip en="The Living Irish"/>
+          An Ghaeilge Bheo <span style={{fontStyle:"italic",opacity:0.65,marginLeft:7,letterSpacing:"0.01em",textTransform:"none",fontSize:"0.6rem"}}>The Living Irish</span>
         </div>
+
+        {/* Streak bar */}
+        {st?.streak>=1&&(
+          <div style={{
+            display:"inline-flex",alignItems:"center",gap:8,
+            marginTop:14,padding:"8px 18px",borderRadius:20,
+            background:c.dark?"rgba(255,120,0,0.12)":"rgba(255,120,0,0.08)",
+            border:"1.5px solid rgba(255,120,0,0.35)",
+          }}>
+            <span style={{fontSize:"1.3rem",animation:st.streak>=7?"goldGlow 2s ease infinite":"none"}}>🔥</span>
+            <div style={{textAlign:"left"}}>
+              <div style={{...bd,fontSize:"0.75rem",fontWeight:800,color:"#FF7A00",lineHeight:1}}>
+                {st.streak} {st.streak===1?"lá":"lá"} as a chéile
+              </div>
+              <div style={{...bd,fontSize:"0.58rem",color:c.tx3,lineHeight:1,marginTop:2}}>
+                {st.streak} day streak · {st.streak===st.best?"personal best 🏆":"keep going!"}
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Celtic ornament divider */}
         <div style={{display:"flex",alignItems:"center",gap:12,margin:"22px auto 0",maxWidth:220}}>
@@ -2331,6 +2545,34 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
               border:`1px solid ${c.dark?"rgba(111,207,151,0.2)":"rgba(27,67,50,0.2)"}`,
               borderRadius:9,padding:"4px 10px",
             }}>{total}/30{st.streak>=2?` 🔥${st.streak}`:""}</div>
+            <div style={{color:c.gold,fontSize:"1.2rem",lineHeight:1,opacity:0.7}}>›</div>
+          </div>
+        </button>
+
+        {/* WORD FLASH */}
+        <button onClick={()=>{haptic([10,20,10]);startFlash();}} style={{
+          width:"100%",border:`2px solid ${c.gold}55`,borderRadius:18,cursor:"pointer",
+          background:c.dark?`linear-gradient(135deg,${c.gold}14 0%,${c.gold}06 100%)`:c.card,
+          padding:"16px 18px",textAlign:"left",
+          display:"flex",alignItems:"center",gap:15,
+          boxShadow:c.dark?`0 4px 24px ${c.gold}18`:c.shadow,
+        }}>
+          <div style={{
+            width:52,height:52,borderRadius:16,flexShrink:0,
+            background:`linear-gradient(145deg,#2A1600,${c.gold}99)`,
+            border:`1px solid ${c.gold}50`,
+            display:"flex",alignItems:"center",justifyContent:"center",fontSize:"1.5rem",
+            boxShadow:`0 4px 14px ${c.gold}30`,
+          }}>⚡</div>
+          <div style={{flex:1,minWidth:0}}>
+            <div style={{...bd,fontSize:"0.48rem",color:c.gold,letterSpacing:"0.2em",textTransform:"uppercase",fontWeight:700,marginBottom:4}}>Word Flash · Focal Flash</div>
+            <div style={{...hd,fontSize:"1.05rem",fontWeight:700,color:c.tx,lineHeight:1.2}}>Quick-fire vocabulary</div>
+            <div style={{...bd,fontSize:"0.6rem",color:c.tx3,marginTop:3}}>
+              10 questions · 5 seconds each{flashBest>0?` · Best: ${flashBest}/10`:""}
+            </div>
+          </div>
+          <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:6,flexShrink:0}}>
+            {flashBest>0&&<div style={{...bd,fontSize:"0.68rem",fontWeight:700,color:c.gold,background:`${c.gold}18`,border:`1px solid ${c.gold}30`,borderRadius:9,padding:"4px 10px"}}>🏆 {flashBest}</div>}
             <div style={{color:c.gold,fontSize:"1.2rem",lineHeight:1,opacity:0.7}}>›</div>
           </div>
         </button>
