@@ -384,27 +384,52 @@ function _bestSpeechVoice() {
 
 async function speakIrish(text) {
   if (_currentAudio) { _currentAudio.pause(); _currentAudio.src=''; _currentAudio=null; }
+
   // 1. Session memory cache (instant)
   if (_audioCache.has(text)) {
     _currentAudio = new Audio(_audioCache.get(text));
-    await _currentAudio.play().catch(()=>{});
+    _currentAudio.play().catch(()=>{});
     return "ok";
   }
-  // 2. abair.ie Connacht neural TTS (best quality)
+
+  // 2. abair.ie Connacht neural TTS (best quality, works if domain is whitelisted)
   try {
     let blob = await _idbGet(text);
     if (!blob) blob = await _fetchAndCacheAudio(text);
     const url = URL.createObjectURL(blob);
     _audioCache.set(text, url);
     _currentAudio = new Audio(url);
-    await _currentAudio.play().catch(()=>{});
+    _currentAudio.play().catch(()=>{});
     return "ok";
   } catch {}
-  // 3. Web Speech API — ONLY if a real Irish voice (ga-IE / ga) is installed
-  //    Never fall back to English — it pronounces Irish completely wrong
+
+  // 3. Google Translate TTS for Irish (ga)
+  // Audio() elements load cross-origin media without CORS restrictions
+  try {
+    const gtUrl = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(text.slice(0,200))}&tl=ga&client=gtx&ttsspeed=0.75`;
+    await new Promise((resolve, reject) => {
+      const a = new Audio(gtUrl);
+      const t = setTimeout(() => reject(new Error('timeout')), 6000);
+      a.onplaying = () => { clearTimeout(t); _currentAudio = a; resolve(); };
+      a.onerror = () => { clearTimeout(t); reject(); };
+      a.play().catch(reject);
+    });
+    return "ok";
+  } catch {}
+
+  // 4. Web Speech API — only if an Irish (ga-IE / ga) voice is installed
+  //    Wait for voices to load if needed (getVoices() is async on first call)
   if (window.speechSynthesis) {
-    const voices = window.speechSynthesis.getVoices();
-    const irishVoice = voices.find(v => v.lang==='ga-IE') || voices.find(v => v.lang==='ga');
+    let voices = window.speechSynthesis.getVoices();
+    if (!voices.length) {
+      await new Promise(resolve => {
+        const h = () => resolve();
+        window.speechSynthesis.addEventListener('voiceschanged', h, {once:true});
+        setTimeout(resolve, 600);
+      });
+      voices = window.speechSynthesis.getVoices();
+    }
+    const irishVoice = voices.find(v=>v.lang==='ga-IE') || voices.find(v=>v.lang==='ga');
     if (irishVoice) {
       window.speechSynthesis.cancel();
       const u = new SpeechSynthesisUtterance(text);
@@ -415,7 +440,8 @@ async function speakIrish(text) {
       return "ok";
     }
   }
-  return "no-voice"; // no Irish voice available anywhere
+
+  return "no-voice";
 }
 
 // Pre-warm audio cache for all 30 day phrases in the background
