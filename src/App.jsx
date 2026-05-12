@@ -824,6 +824,72 @@ const IrishTip = ({en}) => (
     }}>{en}</span>
 );
 
+// Generate a share card image via Canvas
+async function generateShareCard({score, total, label, streak, phrase, meaning}) {
+  const W=540, H=540;
+  const canvas=document.createElement('canvas');
+  canvas.width=W; canvas.height=H;
+  const ctx=canvas.getContext('2d');
+
+  // Background
+  const bg=ctx.createLinearGradient(0,0,W,H);
+  bg.addColorStop(0,'#061210'); bg.addColorStop(1,'#0F2A1C');
+  ctx.fillStyle=bg; ctx.fillRect(0,0,W,H);
+
+  // Subtle grid texture
+  ctx.strokeStyle='rgba(200,150,62,0.04)'; ctx.lineWidth=1;
+  for(let x=0;x<W;x+=36){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+  for(let y=0;y<H;y+=36){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+
+  // Gold top bar
+  const barGrad=ctx.createLinearGradient(0,0,W,0);
+  barGrad.addColorStop(0,'transparent'); barGrad.addColorStop(0.5,'#C8963E'); barGrad.addColorStop(1,'transparent');
+  ctx.fillStyle=barGrad; ctx.fillRect(0,0,W,3);
+
+  // Shamrock + branding
+  ctx.textAlign='center';
+  ctx.font='32px serif'; ctx.fillText('☘️',W/2,52);
+  ctx.font='bold 15px sans-serif'; ctx.fillStyle='rgba(200,150,62,0.65)';
+  ctx.letterSpacing='3px'; ctx.fillText('GAELTACHT CONNECT',W/2,76);
+
+  // Score — big
+  const pct=score/total;
+  const scoreColor=pct>=0.9?'#C8963E':pct>=0.7?'#6FCF97':'rgba(240,237,228,0.85)';
+  ctx.font='bold 130px Georgia,serif'; ctx.fillStyle=scoreColor;
+  ctx.shadowColor=scoreColor; ctx.shadowBlur=pct>=0.9?40:0;
+  ctx.fillText(`${score}/${total}`,W/2,220);
+  ctx.shadowBlur=0;
+
+  // Label
+  ctx.font='bold 22px sans-serif'; ctx.fillStyle='rgba(240,237,228,0.55)';
+  ctx.fillText(label,W/2,262);
+
+  // Streak
+  if(streak>=1){
+    ctx.font='bold 20px sans-serif'; ctx.fillStyle='#FF7A00';
+    ctx.fillText(`🔥 ${streak} day streak`,W/2,298);
+  }
+
+  // Divider
+  const div=ctx.createLinearGradient(0,0,W,0);
+  div.addColorStop(0,'transparent'); div.addColorStop(0.5,'rgba(200,150,62,0.4)'); div.addColorStop(1,'transparent');
+  ctx.fillStyle=div; ctx.fillRect(60,streak>=1?322:308,W-120,1);
+
+  // Irish phrase
+  const phraseY=streak>=1?360:346;
+  ctx.font='italic bold 36px Georgia,serif'; ctx.fillStyle='#C8963E';
+  ctx.fillText(phrase,W/2,phraseY);
+  ctx.font='18px sans-serif'; ctx.fillStyle='rgba(200,150,62,0.5)';
+  ctx.fillText(meaning,W/2,phraseY+32);
+
+  // Bottom
+  ctx.font='13px sans-serif'; ctx.fillStyle='rgba(200,150,62,0.3)';
+  ctx.fillText('An Ghaeilge Bheo · The Living Irish',W/2,H-18);
+  ctx.fillStyle=barGrad; ctx.fillRect(0,H-3,W,3);
+
+  return new Promise(resolve=>canvas.toBlob(resolve,'image/png',0.95));
+}
+
 // FlashTimer — counts down seconds, calls onTick and onExpire
 const FlashTimer = ({seconds, onTick, onExpire}) => {
   useEffect(()=>{
@@ -1011,15 +1077,24 @@ export default function App() {
     setView("flash");
   },[]);
 
-  const shareResult=useCallback(async(text)=>{
+  const shareResult=useCallback(async(cardParams, fallbackText)=>{
     haptic([10,20,10]);
-    if(navigator.share){
-      try{await navigator.share({title:"Gaeltacht Connect ☘️",text});}catch{}
-    } else {
-      try{
-        await navigator.clipboard.writeText(text);
-        alert("Copied to clipboard!");
-      }catch{}
+    try{
+      const blob=await generateShareCard(cardParams);
+      const file=new File([blob],'gaeltacht-result.png',{type:'image/png'});
+      if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){
+        await navigator.share({files:[file],title:'Gaeltacht Connect ☘️',text:fallbackText});
+        return;
+      }
+      // fallback: share text only
+      if(navigator.share){await navigator.share({title:'Gaeltacht Connect ☘️',text:fallbackText});return;}
+      // last resort: download image
+      const url=URL.createObjectURL(blob);
+      const a=document.createElement('a');
+      a.href=url;a.download='gaeltacht-result.png';a.click();
+      setTimeout(()=>URL.revokeObjectURL(url),2000);
+    }catch(e){
+      // user cancelled — silent
     }
   },[]);
 
@@ -1269,7 +1344,8 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
 
             {/* Share button — primary CTA */}
             <button onClick={()=>shareResult(
-              `⚡ ${flashScore}/10 on Word Flash!\n${st?.streak>=1?`🔥 ${st.streak} day streak\n`:""}☘️ Learning Irish on Gaeltacht Connect\n\nDia dhuit! — Hello in Irish`
+              {score:flashScore,total:10,label:'Word Flash ⚡',streak:st?.streak||0,phrase:'Dia dhuit!',meaning:'Hello in Irish'},
+              `⚡ ${flashScore}/10 on Word Flash! ${st?.streak>=1?`🔥 ${st.streak} day streak · `:""}☘️ Gaeltacht Connect`
             )} style={{
               background:`linear-gradient(135deg,${c.acc},${c.gold})`,
               border:"none",borderRadius:16,padding:"15px 32px",cursor:"pointer",
@@ -1560,7 +1636,8 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
               <div style={{display:"flex",flexDirection:"column",gap:10}}>
                 {/* Share — primary CTA */}
                 <button onClick={()=>shareResult(
-                  `🎯 ${quizScore}/${quiz.length} on the Irish Quiz!\n${st?.streak>=1?`🔥 ${st.streak} day streak\n`:""}☘️ Learning Irish on Gaeltacht Connect\n\nDia dhuit! — Hello in Irish`
+                  {score:quizScore,total:quiz.length,label:'Irish Quiz 🎯',streak:st?.streak||0,phrase:'Tá Gaeilge agam!',meaning:'I have Irish!'},
+                  `🎯 ${quizScore}/${quiz.length} on the Irish Quiz! ${st?.streak>=1?`🔥 ${st.streak} day streak · `:""}☘️ Gaeltacht Connect`
                 )} style={{
                   width:"100%",padding:"16px",borderRadius:14,
                   background:`linear-gradient(135deg,${c.acc},${c.gold})`,
