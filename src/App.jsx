@@ -221,70 +221,120 @@ const genShareImage = (day, total, streak) => {
   const x = cv.getContext("2d");
   const ch = CH[day-1];
 
-  // Deep green bg
-  x.fillStyle="#0D2318"; x.fillRect(0,0,1080,1080);
+  // ── Background ──────────────────────────────────────────────
+  const bgGrad = x.createLinearGradient(0,0,0,1080);
+  bgGrad.addColorStop(0,"#081A10"); bgGrad.addColorStop(0.5,"#0D2318"); bgGrad.addColorStop(1,"#061410");
+  x.fillStyle=bgGrad; x.fillRect(0,0,1080,1080);
 
-  // Diagonal texture
-  x.globalAlpha=0.03; x.strokeStyle="#6FCF97"; x.lineWidth=1;
-  for(let i=-1080;i<2160;i+=28){x.beginPath();x.moveTo(i,0);x.lineTo(i+1080,1080);x.stroke();}
-  x.globalAlpha=1;
+  // Subtle radial glow top-right
+  const glow=x.createRadialGradient(1080,0,0,1080,0,700);
+  glow.addColorStop(0,"rgba(64,145,108,0.18)"); glow.addColorStop(1,"rgba(64,145,108,0)");
+  x.fillStyle=glow; x.fillRect(0,0,1080,1080);
 
-  // Circle accents
-  x.globalAlpha=0.07; x.fillStyle="#40916C";
-  x.beginPath(); x.arc(950,130,340,0,Math.PI*2); x.fill();
-  x.globalAlpha=0.04;
-  x.beginPath(); x.arc(130,950,260,0,Math.PI*2); x.fill();
-  x.globalAlpha=1;
+  // Fine dot grid texture
+  x.fillStyle="rgba(64,145,108,0.08)";
+  for(let gx=40;gx<1080;gx+=54) for(let gy=40;gy<1080;gy+=54){x.beginPath();x.arc(gx,gy,1.5,0,Math.PI*2);x.fill();}
 
-  // Top gradient bar
-  const grad=x.createLinearGradient(0,0,1080,0);
-  grad.addColorStop(0,"#2D6A4F"); grad.addColorStop(1,"#C9A22700");
-  x.fillStyle=grad; x.fillRect(0,0,1080,5);
+  // ── Gold top bar ────────────────────────────────────────────
+  const topBar=x.createLinearGradient(0,0,1080,0);
+  topBar.addColorStop(0,"#C9A227"); topBar.addColorStop(0.5,"#E8C84A"); topBar.addColorStop(1,"#C9A227");
+  x.fillStyle=topBar; x.fillRect(0,0,1080,6);
 
-  // Brand
-  x.fillStyle="#40916C99"; x.font="600 28px sans-serif"; x.textAlign="left";
-  x.fillText("☘  GAELTACHT CONNECT",64,76);
+  // ── Brand header ────────────────────────────────────────────
+  x.textAlign="center";
+  x.fillStyle="rgba(201,162,39,0.55)"; x.font="500 26px 'Arial',sans-serif";
+  x.fillText("☘  GAELTACHT CONNECT  ☘",540,68);
 
-  // Big day number
-  x.fillStyle="#FFFFFF"; x.font="bold 160px serif"; x.textAlign="left";
-  x.fillText(`La ${day}`,60,280);
-  // Accent on "a" — gold dot
-  x.fillStyle="#C9A227"; x.font="bold 60px serif";
-  x.fillText("á",60+x.measureText("L").width,280);
+  // ── Day pill ────────────────────────────────────────────────
+  // Pill background
+  const pillX=340, pillY=110, pillW=400, pillH=160, pillR=24;
+  x.fillStyle="rgba(45,106,79,0.35)";
+  x.beginPath(); x.roundRect(pillX,pillY,pillW,pillH,pillR); x.fill();
+  x.strokeStyle="rgba(201,162,39,0.4)"; x.lineWidth=1.5;
+  x.beginPath(); x.roundRect(pillX,pillY,pillW,pillH,pillR); x.stroke();
 
-  x.fillStyle="#40916C"; x.font="500 36px sans-serif"; x.textAlign="left";
-  x.fillText(`of 30  ·  ${total} days done`,64,330);
+  // "Lá" text
+  x.fillStyle="#FFFFFF"; x.font="bold 90px Georgia,serif"; x.textAlign="center";
+  x.fillText(`Lá ${day}`,540,218);
 
-  // Divider
-  x.strokeStyle="#2D6A4F44"; x.lineWidth=2;
-  x.beginPath(); x.moveTo(64,372); x.lineTo(1016,372); x.stroke();
+  // "of 30" subtitle
+  x.fillStyle="rgba(201,162,39,0.75)"; x.font="500 30px 'Arial',sans-serif"; x.textAlign="center";
+  x.fillText(`as a ${total} lá déanta  ·  ${total} of 30 done`,540,298);
 
-  // Phrase — centered, gold, word wrap
-  x.fillStyle="#C9A227"; x.font="italic bold 58px serif"; x.textAlign="center";
-  const maxW=900; const words=ch.p.split(" "); let line=""; let py=490;
-  for(const w of words){
-    const test=line?line+" "+w:w;
-    if(x.measureText(test).width>maxW&&line){x.fillText(line,540,py);line=w;py+=74;}
-    else line=test;
+  // ── Decorative divider ──────────────────────────────────────
+  x.strokeStyle="rgba(201,162,39,0.22)"; x.lineWidth=1;
+  x.beginPath(); x.moveTo(120,340); x.lineTo(960,340); x.stroke();
+  // Center shamrock on divider
+  x.fillStyle="rgba(201,162,39,0.4)"; x.font="22px sans-serif"; x.textAlign="center";
+  x.fillText("☘",540,347);
+
+  // ── Irish phrase box ────────────────────────────────────────
+  const boxX=80, boxY=370, boxW=920, boxH=300;
+  const boxGrad=x.createLinearGradient(boxX,boxY,boxX,boxY+boxH);
+  boxGrad.addColorStop(0,"rgba(45,106,79,0.22)"); boxGrad.addColorStop(1,"rgba(45,106,79,0.06)");
+  x.fillStyle=boxGrad;
+  x.beginPath(); x.roundRect(boxX,boxY,boxW,boxH,20); x.fill();
+  x.strokeStyle="rgba(201,162,39,0.25)"; x.lineWidth=1.5;
+  x.beginPath(); x.roundRect(boxX,boxY,boxW,boxH,20); x.stroke();
+  // Gold left accent
+  x.fillStyle="rgba(201,162,39,0.7)"; x.fillRect(boxX,boxY+20,4,boxH-40);
+
+  // Word-wrap Irish phrase — max 2 lines inside box
+  x.fillStyle="#C9A227"; x.font="italic bold 58px Georgia,serif"; x.textAlign="center";
+  const phWords=ch.p.split(" "); let phLine1="", phLine2="", phMaxW=800;
+  for(const w of phWords){
+    const t=phLine1?phLine1+" "+w:w;
+    if(x.measureText(t).width>phMaxW&&phLine1){phLine2=phLine2?phLine2+" "+w:w;}
+    else phLine1=t;
   }
-  x.fillText(line,540,py);
-
-  // Translation
-  x.fillStyle="#E8E4D899"; x.font="400 36px sans-serif"; x.textAlign="center";
-  x.fillText(`"${ch.m}"`,540,py+60);
-
-  // Streak badge
-  if(streak>=2){
-    x.fillStyle="#C9A22718";
-    x.beginPath(); x.roundRect(64,py+100,240,72,14); x.fill();
-    x.strokeStyle="#C9A22744"; x.lineWidth=1; x.stroke();
-    x.fillStyle="#C9A227"; x.font="bold 36px sans-serif"; x.textAlign="center";
-    x.fillText(`🔥 ${streak} lá as a chéile`,64+120,py+146);
+  if(phLine2){
+    x.fillText(phLine1,540,460);
+    x.fillText(phLine2,540,530);
+  } else {
+    x.fillText(phLine1,540,500);
   }
 
-  // Bottom tag
-  x.fillStyle="#40916C55"; x.font="26px sans-serif"; x.textAlign="center";
-  x.fillText("#GaeltachtConnect  ·  #Gaeilge  ·  #IrishLanguage",540,1036);
+  // English meaning — fixed position below phrase box, always visible
+  x.fillStyle="rgba(232,228,216,0.72)"; x.font="400 34px 'Arial',sans-serif"; x.textAlign="center";
+  const meaning = ch.m.length>60 ? ch.m.slice(0,57)+"…" : ch.m;
+  x.fillText(`"${meaning}"`,540,690);
+
+  // ── Stats row ───────────────────────────────────────────────
+  // Day progress pill
+  const p1x=200, p1y=740, p1w=240, p1h=72;
+  x.fillStyle="rgba(64,145,108,0.2)";
+  x.beginPath(); x.roundRect(p1x,p1y,p1w,p1h,14); x.fill();
+  x.strokeStyle="rgba(64,145,108,0.4)"; x.lineWidth=1;
+  x.beginPath(); x.roundRect(p1x,p1y,p1w,p1h,14); x.stroke();
+  x.fillStyle="#6FCF97"; x.font="bold 32px 'Arial',sans-serif"; x.textAlign="center";
+  x.fillText(`📅 Lá ${day}/30`,p1x+p1w/2,p1y+47);
+
+  // Streak pill (always show, even streak=1)
+  const p2x=640, p2y=740, p2w=240, p2h=72;
+  x.fillStyle="rgba(201,162,39,0.15)";
+  x.beginPath(); x.roundRect(p2x,p2y,p2w,p2h,14); x.fill();
+  x.strokeStyle="rgba(201,162,39,0.35)"; x.lineWidth=1;
+  x.beginPath(); x.roundRect(p2x,p2y,p2w,p2h,14); x.stroke();
+  x.fillStyle="#C9A227"; x.font="bold 32px 'Arial',sans-serif"; x.textAlign="center";
+  x.fillText(`🔥 ${streak} lá`,p2x+p2w/2,p2y+47);
+
+  // ── Motivational text ───────────────────────────────────────
+  x.fillStyle="rgba(111,207,151,0.65)"; x.font="italic 30px Georgia,serif"; x.textAlign="center";
+  const pct=Math.round((day/30)*100);
+  x.fillText(`${pct}% of the challenge complete — keep going!`,540,860);
+
+  // ── Bottom divider ──────────────────────────────────────────
+  x.strokeStyle="rgba(201,162,39,0.15)"; x.lineWidth=1;
+  x.beginPath(); x.moveTo(120,900); x.lineTo(960,900); x.stroke();
+
+  // ── Hashtags ────────────────────────────────────────────────
+  x.fillStyle="rgba(64,145,108,0.5)"; x.font="24px 'Arial',sans-serif"; x.textAlign="center";
+  x.fillText("#GaeltachtConnect  ·  #Gaeilge  ·  #IrishLanguage",540,950);
+
+  // ── Gold bottom bar ─────────────────────────────────────────
+  const botBar=x.createLinearGradient(0,0,1080,0);
+  botBar.addColorStop(0,"#C9A227"); botBar.addColorStop(0.5,"#E8C84A"); botBar.addColorStop(1,"#C9A227");
+  x.fillStyle=botBar; x.fillRect(0,1074,1080,6);
 
   return cv.toDataURL("image/png");
 };
