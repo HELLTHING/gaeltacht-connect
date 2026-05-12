@@ -1011,6 +1011,18 @@ export default function App() {
     setView("flash");
   },[]);
 
+  const shareResult=useCallback(async(text)=>{
+    haptic([10,20,10]);
+    if(navigator.share){
+      try{await navigator.share({title:"Gaeltacht Connect ☘️",text});}catch{}
+    } else {
+      try{
+        await navigator.clipboard.writeText(text);
+        alert("Copied to clipboard!");
+      }catch{}
+    }
+  },[]);
+
   const earnXP=useCallback(async(amount,logKey)=>{
     if(!st)return;
     const xp=(st.xp||0)+amount;
@@ -1238,20 +1250,41 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
         {flashDone?(
           // ── RESULTS ──
           <div style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"24px 20px",textAlign:"center"}}>
-            <div style={{fontSize:"4rem",marginBottom:16,animation:"correctPop 0.5s ease"}}>
+            {flashScore>=10&&<Confetti/>}
+            <div style={{fontSize:"4.5rem",marginBottom:12,animation:"correctPop 0.5s ease"}}>
               {flashScore>=9?"🏆":flashScore>=7?"⭐":flashScore>=5?"👏":"💪"}
             </div>
-            <div style={{...hd,fontSize:"2.6rem",fontWeight:900,color:c.acc,marginBottom:6}}>{flashScore}/10</div>
-            <div style={{...bd,fontSize:"0.85rem",color:c.tx3,marginBottom:6}}>
-              {flashScore>=9?"Foirfe! · Perfect!":flashScore>=7?"An-mhaith! · Very good!":flashScore>=5?"Go maith! · Good!":"Arís! · Keep trying!"}
+            <div style={{...hd,fontSize:"3rem",fontWeight:900,color:flashScore>=9?c.gold:c.acc,marginBottom:4,
+              textShadow:flashScore>=9?`0 0 30px ${c.gold}60`:"none"}}>
+              {flashScore}/10
             </div>
-            {flashScore>flashBest&&<div style={{...bd,fontSize:"0.78rem",color:c.gold,fontWeight:700,marginBottom:20}}>✦ New best! · Taifead nua!</div>}
-            {flashScore<=flashBest&&flashBest>0&&<div style={{...bd,fontSize:"0.72rem",color:c.tx3,marginBottom:20}}>Best: {flashBest}/10</div>}
-            <button onClick={startFlash} style={{
+            <div style={{...bd,fontSize:"0.9rem",color:c.tx2,marginBottom:4,fontWeight:600}}>
+              {flashScore>=9?"Foirfe! · Perfect!":flashScore>=7?"An-mhaith! · Very good!":flashScore>=5?"Go maith! · Good!":"Coinnigh ort! · Keep going!"}
+            </div>
+            {st?.streak>=1&&<div style={{...bd,fontSize:"0.75rem",color:"#FF7A00",marginBottom:4}}>🔥 {st.streak} lá streak</div>}
+            {flashScore>flashBest&&<div style={{...bd,fontSize:"0.75rem",color:c.gold,fontWeight:700,marginBottom:16,
+              animation:"comboBurst 0.4s ease"}}>✦ New best! · Taifead nua!</div>}
+            {flashScore<=flashBest&&flashBest>0&&<div style={{...bd,fontSize:"0.7rem",color:c.tx3,marginBottom:16}}>Best: {flashBest}/10</div>}
+            {flashScore<=flashBest&&flashBest===0&&<div style={{height:16}}/>}
+
+            {/* Share button — primary CTA */}
+            <button onClick={()=>shareResult(
+              `⚡ ${flashScore}/10 on Word Flash!\n${st?.streak>=1?`🔥 ${st.streak} day streak\n`:""}☘️ Learning Irish on Gaeltacht Connect\n\nDia dhuit! — Hello in Irish`
+            )} style={{
               background:`linear-gradient(135deg,${c.acc},${c.gold})`,
-              border:"none",borderRadius:16,padding:"14px 36px",cursor:"pointer",
-              color:"#fff",...hd,fontSize:"1rem",fontWeight:700,
-              boxShadow:`0 6px 20px ${c.acc}50`,
+              border:"none",borderRadius:16,padding:"15px 32px",cursor:"pointer",
+              color:"#fff",...bd,fontSize:"1rem",fontWeight:800,
+              boxShadow:`0 6px 24px ${c.acc}50`,
+              display:"flex",alignItems:"center",gap:8,marginBottom:10,
+              animation:"breathe 2.2s ease infinite",
+            }}>
+              <span style={{fontSize:"1.1rem"}}>↗</span> Share result
+            </button>
+
+            <button onClick={startFlash} style={{
+              background:"transparent",border:`1px solid ${c.bd}`,
+              borderRadius:14,padding:"12px 28px",cursor:"pointer",
+              color:c.tx3,...bd,fontSize:"0.9rem",
             }}>Arís · Play again</button>
           </div>
         ):(fq&&(
@@ -1525,10 +1558,22 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
               </div>
 
               <div style={{display:"flex",flexDirection:"column",gap:10}}>
-                <button onClick={()=>{setView("home");setQuiz(null);}} style={{
-                  width:"100%",padding:"16px",borderRadius:14,background:c.btn,border:"none",
-                  color:c.btnTx,...hd,fontSize:"1rem",fontWeight:700,cursor:"pointer",
+                {/* Share — primary CTA */}
+                <button onClick={()=>shareResult(
+                  `🎯 ${quizScore}/${quiz.length} on the Irish Quiz!\n${st?.streak>=1?`🔥 ${st.streak} day streak\n`:""}☘️ Learning Irish on Gaeltacht Connect\n\nDia dhuit! — Hello in Irish`
+                )} style={{
+                  width:"100%",padding:"16px",borderRadius:14,
+                  background:`linear-gradient(135deg,${c.acc},${c.gold})`,
+                  border:"none",color:"#fff",...bd,fontSize:"1rem",fontWeight:800,cursor:"pointer",
                   display:"flex",alignItems:"center",justifyContent:"center",gap:8,
+                  boxShadow:`0 6px 24px ${c.acc}50`,
+                  animation:"breathe 2.2s ease infinite",
+                }}>
+                  <span style={{fontSize:"1.1rem"}}>↗</span> Share result
+                </button>
+                <button onClick={()=>{setView("home");setQuiz(null);}} style={{
+                  width:"100%",padding:"14px",borderRadius:14,background:c.card,
+                  border:`1px solid ${c.bd}`,color:c.tx,...bd,fontSize:"0.95rem",fontWeight:600,cursor:"pointer",
                 }}>
                   ☘️ Ar aghaidh — Continue
                 </button>
@@ -1536,9 +1581,9 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
                   const nq=quizType==="daily"?getDailyVocabQuiz(VOCAB,new Date()):makeQuiz(st.done);
                   setQuiz(nq);setQuizIdx(0);setQuizScore(0);setQuizPicked(null);setQuizDone(false);
                 }} style={{
-                  width:"100%",padding:"13px",borderRadius:14,
+                  width:"100%",padding:"12px",borderRadius:14,
                   background:"none",border:`1px solid ${c.bd}`,
-                  color:c.tx3,...bd,fontSize:"0.88rem",cursor:"pointer",
+                  color:c.tx3,...bd,fontSize:"0.85rem",cursor:"pointer",
                 }}>
                   Arís — Try again
                 </button>
@@ -2546,6 +2591,13 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
           </div>
           <span style={{...bd,fontSize:"0.65rem",color:c.tx3,whiteSpace:"nowrap"}}>{xp} XP</span>
         </div>
+
+        {/* Community count */}
+        {communityCount>0&&(
+          <div style={{textAlign:"center",...bd,fontSize:"0.68rem",color:c.tx3,letterSpacing:"0.02em"}}>
+            🌍 <strong style={{color:c.acc}}>{communityCount.toLocaleString()}</strong> people reclaiming Irish today
+          </div>
+        )}
 
         {/* ── MAIN CTA CARD ── */}
         <div style={{borderRadius:24,overflow:"hidden",boxShadow:c.dark?"0 8px 32px rgba(0,0,0,0.5)":"0 4px 20px rgba(0,0,0,0.1)"}}>
