@@ -813,61 +813,16 @@ const COUNTIES=[
   {en:"Wicklow",ga:"Cill Mhantáin",pr:"kill WAN-tawn",g:false},
 ];
 
-// IrishTip — gold "?" button that shows English translation on tap
-const IrishTip = ({en}) => {
-  const [open,setOpen]=useState(false);
-  const wrapRef=useRef(null);
-  useEffect(()=>{
-    if(!open)return;
-    const handler=(e)=>{
-      if(wrapRef.current&&!wrapRef.current.contains(e.target))setOpen(false);
-    };
-    const t=setTimeout(()=>{
-      document.addEventListener("click",handler);
-      document.addEventListener("touchstart",handler);
-    },0);
-    return()=>{
-      clearTimeout(t);
-      document.removeEventListener("click",handler);
-      document.removeEventListener("touchstart",handler);
-    };
-  },[open]);
-  return(
-    <span ref={wrapRef} style={{position:"relative",display:"inline-flex",alignItems:"center",verticalAlign:"middle",marginLeft:10}}>
-      <button onClick={()=>setOpen(o=>!o)} style={{
-        width:22,height:22,borderRadius:"50%",
-        background:"rgba(200,150,62,0.22)",
-        border:"1.5px solid rgba(200,150,62,0.65)",
-        color:"#C8963E",fontSize:"0.65rem",fontWeight:800,
-        cursor:"pointer",display:"inline-flex",alignItems:"center",justifyContent:"center",
-        flexShrink:0,padding:0,lineHeight:1,
-        boxShadow:"0 0 8px rgba(200,150,62,0.25)",
-        WebkitTapHighlightColor:"transparent",
-        touchAction:"manipulation",
-      }}>?</button>
-      {open&&(
-        <span style={{
-          position:"absolute",bottom:"calc(100% + 9px)",left:"50%",transform:"translateX(-50%)",
-          background:"#0E1F10",color:"#F0EDE4",
-          padding:"8px 14px",borderRadius:10,
-          fontSize:"0.82rem",whiteSpace:"nowrap",
-          boxShadow:"0 6px 24px rgba(0,0,0,0.6)",zIndex:999,
-          border:"1px solid rgba(200,150,62,0.4)",
-          fontFamily:"'Lato',system-ui,sans-serif",fontWeight:500,
-          pointerEvents:"none",display:"block",
-        }}>
-          {en}
-          <span style={{
-            position:"absolute",top:"100%",left:"50%",transform:"translateX(-50%)",
-            width:0,height:0,
-            borderLeft:"6px solid transparent",borderRight:"6px solid transparent",
-            borderTop:"6px solid #0E1F10",display:"block",
-          }}/>
-        </span>
-      )}
-    </span>
-  );
-};
+// IrishTip — inline English translation, no interactive elements
+const IrishTip = ({en}) => (
+    <span style={{
+      fontSize:"0.68rem",color:"rgba(200,150,62,0.65)",
+      fontStyle:"italic",marginLeft:7,verticalAlign:"middle",
+      fontFamily:"'Lato',system-ui,sans-serif",fontWeight:400,
+      letterSpacing:"0.01em",lineHeight:1,
+      pointerEvents:"none",userSelect:"none",
+    }}>{en}</span>
+);
 
 // Back button — shared across all secondary views
 const BackBtn = ({onClick,c,bd,label="← Ar ais"}) => (
@@ -1426,9 +1381,10 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
                   <div style={{position:"absolute",top:0,left:"10%",right:"10%",height:"1.5px",background:`linear-gradient(90deg,transparent,${c.gold}70,transparent)`}}/>
                   <div style={{position:"absolute",bottom:0,left:"10%",right:"10%",height:"1.5px",background:`linear-gradient(90deg,transparent,${c.gold}70,transparent)`}}/>
                   <div style={{...bd,fontSize:"0.55rem",color:c.gold,letterSpacing:"0.22em",textTransform:"uppercase",marginBottom:14,opacity:0.7}}>✦ An Frása ✦</div>
-                  <div style={{...hd,fontSize:"2.4rem",fontWeight:700,fontStyle:"italic",color:c.acc,lineHeight:1.2,marginBottom:10,display:"flex",alignItems:"center",justifyContent:"center",flexWrap:"wrap",gap:4}}>
-                    {ch.p}<IrishTip en={ch.m}/>
+                  <div style={{...hd,fontSize:"2.4rem",fontWeight:700,fontStyle:"italic",color:c.acc,lineHeight:1.2,marginBottom:6,textAlign:"center"}}>
+                    {ch.p}
                   </div>
+                  <div style={{...bd,fontSize:"0.78rem",color:c.gold,opacity:0.7,letterSpacing:"0.04em",marginBottom:8,fontStyle:"italic"}}>{ch.m}</div>
                   <div style={{...bd,fontSize:"0.84rem",color:c.tx3,letterSpacing:"0.06em",marginBottom:14,fontStyle:"italic"}}>/ {ch.pr} /</div>
                   <button onClick={()=>speak(ch.p)} style={{
                     background:speakError==="no-voice"?`rgba(180,70,0,0.08)`:c.phrase,
@@ -1456,7 +1412,6 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
                       No native Irish voice — approximation only. For real pronunciation, install an Irish voice.
                     </div>
                   )}
-                  <div style={{...hd,fontSize:"1rem",color:c.tx2,fontStyle:"italic",opacity:0.8}}>"{ch.m}"</div>
                 </div>
 
                 {/* Challenge */}
