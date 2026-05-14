@@ -335,6 +335,49 @@ async function sbSignOut(){
   _setTokens(null,null);
 }
 
+// ── Leaderboard — scores table (id uuid PK, name text, xp int, lessons int, streak int) ─
+// SQL to create: create table scores(id uuid primary key,name text not null default 'Gaeilgeoir',xp int not null default 0,lessons int not null default 0,streak int not null default 0,updated_at timestamptz default now());alter table scores enable row level security;create policy "read all" on scores for select using(true);create policy "own write" on scores for insert with check(auth.uid()=id);create policy "own update" on scores for update using(auth.uid()=id);
+async function sbUpdateScore(name,xp,lessons,streak){
+  if(!_gcToken)return;
+  try{
+    const u=await sbGetUser();
+    if(!u?.id)return;
+    await fetch(`${_SB_URL}/rest/v1/scores`,{
+      method:"POST",
+      headers:{..._aH(_gcToken),"Prefer":"resolution=merge-duplicates,return=minimal"},
+      body:JSON.stringify({id:u.id,name,xp,lessons,streak,updated_at:new Date().toISOString()}),
+    });
+  }catch{}
+}
+async function sbLeaderboard(){
+  try{
+    const r=await fetch(
+      `${_SB_URL}/rest/v1/scores?select=id,name,xp,lessons,streak&order=xp.desc&limit=10`,
+      {headers:_sbH}
+    );
+    if(!r.ok)return null;
+    return r.json();
+  }catch{return null;}
+}
+async function sbMyRank(myId){
+  if(!myId)return null;
+  try{
+    const [rMe,rAbove]=await Promise.all([
+      fetch(`${_SB_URL}/rest/v1/scores?id=eq.${myId}&select=xp`,{headers:_sbH}),
+      fetch(`${_SB_URL}/rest/v1/scores?select=id`,{headers:{..._sbH,"Prefer":"count=exact"}}),
+    ]);
+    const [me]=await rMe.json();
+    if(!me)return null;
+    const above=await fetch(
+      `${_SB_URL}/rest/v1/scores?xp=gt.${me.xp}&select=id`,
+      {headers:{..._sbH,"Prefer":"count=exact"}}
+    );
+    const cnt=parseInt((above.headers.get("Content-Range")||"0/0").split("/")[1],10)||0;
+    const total=parseInt((rAbove.headers.get("Content-Range")||"0/0").split("/")[1],10)||1;
+    return{rank:cnt+1,total,xp:me.xp};
+  }catch{return null;}
+}
+
 function mergeProgress(local,cloud){
   if(!cloud) return local;
   if(!local) return cloud;
@@ -1344,6 +1387,10 @@ export default function App() {
   const [authMode,setAuthMode]=useState("in"); // "in"|"up"
   const [authLoading,setAuthLoading]=useState(false);
   const [authErr,setAuthErr]=useState("");
+  const [showLeaderboard,setShowLeaderboard]=useState(false);
+  const [leaderData,setLeaderData]=useState(null);
+  const [myRankData,setMyRankData]=useState(null);
+  const [leaderLoading,setLeaderLoading]=useState(false);
   const c = THEMES[theme]||THEMES.coill;
   const dk = c.dark; // keep dk as a convenience boolean for backward compat
 
@@ -1397,7 +1444,13 @@ export default function App() {
     return()=>window.removeEventListener("keydown",h);
   },[view]);
 
-  const save=useCallback(async(ns)=>{setSt(ns);await saveS(ns);sbSyncProgress(ns);},[]);
+  const save=useCallback(async(ns)=>{
+    setSt(ns);await saveS(ns);sbSyncProgress(ns);
+    if(_gcToken){
+      const nm=authUser?.email?.split("@")[0]||"Gaeilgeoir";
+      sbUpdateScore(nm,ns.xp||0,(ns.done||[]).length,ns.streak||0);
+    }
+  },[authUser]);
   const cycleTheme=async()=>{
     const order=["coill","parchment","oiche"];
     const next=order[(order.indexOf(theme)+1)%order.length];
@@ -2699,6 +2752,138 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
           </div>
         )}
 
+        {/* ── LEADERBOARD MODAL ── */}
+        {showLeaderboard&&(
+          <div onClick={e=>{if(e.target===e.currentTarget)setShowLeaderboard(false);}} style={{
+            position:"fixed",inset:0,background:"rgba(0,0,0,0.6)",zIndex:120,
+            display:"flex",alignItems:"flex-end",justifyContent:"center",
+            backdropFilter:"blur(6px)",
+          }}>
+            <div style={{
+              width:"100%",maxWidth:480,
+              background:c.card,borderRadius:"24px 24px 0 0",
+              maxHeight:"88vh",overflow:"hidden",display:"flex",flexDirection:"column",
+              boxShadow:"0 -8px 40px rgba(0,0,0,0.4)",
+            }}>
+              {/* Handle */}
+              <div style={{display:"flex",justifyContent:"center",paddingTop:10,paddingBottom:4}}>
+                <div style={{width:36,height:4,borderRadius:2,background:c.dark?"rgba(255,255,255,0.15)":"rgba(0,0,0,0.12)"}}/>
+              </div>
+              {/* Header */}
+              <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"8px 20px 14px"}}>
+                <div>
+                  <div style={{...hd,fontSize:"1.3rem",fontWeight:800,color:c.tx}}>Clárbhord <span style={{color:c.gold}}>🏆</span></div>
+                  <div style={{...bd,fontSize:"0.68rem",color:c.tx3,marginTop:1}}>Top players by XP · Leaderboard</div>
+                </div>
+                <button onClick={()=>setShowLeaderboard(false)} style={{background:"none",border:"none",fontSize:"1.4rem",cursor:"pointer",color:c.tx3,lineHeight:1}}>✕</button>
+              </div>
+
+              {/* My rank strip */}
+              {authUser&&myRankData&&(
+                <div style={{
+                  margin:"0 16px 12px",padding:"10px 16px",
+                  background:c.dark?"rgba(200,150,62,0.12)":"rgba(200,150,62,0.08)",
+                  border:`1px solid ${c.gold}40`,borderRadius:14,
+                  display:"flex",alignItems:"center",gap:12,
+                }}>
+                  <div style={{...hd,fontSize:"1.5rem",fontWeight:800,color:c.gold,minWidth:40,textAlign:"center"}}>#{myRankData.rank}</div>
+                  <div style={{flex:1}}>
+                    <div style={{...bd,fontSize:"0.75rem",color:c.tx,fontWeight:700}}>Your position</div>
+                    <div style={{...bd,fontSize:"0.68rem",color:c.tx3}}>{myRankData.xp} XP · out of {myRankData.total} players</div>
+                  </div>
+                  <div style={{...bd,fontSize:"0.7rem",color:c.tx3,textAlign:"right"}}>
+                    {myRankData.rank===1?"Top of the leaderboard! 🥇":myRankData.rank<=3?"Top 3! 🎉":myRankData.rank<=10?"Top 10 👏":"Keep going!"}
+                  </div>
+                </div>
+              )}
+              {authUser&&!myRankData&&!leaderLoading&&(
+                <div style={{margin:"0 16px 12px",padding:"10px 16px",background:c.dark?"rgba(255,255,255,0.04)":"rgba(0,0,0,0.03)",borderRadius:14,...bd,fontSize:"0.75rem",color:c.tx3,textAlign:"center"}}>
+                  Play lessons to appear on the leaderboard
+                </div>
+              )}
+              {!authUser&&(
+                <div onClick={()=>{setShowLeaderboard(false);setShowAuth(true);}} style={{
+                  margin:"0 16px 12px",padding:"10px 16px",
+                  background:c.dark?"rgba(255,255,255,0.04)":"rgba(0,0,0,0.03)",
+                  border:`1px dashed ${c.bd}`,borderRadius:14,
+                  ...bd,fontSize:"0.78rem",color:c.acc,textAlign:"center",cursor:"pointer",
+                }}>
+                  ☁️ Sign in to appear on the leaderboard →
+                </div>
+              )}
+
+              {/* List */}
+              <div style={{overflowY:"auto",flex:1,padding:"0 16px 28px"}}>
+                {leaderLoading&&(
+                  <div style={{textAlign:"center",padding:"32px 0",...bd,fontSize:"0.8rem",color:c.tx3}}>
+                    Loading…
+                  </div>
+                )}
+                {!leaderLoading&&leaderData&&leaderData.length===0&&(
+                  <div style={{textAlign:"center",padding:"32px 0",...bd,fontSize:"0.85rem",color:c.tx3}}>
+                    No scores yet. Be the first! 🌱
+                  </div>
+                )}
+                {!leaderLoading&&leaderData&&leaderData.map((row,i)=>{
+                  const medals=["🥇","🥈","🥉"];
+                  const isMe=authUser?.id===row.id;
+                  const isPodium=i<3;
+                  return(
+                    <div key={row.id||i} style={{
+                      display:"flex",alignItems:"center",gap:12,
+                      padding:"11px 14px",marginBottom:6,borderRadius:14,
+                      background:isMe
+                        ?(c.dark?"rgba(200,150,62,0.15)":"rgba(200,150,62,0.1)")
+                        :(c.dark?"rgba(255,255,255,0.04)":"rgba(0,0,0,0.025)"),
+                      border:isMe?`1px solid ${c.gold}50`:`1px solid ${c.bd}`,
+                      transition:"background 0.2s",
+                    }}>
+                      {/* Rank */}
+                      <div style={{
+                        ...bd,fontWeight:800,minWidth:32,textAlign:"center",
+                        fontSize:isPodium?"1.4rem":"0.9rem",
+                        color:i===0?"#FFD700":i===1?"#C0C0C0":i===2?"#CD7F32":c.tx3,
+                      }}>
+                        {isPodium?medals[i]:`${i+1}`}
+                      </div>
+                      {/* Avatar */}
+                      <div style={{
+                        width:32,height:32,borderRadius:"50%",flexShrink:0,
+                        background:isMe?c.acc:(c.dark?"rgba(255,255,255,0.1)":"rgba(0,0,0,0.08)"),
+                        display:"flex",alignItems:"center",justifyContent:"center",
+                        ...bd,fontWeight:800,fontSize:"0.78rem",
+                        color:isMe?"#111":c.tx3,
+                      }}>
+                        {(row.name||"?")[0].toUpperCase()}
+                      </div>
+                      {/* Info */}
+                      <div style={{flex:1,minWidth:0}}>
+                        <div style={{...bd,fontSize:"0.83rem",fontWeight:700,color:isMe?c.gold:c.tx,
+                          overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>
+                          {row.name||"Gaeilgeoir"}{isMe?" (you)":""}
+                        </div>
+                        <div style={{...bd,fontSize:"0.65rem",color:c.tx3}}>
+                          {row.lessons||0} lessons · {row.streak||0} day streak
+                        </div>
+                      </div>
+                      {/* XP */}
+                      <div style={{textAlign:"right",flexShrink:0}}>
+                        <div style={{...bd,fontSize:"0.9rem",fontWeight:800,color:isPodium?c.gold:c.tx}}>{(row.xp||0).toLocaleString()}</div>
+                        <div style={{...bd,fontSize:"0.6rem",color:c.tx3}}>XP</div>
+                      </div>
+                    </div>
+                  );
+                })}
+                {!leaderLoading&&leaderData&&leaderData.length>0&&(
+                  <div style={{textAlign:"center",marginTop:8,...bd,fontSize:"0.65rem",color:c.tx3,opacity:0.6}}>
+                    Earn XP by completing lessons · Updated live
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* ── CELEBRATIONS ── */}
         {celeb==="day"&&(()=>{
           const prov=CELEB_PROV[(selDay||1)%CELEB_PROV.length];
@@ -3480,6 +3665,19 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
               <span style={{...bd,fontSize:"0.8rem",fontWeight:800,color:"#FF7A00"}}>{st.streak}</span>
             </div>
           )}
+          <button onClick={async()=>{
+            setShowLeaderboard(true);
+            if(!leaderData){
+              setLeaderLoading(true);
+              const [rows,rank]=await Promise.all([
+                sbLeaderboard(),
+                authUser?.id?sbMyRank(authUser.id):Promise.resolve(null),
+              ]);
+              setLeaderData(rows);
+              setMyRankData(rank);
+              setLeaderLoading(false);
+            }
+          }} title="Leaderboard" style={{background:"none",border:"none",fontSize:"1.1rem",cursor:"pointer",padding:"2px 4px",lineHeight:1,color:c.gold}}>🏆</button>
           <button onClick={toggle} style={{background:"none",border:"none",fontSize:"1.2rem",cursor:"pointer",padding:4,lineHeight:1}}>
             {theme==="coill"?"🌲":theme==="parchment"?"📜":"🌊"}
           </button>
