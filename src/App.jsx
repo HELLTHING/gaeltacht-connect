@@ -215,6 +215,75 @@ async function sbGetCount(day) {
   } catch { return null; }
 }
 
+// ── Focail — Daily Irish Word Puzzle (Wordle-style) ─────────────────────────
+const FOCAIL_WORDS = [
+  {w:"teach", m:"house",       pr:"chakh"},
+  {w:"uisce", m:"water",       pr:"ISH-keh"},
+  {w:"leaba", m:"bed",         pr:"LA-ba"},
+  {w:"bróga", m:"shoes",       pr:"BROH-ga"},
+  {w:"maith", m:"good",        pr:"mah"},
+  {w:"madra", m:"dog",         pr:"MAD-ra"},
+  {w:"clann", m:"children",    pr:"klawn"},
+  {w:"grian", m:"sun",         pr:"GREE-an"},
+  {w:"gaoth", m:"wind",        pr:"gwee"},
+  {w:"coill", m:"forest",      pr:"kwill"},
+  {w:"ceart", m:"correct",     pr:"kyart"},
+  {w:"scoil", m:"school",      pr:"skull"},
+  {w:"deoch", m:"drink",       pr:"DYUKH"},
+  {w:"féile", m:"festival",    pr:"FAY-leh"},
+  {w:"súile", m:"eyes",        pr:"SOO-leh"},
+  {w:"lámha", m:"hands",       pr:"LAW-va"},
+  {w:"balla", m:"wall",        pr:"BAL-a"},
+  {w:"ceann", m:"head/one",    pr:"kyawn"},
+  {w:"fuaim", m:"sound",       pr:"FOO-im"},
+  {w:"rince", m:"dance",       pr:"RINK-eh"},
+  {w:"siopa", m:"shop",        pr:"SHUP-a"},
+  {w:"amach", m:"outside",     pr:"a-MAKH"},
+  {w:"anois", m:"now",         pr:"a-NISH"},
+  {w:"oíche", m:"night",       pr:"EE-heh"},
+  {w:"spéir", m:"sky",         pr:"SPAYR"},
+  {w:"greim", m:"grip",        pr:"GREM"},
+  {w:"snámh", m:"swimming",    pr:"SNAWV"},
+  {w:"léamh", m:"reading",     pr:"LAY-uv"},
+  {w:"scéal", m:"story",       pr:"SHKYAL"},
+  {w:"crann", m:"tree",        pr:"krawn"},
+  {w:"sruth", m:"stream",      pr:"sruh"},
+  {w:"páirc", m:"field/park",  pr:"PAW-rk"},
+  {w:"doras", m:"door",        pr:"DUH-ras"},
+  {w:"taobh", m:"side",        pr:"teev"},
+  {w:"béile", m:"meal",        pr:"BAY-leh"},
+  {w:"glúin", m:"knee",        pr:"GLOO-in"},
+  {w:"tuath", m:"countryside", pr:"TOO-uh"},
+  {w:"tirim", m:"dry",         pr:"CHIR-im"},
+  {w:"tobar", m:"well/spring", pr:"TUB-ar"},
+  {w:"cnámh", m:"bone",        pr:"knaav"},
+  {w:"bocht", m:"poor",        pr:"bukht"},
+  {w:"céilí", m:"dance night", pr:"KAY-lee"},
+  {w:"buíon", m:"team",        pr:"BWEE-un"},
+  {w:"fuinn", m:"melody",      pr:"fwin"},
+  {w:"ríoga", m:"royal",       pr:"REE-ga"},
+  {w:"aosta", m:"elderly",     pr:"EE-sta"},
+  {w:"grúpa", m:"group",       pr:"GROO-pa"},
+  {w:"beoir", m:"beer",        pr:"BYOHR"},
+  {w:"éirim", m:"I rise",      pr:"AY-rim"},
+  {w:"caife", m:"coffee",      pr:"KAF-eh"},
+];
+const FOCAIL_EPOCH = new Date("2026-01-01");
+const getFocailDay = () => Math.floor((new Date() - FOCAIL_EPOCH) / 86400000);
+const getFocailWord = () => FOCAIL_WORDS[Math.abs(getFocailDay()) % FOCAIL_WORDS.length];
+const focailNorm = (s="") => s.normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase();
+function scoreFocailGuess(guess, answer) {
+  const g=focailNorm(guess).split(""), a=focailNorm(answer).split("");
+  const res=Array(5).fill("n"), used=Array(5).fill(false);
+  for(let i=0;i<5;i++) if(g[i]===a[i]){res[i]="g";used[i]=true;}
+  for(let i=0;i<5;i++){
+    if(res[i]==="g") continue;
+    for(let j=0;j<5;j++) if(!used[j]&&g[i]===a[j]){res[i]="y";used[j]=true;break;}
+  }
+  return res;
+}
+const focailEmoji = (colors) => colors.map(r=>r.map(col=>col==="g"?"🟩":col==="y"?"🟨":"⬛").join("")).join("\n");
+
 // Share image generation — 1080×1080 Instagram-ready card
 const genShareImage = (day, total, streak) => {
   const cv = document.createElement("canvas"); cv.width=1080; cv.height=1080;
@@ -1047,6 +1116,9 @@ export default function App() {
   const [flashCombo,setFlashCombo]=useState(0);
   const [flashFX,setFlashFX]=useState([]); // floating XP/combo popups
   const flashTimerRef=useRef(null);
+  const [focailInput,setFocailInput]=useState("");
+  const [focailShake,setFocailShake]=useState(false);
+  const focailSubmitRef=useRef(null);
   const c = THEMES[theme]||THEMES.coill;
   const dk = c.dark; // keep dk as a convenience boolean for backward compat
 
@@ -1067,6 +1139,19 @@ export default function App() {
     sbGetCount(todayKey()).then(n=>{if(n!==null)setCommunityCount(n);});
   })()},[]);
 
+
+  // Physical keyboard for Focail
+  useEffect(()=>{
+    if(view!=="focail") return;
+    const h=(e)=>{
+      if(e.metaKey||e.ctrlKey||e.altKey) return;
+      if(e.key==="Backspace") setFocailInput(v=>v.slice(0,-1));
+      else if(e.key==="Enter") focailSubmitRef.current?.();
+      else if(/^[a-záéíóú]$/i.test(e.key)) setFocailInput(v=>v.length<5?v+e.key.toLowerCase():v);
+    };
+    window.addEventListener("keydown",h);
+    return()=>window.removeEventListener("keydown",h);
+  },[view]);
 
   const save=useCallback(async(ns)=>{setSt(ns);await saveS(ns)},[]);
   const cycleTheme=async()=>{
@@ -1306,12 +1391,183 @@ export default function App() {
 @keyframes floatUp{0%{opacity:1;transform:translateY(0) scale(1)}60%{opacity:1;transform:translateY(-44px) scale(1.08)}100%{opacity:0;transform:translateY(-80px) scale(0.9)}}
 @keyframes comboBurst{0%{transform:scale(0.4);opacity:0}50%{transform:scale(1.2);opacity:1}80%{transform:scale(0.95)}100%{transform:scale(1);opacity:1}}
 @keyframes bgFlashGreen{0%,100%{background-color:transparent}40%{background-color:rgba(34,197,94,0.18)}}
+@keyframes tileFlip{0%{transform:rotateX(0deg)}50%{transform:rotateX(-90deg)}100%{transform:rotateX(0deg)}}
+@keyframes tilePop{0%{transform:scale(1)}50%{transform:scale(1.12)}100%{transform:scale(1)}}
+@keyframes tileShake{0%,100%{transform:translateX(0)}15%{transform:translateX(-6px)}35%{transform:translateX(6px)}55%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
 html{-webkit-font-smoothing:antialiased}
 button:active{opacity:0.85;transform:scale(0.98)!important}
 `;
 
   const hd = {fontFamily:"'Playfair Display',Georgia,serif",letterSpacing:"0.01em"};
   const bd = {fontFamily:"'Lato',system-ui,sans-serif"};
+
+  // ═══════════════════════════════
+  // FOCAIL VIEW — Daily Irish Wordle
+  // ═══════════════════════════════
+  if(view==="focail"){
+    const fw=getFocailWord();
+    const dayNum=getFocailDay();
+    const todayDate=todayKey();
+    const isToday=st.focailDate===todayDate;
+    const guesses=isToday?(st.focailGuesses||[]):[];
+    const colors =isToday?(st.focailColors||[]):[];
+    const done   =isToday?(st.focailDone||false):false;
+
+    // Build keyboard color map
+    const keyCol={};
+    colors.forEach((row,ri)=>{
+      const w=guesses[ri]||"";
+      row.forEach((col,ci)=>{
+        const l=focailNorm(w[ci]||"");
+        if(!l) return;
+        if(col==="g") keyCol[l]="g";
+        else if(col==="y"&&keyCol[l]!=="g") keyCol[l]="y";
+        else if(!keyCol[l]) keyCol[l]="n";
+      });
+    });
+
+    const doSubmit=()=>{
+      if(done||focailInput.length!==5){
+        setFocailShake(true); setTimeout(()=>setFocailShake(false),500); return;
+      }
+      const result=scoreFocailGuess(focailInput,fw.w);
+      const ng=[...guesses,focailInput];
+      const nc=[...colors,result];
+      const won=result.every(col=>col==="g");
+      const lost=!won&&ng.length>=6;
+      const newDone=won?"won":lost?"lost":false;
+      setSt(s=>({...s,focailDate:todayDate,focailGuesses:ng,focailColors:nc,focailDone:newDone}));
+      if(won) earnXP(30,"focail");
+      else if(newDone==="lost") earnXP(5,"focail");
+      setFocailInput("");
+    };
+    focailSubmitRef.current=doSubmit;
+
+    const handleFKey=(k)=>{
+      if(done) return;
+      if(k==="⌫"){setFocailInput(v=>v.slice(0,-1));return;}
+      if(k==="↵"){doSubmit();return;}
+      const ch=k.toLowerCase();
+      if(/^[a-záéíóú]$/.test(ch)&&focailInput.length<5) setFocailInput(v=>v+ch);
+    };
+
+    const ROWS=6,COLS=5;
+    const getTile=(ri,ci)=>{
+      const submitted=ri<guesses.length;
+      const isCurrent=ri===guesses.length;
+      const letter=(submitted?(guesses[ri]?.[ci]||""):isCurrent?(focailInput[ci]||""):"").toUpperCase();
+      const col=submitted?(colors[ri]?.[ci]||"n"):null;
+      const isNew=submitted&&ri===guesses.length-1;
+      const bg=col==="g"?"#22c55e":col==="y"?"#c9a227":col==="n"?(c.dark?"#2d3748":"#9ca3af"):"transparent";
+      const bdr=submitted?"2px solid transparent":
+        isCurrent&&focailInput[ci]?`2px solid ${c.acc}`:
+        isCurrent?`2px solid ${c.bd}`:`2px solid ${c.bd}44`;
+      return(
+        <div key={ci} style={{
+          width:54,height:54,display:"flex",alignItems:"center",justifyContent:"center",
+          background:bg,border:bdr,borderRadius:8,
+          fontSize:"1.5rem",fontWeight:800,
+          color:submitted?"#fff":c.tx,
+          fontFamily:"Georgia,serif",
+          transition:"background 0.3s,border 0.15s",
+          animation:isCurrent&&focailShake?`tileShake 0.4s ease`:
+                    isNew?`tileFlip 0.5s ease ${ci*0.1}s both`:"none",
+        }}>{letter}</div>
+      );
+    };
+
+    const KB=[
+      ["q","w","e","r","t","y","u","i","o","p"],
+      ["a","s","d","f","g","h","j","k","l"],
+      ["↵","z","x","c","v","b","n","m","⌫"],
+      ["á","é","í","ó","ú"],
+    ];
+    const kbBg=(k)=>{
+      if(k==="↵"||k==="⌫") return c.dark?"#3d4a5c":"#5a6a7a";
+      const col=keyCol[focailNorm(k)];
+      return col==="g"?"#22c55e":col==="y"?"#c9a227":col==="n"?(c.dark?"#2d3748":"#9ca3af"):(c.dark?"#2a3544":"#b8c4cc");
+    };
+
+    return(
+      <div style={{minHeight:"100svh",background:c.bg,color:c.tx,display:"flex",flexDirection:"column",alignItems:"center",fontFamily:"'Lato',system-ui,sans-serif"}}>
+        {/* Header */}
+        <div style={{width:"100%",maxWidth:420,display:"flex",alignItems:"center",padding:"10px 14px 8px",borderBottom:`1px solid ${c.bd}33`}}>
+          <button onClick={()=>setView("home")} style={{background:"none",border:"none",color:c.tx2,fontSize:"1.5rem",cursor:"pointer",padding:"2px 8px",lineHeight:1}}>←</button>
+          <div style={{flex:1,textAlign:"center"}}>
+            <div style={{fontFamily:"Georgia,serif",fontWeight:800,fontSize:"1.35rem",letterSpacing:5,color:c.acc}}>FOCAIL</div>
+            <div style={{fontSize:"0.68rem",color:c.tx3,marginTop:1,fontFamily:"'Lato',system-ui,sans-serif"}}>#{dayNum} · Focal Gaeilge an Lae</div>
+          </div>
+          <div style={{width:44}}/>
+        </div>
+
+        {/* Divider tip */}
+        {!done&&guesses.length===0&&(
+          <div style={{fontSize:"0.72rem",color:c.tx3,padding:"6px 0 0",textAlign:"center",fontStyle:"italic"}}>
+            Buail an focal 5-litir · Guess the 5-letter Irish word
+          </div>
+        )}
+
+        {/* Tile grid */}
+        <div style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:5,padding:"4px 0"}}>
+          {Array.from({length:ROWS},(_,ri)=>(
+            <div key={ri} style={{display:"flex",gap:5}}>
+              {Array.from({length:COLS},(_,ci)=>getTile(ri,ci))}
+            </div>
+          ))}
+        </div>
+
+        {/* Result banner */}
+        {done&&(
+          <div style={{textAlign:"center",padding:"6px 20px 4px",width:"100%",maxWidth:420,borderTop:`1px solid ${c.bd}22`}}>
+            {done==="won"
+              ?<div style={{color:"#22c55e",fontWeight:800,fontSize:"1.05rem",fontFamily:"Georgia,serif"}}>🎉 Maith thú! +30 XP</div>
+              :<div style={{color:c.tx2,fontSize:"0.95rem"}}>
+                  An focal: <span style={{color:c.acc,fontWeight:800,fontFamily:"Georgia,serif"}}>{fw.w.toUpperCase()}</span>
+                </div>
+            }
+            <div style={{color:c.tx3,fontSize:"0.75rem",marginTop:2}}>/{fw.pr}/ · {fw.m}</div>
+            <div style={{display:"flex",gap:8,justifyContent:"center",marginTop:10,flexWrap:"wrap"}}>
+              <button onClick={()=>speak(fw.w)} style={{
+                background:"none",border:`1px solid ${c.bd}`,borderRadius:8,
+                padding:"8px 16px",color:c.tx2,fontSize:"0.8rem",cursor:"pointer"
+              }}>🔊 Éist · Listen</button>
+              <button onClick={()=>{
+                const score=done==="won"?`${guesses.length}/6`:"X/6";
+                const txt=`Focail #${dayNum} ${score}\n\n${focailEmoji(colors)}\n\n☘️ Gaeltacht Connect`;
+                if(navigator.share) navigator.share({title:"Focail",text:txt});
+                else navigator.clipboard?.writeText(txt).then(()=>alert("Copied to clipboard!"));
+              }} style={{
+                background:c.acc,border:"none",borderRadius:8,
+                padding:"8px 20px",color:"#111",fontSize:"0.82rem",fontWeight:800,cursor:"pointer"
+              }}>↗ Roinn · Share</button>
+            </div>
+          </div>
+        )}
+
+        {/* Keyboard */}
+        <div style={{width:"100%",maxWidth:440,padding:"6px 4px 16px",display:"flex",flexDirection:"column",gap:5,alignItems:"center"}}>
+          {KB.map((row,ri)=>(
+            <div key={ri} style={{display:"flex",gap:ri===3?10:4,justifyContent:"center",width:"100%",paddingLeft:ri===1?14:0}}>
+              {row.map(k=>(
+                <button key={k} onClick={()=>handleFKey(k)} style={{
+                  minWidth:k==="↵"?46:k==="⌫"?46:ri===3?40:31,
+                  height:ri===3?42:50,
+                  background:kbBg(k),color:"#fff",border:"none",borderRadius:6,
+                  fontSize:ri===3?"1.1rem":k==="↵"||k==="⌫"?"0.74rem":"0.95rem",
+                  fontWeight:ri===3?700:600,
+                  fontFamily:ri===3?"Georgia,serif":"inherit",
+                  cursor:"pointer",transition:"background 0.2s",
+                  boxShadow:"0 2px 4px rgba(0,0,0,0.25)",
+                  letterSpacing:ri===3?0:0,
+                  opacity:done?0.6:1,
+                }}>{k==="↵"?"ENTER":k==="⌫"?"⌫":k.toUpperCase()}</button>
+              ))}
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   // ═══════════════════════════════
   // ONBOARDING
@@ -2668,7 +2924,8 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
   const missionLesson = !!(st?.dailyLog?.[todayKey()+"_lesson"]);
   const missionFlash  = !!(st?.dailyLog?.[todayKey()+"_flash"]);
   const missionQuiz   = !!(st?.dailyLog?.[todayKey()+"_vq"]);
-  const missionsToday = [missionLesson, missionFlash, missionQuiz].filter(Boolean).length;
+  const missionFocail = st?.focailDate===todayKey()&&(st?.focailDone==="won"||st?.focailDone==="lost");
+  const missionsToday = [missionLesson, missionFlash, missionQuiz, missionFocail].filter(Boolean).length;
   const xp = st?.xp || 0;
   const level = Math.floor(xp / 100) + 1;
   const levelPct = xp % 100;
@@ -2773,36 +3030,39 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
           </button>
         </div>
 
-        {/* ── 2-COL: Flash + Quiz ── */}
-        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+        {/* ── 3-COL: Focail + Flash + Quiz ── */}
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8}}>
           {[
+            {emoji:missionFocail?"✅":"🟩",label:"Focail",sub:missionFocail?"Done today":`#${getFocailDay()}`,
+              done:missionFocail,action:()=>{haptic([10,20,10]);setView("focail");}},
             {emoji:missionFlash?"✅":"⚡",label:"Word Flash",sub:missionFlash?"Done today":flashBest>0?`Best ${flashBest}/10`:"8s per word",
               done:missionFlash,action:()=>{haptic([10,20,10]);startFlash();}},
             {emoji:missionQuiz?"✅":"🎯",label:"Daily Quiz",sub:missionQuiz?"Done today":"Test vocab",
               done:missionQuiz,action:()=>{haptic([15,30,15]);startDailyQuiz();}},
           ].map(({emoji,label,sub,done,action},i)=>(
             <button key={i} onClick={action} style={{
-              border:`1.5px solid ${done?c.doneBd:c.bd}`,borderRadius:18,
-              padding:"18px 12px",cursor:"pointer",textAlign:"center",
-              background:done?(c.dark?"rgba(111,207,151,0.08)":"rgba(27,67,50,0.05)"):c.card,
-              display:"flex",flexDirection:"column",alignItems:"center",gap:6,
+              border:`1.5px solid ${done?c.doneBd:i===0?(c.dark?"rgba(34,197,94,0.35)":"rgba(27,67,50,0.25)"):c.bd}`,
+              borderRadius:16,padding:"14px 8px",cursor:"pointer",textAlign:"center",
+              background:done?(c.dark?"rgba(111,207,151,0.08)":"rgba(27,67,50,0.05)"):
+                i===0?(c.dark?"rgba(34,197,94,0.06)":"rgba(27,67,50,0.04)"):c.card,
+              display:"flex",flexDirection:"column",alignItems:"center",gap:5,
               boxShadow:c.shadow,
             }}>
-              <span style={{fontSize:"1.8rem",lineHeight:1}}>{emoji}</span>
-              <span style={{...bd,fontSize:"0.82rem",fontWeight:800,color:done?c.doneTx:c.tx}}>{label}</span>
-              <span style={{...bd,fontSize:"0.62rem",color:c.tx3}}>{sub}</span>
+              <span style={{fontSize:"1.55rem",lineHeight:1}}>{emoji}</span>
+              <span style={{...bd,fontSize:"0.72rem",fontWeight:800,color:done?c.doneTx:i===0?"#22c55e":c.tx}}>{label}</span>
+              <span style={{...bd,fontSize:"0.58rem",color:c.tx3}}>{sub}</span>
             </button>
           ))}
         </div>
 
         {/* Mission dots */}
         <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:6}}>
-          {[missionLesson,missionFlash,missionQuiz].map((d,i)=>(
+          {[missionFocail,missionLesson,missionFlash,missionQuiz].map((d,i)=>(
             <div key={i} style={{width:9,height:9,borderRadius:"50%",transition:"background 0.3s",
               background:d?c.doneTx:(c.dark?"rgba(255,255,255,0.13)":"rgba(0,0,0,0.1)")}}/>
           ))}
           <span style={{...bd,fontSize:"0.62rem",color:c.tx3,marginLeft:6}}>
-            {missionsToday===3?"🎉 All done today!":missionsToday===0?"Complete 3 missions":`${missionsToday}/3 done`}
+            {missionsToday===4?"🎉 All done today!":missionsToday===0?"Complete 4 missions":`${missionsToday}/4 done`}
           </span>
         </div>
 
