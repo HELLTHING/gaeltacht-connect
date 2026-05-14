@@ -237,6 +237,71 @@ async function sbFocailStats(dayNum) {
   } catch { return null; }
 }
 
+// ── Auth — Supabase email/password + cloud sync ─────────────────────────────
+let _gcToken   = localStorage.getItem("gc_token")   || null;
+let _gcRefresh = localStorage.getItem("gc_refresh")  || null;
+function _setTokens(a,r){
+  _gcToken=a; _gcRefresh=r||null;
+  if(a){localStorage.setItem("gc_token",a);localStorage.setItem("gc_refresh",r||"");}
+  else {localStorage.removeItem("gc_token");localStorage.removeItem("gc_refresh");}
+}
+const _aH=(tok)=>({"apikey":_SB_KEY,"Authorization":`Bearer ${tok}`,"Content-Type":"application/json"});
+
+async function sbAuth(email,password,isSignUp){
+  const url=isSignUp?`${_SB_URL}/auth/v1/signup`:`${_SB_URL}/auth/v1/token?grant_type=password`;
+  try{
+    const r=await fetch(url,{method:"POST",headers:_sbH,body:JSON.stringify({email,password})});
+    const d=await r.json();
+    if(d.access_token) _setTokens(d.access_token,d.refresh_token);
+    return d;
+  }catch(e){return {error:{message:"Network error"}};}
+}
+
+async function sbGetUser(){
+  if(!_gcToken) return null;
+  try{
+    let r=await fetch(`${_SB_URL}/auth/v1/user`,{headers:_aH(_gcToken)});
+    if(r.status===401&&_gcRefresh){
+      const rr=await fetch(`${_SB_URL}/auth/v1/token?grant_type=refresh_token`,{
+        method:"POST",headers:_sbH,body:JSON.stringify({refresh_token:_gcRefresh})});
+      const rd=await rr.json();
+      if(rd.access_token){_setTokens(rd.access_token,rd.refresh_token);r=await fetch(`${_SB_URL}/auth/v1/user`,{headers:_aH(_gcToken)});}
+      else{_setTokens(null,null);return null;}
+    }
+    if(!r.ok){_setTokens(null,null);return null;}
+    return r.json();
+  }catch{return null;}
+}
+
+async function sbSyncProgress(progress){
+  if(!_gcToken) return;
+  try{
+    await fetch(`${_SB_URL}/auth/v1/user`,{method:"PUT",headers:_aH(_gcToken),
+      body:JSON.stringify({data:{progress}})});
+  }catch{}
+}
+
+async function sbSignOut(){
+  if(!_gcToken) return;
+  try{await fetch(`${_SB_URL}/auth/v1/logout`,{method:"POST",headers:_aH(_gcToken)});}catch{}
+  _setTokens(null,null);
+}
+
+function mergeProgress(local,cloud){
+  if(!cloud) return local;
+  if(!local) return cloud;
+  return{
+    ...local,
+    done:[...new Set([...(local.done||[]),(cloud.done||[])])].flat().filter(Number.isInteger).sort((a,b)=>a-b),
+    bonus:[...new Set([...(local.bonus||[]),(cloud.bonus||[])]).values()],
+    achievements:[...new Set([...(local.achievements||[]),(cloud.achievements||[])]).values()],
+    tasksDone:[...new Set([...(local.tasksDone||[]),(cloud.tasksDone||[])]).values()],
+    xp:Math.max(local.xp||0,cloud.xp||0),
+    streak:Math.max(local.streak||0,cloud.streak||0),
+    best:Math.max(local.best||0,cloud.best||0),
+  };
+}
+
 // ── Focail — Daily Irish Word Puzzle (Wordle-style) ─────────────────────────
 const FOCAIL_WORDS = [
   {w:"teach", m:"house",       pr:"chakh"},
@@ -1220,8 +1285,15 @@ export default function App() {
   const [focailInput,setFocailInput]=useState("");
   const [focailShake,setFocailShake]=useState(false);
   const [focailStats,setFocailStats]=useState(null);
-  const [achToast,setAchToast]=useState(null); // {icon,name,nameEn}
+  const [achToast,setAchToast]=useState(null);
   const focailSubmitRef=useRef(null);
+  const [authUser,setAuthUser]=useState(null);
+  const [showAuth,setShowAuth]=useState(false);
+  const [authEmail,setAuthEmail]=useState("");
+  const [authPwd,setAuthPwd]=useState("");
+  const [authMode,setAuthMode]=useState("in"); // "in"|"up"
+  const [authLoading,setAuthLoading]=useState(false);
+  const [authErr,setAuthErr]=useState("");
   const c = THEMES[theme]||THEMES.coill;
   const dk = c.dark; // keep dk as a convenience boolean for backward compat
 
@@ -1243,6 +1315,22 @@ export default function App() {
   })()},[]);
 
 
+  // Auth init — restore session and merge cloud progress
+  useEffect(()=>{
+    sbGetUser().then(user=>{
+      if(!user) return;
+      setAuthUser(user);
+      const cloud=user.user_metadata?.progress;
+      if(!cloud) return;
+      setSt(prev=>{
+        if(!prev) return cloud;
+        const merged=mergeProgress(prev,cloud);
+        saveS(merged);
+        return merged;
+      });
+    });
+  },[]);
+
   // Physical keyboard + stats fetch for Focail
   useEffect(()=>{
     if(view!=="focail") return;
@@ -1257,7 +1345,7 @@ export default function App() {
     return()=>window.removeEventListener("keydown",h);
   },[view]);
 
-  const save=useCallback(async(ns)=>{setSt(ns);await saveS(ns)},[]);
+  const save=useCallback(async(ns)=>{setSt(ns);await saveS(ns);sbSyncProgress(ns);},[]);
   const cycleTheme=async()=>{
     const order=["coill","parchment","oiche"];
     const next=order[(order.indexOf(theme)+1)%order.length];
@@ -2365,6 +2453,90 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
           </div>
         )}
 
+        {/* ── AUTH MODAL ── */}
+        {showAuth&&(
+          <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.6)",zIndex:300,display:"flex",alignItems:"flex-end",justifyContent:"center"}}
+            onClick={e=>{if(e.target===e.currentTarget){setShowAuth(false);setAuthErr("");}}}>
+            <div style={{
+              background:c.card,border:`1px solid ${c.bd}`,
+              borderRadius:"24px 24px 0 0",padding:"28px 24px 40px",
+              width:"100%",maxWidth:480,
+              animation:"slide-up 0.3s ease",
+            }}>
+              {authUser?(
+                // ── SIGNED IN STATE ──
+                <div style={{textAlign:"center"}}>
+                  <div style={{fontSize:"2.5rem",marginBottom:8}}>☁️</div>
+                  <div style={{...hd,fontSize:"1.1rem",color:c.acc,marginBottom:4}}>Synced to cloud</div>
+                  <div style={{...bd,fontSize:"0.8rem",color:c.tx3,marginBottom:24}}>{authUser.email}</div>
+                  <div style={{background:c.dark?"rgba(34,197,94,0.1)":"rgba(27,67,50,0.05)",
+                    border:`1px solid ${c.doneBd}`,borderRadius:12,padding:"12px 16px",marginBottom:20,textAlign:"left"}}>
+                    <div style={{...bd,fontSize:"0.8rem",color:c.doneTx,fontWeight:700,marginBottom:4}}>✓ Your progress is safe</div>
+                    <div style={{...bd,fontSize:"0.72rem",color:c.tx3}}>XP, streaks, Focail history and achievements sync automatically across devices.</div>
+                  </div>
+                  <button onClick={async()=>{await sbSignOut();setAuthUser(null);setShowAuth(false);}} style={{
+                    width:"100%",padding:"12px",background:"none",
+                    border:`1px solid ${c.bd}`,borderRadius:12,
+                    color:c.tx3,...bd,fontSize:"0.85rem",cursor:"pointer"
+                  }}>Sign out</button>
+                </div>
+              ):(
+                // ── SIGN IN / SIGN UP ──
+                <div>
+                  <div style={{...hd,fontSize:"1.2rem",color:c.tx,marginBottom:4,textAlign:"center"}}>
+                    {authMode==="in"?"Welcome back":"Create account"}
+                  </div>
+                  <div style={{...bd,fontSize:"0.75rem",color:c.tx3,marginBottom:20,textAlign:"center"}}>
+                    {authMode==="in"?"Sign in to sync your progress across devices":"Save your progress to the cloud"}
+                  </div>
+                  <div style={{display:"flex",flexDirection:"column",gap:10,marginBottom:16}}>
+                    <input type="email" placeholder="Email" value={authEmail}
+                      onChange={e=>setAuthEmail(e.target.value)}
+                      style={{padding:"13px 14px",borderRadius:10,border:`1.5px solid ${authErr?'#ef4444':c.bd}`,
+                        background:c.cardAlt,color:c.tx,...bd,fontSize:"0.9rem",outline:"none"}}/>
+                    <input type="password" placeholder="Password (min 6 chars)" value={authPwd}
+                      onChange={e=>setAuthPwd(e.target.value)}
+                      onKeyDown={e=>e.key==="Enter"&&document.getElementById("auth-submit")?.click()}
+                      style={{padding:"13px 14px",borderRadius:10,border:`1.5px solid ${authErr?'#ef4444':c.bd}`,
+                        background:c.cardAlt,color:c.tx,...bd,fontSize:"0.9rem",outline:"none"}}/>
+                  </div>
+                  {authErr&&<div style={{...bd,fontSize:"0.75rem",color:"#ef4444",marginBottom:10,textAlign:"center"}}>{authErr}</div>}
+                  <button id="auth-submit" disabled={authLoading||!authEmail||authPwd.length<6}
+                    onClick={async()=>{
+                      setAuthLoading(true);setAuthErr("");
+                      const d=await sbAuth(authEmail,authPwd,authMode==="up");
+                      setAuthLoading(false);
+                      if(d.error){
+                        setAuthErr(d.error.message||"Something went wrong");
+                      } else {
+                        const user=await sbGetUser();
+                        if(user){
+                          setAuthUser(user);
+                          // Merge cloud with local
+                          const cloud=user.user_metadata?.progress;
+                          if(cloud&&st){const merged=mergeProgress(st,cloud);await save(merged);}
+                          else if(st){sbSyncProgress(st);}
+                        }
+                        setShowAuth(false);setAuthEmail("");setAuthPwd("");
+                      }
+                    }} style={{
+                      width:"100%",padding:"14px",borderRadius:12,border:"none",
+                      background:authLoading||!authEmail||authPwd.length<6?c.bd:c.acc,
+                      color:"#111",...bd,fontWeight:800,fontSize:"0.95rem",
+                      cursor:authLoading||!authEmail||authPwd.length<6?"not-allowed":"pointer",
+                      transition:"background 0.2s",
+                    }}>{authLoading?"...":(authMode==="in"?"Sign in · Logáil isteach":"Create account · Cruthaigh cuntas")}</button>
+                  <div style={{textAlign:"center",marginTop:14}}>
+                    <button onClick={()=>{setAuthMode(m=>m==="in"?"up":"in");setAuthErr("");}} style={{
+                      background:"none",border:"none",color:c.acc,...bd,fontSize:"0.8rem",cursor:"pointer",textDecoration:"underline"
+                    }}>{authMode==="in"?"No account? Sign up →":"Have an account? Sign in →"}</button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
         {/* ── ACHIEVEMENT TOAST ── */}
         {achToast&&(
           <div style={{
@@ -3169,6 +3341,19 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
           )}
           <button onClick={toggle} style={{background:"none",border:"none",fontSize:"1.2rem",cursor:"pointer",padding:4,lineHeight:1}}>
             {theme==="coill"?"🌲":theme==="parchment"?"📜":"🌊"}
+          </button>
+          <button onClick={()=>setShowAuth(true)} title={authUser?"Synced to cloud":"Sign in"} style={{
+            background:"none",border:"none",cursor:"pointer",padding:"2px 4px",
+            fontSize:"1.05rem",lineHeight:1,position:"relative",
+          }}>
+            {authUser
+              ? <span style={{display:"flex",alignItems:"center",justifyContent:"center",
+                  width:26,height:26,borderRadius:"50%",background:c.acc,
+                  color:"#111",...bd,fontWeight:800,fontSize:"0.72rem"}}>
+                  {authUser.email?.[0]?.toUpperCase()||"?"}
+                </span>
+              : <span style={{color:c.tx3,fontSize:"1.1rem"}}>☁️</span>
+            }
           </button>
           <button onClick={()=>setView("settings")} style={{background:"none",border:"none",fontSize:"1.1rem",cursor:"pointer",padding:4,lineHeight:1,color:c.tx3}}>⚙️</button>
         </div>
