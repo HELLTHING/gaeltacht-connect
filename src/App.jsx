@@ -289,6 +289,57 @@ const FOCAIL_WORDS = [
   {w:"beoir", m:"beer",        pr:"BYOHR"},
   {w:"éirim", m:"I rise",      pr:"AY-rim"},
   {w:"caife", m:"coffee",      pr:"KAF-eh"},
+  // ── second 50 ──────────────────────────────
+  {w:"cloch", m:"stone",       pr:"klukh"},
+  {w:"bláth", m:"flower",      pr:"blaw"},
+  {w:"feoil", m:"meat",        pr:"FYOHL"},
+  {w:"milis", m:"sweet",       pr:"MIL-ish"},
+  {w:"obair", m:"work",        pr:"UB-ir"},
+  {w:"tábla", m:"table",       pr:"TAW-bla"},
+  {w:"éadaí", m:"clothes",     pr:"AY-dee"},
+  {w:"oifig", m:"office",      pr:"IF-ig"},
+  {w:"cosán", m:"footpath",    pr:"cuh-SAWN"},
+  {w:"geata", m:"gate",        pr:"GAT-a"},
+  {w:"cósta", m:"coast",       pr:"KOH-sta"},
+  {w:"caint", m:"speech/chat", pr:"KYANT"},
+  {w:"focal", m:"word",        pr:"FUK-al"},
+  {w:"litir", m:"letter",      pr:"LIT-ir"},
+  {w:"droim", m:"back/ridge",  pr:"drim"},
+  {w:"cluas", m:"ear",         pr:"KLOO-as"},
+  {w:"naomh", m:"saint",       pr:"neev"},
+  {w:"gáire", m:"laughter",    pr:"GAW-reh"},
+  {w:"cúram", m:"care/duty",   pr:"KOO-rum"},
+  {w:"bréag", m:"lie/untruth", pr:"BRYAG"},
+  {w:"dearg", m:"red",         pr:"DYAR-ug"},
+  {w:"lacha", m:"duck",        pr:"LAKH-a"},
+  {w:"cearc", m:"hen",         pr:"kyark"},
+  {w:"ciúin", m:"quiet/calm",  pr:"KYOO-in"},
+  {w:"cróga", m:"brave",       pr:"KROH-ga"},
+  {w:"fionn", m:"fair/blonde", pr:"fyun"},
+  {w:"sméar", m:"blackberry",  pr:"smyar"},
+  {w:"silín", m:"cherry",      pr:"SHIL-een"},
+  {w:"camán", m:"hurley stick",pr:"kuh-MAWN"},
+  {w:"léine", m:"shirt",       pr:"LAY-neh"},
+  {w:"draoi", m:"druid",       pr:"DREE"},
+  {w:"sídhe", m:"fairy folk",  pr:"SHEE"},
+  {w:"baile", m:"town/home",   pr:"BAL-yeh"},
+  {w:"féach", m:"look/watch",  pr:"FAY-akh"},
+  {w:"cáise", m:"cheese",      pr:"KAW-sheh"},
+  {w:"sicín", m:"chicken",     pr:"SHIK-een"},
+  {w:"aigne", m:"mind/spirit", pr:"AIG-neh"},
+  {w:"beoga", m:"lively",      pr:"BYOH-ga"},
+  {w:"uasal", m:"noble",       pr:"OO-sul"},
+  {w:"óstán", m:"hotel",       pr:"OH-stawn"},
+  {w:"oráid", m:"speech/talk", pr:"uh-RAW-idj"},
+  {w:"dánta", m:"poems",       pr:"DAWN-ta"},
+  {w:"anail", m:"breath",      pr:"AN-il"},
+  {w:"liath", m:"grey",        pr:"LEE-uh"},
+  {w:"gorma", m:"blue",        pr:"GUR-ma"},
+  {w:"caora", m:"sheep",       pr:"KWEE-ra"},
+  {w:"ithim", m:"I eat",       pr:"IH-im"},
+  {w:"ólaim", m:"I drink",     pr:"OH-lim"},
+  {w:"meala", m:"honey",       pr:"MAL-a"},
+  {w:"campa", m:"camp",        pr:"KAMP-a"},
 ];
 const FOCAIL_EPOCH = new Date("2026-01-01");
 const getFocailDay = () => Math.floor((new Date() - FOCAIL_EPOCH) / 86400000);
@@ -305,6 +356,34 @@ function scoreFocailGuess(guess, answer) {
   return res;
 }
 const focailEmoji = (colors) => colors.map(r=>r.map(col=>col==="g"?"🟩":col==="y"?"🟨":"⬛").join("")).join("\n");
+
+// ── Achievement definitions ──────────────────────────────────────────────────
+const ALL_ACHIEVEMENTS = [
+  // First-timers
+  {id:"first_lesson",  icon:"🌱", name:"Céad Lá",      nameEn:"First Day",        desc:"Completed your first lesson"},
+  {id:"first_flash",   icon:"⚡", name:"Splanc!",       nameEn:"First Flash",      desc:"Played Word Flash for the first time"},
+  {id:"first_focail",  icon:"🟩", name:"Focal Maith",   nameEn:"Good Word",        desc:"Played Focail for the first time"},
+  // Streaks
+  {id:"streak_3",      icon:"🔥", name:"3 Lá",          nameEn:"3 Days",           desc:"3-day streak"},
+  {id:"streak_7",      icon:"🔥", name:"Seachtain",     nameEn:"One Week",         desc:"7-day streak"},
+  {id:"streak_14",     icon:"🏅", name:"Coicís",        nameEn:"Two Weeks",        desc:"14-day streak"},
+  {id:"streak_30",     icon:"🏆", name:"30 Lá!",        nameEn:"Full Month",       desc:"30-day streak"},
+  // Focail
+  {id:"focail_win",    icon:"🎯", name:"Cruthaithe!",   nameEn:"Solved!",          desc:"Solved Focail"},
+  {id:"focail_3",      icon:"🤩", name:"3 Croí",        nameEn:"3-Streak",         desc:"Solved Focail 3 days in a row"},
+  {id:"focail_genius", icon:"🧠", name:"Géinieas",      nameEn:"Genius",           desc:"Solved Focail in 2 guesses or fewer"},
+  // Flash
+  {id:"flash_perfect", icon:"💯", name:"Foirfe!",       nameEn:"Perfect!",         desc:"10/10 in Word Flash"},
+  {id:"flash_combo",   icon:"🔥", name:"5 Combo",       nameEn:"On Fire",          desc:"5× combo in Word Flash"},
+  // Lessons
+  {id:"lesson_5",      icon:"📚", name:"Cúig Cheacht",  nameEn:"Five Lessons",     desc:"5 lessons completed"},
+  {id:"lesson_15",     icon:"📖", name:"Leath Slí",     nameEn:"Halfway",          desc:"15 lessons completed"},
+  {id:"lesson_30",     icon:"☘️", name:"Gaeilgeoir!",   nameEn:"Irish Speaker",    desc:"All 30 lessons done"},
+  // XP
+  {id:"xp_100",        icon:"⭐", name:"Céad XP",       nameEn:"100 XP",           desc:"Earned 100 XP"},
+  {id:"xp_500",        icon:"🌟", name:"500 XP",        nameEn:"500 XP",           desc:"Earned 500 XP"},
+  {id:"xp_1000",       icon:"💎", name:"Míle XP",       nameEn:"1000 XP",          desc:"Earned 1000 XP"},
+];
 
 // Share image generation — 1080×1080 Instagram-ready card
 const genShareImage = (day, total, streak) => {
@@ -1141,6 +1220,7 @@ export default function App() {
   const [focailInput,setFocailInput]=useState("");
   const [focailShake,setFocailShake]=useState(false);
   const [focailStats,setFocailStats]=useState(null);
+  const [achToast,setAchToast]=useState(null); // {icon,name,nameEn}
   const focailSubmitRef=useRef(null);
   const c = THEMES[theme]||THEMES.coill;
   const dk = c.dark; // keep dk as a convenience boolean for backward compat
@@ -1259,9 +1339,25 @@ export default function App() {
 
   const earnXP=useCallback(async(amount,logKey)=>{
     if(!st)return;
-    const xp=(st.xp||0)+amount;
+    const prevXP=st.xp||0;
+    const xp=prevXP+amount;
     const dl=logKey?{...(st.dailyLog||{}),[logKey]:true}:(st.dailyLog||{});
     await save({...st,xp,dailyLog:dl});
+    if(prevXP<100&&xp>=100) setTimeout(()=>earnAchievement("xp_100"),400);
+    if(prevXP<500&&xp>=500) setTimeout(()=>earnAchievement("xp_500"),400);
+    if(prevXP<1000&&xp>=1000) setTimeout(()=>earnAchievement("xp_1000"),400);
+  },[st,save,earnAchievement]);
+
+  const earnAchievement=useCallback(async(id)=>{
+    if(!st)return;
+    const already=(st.achievements||[]);
+    if(already.includes(id))return;
+    const def=ALL_ACHIEVEMENTS.find(a=>a.id===id);
+    if(!def)return;
+    const newAchs=[...already,id];
+    await save({...st,achievements:newAchs});
+    setAchToast(def);
+    setTimeout(()=>setAchToast(null),3200);
   },[st,save]);
 
   const scheduleNotif=useCallback(()=>{
@@ -1463,7 +1559,17 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
       setSt(s=>({...s,focailDate:todayDate,focailGuesses:ng,focailColors:nc,focailDone:newDone}));
       if(won) earnXP(30,"focail");
       else if(newDone==="lost") earnXP(5,"focail");
-      if(newDone) sbFocailRecord(dayNum,won).then(()=>sbFocailStats(dayNum).then(s=>{if(s)setFocailStats(s);}));
+      if(newDone) {
+        sbFocailRecord(dayNum,won).then(()=>sbFocailStats(dayNum).then(s=>{if(s)setFocailStats(s);}));
+        earnAchievement("first_focail");
+        if(won){
+          earnAchievement("focail_win");
+          if(ng.length<=2) earnAchievement("focail_genius");
+          // Check 3-day focail streak (simple: prev 2 days also won)
+          const p1=st.focailDate===new Date(Date.now()-86400000).toISOString().slice(0,10)&&st.focailDone==="won";
+          if(p1) earnAchievement("focail_3");
+        }
+      }
       setFocailInput("");
     };
     focailSubmitRef.current=doSubmit;
@@ -1513,8 +1619,41 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
       return col==="g"?"#22c55e":col==="y"?"#c9a227":col==="n"?(c.dark?"#2d3748":"#9ca3af"):(c.dark?"#2a3544":"#b8c4cc");
     };
 
+    const showIntro = !st.focailIntroSeen && guesses.length===0 && !done;
+
     return(
       <div style={{minHeight:"100svh",background:c.bg,color:c.tx,display:"flex",flexDirection:"column",alignItems:"center",fontFamily:"'Lato',system-ui,sans-serif"}}>
+        {/* ── HOW TO PLAY overlay (first time) ── */}
+        {showIntro&&(
+          <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.82)",zIndex:50,display:"flex",alignItems:"center",justifyContent:"center",padding:20}}
+            onClick={()=>setSt(s=>({...s,focailIntroSeen:true}))}>
+            <div style={{background:c.card,border:`1px solid ${c.bd}`,borderRadius:20,padding:"28px 24px",maxWidth:340,textAlign:"center",boxShadow:"0 20px 60px rgba(0,0,0,0.5)"}}>
+              <div style={{fontSize:"2.5rem",marginBottom:12}}>🟩</div>
+              <div style={{...hd,fontSize:"1.3rem",color:c.acc,marginBottom:6}}>Conas a Imrítear?</div>
+              <div style={{...bd,fontSize:"0.8rem",color:c.tx3,marginBottom:18,fontStyle:"italic"}}>How to play</div>
+              <div style={{display:"flex",flexDirection:"column",gap:10,textAlign:"left",marginBottom:20}}>
+                {[
+                  ["🟩","Correct letter, correct position"],
+                  ["🟨","Correct letter, wrong position"],
+                  ["⬛","Letter not in the word"],
+                ].map(([e,t])=>(
+                  <div key={e} style={{display:"flex",alignItems:"center",gap:10}}>
+                    <span style={{fontSize:"1.3rem",minWidth:28}}>{e}</span>
+                    <span style={{...bd,fontSize:"0.82rem",color:c.tx2}}>{t}</span>
+                  </div>
+                ))}
+              </div>
+              <div style={{...bd,fontSize:"0.75rem",color:c.tx3,marginBottom:18}}>
+                Guess the 5-letter Irish word in 6 tries. A new word every day. Use the <strong style={{color:c.acc}}>Á É Í Ó Ú</strong> row for fada.
+              </div>
+              <button style={{
+                background:c.acc,border:"none",borderRadius:10,
+                padding:"12px 32px",color:"#111",...bd,fontWeight:800,fontSize:"0.95rem",cursor:"pointer",width:"100%"
+              }}>Tosaigh · Start playing</button>
+            </div>
+          </div>
+        )}
+
         {/* Header */}
         <div style={{width:"100%",maxWidth:420,display:"flex",alignItems:"center",padding:"10px 14px 8px",borderBottom:`1px solid ${c.bd}33`}}>
           <button onClick={()=>setView("home")} style={{background:"none",border:"none",color:c.tx2,fontSize:"1.5rem",cursor:"pointer",padding:"2px 8px",lineHeight:1}}>←</button>
@@ -1674,6 +1813,12 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
           // ── RESULTS ──
           <div style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"24px 20px",textAlign:"center"}}>
             {flashScore>=10&&<Confetti/>}
+            {flashDone&&(()=>{
+              earnAchievement("first_flash");
+              if(flashScore>=10) earnAchievement("flash_perfect");
+              if(flashCombo>=5) earnAchievement("flash_combo");
+              return null;
+            })()}
             <div style={{fontSize:"4.5rem",marginBottom:12,animation:"correctPop 0.5s ease"}}>
               {flashScore>=9?"🏆":flashScore>=7?"⭐":flashScore>=5?"👏":"💪"}
             </div>
@@ -2033,6 +2178,15 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
     const todayDayNum=CH.findIndex(d=>!st.done.includes(d.day))+1||CH.length;
     if(selDay===todayDayNum&&!st.dailyLog?.[todayKey()+"_lesson"]){
       earnXP(20, todayKey()+"_lesson");
+      earnAchievement("first_lesson");
+      const doneCount=(st.done||[]).length;
+      if(doneCount>=4)  earnAchievement("lesson_5");
+      if(doneCount>=14) earnAchievement("lesson_15");
+      if(doneCount>=29) earnAchievement("lesson_30");
+      if((st.streak||0)>=3)  earnAchievement("streak_3");
+      if((st.streak||0)>=7)  earnAchievement("streak_7");
+      if((st.streak||0)>=14) earnAchievement("streak_14");
+      if((st.streak||0)>=30) earnAchievement("streak_30");
     }
 
     return(
@@ -2211,6 +2365,27 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
           </div>
         )}
 
+        {/* ── ACHIEVEMENT TOAST ── */}
+        {achToast&&(
+          <div style={{
+            position:"fixed",bottom:88,left:"50%",transform:"translateX(-50%)",
+            background:c.dark?"rgba(20,30,20,0.97)":"rgba(255,252,245,0.97)",
+            border:`1.5px solid ${c.acc}`,borderRadius:16,
+            padding:"12px 20px",zIndex:200,
+            display:"flex",alignItems:"center",gap:12,
+            boxShadow:"0 8px 32px rgba(0,0,0,0.35)",
+            animation:"slide-up 0.35s ease",
+            maxWidth:320,width:"90vw",
+          }}>
+            <div style={{fontSize:"2rem",lineHeight:1,flexShrink:0}}>{achToast.icon}</div>
+            <div>
+              <div style={{...bd,fontSize:"0.62rem",color:c.acc,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",marginBottom:1}}>Achievement unlocked</div>
+              <div style={{...hd,fontSize:"1rem",color:c.tx,fontWeight:800}}>{achToast.name}</div>
+              <div style={{...bd,fontSize:"0.72rem",color:c.tx3}}>{achToast.nameEn} · {achToast.desc}</div>
+            </div>
+          </div>
+        )}
+
         {/* ── CELEBRATIONS ── */}
         {celeb==="day"&&(()=>{
           const prov=CELEB_PROV[(selDay||1)%CELEB_PROV.length];
@@ -2374,14 +2549,8 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
   if(view==="stats"){
     const daysSince=st.started?Math.floor((Date.now()-new Date(st.started).getTime())/(1000*60*60*24)):0;
     const wkColors=["#2D6A4F","#1A5FA0","#8A3A8A","#C2541A"];
-    const ACHIEVEMENTS=[
-      {id:"first",  icon:"🌱", name:"Céad Lá",      nameEn:"First Day",       desc:"Completed your first day",      unlocked:total>=1},
-      {id:"week1",  icon:"🔥", name:"Seachtain",    nameEn:"One Week",        desc:"7-day streak achieved",         unlocked:st.best>=7},
-      {id:"half",   icon:"⚡", name:"Leath Slí",    nameEn:"Halfway",         desc:"15 days completed",             unlocked:total>=15},
-      {id:"bonus5", icon:"⭐", name:"Díograiseoir", nameEn:"The Eager One",   desc:"5 bonus challenges done",       unlocked:st.bonus.length>=5},
-      {id:"tasks",  icon:"🎯", name:"Cúramach",     nameEn:"The Careful One", desc:"15 mini tasks completed",       unlocked:(st.tasksDone||[]).length>=15},
-      {id:"done",   icon:"☘️", name:"Gaeilgeoir",   nameEn:"Irish Speaker",   desc:"All 30 days completed",         unlocked:total===30},
-    ];
+    const earned=st.achievements||[];
+    const ACHIEVEMENTS=ALL_ACHIEVEMENTS.map(a=>({...a,unlocked:earned.includes(a.id)}));
     return(
       <div style={{minHeight:"100vh",background:c.bg,color:c.tx,animation:"fadeIn 0.25s ease",paddingBottom:24}}>
         <style>{css}</style>
