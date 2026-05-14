@@ -215,13 +215,25 @@ async function sbGetCount(day) {
   } catch { return null; }
 }
 
-async function sbFocailRecord(dayNum, won) {
+async function sbFocailRecord(dayNum, won, guesses) {
   try {
     await fetch(`${_SB_URL}/rest/v1/completions`,
       {method:"POST",headers:_sbH,body:JSON.stringify({date:`focail-${dayNum}`})});
-    if(won) await fetch(`${_SB_URL}/rest/v1/completions`,
-      {method:"POST",headers:_sbH,body:JSON.stringify({date:`focail-${dayNum}-w`})});
+    if(won){
+      await fetch(`${_SB_URL}/rest/v1/completions`,
+        {method:"POST",headers:_sbH,body:JSON.stringify({date:`focail-${dayNum}-w`})});
+      await fetch(`${_SB_URL}/rest/v1/completions`,
+        {method:"POST",headers:_sbH,body:JSON.stringify({date:`focail-${dayNum}-g${guesses}`})});
+    }
   } catch {}
+}
+async function sbFocailDistribution(dayNum) {
+  try {
+    const rs=await Promise.all([1,2,3,4,5,6].map(n=>
+      fetch(`${_SB_URL}/rest/v1/completions?date=eq.focail-${dayNum}-g${n}&select=id`,
+        {headers:{..._sbH,"Prefer":"count=exact"}})));
+    return rs.map(r=>parseInt((r.headers.get("Content-Range")||"0/0").split("/")[1],10)||0);
+  }catch{return null;}
 }
 async function sbFocailStats(dayNum) {
   try {
@@ -1285,6 +1297,8 @@ export default function App() {
   const [focailInput,setFocailInput]=useState("");
   const [focailShake,setFocailShake]=useState(false);
   const [focailStats,setFocailStats]=useState(null);
+  const [focailDist,setFocailDist]=useState(null);
+  const [showFocailStats,setShowFocailStats]=useState(false);
   const [achToast,setAchToast]=useState(null);
   const focailSubmitRef=useRef(null);
   const [authUser,setAuthUser]=useState(null);
@@ -1341,7 +1355,9 @@ export default function App() {
       else if(/^[a-záéíóú]$/i.test(e.key)) setFocailInput(v=>v.length<5?v+e.key.toLowerCase():v);
     };
     window.addEventListener("keydown",h);
-    sbFocailStats(getFocailDay()).then(s=>{if(s)setFocailStats(s);});
+    const dn=getFocailDay();
+    sbFocailStats(dn).then(s=>{if(s)setFocailStats(s);});
+    sbFocailDistribution(dn).then(d=>{if(d)setFocailDist(d);});
     return()=>window.removeEventListener("keydown",h);
   },[view]);
 
@@ -1648,7 +1664,12 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
       if(won) earnXP(30,"focail");
       else if(newDone==="lost") earnXP(5,"focail");
       if(newDone) {
-        sbFocailRecord(dayNum,won).then(()=>sbFocailStats(dayNum).then(s=>{if(s)setFocailStats(s);}));
+        sbFocailRecord(dayNum,won,ng.length).then(()=>{
+          sbFocailStats(dayNum).then(s=>{if(s)setFocailStats(s);});
+          sbFocailDistribution(dayNum).then(d=>{if(d)setFocailDist(d);});
+        });
+        // Save personal history (keep last 90 games)
+        setSt(s=>({...s,focailHistory:[...(s.focailHistory||[]).slice(-89),{d:dayNum,g:won?ng.length:0,s:won}]}));
         earnAchievement("first_focail");
         if(won){
           earnAchievement("focail_win");
@@ -1749,8 +1770,92 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
             <div style={{fontFamily:"Georgia,serif",fontWeight:800,fontSize:"1.35rem",letterSpacing:5,color:c.acc}}>FOCAIL</div>
             <div style={{fontSize:"0.68rem",color:c.tx3,marginTop:1,fontFamily:"'Lato',system-ui,sans-serif"}}>#{dayNum} · Focal Gaeilge an Lae</div>
           </div>
-          <div style={{width:44}}/>
+          <button onClick={()=>setShowFocailStats(true)} style={{
+            background:"none",border:"none",color:c.tx3,fontSize:"1.1rem",cursor:"pointer",padding:"2px 8px",lineHeight:1
+          }}>📊</button>
         </div>
+
+        {/* ── STATS MODAL ── */}
+        {showFocailStats&&(()=>{
+          const hist=st.focailHistory||[];
+          const total=hist.length;
+          const wins=hist.filter(g=>g.s).length;
+          const winRate=total>0?Math.round(wins/total*100):0;
+          const myDist=[1,2,3,4,5,6].map(n=>hist.filter(g=>g.s&&g.g===n).length);
+          const maxBar=Math.max(...myDist,1);
+          // Focail solve streak
+          let fStreak=0;
+          const sorted=[...hist].sort((a,b)=>b.d-a.d);
+          let prev=null;
+          for(const g of sorted){
+            if(!g.s) break;
+            if(prev===null||prev-g.d===1){fStreak++;prev=g.d;}
+            else break;
+          }
+          // "Better than X%" today
+          const todayGame=hist.find(g=>g.d===dayNum);
+          let betterThan=null;
+          if(todayGame?.s&&focailStats?.plays&&focailDist){
+            const worseOrFailed=focailStats.plays-focailDist.slice(0,todayGame.g).reduce((a,b)=>a+b,0);
+            betterThan=Math.round(worseOrFailed/focailStats.plays*100);
+          }
+          return(
+            <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.6)",zIndex:200,display:"flex",alignItems:"flex-end",justifyContent:"center"}}
+              onClick={e=>{if(e.target===e.currentTarget)setShowFocailStats(false);}}>
+              <div style={{background:c.card,border:`1px solid ${c.bd}`,borderRadius:"24px 24px 0 0",
+                padding:"24px 20px 36px",width:"100%",maxWidth:480,animation:"slide-up 0.3s ease"}}>
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20}}>
+                  <div style={{...hd,fontSize:"1.1rem",color:c.tx,fontWeight:800}}>Mo Staitisticí · My Stats</div>
+                  <button onClick={()=>setShowFocailStats(false)} style={{background:"none",border:"none",color:c.tx3,fontSize:"1.4rem",cursor:"pointer",lineHeight:1}}>×</button>
+                </div>
+                {/* Key stats */}
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr 1fr",gap:8,marginBottom:20}}>
+                  {[{v:total,l:"Played"},{v:`${winRate}%`,l:"Won"},{v:fStreak,l:"Streak"},{v:wins>0?`${hist.filter(g=>g.s).reduce((a,g)=>a+g.g,0)/wins|0}/6`:"-",l:"Avg"}].map((s,i)=>(
+                    <div key={i} style={{textAlign:"center",background:c.cardAlt,border:`1px solid ${c.bd}`,borderRadius:10,padding:"10px 4px"}}>
+                      <div style={{...hd,fontSize:"1.4rem",fontWeight:800,color:c.acc}}>{s.v}</div>
+                      <div style={{...bd,fontSize:"0.6rem",color:c.tx3,marginTop:2}}>{s.l}</div>
+                    </div>
+                  ))}
+                </div>
+                {/* Guess distribution */}
+                <div style={{...bd,fontSize:"0.7rem",color:c.tx3,fontWeight:700,letterSpacing:"0.08em",textTransform:"uppercase",marginBottom:10}}>Guess distribution</div>
+                <div style={{display:"flex",flexDirection:"column",gap:5,marginBottom:16}}>
+                  {[1,2,3,4,5,6].map(n=>{
+                    const cnt=myDist[n-1];
+                    const pct=Math.round(cnt/maxBar*100)||0;
+                    const isToday=todayGame?.s&&todayGame?.g===n;
+                    return(
+                      <div key={n} style={{display:"flex",alignItems:"center",gap:8}}>
+                        <span style={{...bd,fontSize:"0.82rem",color:c.tx2,width:10,textAlign:"right"}}>{n}</span>
+                        <div style={{flex:1,height:22,background:c.cardAlt,borderRadius:4,overflow:"hidden"}}>
+                          <div style={{width:`${Math.max(pct,cnt>0?8:0)}%`,height:"100%",
+                            background:isToday?"#22c55e":c.acc,borderRadius:4,
+                            display:"flex",alignItems:"center",justifyContent:"flex-end",paddingRight:6,
+                            transition:"width 0.6s ease",minWidth:cnt>0?28:0}}>
+                            {cnt>0&&<span style={{...bd,fontSize:"0.7rem",fontWeight:700,color:"#111"}}>{cnt}</span>}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+                {/* Community line */}
+                {focailStats?.plays>0&&(
+                  <div style={{textAlign:"center",padding:"10px",background:c.cardAlt,borderRadius:10,border:`1px solid ${c.bd}`}}>
+                    <span style={{...bd,fontSize:"0.78rem",color:c.tx2}}>
+                      {focailStats.plays.toLocaleString()} players today · {Math.round(focailStats.wins/focailStats.plays*100)}% solved
+                    </span>
+                    {betterThan!==null&&(
+                      <div style={{...bd,fontSize:"0.75rem",color:"#22c55e",marginTop:4,fontWeight:700}}>
+                        🎯 You beat {betterThan}% of today's players
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+          );
+        })()}
 
         {/* Community stats bar */}
         <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:10,padding:"5px 0 2px",minHeight:22}}>
