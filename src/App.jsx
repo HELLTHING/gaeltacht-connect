@@ -215,6 +215,28 @@ async function sbGetCount(day) {
   } catch { return null; }
 }
 
+async function sbFocailRecord(dayNum, won) {
+  try {
+    await fetch(`${_SB_URL}/rest/v1/completions`,
+      {method:"POST",headers:_sbH,body:JSON.stringify({date:`focail-${dayNum}`})});
+    if(won) await fetch(`${_SB_URL}/rest/v1/completions`,
+      {method:"POST",headers:_sbH,body:JSON.stringify({date:`focail-${dayNum}-w`})});
+  } catch {}
+}
+async function sbFocailStats(dayNum) {
+  try {
+    const [rP,rW]=await Promise.all([
+      fetch(`${_SB_URL}/rest/v1/completions?date=eq.focail-${dayNum}&select=id`,
+        {headers:{..._sbH,"Prefer":"count=exact"}}),
+      fetch(`${_SB_URL}/rest/v1/completions?date=eq.focail-${dayNum}-w&select=id`,
+        {headers:{..._sbH,"Prefer":"count=exact"}}),
+    ]);
+    const plays=parseInt((rP.headers.get("Content-Range")||"0/0").split("/")[1],10)||0;
+    const wins =parseInt((rW.headers.get("Content-Range")||"0/0").split("/")[1],10)||0;
+    return {plays,wins};
+  } catch { return null; }
+}
+
 // ── Focail — Daily Irish Word Puzzle (Wordle-style) ─────────────────────────
 const FOCAIL_WORDS = [
   {w:"teach", m:"house",       pr:"chakh"},
@@ -1118,6 +1140,7 @@ export default function App() {
   const flashTimerRef=useRef(null);
   const [focailInput,setFocailInput]=useState("");
   const [focailShake,setFocailShake]=useState(false);
+  const [focailStats,setFocailStats]=useState(null);
   const focailSubmitRef=useRef(null);
   const c = THEMES[theme]||THEMES.coill;
   const dk = c.dark; // keep dk as a convenience boolean for backward compat
@@ -1140,7 +1163,7 @@ export default function App() {
   })()},[]);
 
 
-  // Physical keyboard for Focail
+  // Physical keyboard + stats fetch for Focail
   useEffect(()=>{
     if(view!=="focail") return;
     const h=(e)=>{
@@ -1150,6 +1173,7 @@ export default function App() {
       else if(/^[a-záéíóú]$/i.test(e.key)) setFocailInput(v=>v.length<5?v+e.key.toLowerCase():v);
     };
     window.addEventListener("keydown",h);
+    sbFocailStats(getFocailDay()).then(s=>{if(s)setFocailStats(s);});
     return()=>window.removeEventListener("keydown",h);
   },[view]);
 
@@ -1439,6 +1463,7 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
       setSt(s=>({...s,focailDate:todayDate,focailGuesses:ng,focailColors:nc,focailDone:newDone}));
       if(won) earnXP(30,"focail");
       else if(newDone==="lost") earnXP(5,"focail");
+      if(newDone) sbFocailRecord(dayNum,won).then(()=>sbFocailStats(dayNum).then(s=>{if(s)setFocailStats(s);}));
       setFocailInput("");
     };
     focailSubmitRef.current=doSubmit;
@@ -1500,12 +1525,24 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
           <div style={{width:44}}/>
         </div>
 
-        {/* Divider tip */}
-        {!done&&guesses.length===0&&(
-          <div style={{fontSize:"0.72rem",color:c.tx3,padding:"6px 0 0",textAlign:"center",fontStyle:"italic"}}>
-            Buail an focal 5-litir · Guess the 5-letter Irish word
-          </div>
-        )}
+        {/* Community stats bar */}
+        <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:10,padding:"5px 0 2px",minHeight:22}}>
+          {focailStats&&focailStats.plays>0?(
+            <>
+              <span style={{fontSize:"0.7rem",color:c.tx3}}>
+                👥 {focailStats.plays.toLocaleString()} players today
+              </span>
+              <span style={{fontSize:"0.62rem",color:c.bd}}>·</span>
+              <span style={{fontSize:"0.7rem",color:focailStats.wins/focailStats.plays>0.5?"#22c55e":c.tx3}}>
+                {Math.round(focailStats.wins/focailStats.plays*100)}% solved
+              </span>
+            </>
+          ):(
+            <span style={{fontSize:"0.68rem",color:c.tx3,fontStyle:"italic"}}>
+              {!done&&guesses.length===0?"5-litir · Guess the 5-letter Irish word":""}
+            </span>
+          )}
+        </div>
 
         {/* Tile grid */}
         <div style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:5,padding:"4px 0"}}>
@@ -1533,13 +1570,18 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
               }}>🔊 Éist · Listen</button>
               <button onClick={()=>{
                 const score=done==="won"?`${guesses.length}/6`:"X/6";
-                const txt=`Focail #${dayNum} ${score}\n\n${focailEmoji(colors)}\n\n☘️ Gaeltacht Connect`;
+                const txt=`Focail #${dayNum} ${score}\n${fw.w.toUpperCase()} — ${fw.m}\n\n${focailEmoji(colors)}\n\n☘️ gaeltacht.app — Irish word of the day`;
                 if(navigator.share) navigator.share({title:"Focail",text:txt});
                 else navigator.clipboard?.writeText(txt).then(()=>alert("Copied to clipboard!"));
               }} style={{
                 background:c.acc,border:"none",borderRadius:8,
                 padding:"8px 20px",color:"#111",fontSize:"0.82rem",fontWeight:800,cursor:"pointer"
               }}>↗ Roinn · Share</button>
+              {focailStats&&focailStats.plays>0&&(
+                <div style={{width:"100%",textAlign:"center",marginTop:8,fontSize:"0.68rem",color:c.tx3}}>
+                  {focailStats.plays.toLocaleString()} players today · {Math.round(focailStats.wins/focailStats.plays*100)}% solved
+                </div>
+              )}
             </div>
           </div>
         )}
