@@ -1391,6 +1391,7 @@ export default function App() {
   const [leaderData,setLeaderData]=useState(null);
   const [myRankData,setMyRankData]=useState(null);
   const [leaderLoading,setLeaderLoading]=useState(false);
+  const [guideTab,setGuideTab]=useState("fuaimeanna");
   const c = THEMES[theme]||THEMES.coill;
   const dk = c.dark; // keep dk as a convenience boolean for backward compat
 
@@ -3494,6 +3495,279 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
 
   // MAP VIEW (all 30 days)
   // ═══════════════════════════════
+  if(view==="guide"){
+    const VOWELS=[
+      {spell:"a",sound:"ah",ex:"cat → KAT",note:"Short, like 'cat'"},
+      {spell:"á",sound:"aw",ex:"grá → GRAW",note:"Long — love, held longer"},
+      {spell:"e",sound:"eh",ex:"te → TEH",note:"Short, like 'bed'"},
+      {spell:"é",sound:"ay",ex:"mé → MAY",note:"Long — I/me"},
+      {spell:"i",sound:"ih",ex:"inis → IN-ish",note:"Short, like 'bit'"},
+      {spell:"í",sound:"ee",ex:"síoga → SHEE-ga",note:"Long — fairies"},
+      {spell:"o",sound:"uh/oh",ex:"obair → UB-ir",note:"Short, often reduced"},
+      {spell:"ó",sound:"oh",ex:"mór → MOHR",note:"Long — big/great"},
+      {spell:"u",sound:"uh",ex:"dul → DUL",note:"Short, like 'put'"},
+      {spell:"ú",sound:"oo",ex:"cúig → KOO-ig",note:"Long — five"},
+    ];
+    const COMBOS=[
+      {spell:"bh / mh",sound:"v (w before á,ó,ú)",ex:"bhean → VAN · mhór → WOHR",note:"Most common surprise for English speakers"},
+      {spell:"ch",sound:"kh — like Scottish loch",ex:"ach → AKH · Chlann → KHLAN",note:"Never like English 'church'"},
+      {spell:"dh / gh (slender)",sound:"y",ex:"dhia → YEE-a · gheal → YAL",note:"Before e or i — soft y sound"},
+      {spell:"dh / gh (broad)",sound:"silent or γ",ex:"fadhb → FAYV · adh → AH",note:"Before a, o, u — often silent"},
+      {spell:"fh",sound:"silent",ex:"fhios → IS · fhuair → OO-ir",note:"Always silent — the most invisible letter"},
+      {spell:"ph",sound:"f",ex:"pháirc → FAWRK",note:"Like Greek phi — always f"},
+      {spell:"sh / th",sound:"h",ex:"shín → HEEN · thú → HOO",note:"Both give a simple h sound"},
+      {spell:"-igh / -aidh / -idh",sound:"ee (or silent)",ex:"saigh → SIE · óraigh → OH-ree",note:"Verb endings — the -gh is always silent"},
+      {spell:"ll / nn",sound:"held longer",ex:"mall → MOWL · binn → BIN",note:"More emphatic than single l/n"},
+      {spell:"ng",sound:"ng (as in 'sing')",ex:"long → LUNG · teanga → TYANG-ga",note:"Always the 'sing' ng, never 'finger'"},
+    ];
+    const MUTATIONS=[
+      {title:"Séimhiú · Lenition",sub:"Adds -h after the first consonant",color:"#2D6A4F",colorLight:"rgba(45,106,79,0.12)",
+        rule:"Triggered by: mo, do, a (his), after ní, nach, ar, faoi, le, ó, thar",
+        rows:[
+          {before:"cara",after:"mo chara",before_pr:"KAH-ra",after_pr:"muh KHAR-a",note:"friend → my friend"},
+          {before:"bean",after:"a bhean",before_pr:"BAN",after_pr:"a VAN",note:"woman → his woman (vocative)"},
+          {before:"peann",after:"ní pheann",before_pr:"PYAN",after_pr:"nee FAN",note:"pen → not a pen"},
+          {before:"tír",after:"ár dtír",before_pr:"CHEER",after_pr:"awr DJEER",note:"country → our country (eclipsis here)"},
+        ]},
+      {title:"Urú · Eclipsis",sub:"Adds a letter before the first consonant/vowel",color:"#1A3070",colorLight:"rgba(26,48,112,0.12)",
+        rule:"b→mb · c→gc · d→nd · f→bhf · g→ng · p→bp · t→dt · vowels get n-",
+        rows:[
+          {before:"baile",after:"i mbaile",before_pr:"BAL-yeh",after_pr:"ih MAL-yeh",note:"home → at home"},
+          {before:"carr",after:"sa gcarr",before_pr:"KAR",after_pr:"sa GAR",note:"car → in the car"},
+          {before:"fear",after:"ár bhfear",before_pr:"FAR",after_pr:"awr VAR",note:"man → our man"},
+          {before:"Éire",after:"in Éirinn",before_pr:"AY-reh",after_pr:"in AY-rin",note:"Ireland → in Ireland (n- on vowel)"},
+        ]},
+    ];
+    const PATTERNS=[
+      {title:"Tá / Níl",sub:"To be · Not to be",icon:"🟢",color:"#2D6A4F",light:"rgba(45,106,79,0.1)",
+        rows:[
+          {irish:"Tá mé",pr:"taw may",en:"I am"},
+          {irish:"Tá sé / sí",pr:"taw shay / shee",en:"He is / She is"},
+          {irish:"Níl mé",pr:"neel may",en:"I am not"},
+          {irish:"An bhfuil tú?",pr:"on WILL too",en:"Are you? (question)"},
+          {irish:"Tá mé tuirseach",pr:"taw may TEER-shukh",en:"I am tired"},
+        ]},
+      {title:"Tá X agam",sub:"I have X — literally 'X is at me'",icon:"👋",color:"#1A3070",light:"rgba(26,48,112,0.1)",
+        rows:[
+          {irish:"Tá Gaeilge agam",pr:"taw GAYL-geh AH-gum",en:"I have Irish"},
+          {irish:"Tá carr agam",pr:"taw KAR AH-gum",en:"I have a car"},
+          {irish:"Níl airgead agam",pr:"neel AR-i-gyud AH-gum",en:"I have no money"},
+          {irish:"An bhfuil am agat?",pr:"on will am AH-gut",en:"Do you have time?"},
+        ]},
+      {title:"Is maith liom",sub:"I like X — literally 'X is good with me'",icon:"❤️",color:"#6B0F1A",light:"rgba(107,15,26,0.1)",
+        rows:[
+          {irish:"Is maith liom caifé",pr:"iss mah lyum KAH-fay",en:"I like coffee"},
+          {irish:"Ní maith liom an aimsir",pr:"nee mah lyum on AM-shir",en:"I don't like the weather"},
+          {irish:"Is fearr liom tae",pr:"iss far lyum TAY",en:"I prefer tea"},
+          {irish:"Is breá liom Éire",pr:"iss BRAW lyum AY-reh",en:"I love Ireland"},
+        ]},
+      {title:"Tá mé ag + ainm briathartha",sub:"I am doing X — verbal noun (no infinitive in Irish)",icon:"⚡",color:"#5A3A00",light:"rgba(90,58,0,0.1)",
+        rows:[
+          {irish:"Tá mé ag foghlaim",pr:"taw may egg FOW-lim",en:"I am learning"},
+          {irish:"Tá mé ag obair",pr:"taw may egg UB-ir",en:"I am working"},
+          {irish:"Tá mé ag caint",pr:"taw may egg KANT",en:"I am talking"},
+          {irish:"Tá sí ag dul abhaile",pr:"taw shee egg DUL AW-il-eh",en:"She is going home"},
+        ]},
+      {title:"Is + abairt aitheantais",sub:"Identity sentences — use Is, not Tá",icon:"🪪",color:"#3A0A5A",light:"rgba(58,10,90,0.1)",
+        rows:[
+          {irish:"Is múinteoir mé",pr:"iss MWIN-chohr may",en:"I am a teacher"},
+          {irish:"Is Éireannach í",pr:"iss AY-run-ukh ee",en:"She is Irish"},
+          {irish:"Ní dochtúir é",pr:"nee DOKH-toor ay",en:"He is not a doctor"},
+          {irish:"Cé thú féin?",pr:"kay hoo hayn",en:"Who are you? (informal)"},
+        ]},
+      {title:"Ceisteanna · Questions",sub:"Question words — all you need to get by",icon:"❓",color:"#1A4A3A",light:"rgba(26,74,58,0.1)",
+        rows:[
+          {irish:"Cé?",pr:"kay",en:"Who?"},
+          {irish:"Cad? / Céard?",pr:"KAH / KAYD",en:"What?"},
+          {irish:"Cá / Cá háit?",pr:"kaw / kaw HAWT",en:"Where?"},
+          {irish:"Cathain?",pr:"KAH-hin",en:"When?"},
+          {irish:"Conas? / Cén chaoi?",pr:"KUN-us / kayn KHEE",en:"How?"},
+          {irish:"Cé mhéad?",pr:"kay VAYD",en:"How much / many?"},
+        ]},
+    ];
+    return(
+      <div style={{minHeight:"100vh",background:c.bg,color:c.tx,paddingBottom:40,animation:"fadeIn 0.25s ease"}}>
+        <style>{css}</style>
+        {/* Header */}
+        <div style={{background:c.hero,padding:"20px 20px 0"}}>
+          <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:14}}>
+            <button onClick={()=>setView("home")} style={{display:"flex",alignItems:"center",gap:6,background:"rgba(255,255,255,0.12)",border:"1px solid rgba(255,255,255,0.2)",borderRadius:10,padding:"7px 12px",cursor:"pointer",color:"rgba(255,255,255,0.85)",...bd,fontSize:"0.82rem",fontWeight:600}}>← Baile <span style={{opacity:0.5,fontWeight:400,fontSize:"0.72rem"}}>· Home</span></button>
+          </div>
+          <h1 style={{...hd,fontSize:"1.7rem",color:"#fff",marginBottom:4}}>📚 Fuaimeanna & Gramadach</h1>
+          <p style={{...bd,fontSize:"0.75rem",color:"rgba(255,255,255,0.55)",marginBottom:0,paddingBottom:0}}>Pronunciation · Grammar · How Irish works</p>
+          {/* Tabs */}
+          <div style={{display:"flex",gap:0,marginTop:14,borderBottom:"2px solid rgba(255,255,255,0.12)"}}>
+            {[{id:"fuaimeanna",label:"Fuaimeanna 🔊",sub:"Sounds"},{id:"gramadach",label:"Gramadach 📖",sub:"Grammar"}].map(t=>(
+              <button key={t.id} onClick={()=>setGuideTab(t.id)} style={{
+                flex:1,background:"none",border:"none",cursor:"pointer",
+                padding:"10px 0 12px",
+                borderBottom:`2px solid ${guideTab===t.id?c.gold:"transparent"}`,
+                marginBottom:"-2px",
+              }}>
+                <div style={{...bd,fontSize:"0.78rem",fontWeight:700,color:guideTab===t.id?c.gold:"rgba(255,255,255,0.5)"}}>{t.label}</div>
+                <div style={{...bd,fontSize:"0.58rem",color:"rgba(255,255,255,0.35)",marginTop:1}}>{t.sub}</div>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div style={{maxWidth:500,margin:"0 auto",padding:"20px 16px"}}>
+
+        {guideTab==="fuaimeanna"&&(<>
+          {/* Vowels */}
+          <div style={{...bd,fontSize:"0.6rem",color:c.tx3,letterSpacing:"0.12em",marginBottom:10}}>GUTAÍ · VOWELS</div>
+          <div style={{background:c.card,border:`1px solid ${c.bd}`,borderRadius:16,overflow:"hidden",marginBottom:20,boxShadow:c.shadow}}>
+            {VOWELS.map((v,i)=>(
+              <div key={i} style={{
+                display:"flex",alignItems:"center",gap:12,padding:"11px 14px",
+                borderBottom:i<VOWELS.length-1?`1px solid ${c.bd}`:"none",
+              }}>
+                <div style={{
+                  width:36,height:36,borderRadius:10,flexShrink:0,
+                  background:v.spell.includes("á")||v.spell==="é"||v.spell==="í"||v.spell==="ó"||v.spell==="ú"
+                    ?(c.dark?"rgba(200,150,62,0.2)":"rgba(200,150,62,0.12)")
+                    :(c.dark?"rgba(255,255,255,0.08)":"rgba(0,0,0,0.05)"),
+                  display:"flex",alignItems:"center",justifyContent:"center",
+                  ...hd,fontSize:"1.05rem",fontWeight:800,color:c.gold,
+                  border:v.spell.length===1&&v.spell===v.spell.toUpperCase()?`none`:"none",
+                }}>
+                  {v.spell}
+                </div>
+                <div style={{flex:1,minWidth:0}}>
+                  <div style={{display:"flex",alignItems:"center",gap:8}}>
+                    <span style={{...bd,fontSize:"0.8rem",fontWeight:700,color:c.tx}}>{v.sound}</span>
+                    <span style={{...hd,fontSize:"0.72rem",color:c.acc,fontStyle:"italic"}}>{v.ex}</span>
+                  </div>
+                  <div style={{...bd,fontSize:"0.62rem",color:c.tx3,marginTop:1}}>{v.note}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Consonant combos */}
+          <div style={{...bd,fontSize:"0.6rem",color:c.tx3,letterSpacing:"0.12em",marginBottom:10}}>CONSAINI CASTA · TRICKY CONSONANTS</div>
+          <div style={{background:c.card,border:`1px solid ${c.bd}`,borderRadius:16,overflow:"hidden",marginBottom:20,boxShadow:c.shadow}}>
+            {COMBOS.map((v,i)=>(
+              <div key={i} style={{padding:"12px 14px",borderBottom:i<COMBOS.length-1?`1px solid ${c.bd}`:"none"}}>
+                <div style={{display:"flex",alignItems:"flex-start",gap:10}}>
+                  <div style={{
+                    background:c.dark?"rgba(200,150,62,0.15)":"rgba(200,150,62,0.1)",
+                    border:`1px solid ${c.gold}30`,borderRadius:8,
+                    padding:"3px 8px",flexShrink:0,
+                    ...hd,fontSize:"0.82rem",fontWeight:800,color:c.gold,
+                  }}>{v.spell}</div>
+                  <div style={{flex:1}}>
+                    <div style={{...bd,fontSize:"0.78rem",fontWeight:700,color:c.tx}}>{v.sound}</div>
+                    <div style={{...hd,fontSize:"0.7rem",color:c.acc,fontStyle:"italic",margin:"2px 0"}}>{v.ex}</div>
+                    <div style={{...bd,fontSize:"0.62rem",color:c.tx3}}>{v.note}</div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Mutations */}
+          <div style={{...bd,fontSize:"0.6rem",color:c.tx3,letterSpacing:"0.12em",marginBottom:10}}>ATHRUITHE TOSAIGH · INITIAL MUTATIONS</div>
+          {MUTATIONS.map((mut,mi)=>(
+            <div key={mi} style={{
+              background:c.card,border:`1px solid ${c.bd}`,borderRadius:16,
+              overflow:"hidden",marginBottom:16,boxShadow:c.shadow,
+            }}>
+              <div style={{
+                padding:"12px 14px 10px",
+                background:c.dark?mut.colorLight:`${mut.color}10`,
+                borderBottom:`1px solid ${c.bd}`,
+              }}>
+                <div style={{...hd,fontSize:"0.9rem",fontWeight:800,color:mut.color}}>{mut.title}</div>
+                <div style={{...bd,fontSize:"0.7rem",color:c.tx3,marginTop:1}}>{mut.sub}</div>
+                <div style={{...bd,fontSize:"0.62rem",color:c.tx2,marginTop:4,fontStyle:"italic"}}>{mut.rule}</div>
+              </div>
+              {mut.rows.map((r,ri)=>(
+                <div key={ri} style={{display:"flex",gap:10,padding:"10px 14px",borderBottom:ri<mut.rows.length-1?`1px solid ${c.bd}`:"none",alignItems:"center"}}>
+                  <div style={{minWidth:0,flex:1}}>
+                    <span style={{...hd,fontSize:"0.78rem",color:c.tx3,fontStyle:"italic"}}>{r.before}</span>
+                    <span style={{...bd,fontSize:"0.65rem",color:c.tx3,margin:"0 4px"}}>→</span>
+                    <span style={{...hd,fontSize:"0.85rem",fontWeight:700,color:mut.color,fontStyle:"italic"}}>{r.after}</span>
+                  </div>
+                  <div style={{textAlign:"right",flexShrink:0}}>
+                    <div style={{...bd,fontSize:"0.6rem",color:c.tx3}}>{r.note}</div>
+                    <div style={{...bd,fontSize:"0.58rem",color:c.tx3,opacity:0.6}}>{r.before_pr} → {r.after_pr}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ))}
+
+          {/* Broad/slender rule */}
+          <div style={{
+            background:c.dark?"rgba(255,255,255,0.04)":"rgba(0,0,0,0.03)",
+            border:`1px solid ${c.bd}`,borderRadius:16,padding:"14px 16px",marginBottom:8,
+          }}>
+            <div style={{...hd,fontSize:"0.88rem",fontWeight:800,color:c.tx,marginBottom:4}}>Caol le Caol, Leathan le Leathan</div>
+            <div style={{...bd,fontSize:"0.72rem",color:c.tx2,lineHeight:1.6}}>
+              The golden rule of Irish spelling: slender vowels (e, i) must match on both sides of a consonant; broad vowels (a, o, u) must match on both sides. This is why "fiacail" has the same vowels on both sides of each consonant — and why Irish spelling looks strange but is actually logical.
+            </div>
+            <div style={{marginTop:10,display:"flex",gap:12}}>
+              <div style={{flex:1,background:c.dark?"rgba(200,150,62,0.1)":"rgba(200,150,62,0.07)",borderRadius:10,padding:"8px 10px",textAlign:"center"}}>
+                <div style={{...bd,fontSize:"0.58rem",color:c.tx3,marginBottom:3}}>LEATHAN · BROAD</div>
+                <div style={{...hd,fontSize:"0.9rem",color:c.gold,fontStyle:"italic"}}>a·o·u</div>
+                <div style={{...bd,fontSize:"0.58rem",color:c.tx3,marginTop:2}}>mar, bord, dul</div>
+              </div>
+              <div style={{flex:1,background:c.dark?"rgba(79,172,219,0.1)":"rgba(79,172,219,0.08)",borderRadius:10,padding:"8px 10px",textAlign:"center"}}>
+                <div style={{...bd,fontSize:"0.58rem",color:c.tx3,marginBottom:3}}>CAOL · SLENDER</div>
+                <div style={{...hd,fontSize:"0.9rem",color:"#4FACDB",fontStyle:"italic"}}>e·i</div>
+                <div style={{...bd,fontSize:"0.62rem",color:c.tx3,marginTop:2}}>mise, féin, tine</div>
+              </div>
+            </div>
+          </div>
+        </>)}
+
+        {guideTab==="gramadach"&&(<>
+          <div style={{...bd,fontSize:"0.7rem",color:c.tx3,lineHeight:1.6,marginBottom:16,padding:"12px 14px",background:c.dark?"rgba(255,255,255,0.04)":"rgba(0,0,0,0.03)",borderRadius:12}}>
+            Irish word order is <strong style={{color:c.tx}}>VSO — Verb · Subject · Object</strong>. The verb comes first. "I eat bread" = <em style={{color:c.acc}}>"Itheann mé arán"</em> — Eats · I · bread. You'll get used to it fast.
+          </div>
+          {PATTERNS.map((pat,pi)=>(
+            <div key={pi} style={{
+              background:c.card,border:`1px solid ${c.bd}`,
+              borderRadius:16,overflow:"hidden",marginBottom:16,boxShadow:c.shadow,
+            }}>
+              <div style={{padding:"12px 14px 10px",background:c.dark?pat.light:`${pat.color}0E`,borderBottom:`1px solid ${c.bd}`}}>
+                <div style={{display:"flex",alignItems:"center",gap:8}}>
+                  <span style={{fontSize:"1.2rem"}}>{pat.icon}</span>
+                  <div>
+                    <div style={{...hd,fontSize:"0.92rem",fontWeight:800,color:pat.color}}>{pat.title}</div>
+                    <div style={{...bd,fontSize:"0.65rem",color:c.tx3,marginTop:1}}>{pat.sub}</div>
+                  </div>
+                </div>
+              </div>
+              {pat.rows.map((r,ri)=>(
+                <div key={ri} style={{
+                  display:"flex",alignItems:"center",gap:10,padding:"10px 14px",
+                  borderBottom:ri<pat.rows.length-1?`1px solid ${c.bd}`:"none",
+                }}>
+                  <div style={{flex:1,minWidth:0}}>
+                    <div style={{...hd,fontSize:"0.85rem",fontWeight:700,color:c.acc,fontStyle:"italic"}}>{r.irish}</div>
+                    <div style={{...bd,fontSize:"0.6rem",color:c.tx3,marginTop:1}}>{r.pr}</div>
+                  </div>
+                  <div style={{...bd,fontSize:"0.75rem",color:c.tx2,textAlign:"right",flexShrink:0,maxWidth:140}}>{r.en}</div>
+                </div>
+              ))}
+            </div>
+          ))}
+
+          <div style={{
+            background:c.dark?"rgba(200,150,62,0.08)":"rgba(200,150,62,0.06)",
+            border:`1px solid ${c.gold}30`,borderRadius:16,padding:"14px 16px",
+          }}>
+            <div style={{...hd,fontSize:"0.88rem",fontWeight:800,color:c.gold,marginBottom:6}}>Is fearr Gaeilge briste ná Béarla cliste</div>
+            <div style={{...bd,fontSize:"0.72rem",color:c.tx2,lineHeight:1.6}}>Broken Irish is better than clever English. Use these patterns imperfectly, loudly, and often. Correctness comes with use — not study.</div>
+          </div>
+        </>)}
+        </div>
+      </div>
+    );
+  }
+
   if(view==="map"){
     const isNext=(day)=>day===nextDay&&!st.done.includes(day);
     return (
@@ -3800,6 +4074,25 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
             {missionsToday===4?"🎉 All done today!":missionsToday===0?"Complete 4 missions":`${missionsToday}/4 done`}
           </span>
         </div>
+
+        {/* ── Guide banner ── */}
+        <button onClick={()=>{haptic();setGuideTab("fuaimeanna");setView("guide");}} style={{
+          display:"flex",alignItems:"center",gap:12,width:"100%",textAlign:"left",
+          border:`1px solid ${c.gold}28`,borderRadius:18,padding:"13px 16px",cursor:"pointer",
+          background:c.dark?"rgba(200,150,62,0.07)":"rgba(200,150,62,0.05)",
+          boxShadow:c.shadow,
+        }}>
+          <div style={{
+            width:40,height:40,borderRadius:12,flexShrink:0,
+            background:"linear-gradient(135deg,#5A3A00,#A06A00)",
+            display:"flex",alignItems:"center",justifyContent:"center",fontSize:"1.3rem",
+          }}>📚</div>
+          <div style={{flex:1,minWidth:0}}>
+            <div style={{...bd,fontSize:"0.8rem",fontWeight:800,color:c.tx}}>Fuaimeanna & Gramadach</div>
+            <div style={{...bd,fontSize:"0.62rem",color:c.tx3,marginTop:1}}>Pronunciation · Grammar · Mutations</div>
+          </div>
+          <span style={{...bd,fontSize:"0.9rem",color:c.gold,opacity:0.7}}>→</span>
+        </button>
 
         {/* ── 4-COL NAV ICONS ── */}
         <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:8}}>
