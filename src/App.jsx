@@ -583,7 +583,7 @@ const genShareImage = (day, total, streak) => {
 
   // "of 30" subtitle
   x.fillStyle="rgba(201,162,39,0.75)"; x.font="500 30px 'Arial',sans-serif"; x.textAlign="center";
-  x.fillText(`as a ${total} lá déanta  ·  ${total} of 30 done`,540,298);
+  x.fillText(`as a ${total} lá déanta  ·  ${total} of ${CH.length} done`,540,298);
 
   // ── Decorative divider ──────────────────────────────────────
   x.strokeStyle="rgba(201,162,39,0.22)"; x.lineWidth=1;
@@ -1721,47 +1721,69 @@ export default function App() {
 
   if(loading) return (
     <div style={{
-      minHeight:"100vh",
-      background:`linear-gradient(180deg,${c.bg2||"#0D1F0F"} 0%,${c.bg} 60%)`,
+      background:"linear-gradient(160deg,#050e07 0%,#0b1e10 40%,#060e08 100%)",
       display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",
-      position:"fixed",inset:0,
+      position:"fixed",inset:0,overflow:"hidden",
     }}>
       <style>{`
-        @keyframes shamrockIn{0%{transform:scale(0) rotate(-20deg);opacity:0}65%{transform:scale(1.18) rotate(6deg);opacity:1}100%{transform:scale(1) rotate(0deg);opacity:1}}
-        @keyframes fadeUpIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
-        @keyframes goldPulse{0%,100%{box-shadow:0 0 30px rgba(200,150,62,0.15),0 12px 40px rgba(0,0,0,0.5)}50%{box-shadow:0 0 60px rgba(200,150,62,0.35),0 12px 40px rgba(0,0,0,0.5)}}
-        .sp-sh{animation:shamrockIn 0.9s cubic-bezier(0.34,1.56,0.64,1) both}
-        .sp-t1{animation:fadeUpIn 0.7s 0.55s ease both;opacity:0}
-        .sp-t2{animation:fadeUpIn 0.6s 0.85s ease both;opacity:0}
-        .sp-dv{animation:fadeUpIn 0.5s 1.1s ease both;opacity:0}
+        @keyframes shamrockIn{0%{transform:scale(0) rotate(-20deg);opacity:0}65%{transform:scale(1.2) rotate(6deg);opacity:1}100%{transform:scale(1) rotate(0deg);opacity:1}}
+        @keyframes fadeUpIn{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+        @keyframes goldPulse{0%,100%{box-shadow:0 0 40px rgba(200,150,62,0.2),0 16px 60px rgba(0,0,0,0.6)}50%{box-shadow:0 0 80px rgba(200,150,62,0.45),0 16px 60px rgba(0,0,0,0.6)}}
+        @keyframes barFill{from{width:0}to{width:100%}}
+        @keyframes glowRing{0%,100%{opacity:0.15;transform:scale(1)}50%{opacity:0.35;transform:scale(1.05)}}
+        .sp-sh{animation:shamrockIn 1s cubic-bezier(0.34,1.56,0.64,1) both}
+        .sp-t1{animation:fadeUpIn 0.7s 0.6s ease both;opacity:0}
+        .sp-t2{animation:fadeUpIn 0.6s 0.9s ease both;opacity:0}
+        .sp-t3{animation:fadeUpIn 0.6s 1.05s ease both;opacity:0}
+        .sp-dv{animation:fadeUpIn 0.5s 1.2s ease both;opacity:0}
+        .sp-bar{animation:fadeUpIn 0.4s 1.35s ease both,barFill 0.9s 1.55s ease both;opacity:0;width:0}
+        body{background:#060d08}
       `}</style>
 
+      {/* ambient glow */}
+      <div style={{position:"absolute",width:500,height:500,borderRadius:"50%",
+        background:"radial-gradient(ellipse,rgba(45,106,79,0.18) 0%,transparent 70%)",
+        top:"50%",left:"50%",transform:"translate(-50%,-60%)",pointerEvents:"none",
+        animation:"glowRing 3s ease-in-out infinite"}}/>
+
       <div className="sp-sh" style={{
-        width:90,height:90,borderRadius:28,
+        width:100,height:100,borderRadius:32,
         background:"linear-gradient(145deg,#0E2A1C,#1B4332)",
-        border:`2px solid ${c.gold}66`,
-        animation:"shamrockIn 0.9s cubic-bezier(0.34,1.56,0.64,1) both, goldPulse 2s 0.9s ease-in-out infinite",
+        border:"2px solid rgba(200,150,62,0.4)",
+        animation:"shamrockIn 1s cubic-bezier(0.34,1.56,0.64,1) both, goldPulse 2.5s 1s ease-in-out infinite",
         display:"flex",alignItems:"center",justifyContent:"center",
-        fontSize:"2.9rem",marginBottom:26,
+        fontSize:"3.2rem",marginBottom:32,
+        boxShadow:"0 20px 60px rgba(0,0,0,0.6)",
       }}>☘️</div>
 
       <div className="sp-t1" style={{
         fontFamily:"'Playfair Display',Georgia,serif",
-        fontSize:"2.2rem",fontWeight:900,color:c.tx,
-        letterSpacing:"-0.025em",lineHeight:1,marginBottom:11,textAlign:"center",
+        fontSize:"2.5rem",fontWeight:900,color:"#F0EDE4",
+        letterSpacing:"-0.03em",lineHeight:1,marginBottom:8,textAlign:"center",
       }}>Gaeltacht Connect</div>
 
       <div className="sp-t2" style={{
         fontFamily:"'Lato',system-ui,sans-serif",
-        fontSize:"0.55rem",color:c.gold,
-        letterSpacing:"0.32em",textTransform:"uppercase",fontWeight:700,
-        marginBottom:28,
-      }}>An Ghaeilge Bheo<IrishTip en="The Living Irish"/></div>
+        fontSize:"0.62rem",color:"rgba(200,150,62,0.85)",
+        letterSpacing:"0.28em",textTransform:"uppercase",fontWeight:700,
+        marginBottom:6,
+      }}>An Ghaeilge Bheo</div>
 
-      <div className="sp-dv" style={{display:"flex",alignItems:"center",gap:11,width:190}}>
-        <div style={{flex:1,height:1,background:`linear-gradient(90deg,transparent,${c.gold}55)`}}/>
-        <div style={{color:c.gold,fontSize:"0.75rem",opacity:0.7,letterSpacing:"0.05em"}}>✦ ✦ ✦</div>
-        <div style={{flex:1,height:1,background:`linear-gradient(90deg,${c.gold}55,transparent)`}}/>
+      <div className="sp-t3" style={{
+        fontFamily:"'Lato',system-ui,sans-serif",
+        fontSize:"0.72rem",color:"rgba(240,237,228,0.4)",
+        letterSpacing:"0.04em",fontWeight:400,
+        marginBottom:36,textAlign:"center",
+      }}>The Living Irish</div>
+
+      <div className="sp-dv" style={{display:"flex",alignItems:"center",gap:12,width:220,marginBottom:28}}>
+        <div style={{flex:1,height:1,background:"linear-gradient(90deg,transparent,rgba(200,150,62,0.4))"}}/>
+        <div style={{color:"rgba(200,150,62,0.6)",fontSize:"0.7rem",letterSpacing:"0.1em"}}>✦</div>
+        <div style={{flex:1,height:1,background:"linear-gradient(90deg,rgba(200,150,62,0.4),transparent)"}}/>
+      </div>
+
+      <div style={{width:140,height:2,background:"rgba(255,255,255,0.06)",borderRadius:2,overflow:"hidden"}}>
+        <div className="sp-bar" style={{height:"100%",background:"linear-gradient(90deg,rgba(45,106,79,0.8),rgba(200,150,62,0.8))",borderRadius:2}}/>
       </div>
     </div>
   );
@@ -1799,6 +1821,11 @@ export default function App() {
 @keyframes tileShake{0%,100%{transform:translateX(0)}15%{transform:translateX(-6px)}35%{transform:translateX(6px)}55%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
 html{-webkit-font-smoothing:antialiased}
 button:active{opacity:0.85;transform:scale(0.98)!important}
+body{background:${c.bg}}
+@media(min-width:520px){
+  body{background:${theme==="parchment"?"linear-gradient(160deg,#E0D8C8 0%,#EDE7D8 50%,#E0D8C8 100%)":theme==="oiche"?"linear-gradient(160deg,#020508 0%,#060e15 40%,#020508 100%)":"linear-gradient(160deg,#050e07 0%,#0c2010 40%,#060e08 100%)"};min-height:100vh}
+  .af{max-width:480px;margin:0 auto;position:relative;box-shadow:0 0 0 1px ${c.bd},0 8px 60px ${c.dark?"rgba(0,0,0,0.95)":"rgba(0,0,0,0.25)"},0 30px 120px ${c.dark?"rgba(0,0,0,0.8)":"rgba(0,0,0,0.15)"}}
+}
 `;
 
   const hd = {fontFamily:"'Playfair Display',Georgia,serif",letterSpacing:"0.01em"};
@@ -1910,7 +1937,7 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
     const showIntro = !st.focailIntroSeen && guesses.length===0 && !done;
 
     return(
-      <div style={{minHeight:"100svh",background:c.bg,color:c.tx,display:"flex",flexDirection:"column",alignItems:"center",fontFamily:"'Lato',system-ui,sans-serif"}}>
+      <div className="af" style={{minHeight:"100svh",background:c.bg,color:c.tx,display:"flex",flexDirection:"column",alignItems:"center",fontFamily:"'Lato',system-ui,sans-serif"}}>
         {/* ── HOW TO PLAY overlay (first time) ── */}
         {showIntro&&(
           <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.82)",zIndex:50,display:"flex",alignItems:"center",justifyContent:"center",padding:20}}
@@ -2135,7 +2162,7 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
     const timerColor=flashTimeLeft<=2?"#DC2626":flashTimeLeft<=3?"#F59E0B":c.acc;
 
     return(
-      <div style={{minHeight:"100dvh",display:"flex",flexDirection:"column",background:c.bg,color:c.tx,position:"relative",overflow:"hidden"}}>
+      <div className="af" style={{minHeight:"100dvh",display:"flex",flexDirection:"column",background:c.bg,color:c.tx,position:"relative",overflow:"hidden"}}>
         <style>{`${css} @keyframes flashPop{0%{transform:scale(0.94);opacity:0}100%{transform:scale(1);opacity:1}}`}</style>
 
         {/* Floating XP / combo effects */}
@@ -2356,7 +2383,7 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
     const weekNum=Math.max(1,Math.ceil((total||1)/7));
     const qPct=Math.round((quizIdx/quiz.length)*100);
     return(
-      <div style={{minHeight:"100vh",background:c.bg,color:c.tx,display:"flex",flexDirection:"column"}}>
+      <div className="af" style={{minHeight:"100vh",background:c.bg,color:c.tx,display:"flex",flexDirection:"column"}}>
         <style>{css}</style>
 
         {/* ── TOP BAR ── */}
@@ -2562,7 +2589,7 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
     }
 
     return(
-      <div style={{minHeight:"100vh",background:c.bg,color:c.tx,paddingBottom:24}}>
+      <div className="af" style={{minHeight:"100vh",background:c.bg,color:c.tx,paddingBottom:24}}>
         <style>{css}</style>
 
         {/* ── TOP NAV ── */}
@@ -3037,10 +3064,10 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
                 )}
 
                 {/* 30 days! */}
-                {selDay===30&&(
+                {selDay===CH.length&&(
                   <div style={{background:`${c.gold}20`,border:`1px solid ${c.gold}50`,borderRadius:14,padding:"13px 20px",marginBottom:14}}>
                     <div style={{...hd,fontSize:"1.3rem",color:c.gold,display:"flex",alignItems:"center",gap:4}}>Tá Gaeilge agat! 🏆<IrishTip en="You have Irish!"/></div>
-                    <div style={{...bd,fontSize:"0.78rem",color:"rgba(255,255,255,0.55)",marginTop:4}}>All 30 days. You did it.</div>
+                    <div style={{...bd,fontSize:"0.78rem",color:"rgba(255,255,255,0.55)",marginTop:4}}>All {CH.length} days. You did it.</div>
                   </div>
                 )}
 
@@ -3089,7 +3116,7 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
     });
     const forvoUrl=(word)=>`https://forvo.com/search/${encodeURIComponent(word.split(/[\s,!?]/)[0])}/ga/`;
     return(
-      <div style={{minHeight:"100vh",background:c.bg,color:c.tx,animation:"fadeIn 0.25s ease",paddingBottom:24}}>
+      <div className="af" style={{minHeight:"100vh",background:c.bg,color:c.tx,animation:"fadeIn 0.25s ease",paddingBottom:24}}>
         <style>{css}</style>
         <div style={{background:c.hero,padding:"20px 20px 20px"}}>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
@@ -3140,7 +3167,7 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
     const earned=st.achievements||[];
     const ACHIEVEMENTS=ALL_ACHIEVEMENTS.map(a=>({...a,unlocked:earned.includes(a.id)}));
     return(
-      <div style={{minHeight:"100vh",background:c.bg,color:c.tx,animation:"fadeIn 0.25s ease",paddingBottom:24}}>
+      <div className="af" style={{minHeight:"100vh",background:c.bg,color:c.tx,animation:"fadeIn 0.25s ease",paddingBottom:24}}>
         <style>{css}</style>
         <div style={{background:c.hero,padding:"20px 20px 32px",textAlign:"center"}}>
           <div style={{display:"flex",justifyContent:"flex-start",marginBottom:16}}>
@@ -3155,7 +3182,7 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
             </svg>
             <div style={{position:"absolute",inset:0,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center"}}>
               <span style={{...hd,fontSize:"2rem",fontWeight:800,color:"#fff",lineHeight:1}}>{total}</span>
-              <span style={{...bd,fontSize:"0.6rem",color:"rgba(255,255,255,0.65)"}}>of 30</span>
+              <span style={{...bd,fontSize:"0.6rem",color:"rgba(255,255,255,0.65)"}}>of {CH.length}</span>
             </div>
           </div>
         </div>
@@ -3266,7 +3293,7 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
     ];
     const taskCount=st.tasksDone?st.tasksDone.length:0;
     return(
-      <div style={{minHeight:"100vh",background:c.bg,color:c.tx,paddingBottom:24,animation:"fadeIn 0.25s ease"}}>
+      <div className="af" style={{minHeight:"100vh",background:c.bg,color:c.tx,paddingBottom:24,animation:"fadeIn 0.25s ease"}}>
         <style>{css}</style>
         <div style={{background:c.hero,padding:"20px 20px 20px"}}>
           <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:12}}>
@@ -3473,7 +3500,7 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
             <div style={{fontSize:"2.5rem",marginBottom:8}}>☘️</div>
             <div style={{...hd,fontSize:"1.3rem",color:c.tx,marginBottom:4}}>Gaeltacht Connect</div>
             <div style={{...bd,fontSize:"0.78rem",color:c.tx3,lineHeight:1.6,marginBottom:12}}>
-              30 real-world challenges to bring Irish into your daily life.<br/>Built in Ireland. For Ireland.
+              60 real-world challenges to bring Irish into your daily life.<br/>Built in Ireland. For Ireland.
             </div>
             <div style={{...bd,fontSize:"0.72rem",fontStyle:"italic",color:c.tx3,opacity:0.7}}>"Is fearr Gaeilge briste ná Béarla cliste"</div>
           </div>
@@ -3500,7 +3527,7 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
   // ═══════════════════════════════
   if(view==="ceol"){
     return(
-      <div style={{minHeight:"100vh",background:c.bg,color:c.tx,paddingBottom:24,animation:"rise 0.3s ease"}}>
+      <div className="af" style={{minHeight:"100vh",background:c.bg,color:c.tx,paddingBottom:24,animation:"rise 0.3s ease"}}>
         <style>{css}</style>
         {/* Header */}
         <div style={{background:c.hero,padding:"20px 20px 20px"}}>
@@ -3588,7 +3615,7 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
   if(view==="guide"){
     const VOWELS=GUIDE_VOWELS, COMBOS=GUIDE_COMBOS, MUTATIONS=GUIDE_MUTATIONS, PATTERNS=GUIDE_PATTERNS;
     return(
-      <div style={{minHeight:"100vh",background:c.bg,color:c.tx,paddingBottom:40,animation:"fadeIn 0.25s ease"}}>
+      <div className="af" style={{minHeight:"100vh",background:c.bg,color:c.tx,paddingBottom:40,animation:"fadeIn 0.25s ease"}}>
         <style>{css}</style>
         {/* Header */}
         <div style={{background:c.hero,padding:"20px 20px 0"}}>
@@ -3773,7 +3800,7 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
   if(view==="map"){
     const isNext=(day)=>day===nextDay&&!st.done.includes(day);
     return (
-      <div style={{minHeight:"100vh",background:c.bg,color:c.tx,paddingBottom:24,animation:"rise 0.3s ease"}}>
+      <div className="af" style={{minHeight:"100vh",background:c.bg,color:c.tx,paddingBottom:24,animation:"rise 0.3s ease"}}>
         <style>{css}</style>
 
         {/* ── HERO HEADER ── */}
@@ -3921,7 +3948,7 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
   const storyTeaser = (todayCh?.story||"").split(". ")[0].slice(0,90)+"…";
 
   return(
-    <div style={{minHeight:"100vh",background:c.bg,color:c.tx,display:"flex",flexDirection:"column"}}>
+    <div className="af" style={{minHeight:"100vh",background:c.bg,color:c.tx,display:"flex",flexDirection:"column"}}>
       <style>{css}</style>
 
       {/* ── TOP BAR ── */}
