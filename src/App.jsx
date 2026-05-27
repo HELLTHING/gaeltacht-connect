@@ -337,15 +337,13 @@ async function sbSignOut(){
 
 // ── Leaderboard — scores table (id uuid PK, name text, xp int, lessons int, streak int) ─
 // SQL to create: create table scores(id uuid primary key,name text not null default 'Gaeilgeoir',xp int not null default 0,lessons int not null default 0,streak int not null default 0,updated_at timestamptz default now());alter table scores enable row level security;create policy "read all" on scores for select using(true);create policy "own write" on scores for insert with check(auth.uid()=id);create policy "own update" on scores for update using(auth.uid()=id);
-async function sbUpdateScore(name,xp,lessons,streak){
-  if(!_gcToken)return;
+async function sbUpdateScore(userId,name,xp,lessons,streak){
+  if(!_gcToken||!userId)return;
   try{
-    const u=await sbGetUser();
-    if(!u?.id)return;
     await fetch(`${_SB_URL}/rest/v1/scores`,{
       method:"POST",
       headers:{..._aH(_gcToken),"Prefer":"resolution=merge-duplicates,return=minimal"},
-      body:JSON.stringify({id:u.id,name,xp,lessons,streak,updated_at:new Date().toISOString()}),
+      body:JSON.stringify({id:userId,name,xp,lessons,streak,updated_at:new Date().toISOString()}),
     });
   }catch{}
 }
@@ -633,7 +631,7 @@ const genShareImage = (day, total, streak) => {
   x.strokeStyle="rgba(64,145,108,0.4)"; x.lineWidth=1;
   x.beginPath(); x.roundRect(p1x,p1y,p1w,p1h,14); x.stroke();
   x.fillStyle="#6FCF97"; x.font="bold 32px 'Arial',sans-serif"; x.textAlign="center";
-  x.fillText(`📅 Lá ${day}/30`,p1x+p1w/2,p1y+47);
+  x.fillText(`📅 Lá ${day}/${CH.length}`,p1x+p1w/2,p1y+47);
 
   // Streak pill (always show, even streak=1)
   const p2x=640, p2y=740, p2w=240, p2h=72;
@@ -646,7 +644,7 @@ const genShareImage = (day, total, streak) => {
 
   // ── Motivational text ───────────────────────────────────────
   x.fillStyle="rgba(111,207,151,0.65)"; x.font="italic 30px Georgia,serif"; x.textAlign="center";
-  const pct=Math.round((day/30)*100);
+  const pct=Math.round((day/CH.length)*100);
   x.fillText(`${pct}% of the challenge complete — keep going!`,540,860);
 
   // ── Bottom divider ──────────────────────────────────────────
@@ -1339,6 +1337,97 @@ const Confetti = () => {
   );
 };
 
+// ── Guide view static data — module-level so they're not recreated on render ──
+const GUIDE_VOWELS=[
+  {spell:"a",sound:"ah",ex:"cat → KAT",note:"Short, like 'cat'"},
+  {spell:"á",sound:"aw",ex:"grá → GRAW",note:"Long — love, held longer"},
+  {spell:"e",sound:"eh",ex:"te → TEH",note:"Short, like 'bed'"},
+  {spell:"é",sound:"ay",ex:"mé → MAY",note:"Long — I/me"},
+  {spell:"i",sound:"ih",ex:"inis → IN-ish",note:"Short, like 'bit'"},
+  {spell:"í",sound:"ee",ex:"síoga → SHEE-ga",note:"Long — fairies"},
+  {spell:"o",sound:"uh/oh",ex:"obair → UB-ir",note:"Short, often reduced"},
+  {spell:"ó",sound:"oh",ex:"mór → MOHR",note:"Long — big/great"},
+  {spell:"u",sound:"uh",ex:"dul → DUL",note:"Short, like 'put'"},
+  {spell:"ú",sound:"oo",ex:"cúig → KOO-ig",note:"Long — five"},
+];
+const GUIDE_COMBOS=[
+  {spell:"bh / mh",sound:"v (w before á,ó,ú)",ex:"bhean → VAN · mhór → WOHR",note:"Most common surprise for English speakers"},
+  {spell:"ch",sound:"kh — like Scottish loch",ex:"ach → AKH · Chlann → KHLAN",note:"Never like English 'church'"},
+  {spell:"dh / gh (slender)",sound:"y",ex:"dhia → YEE-a · gheal → YAL",note:"Before e or i — soft y sound"},
+  {spell:"dh / gh (broad)",sound:"silent or γ",ex:"fadhb → FAYV · adh → AH",note:"Before a, o, u — often silent"},
+  {spell:"fh",sound:"silent",ex:"fhios → IS · fhuair → OO-ir",note:"Always silent — the most invisible letter"},
+  {spell:"ph",sound:"f",ex:"pháirc → FAWRK",note:"Like Greek phi — always f"},
+  {spell:"sh / th",sound:"h",ex:"shín → HEEN · thú → HOO",note:"Both give a simple h sound"},
+  {spell:"-igh / -aidh / -idh",sound:"ee (or silent)",ex:"saigh → SIE · óraigh → OH-ree",note:"Verb endings — the -gh is always silent"},
+  {spell:"ll / nn",sound:"held longer",ex:"mall → MOWL · binn → BIN",note:"More emphatic than single l/n"},
+  {spell:"ng",sound:"ng (as in 'sing')",ex:"long → LUNG · teanga → TYANG-ga",note:"Always the 'sing' ng, never 'finger'"},
+];
+const GUIDE_MUTATIONS=[
+  {title:"Séimhiú · Lenition",sub:"Adds -h after the first consonant",color:"#2D6A4F",colorLight:"rgba(45,106,79,0.12)",
+    rule:"Triggered by: mo, do, a (his), after ní, nach, ar, faoi, le, ó, thar",
+    rows:[
+      {before:"cara",after:"mo chara",before_pr:"KAH-ra",after_pr:"muh KHAR-a",note:"friend → my friend"},
+      {before:"bean",after:"a bhean",before_pr:"BAN",after_pr:"a VAN",note:"woman → his woman (vocative)"},
+      {before:"peann",after:"ní pheann",before_pr:"PYAN",after_pr:"nee FAN",note:"pen → not a pen"},
+      {before:"tír",after:"ár dtír",before_pr:"CHEER",after_pr:"awr DJEER",note:"country → our country (eclipsis here)"},
+    ]},
+  {title:"Urú · Eclipsis",sub:"Adds a letter before the first consonant/vowel",color:"#1A3070",colorLight:"rgba(26,48,112,0.12)",
+    rule:"b→mb · c→gc · d→nd · f→bhf · g→ng · p→bp · t→dt · vowels get n-",
+    rows:[
+      {before:"baile",after:"i mbaile",before_pr:"BAL-yeh",after_pr:"ih MAL-yeh",note:"home → at home"},
+      {before:"carr",after:"sa gcarr",before_pr:"KAR",after_pr:"sa GAR",note:"car → in the car"},
+      {before:"fear",after:"ár bhfear",before_pr:"FAR",after_pr:"awr VAR",note:"man → our man"},
+      {before:"Éire",after:"in Éirinn",before_pr:"AY-reh",after_pr:"in AY-rin",note:"Ireland → in Ireland (n- on vowel)"},
+    ]},
+];
+const GUIDE_PATTERNS=[
+  {title:"Tá / Níl",sub:"To be · Not to be",icon:"🟢",color:"#2D6A4F",light:"rgba(45,106,79,0.1)",
+    rows:[
+      {irish:"Tá mé",pr:"taw may",en:"I am"},
+      {irish:"Tá sé / sí",pr:"taw shay / shee",en:"He is / She is"},
+      {irish:"Níl mé",pr:"neel may",en:"I am not"},
+      {irish:"An bhfuil tú?",pr:"on WILL too",en:"Are you? (question)"},
+      {irish:"Tá mé tuirseach",pr:"taw may TEER-shukh",en:"I am tired"},
+    ]},
+  {title:"Tá X agam",sub:"I have X — literally 'X is at me'",icon:"👋",color:"#1A3070",light:"rgba(26,48,112,0.1)",
+    rows:[
+      {irish:"Tá Gaeilge agam",pr:"taw GAYL-geh AH-gum",en:"I have Irish"},
+      {irish:"Tá carr agam",pr:"taw KAR AH-gum",en:"I have a car"},
+      {irish:"Níl airgead agam",pr:"neel AR-i-gyud AH-gum",en:"I have no money"},
+      {irish:"An bhfuil am agat?",pr:"on will am AH-gut",en:"Do you have time?"},
+    ]},
+  {title:"Is maith liom",sub:"I like X — literally 'X is good with me'",icon:"❤️",color:"#6B0F1A",light:"rgba(107,15,26,0.1)",
+    rows:[
+      {irish:"Is maith liom caifé",pr:"iss mah lyum KAH-fay",en:"I like coffee"},
+      {irish:"Ní maith liom an aimsir",pr:"nee mah lyum on AM-shir",en:"I don't like the weather"},
+      {irish:"Is fearr liom tae",pr:"iss far lyum TAY",en:"I prefer tea"},
+      {irish:"Is breá liom Éire",pr:"iss BRAW lyum AY-reh",en:"I love Ireland"},
+    ]},
+  {title:"Tá mé ag + ainm briathartha",sub:"I am doing X — verbal noun (no infinitive in Irish)",icon:"⚡",color:"#5A3A00",light:"rgba(90,58,0,0.1)",
+    rows:[
+      {irish:"Tá mé ag foghlaim",pr:"taw may egg FOW-lim",en:"I am learning"},
+      {irish:"Tá mé ag obair",pr:"taw may egg UB-ir",en:"I am working"},
+      {irish:"Tá mé ag caint",pr:"taw may egg KANT",en:"I am talking"},
+      {irish:"Tá sí ag dul abhaile",pr:"taw shee egg DUL AW-il-eh",en:"She is going home"},
+    ]},
+  {title:"Is + abairt aitheantais",sub:"Identity sentences — use Is, not Tá",icon:"🪪",color:"#3A0A5A",light:"rgba(58,10,90,0.1)",
+    rows:[
+      {irish:"Is múinteoir mé",pr:"iss MWIN-chohr may",en:"I am a teacher"},
+      {irish:"Is Éireannach í",pr:"iss AY-run-ukh ee",en:"She is Irish"},
+      {irish:"Ní dochtúir é",pr:"nee DOKH-toor ay",en:"He is not a doctor"},
+      {irish:"Cé thú féin?",pr:"kay hoo hayn",en:"Who are you? (informal)"},
+    ]},
+  {title:"Ceisteanna · Questions",sub:"Question words — all you need to get by",icon:"❓",color:"#1A4A3A",light:"rgba(26,74,58,0.1)",
+    rows:[
+      {irish:"Cé?",pr:"kay",en:"Who?"},
+      {irish:"Cad? / Céard?",pr:"KAH / KAYD",en:"What?"},
+      {irish:"Cá / Cá háit?",pr:"kaw / kaw HAWT",en:"Where?"},
+      {irish:"Cathain?",pr:"KAH-hin",en:"When?"},
+      {irish:"Conas? / Cén chaoi?",pr:"KUN-us / kayn KHEE",en:"How?"},
+      {irish:"Cé mhéad?",pr:"kay VAYD",en:"How much / many?"},
+    ]},
+];
+
 export default function App() {
   const [st,setSt]=useState(null);
   const [loading,setLoading]=useState(true);
@@ -1447,9 +1536,9 @@ export default function App() {
 
   const save=useCallback(async(ns)=>{
     setSt(ns);await saveS(ns);sbSyncProgress(ns);
-    if(_gcToken){
-      const nm=authUser?.email?.split("@")[0]||"Gaeilgeoir";
-      sbUpdateScore(nm,ns.xp||0,(ns.done||[]).length,ns.streak||0);
+    if(_gcToken&&authUser?.id){
+      const nm=authUser.email?.split("@")[0]||"Gaeilgeoir";
+      sbUpdateScore(authUser.id,nm,ns.xp||0,(ns.done||[]).length,ns.streak||0);
     }
   },[authUser]);
   const cycleTheme=async()=>{
@@ -1679,8 +1768,8 @@ export default function App() {
   if(!st)return null;
 
   const total=st.done.length;
-  const nextDay=total<30?total+1:30;
-  const pct=total/30;
+  const nextDay=total<CH.length?total+1:CH.length;
+  const pct=total/CH.length;
   const currentCh=CH[nextDay-1];
   const allDone=total===CH.length;
 
@@ -2669,7 +2758,7 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
                     <div style={{...bd,fontSize:"0.8rem",color:c.doneTx,fontWeight:700,marginBottom:4}}>✓ Your progress is safe</div>
                     <div style={{...bd,fontSize:"0.72rem",color:c.tx3}}>XP, streaks, Focail history and achievements sync automatically across devices.</div>
                   </div>
-                  <button onClick={async()=>{await sbSignOut();setAuthUser(null);setShowAuth(false);}} style={{
+                  <button onClick={async()=>{await sbSignOut();setAuthUser(null);setShowAuth(false);setLeaderData(null);setMyRankData(null);}} style={{
                     width:"100%",padding:"12px",background:"none",
                     border:`1px solid ${c.bd}`,borderRadius:12,
                     color:c.tx3,...bd,fontSize:"0.85rem",cursor:"pointer"
@@ -3062,7 +3151,7 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
           <div style={{position:"relative",width:120,height:120,margin:"0 auto"}}>
             <svg width="120" height="120" viewBox="0 0 120 120" style={{transform:"rotate(-90deg)"}}>
               <circle cx="60" cy="60" r="50" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="8"/>
-              <circle cx="60" cy="60" r="50" fill="none" stroke="#fff" strokeWidth="8" strokeDasharray={`${(total/30)*314} 314`} strokeLinecap="round" style={{transition:"stroke-dasharray 1s ease"}}/>
+              <circle cx="60" cy="60" r="50" fill="none" stroke="#fff" strokeWidth="8" strokeDasharray={`${(total/CH.length)*314} 314`} strokeLinecap="round" style={{transition:"stroke-dasharray 1s ease"}}/>
             </svg>
             <div style={{position:"absolute",inset:0,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center"}}>
               <span style={{...hd,fontSize:"2rem",fontWeight:800,color:"#fff",lineHeight:1}}>{total}</span>
@@ -3072,7 +3161,7 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
         </div>
         <div style={{padding:"20px",maxWidth:500,margin:"0 auto"}}>
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:24}}>
-            {[{label:"Days done",val:total,icon:"✅"},{label:"Bonus done",val:st.bonus.length,icon:"⭐"},{label:"Best streak",val:st.best,icon:"🏆"},{label:"Current streak",val:st.streak,icon:"🔥"},{label:"Days since start",val:daysSince,icon:"📅"},{label:"Complete",val:Math.round(total/30*100)+"%",icon:"📊"}].map((s,i)=>(
+            {[{label:"Days done",val:total,icon:"✅"},{label:"Bonus done",val:st.bonus.length,icon:"⭐"},{label:"Best streak",val:st.best,icon:"🏆"},{label:"Current streak",val:st.streak,icon:"🔥"},{label:"Days since start",val:daysSince,icon:"📅"},{label:"Complete",val:Math.round(total/CH.length*100)+"%",icon:"📊"}].map((s,i)=>(
               <div key={i} style={{background:c.card,border:`1px solid ${c.bd}`,borderRadius:12,padding:"14px 16px",boxShadow:c.shadow,animation:`rise 0.4s ${i*0.05}s ease both`}}>
                 <div style={{fontSize:"1.1rem",marginBottom:5}}>{s.icon}</div>
                 <div style={{...hd,fontSize:"1.6rem",fontWeight:800,color:c.acc}}>{s.val}</div>
@@ -3123,7 +3212,8 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
               {total===0?"Every journey begins with one word."
               :total<10?"You've started. That's more than most."
               :total<20?"You're not just learning — you're reviving."
-              :total<30?"Almost there. The language is proud of you."
+              :total<30?"The first milestone is close. Keep going."
+              :total<CH.length?"Almost there. The language is proud of you."
               :<span>Tá Gaeilge agat<IrishTip en="You have Irish!"/>. You did it. 🏆</span>}
             </p>
           </div>
@@ -3496,95 +3586,7 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
   // MAP VIEW (all 30 days)
   // ═══════════════════════════════
   if(view==="guide"){
-    const VOWELS=[
-      {spell:"a",sound:"ah",ex:"cat → KAT",note:"Short, like 'cat'"},
-      {spell:"á",sound:"aw",ex:"grá → GRAW",note:"Long — love, held longer"},
-      {spell:"e",sound:"eh",ex:"te → TEH",note:"Short, like 'bed'"},
-      {spell:"é",sound:"ay",ex:"mé → MAY",note:"Long — I/me"},
-      {spell:"i",sound:"ih",ex:"inis → IN-ish",note:"Short, like 'bit'"},
-      {spell:"í",sound:"ee",ex:"síoga → SHEE-ga",note:"Long — fairies"},
-      {spell:"o",sound:"uh/oh",ex:"obair → UB-ir",note:"Short, often reduced"},
-      {spell:"ó",sound:"oh",ex:"mór → MOHR",note:"Long — big/great"},
-      {spell:"u",sound:"uh",ex:"dul → DUL",note:"Short, like 'put'"},
-      {spell:"ú",sound:"oo",ex:"cúig → KOO-ig",note:"Long — five"},
-    ];
-    const COMBOS=[
-      {spell:"bh / mh",sound:"v (w before á,ó,ú)",ex:"bhean → VAN · mhór → WOHR",note:"Most common surprise for English speakers"},
-      {spell:"ch",sound:"kh — like Scottish loch",ex:"ach → AKH · Chlann → KHLAN",note:"Never like English 'church'"},
-      {spell:"dh / gh (slender)",sound:"y",ex:"dhia → YEE-a · gheal → YAL",note:"Before e or i — soft y sound"},
-      {spell:"dh / gh (broad)",sound:"silent or γ",ex:"fadhb → FAYV · adh → AH",note:"Before a, o, u — often silent"},
-      {spell:"fh",sound:"silent",ex:"fhios → IS · fhuair → OO-ir",note:"Always silent — the most invisible letter"},
-      {spell:"ph",sound:"f",ex:"pháirc → FAWRK",note:"Like Greek phi — always f"},
-      {spell:"sh / th",sound:"h",ex:"shín → HEEN · thú → HOO",note:"Both give a simple h sound"},
-      {spell:"-igh / -aidh / -idh",sound:"ee (or silent)",ex:"saigh → SIE · óraigh → OH-ree",note:"Verb endings — the -gh is always silent"},
-      {spell:"ll / nn",sound:"held longer",ex:"mall → MOWL · binn → BIN",note:"More emphatic than single l/n"},
-      {spell:"ng",sound:"ng (as in 'sing')",ex:"long → LUNG · teanga → TYANG-ga",note:"Always the 'sing' ng, never 'finger'"},
-    ];
-    const MUTATIONS=[
-      {title:"Séimhiú · Lenition",sub:"Adds -h after the first consonant",color:"#2D6A4F",colorLight:"rgba(45,106,79,0.12)",
-        rule:"Triggered by: mo, do, a (his), after ní, nach, ar, faoi, le, ó, thar",
-        rows:[
-          {before:"cara",after:"mo chara",before_pr:"KAH-ra",after_pr:"muh KHAR-a",note:"friend → my friend"},
-          {before:"bean",after:"a bhean",before_pr:"BAN",after_pr:"a VAN",note:"woman → his woman (vocative)"},
-          {before:"peann",after:"ní pheann",before_pr:"PYAN",after_pr:"nee FAN",note:"pen → not a pen"},
-          {before:"tír",after:"ár dtír",before_pr:"CHEER",after_pr:"awr DJEER",note:"country → our country (eclipsis here)"},
-        ]},
-      {title:"Urú · Eclipsis",sub:"Adds a letter before the first consonant/vowel",color:"#1A3070",colorLight:"rgba(26,48,112,0.12)",
-        rule:"b→mb · c→gc · d→nd · f→bhf · g→ng · p→bp · t→dt · vowels get n-",
-        rows:[
-          {before:"baile",after:"i mbaile",before_pr:"BAL-yeh",after_pr:"ih MAL-yeh",note:"home → at home"},
-          {before:"carr",after:"sa gcarr",before_pr:"KAR",after_pr:"sa GAR",note:"car → in the car"},
-          {before:"fear",after:"ár bhfear",before_pr:"FAR",after_pr:"awr VAR",note:"man → our man"},
-          {before:"Éire",after:"in Éirinn",before_pr:"AY-reh",after_pr:"in AY-rin",note:"Ireland → in Ireland (n- on vowel)"},
-        ]},
-    ];
-    const PATTERNS=[
-      {title:"Tá / Níl",sub:"To be · Not to be",icon:"🟢",color:"#2D6A4F",light:"rgba(45,106,79,0.1)",
-        rows:[
-          {irish:"Tá mé",pr:"taw may",en:"I am"},
-          {irish:"Tá sé / sí",pr:"taw shay / shee",en:"He is / She is"},
-          {irish:"Níl mé",pr:"neel may",en:"I am not"},
-          {irish:"An bhfuil tú?",pr:"on WILL too",en:"Are you? (question)"},
-          {irish:"Tá mé tuirseach",pr:"taw may TEER-shukh",en:"I am tired"},
-        ]},
-      {title:"Tá X agam",sub:"I have X — literally 'X is at me'",icon:"👋",color:"#1A3070",light:"rgba(26,48,112,0.1)",
-        rows:[
-          {irish:"Tá Gaeilge agam",pr:"taw GAYL-geh AH-gum",en:"I have Irish"},
-          {irish:"Tá carr agam",pr:"taw KAR AH-gum",en:"I have a car"},
-          {irish:"Níl airgead agam",pr:"neel AR-i-gyud AH-gum",en:"I have no money"},
-          {irish:"An bhfuil am agat?",pr:"on will am AH-gut",en:"Do you have time?"},
-        ]},
-      {title:"Is maith liom",sub:"I like X — literally 'X is good with me'",icon:"❤️",color:"#6B0F1A",light:"rgba(107,15,26,0.1)",
-        rows:[
-          {irish:"Is maith liom caifé",pr:"iss mah lyum KAH-fay",en:"I like coffee"},
-          {irish:"Ní maith liom an aimsir",pr:"nee mah lyum on AM-shir",en:"I don't like the weather"},
-          {irish:"Is fearr liom tae",pr:"iss far lyum TAY",en:"I prefer tea"},
-          {irish:"Is breá liom Éire",pr:"iss BRAW lyum AY-reh",en:"I love Ireland"},
-        ]},
-      {title:"Tá mé ag + ainm briathartha",sub:"I am doing X — verbal noun (no infinitive in Irish)",icon:"⚡",color:"#5A3A00",light:"rgba(90,58,0,0.1)",
-        rows:[
-          {irish:"Tá mé ag foghlaim",pr:"taw may egg FOW-lim",en:"I am learning"},
-          {irish:"Tá mé ag obair",pr:"taw may egg UB-ir",en:"I am working"},
-          {irish:"Tá mé ag caint",pr:"taw may egg KANT",en:"I am talking"},
-          {irish:"Tá sí ag dul abhaile",pr:"taw shee egg DUL AW-il-eh",en:"She is going home"},
-        ]},
-      {title:"Is + abairt aitheantais",sub:"Identity sentences — use Is, not Tá",icon:"🪪",color:"#3A0A5A",light:"rgba(58,10,90,0.1)",
-        rows:[
-          {irish:"Is múinteoir mé",pr:"iss MWIN-chohr may",en:"I am a teacher"},
-          {irish:"Is Éireannach í",pr:"iss AY-run-ukh ee",en:"She is Irish"},
-          {irish:"Ní dochtúir é",pr:"nee DOKH-toor ay",en:"He is not a doctor"},
-          {irish:"Cé thú féin?",pr:"kay hoo hayn",en:"Who are you? (informal)"},
-        ]},
-      {title:"Ceisteanna · Questions",sub:"Question words — all you need to get by",icon:"❓",color:"#1A4A3A",light:"rgba(26,74,58,0.1)",
-        rows:[
-          {irish:"Cé?",pr:"kay",en:"Who?"},
-          {irish:"Cad? / Céard?",pr:"KAH / KAYD",en:"What?"},
-          {irish:"Cá / Cá háit?",pr:"kaw / kaw HAWT",en:"Where?"},
-          {irish:"Cathain?",pr:"KAH-hin",en:"When?"},
-          {irish:"Conas? / Cén chaoi?",pr:"KUN-us / kayn KHEE",en:"How?"},
-          {irish:"Cé mhéad?",pr:"kay VAYD",en:"How much / many?"},
-        ]},
-    ];
+    const VOWELS=GUIDE_VOWELS, COMBOS=GUIDE_COMBOS, MUTATIONS=GUIDE_MUTATIONS, PATTERNS=GUIDE_PATTERNS;
     return(
       <div style={{minHeight:"100vh",background:c.bg,color:c.tx,paddingBottom:40,animation:"fadeIn 0.25s ease"}}>
         <style>{css}</style>
@@ -3786,13 +3788,14 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
           {/* Big progress number */}
           <div style={{textAlign:"center",marginBottom:14}}>
             <div style={{...hd,fontSize:"3.2rem",fontWeight:800,color:"#fff",lineHeight:1}}>
-              {total}<span style={{fontSize:"1.4rem",fontWeight:400,opacity:0.45}}>/30</span>
+              {total}<span style={{fontSize:"1.4rem",fontWeight:400,opacity:0.45}}>/{CH.length}</span>
             </div>
             <div style={{...bd,fontSize:"0.78rem",color:"rgba(255,255,255,0.55)",marginTop:4,fontStyle:"italic"}}>
               {total===0?"Your journey begins with a single word."
               :total<10?"Every word you speak makes the language stronger."
               :total<20?"You're not just learning — you're reviving."
-              :total<30?`${30-total} days to go. The old words are proud of you.`
+              :total<30?`${30-total} days to Level 1. The old words are proud of you.`
+              :total<CH.length?`${CH.length-total} days to go. Almost there.`
               :"Tá Gaeilge agat. You did it."}
             </div>
           </div>
@@ -4097,7 +4100,7 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
         {/* ── 4-COL NAV ICONS ── */}
         <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:8}}>
           {[
-            {e:"☘️",l:"30 Lá",s:`${total}/30`,bg:"linear-gradient(135deg,#1B4332,#2D6A4F)",bd:"rgba(111,207,151,0.3)",
+            {e:"☘️",l:"Léiriú",s:`${total}/${CH.length}`,bg:"linear-gradient(135deg,#1B4332,#2D6A4F)",bd:"rgba(111,207,151,0.3)",
               a:()=>{haptic();setPrevView("home");if(allDone){setView("map");}else{setSelDay(nextDay);setView("day");}}},
             {e:"🎵",l:"Ceol",s:"Music",bg:"linear-gradient(135deg,#4A0A0A,#8B1A1A)",bd:"rgba(220,80,80,0.3)",
               a:()=>{haptic();setPrevView("home");setView("ceol");}},
