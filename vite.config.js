@@ -11,7 +11,7 @@ export default defineConfig({
       manifest: {
         name: 'Gaeltacht Connect',
         short_name: 'Gaeltacht',
-        description: '30 real-world challenges to bring Irish into your daily life.',
+        description: '60 real-world challenges to bring Irish into your daily life. gaeltachtconnect.com',
         theme_color: '#2D6A4F',
         background_color: '#F5F0E8',
         display: 'standalone',

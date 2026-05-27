@@ -2081,7 +2081,7 @@ button:active{opacity:0.85;transform:scale(0.98)!important}
               }}>🔊 Éist · Listen</button>
               <button onClick={()=>{
                 const score=done==="won"?`${guesses.length}/6`:"X/6";
-                const txt=`Focail #${dayNum} ${score}\n${fw.w.toUpperCase()} — ${fw.m}\n\n${focailEmoji(colors)}\n\n☘️ gaeltacht.app — Irish word of the day`;
+                const txt=`Focail #${dayNum} ${score}\n${fw.w.toUpperCase()} — ${fw.m}\n\n${focailEmoji(colors)}\n\n☘️ gaeltachtconnect.com — Irish word of the day`;
                 if(navigator.share) navigator.share({title:"Focail",text:txt});
                 else navigator.clipboard?.writeText(txt).then(()=>alert("Copied to clipboard!"));
               }} style={{
