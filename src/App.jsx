@@ -3991,160 +3991,114 @@ body{background:${c.bg}}
       </div>
 
       {/* ── BODY ── */}
-      <div style={{flex:1,maxWidth:480,width:"100%",margin:"0 auto",padding:"16px 16px 40px",display:"flex",flexDirection:"column",gap:12}}>
+      <div style={{flex:1,padding:"16px 16px 32px",display:"flex",flexDirection:"column",gap:16}}>
 
-        {/* XP strip */}
+        {/* XP bar */}
         <div style={{display:"flex",alignItems:"center",gap:10}}>
-          <span style={{...bd,fontSize:"0.68rem",fontWeight:800,color:c.gold,whiteSpace:"nowrap",minWidth:72}}>Leibhéal {level}</span>
-          <div style={{flex:1,height:8,background:c.dark?"rgba(255,255,255,0.08)":"rgba(0,0,0,0.07)",borderRadius:10,overflow:"hidden"}}>
-            <div style={{height:"100%",width:`${levelPct}%`,borderRadius:10,
-              background:`linear-gradient(90deg,${c.acc},${c.gold})`,transition:"width 0.6s ease"}}/>
+          <span style={{...bd,fontSize:"0.68rem",fontWeight:800,color:c.gold,whiteSpace:"nowrap"}}>Leibhéal {level}</span>
+          <div style={{flex:1,height:6,background:c.progBg,borderRadius:10,overflow:"hidden"}}>
+            <div style={{height:"100%",width:`${levelPct}%`,background:c.progFill,borderRadius:10,transition:"width 0.6s ease"}}/>
           </div>
           <span style={{...bd,fontSize:"0.65rem",color:c.tx3,whiteSpace:"nowrap"}}>{xp} XP</span>
         </div>
 
-        {/* Community count */}
-        {communityCount>0&&(
-          <div style={{textAlign:"center",...bd,fontSize:"0.68rem",color:c.tx3,letterSpacing:"0.02em"}}>
-            🌍 <strong style={{color:c.acc}}>{communityCount.toLocaleString()}</strong> people reclaiming Irish today
-          </div>
-        )}
-
-        {/* ── MAIN CTA CARD ── */}
-        <div style={{borderRadius:24,overflow:"hidden",boxShadow:c.dark?"0 8px 32px rgba(0,0,0,0.5)":"0 4px 20px rgba(0,0,0,0.1)"}}>
-          {/* Phrase header */}
-          <div style={{background:"linear-gradient(135deg,#0D2218,#1B4332)",padding:"24px 22px 20px",textAlign:"center",position:"relative"}}>
-            {missionLesson&&<div style={{position:"absolute",top:12,right:14,...bd,fontSize:"0.62rem",fontWeight:700,
-              color:"#6FCF97",background:"rgba(111,207,151,0.12)",border:"1px solid rgba(111,207,151,0.25)",
-              borderRadius:20,padding:"3px 10px"}}>✓ Done</div>}
-            <div style={{...bd,fontSize:"0.52rem",color:"rgba(200,150,62,0.6)",letterSpacing:"0.2em",textTransform:"uppercase",marginBottom:10}}>
+        {/* ── HERO CARD ── */}
+        <div style={{borderRadius:24,overflow:"hidden",boxShadow:"0 8px 40px rgba(0,0,0,0.35)"}}>
+          <div style={{
+            background:"linear-gradient(150deg,#0D2218 0%,#1B4332 100%)",
+            padding:"28px 24px 20px",position:"relative",
+          }}>
+            {missionLesson&&<div style={{
+              position:"absolute",top:14,right:16,...bd,fontSize:"0.6rem",fontWeight:700,
+              color:"#6FCF97",background:"rgba(111,207,151,0.15)",border:"1px solid rgba(111,207,151,0.3)",
+              borderRadius:20,padding:"3px 10px",
+            }}>✓ Déanta</div>}
+            <div style={{...bd,fontSize:"0.5rem",color:"rgba(200,150,62,0.55)",letterSpacing:"0.22em",textTransform:"uppercase",marginBottom:10}}>
               {allDone?"Tá Gaeilge agat 🏆":`Lá ${nextDay} · ${todayCh?.e||""}`}
             </div>
-            <div style={{...hd,fontSize:"2.8rem",fontWeight:800,color:"#C8963E",fontStyle:"italic",lineHeight:1.05,marginBottom:6}}>
+            <div style={{...hd,fontSize:"3rem",fontWeight:900,color:"#C8963E",fontStyle:"italic",lineHeight:1,marginBottom:8,letterSpacing:"-0.02em"}}>
               {allDone?"Tá Gaeilge agat!":todayCh?.p}
             </div>
-            <div style={{...bd,fontSize:"0.8rem",color:"rgba(200,150,62,0.5)",marginBottom:12}}>
+            <div style={{...bd,fontSize:"0.78rem",color:"rgba(200,150,62,0.45)",marginBottom:16}}>
               {allDone?"You have Irish":todayCh?.m}
             </div>
-            {/* story teaser — the hook */}
-            <div style={{
-              borderLeft:"2px solid rgba(200,150,62,0.45)",
-              paddingLeft:12,marginTop:4,textAlign:"left",
-            }}>
-              <div style={{...bd,fontSize:"0.78rem",color:"rgba(240,237,228,0.82)",
-                lineHeight:1.62,fontStyle:"italic"}}>
+            <div style={{borderLeft:"2px solid rgba(200,150,62,0.35)",paddingLeft:14}}>
+              <div style={{...bd,fontSize:"0.76rem",color:"rgba(240,237,228,0.75)",lineHeight:1.65,fontStyle:"italic"}}>
                 {storyTeaser}
               </div>
             </div>
           </div>
-          {/* Big action button */}
           <button onClick={()=>{haptic([10,20,10]);setPrevView("home");
             if(allDone){setView("map");}else{setSelDay(nextDay);setView("day");}
           }} style={{
-            width:"100%",padding:"18px",border:"none",cursor:"pointer",
-            background:missionLesson
-              ?"rgba(111,207,151,0.1)"
-              :"linear-gradient(135deg,#2D6A4F,#1B4332)",
-            display:"flex",alignItems:"center",justifyContent:"center",gap:8,
+            width:"100%",padding:"20px",border:"none",cursor:"pointer",
+            background:missionLesson?"rgba(111,207,151,0.1)":"linear-gradient(135deg,#2D6A4F,#1B4332)",
+            display:"flex",alignItems:"center",justifyContent:"center",gap:10,
             animation:missionLesson?"none":"breathe 2.4s ease infinite",
-            boxShadow:missionLesson?"none":"0 4px 20px rgba(27,67,50,0.6)",
           }}>
-            <span style={{...bd,fontSize:"1.05rem",fontWeight:800,letterSpacing:"0.01em",
+            <span style={{...bd,fontSize:"1.1rem",fontWeight:800,letterSpacing:"0.01em",
               color:missionLesson?c.doneTx:"#fff"}}>
-              {missionLesson?"Léigh arís · Read again":total===0?"Tosaigh · Start":"Lean ar aghaidh · Continue"}
+              {missionLesson?"Léigh arís":"Lean ar aghaidh"}
             </span>
-            {!missionLesson&&<span style={{fontSize:"1.1rem",color:"rgba(255,255,255,0.8)"}}>→</span>}
+            {!missionLesson&&<span style={{fontSize:"1.2rem"}}>→</span>}
           </button>
         </div>
 
-        {/* ── 3-COL: Focail + Flash + Quiz ── */}
-        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8}}>
+        {/* ── DAILY MISSIONS ── */}
+        <div style={{background:c.card,border:`1px solid ${c.bd}`,borderRadius:20,padding:"14px 16px",boxShadow:c.shadow}}>
+          <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:12}}>
+            <span style={{...bd,fontSize:"0.62rem",fontWeight:800,color:c.tx3,letterSpacing:"0.1em",textTransform:"uppercase"}}>Misin an Lae</span>
+            <span style={{...bd,fontSize:"0.62rem",color:missionsToday===4?c.doneTx:c.tx3,fontWeight:700}}>
+              {missionsToday===4?"🎉 Críochnaithe!":` ${missionsToday}/4`}
+            </span>
+          </div>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
+            {[
+              {emoji:missionLesson?"✅":"☘️",label:"Ceacht",sub:"Lesson",done:missionLesson,action:()=>{haptic([10,20,10]);setPrevView("home");setSelDay(nextDay);setView("day");}},
+              {emoji:missionFocail?"✅":"🟩",label:"Focail",sub:`#${getFocailDay()}`,done:missionFocail,action:()=>{haptic([10,20,10]);setView("focail");}},
+              {emoji:missionFlash?"✅":"⚡",label:"Splancfhocal",sub:"Word Flash",done:missionFlash,action:()=>{haptic([10,20,10]);startFlash();}},
+              {emoji:missionQuiz?"✅":"🎯",label:"Tráth",sub:"Quiz",done:missionQuiz,action:()=>{haptic([15,30,15]);startDailyQuiz();}},
+            ].map(({emoji,label,sub,done,action},i)=>(
+              <button key={i} onClick={action} style={{
+                border:`1px solid ${done?c.doneBd:c.bd}`,borderRadius:14,padding:"12px 10px",
+                cursor:"pointer",textAlign:"left",
+                background:done?(c.dark?"rgba(111,207,151,0.07)":"rgba(27,67,50,0.04)"):c.cardAlt,
+                display:"flex",alignItems:"center",gap:10,
+              }}>
+                <span style={{fontSize:"1.3rem",lineHeight:1}}>{emoji}</span>
+                <div>
+                  <div style={{...bd,fontSize:"0.74rem",fontWeight:800,color:done?c.doneTx:c.tx,lineHeight:1.2}}>{label}</div>
+                  <div style={{...bd,fontSize:"0.58rem",color:c.tx3,marginTop:1}}>{sub}</div>
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* ── QUICK ACCESS ── */}
+        <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:8}}>
           {[
-            {emoji:missionFocail?"✅":"🟩",label:"Focail",sub:missionFocail?"Done today":`#${getFocailDay()}`,
-              done:missionFocail,action:()=>{haptic([10,20,10]);setView("focail");}},
-            {emoji:missionFlash?"✅":"⚡",label:"Word Flash",sub:missionFlash?"Done today":flashBest>0?`Best ${flashBest}/10`:"8s per word",
-              done:missionFlash,action:()=>{haptic([10,20,10]);startFlash();}},
-            {emoji:missionQuiz?"✅":"🎯",label:"Daily Quiz",sub:missionQuiz?"Done today":"Test vocab",
-              done:missionQuiz,action:()=>{haptic([15,30,15]);startDailyQuiz();}},
-          ].map(({emoji,label,sub,done,action},i)=>(
-            <button key={i} onClick={action} style={{
-              border:`1.5px solid ${done?c.doneBd:i===0?(c.dark?"rgba(34,197,94,0.35)":"rgba(27,67,50,0.25)"):c.bd}`,
-              borderRadius:16,padding:"14px 8px",cursor:"pointer",textAlign:"center",
-              background:done?(c.dark?"rgba(111,207,151,0.08)":"rgba(27,67,50,0.05)"):
-                i===0?(c.dark?"rgba(34,197,94,0.06)":"rgba(27,67,50,0.04)"):c.card,
+            {e:"🗺️",l:"Léarscáil",s:`${total}/${CH.length}`,a:()=>{haptic();setView("map");}},
+            {e:"🎵",l:"Ceol",s:"Music",a:()=>{haptic();setPrevView("home");setView("ceol");}},
+            {e:"📖",l:"Foclóir",s:"Words",a:()=>{haptic();setPrevView("home");setView("dict");}},
+            {e:"📚",l:"Gramadach",s:"Guide",a:()=>{haptic();setGuideTab("fuaimeanna");setView("guide");}},
+          ].map(({e,l,s,a},i)=>(
+            <button key={i} onClick={a} style={{
+              border:`1px solid ${c.bd}`,borderRadius:16,padding:"12px 4px 10px",
+              cursor:"pointer",textAlign:"center",background:c.card,
               display:"flex",flexDirection:"column",alignItems:"center",gap:5,
               boxShadow:c.shadow,
             }}>
-              <span style={{fontSize:"1.55rem",lineHeight:1}}>{emoji}</span>
-              <span style={{...bd,fontSize:"0.72rem",fontWeight:800,color:done?c.doneTx:i===0?"#22c55e":c.tx}}>{label}</span>
-              <span style={{...bd,fontSize:"0.58rem",color:c.tx3}}>{sub}</span>
-            </button>
-          ))}
-        </div>
-
-        {/* Mission dots */}
-        <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:6}}>
-          {[missionFocail,missionLesson,missionFlash,missionQuiz].map((d,i)=>(
-            <div key={i} style={{width:9,height:9,borderRadius:"50%",transition:"background 0.3s",
-              background:d?c.doneTx:(c.dark?"rgba(255,255,255,0.13)":"rgba(0,0,0,0.1)")}}/>
-          ))}
-          <span style={{...bd,fontSize:"0.62rem",color:c.tx3,marginLeft:6}}>
-            {missionsToday===4?"🎉 All done today!":missionsToday===0?"Complete 4 missions":`${missionsToday}/4 done`}
-          </span>
-        </div>
-
-        {/* ── Guide banner ── */}
-        <button onClick={()=>{haptic();setGuideTab("fuaimeanna");setView("guide");}} style={{
-          display:"flex",alignItems:"center",gap:12,width:"100%",textAlign:"left",
-          border:`1px solid ${c.gold}28`,borderRadius:18,padding:"13px 16px",cursor:"pointer",
-          background:c.dark?"rgba(200,150,62,0.07)":"rgba(200,150,62,0.05)",
-          boxShadow:c.shadow,
-        }}>
-          <div style={{
-            width:40,height:40,borderRadius:12,flexShrink:0,
-            background:"linear-gradient(135deg,#5A3A00,#A06A00)",
-            display:"flex",alignItems:"center",justifyContent:"center",fontSize:"1.3rem",
-          }}>📚</div>
-          <div style={{flex:1,minWidth:0}}>
-            <div style={{...bd,fontSize:"0.8rem",fontWeight:800,color:c.tx}}>Fuaimeanna & Gramadach</div>
-            <div style={{...bd,fontSize:"0.62rem",color:c.tx3,marginTop:1}}>Pronunciation · Grammar · Mutations</div>
-          </div>
-          <span style={{...bd,fontSize:"0.9rem",color:c.gold,opacity:0.7}}>→</span>
-        </button>
-
-        {/* ── 4-COL NAV ICONS ── */}
-        <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:8}}>
-          {[
-            {e:"☘️",l:"Léiriú",s:`${total}/${CH.length}`,bg:"linear-gradient(135deg,#1B4332,#2D6A4F)",bd:"rgba(111,207,151,0.3)",
-              a:()=>{haptic();setPrevView("home");if(allDone){setView("map");}else{setSelDay(nextDay);setView("day");}}},
-            {e:"🎵",l:"Ceol",s:"Music",bg:"linear-gradient(135deg,#4A0A0A,#8B1A1A)",bd:"rgba(220,80,80,0.3)",
-              a:()=>{haptic();setPrevView("home");setView("ceol");}},
-            {e:"📖",l:"Foclóir",s:"Words",bg:"linear-gradient(135deg,#0A1535,#1A3070)",bd:"rgba(80,130,220,0.3)",
-              a:()=>{haptic();setPrevView("home");setView("dict");}},
-            {e:"📊",l:"Stats",s:st.best>=1?`🔥${st.best}`:"—",bg:"linear-gradient(135deg,#1A0A35,#3A1A6A)",bd:"rgba(140,80,220,0.3)",
-              a:()=>{haptic();setPrevView("home");setView("stats");}},
-          ].map(({e,l,s,bg,bd:ibdColor,a},i)=>(
-            <button key={i} onClick={a} style={{
-              border:`1px solid ${c.bd}`,borderRadius:18,padding:"14px 6px 12px",
-              cursor:"pointer",textAlign:"center",background:c.card,
-              display:"flex",flexDirection:"column",alignItems:"center",gap:6,
-              boxShadow:c.shadow,
-            }}>
-              <div style={{
-                width:46,height:46,borderRadius:14,
-                background:bg,border:`1px solid ${ibdColor}`,
-                display:"flex",alignItems:"center",justifyContent:"center",
-                fontSize:"1.4rem",boxShadow:"0 3px 10px rgba(0,0,0,0.3)",
-              }}>{e}</div>
-              <span style={{...bd,fontSize:"0.7rem",fontWeight:700,color:c.tx}}>{l}</span>
-              <span style={{...bd,fontSize:"0.58rem",color:c.tx3}}>{s}</span>
+              <span style={{fontSize:"1.5rem",lineHeight:1}}>{e}</span>
+              <span style={{...bd,fontSize:"0.65rem",fontWeight:700,color:c.tx,lineHeight:1.1}}>{l}</span>
+              <span style={{...bd,fontSize:"0.55rem",color:c.tx3}}>{s}</span>
             </button>
           ))}
         </div>
 
         {/* ── WORD OF DAY ── */}
         <div style={{borderRadius:16,background:c.card,border:`1px solid ${c.bd}`,
-          padding:"12px 14px",display:"flex",alignItems:"center",gap:12}}>
+          padding:"12px 14px",display:"flex",alignItems:"center",gap:12,boxShadow:c.shadow}}>
           <div style={{flex:1,minWidth:0}}>
             <div style={{...bd,fontSize:"0.5rem",color:c.gold,letterSpacing:"0.18em",textTransform:"uppercase",fontWeight:700,marginBottom:4}}>Focal an Lae · Word of the day</div>
             <div style={{...hd,fontSize:"1.1rem",fontWeight:700,color:c.acc,fontStyle:"italic"}}>{wod.p}</div>
@@ -4162,10 +4116,11 @@ body{background:${c.bg}}
             style={{width:"100%",padding:"12px 16px",borderRadius:14,background:"transparent",
               border:`1px solid ${c.bd}`,color:c.tx3,display:"flex",alignItems:"center",gap:10,cursor:"pointer"}}>
             <span>📲</span>
-            <span style={{...bd,fontSize:"0.8rem"}}>Install app · Suiteáil</span>
+            <span style={{...bd,fontSize:"0.8rem"}}>Suiteáil · Install app</span>
             <span style={{marginLeft:"auto",opacity:0.5}}>›</span>
           </button>
         )}
+
       </div>
     </div>
   );
