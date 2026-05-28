@@ -122,43 +122,23 @@ const WK = [
 ];
 
 const THEMES = {
-  coill: {   // Coill = Forest — dark deep green + gold (default)
+  coill: {
     dark:true,
-    bg:"#091508",bg2:"#0D1F0F",card:"#101E10",cardAlt:"#142014",
-    phrase:"#1A2E20",phraseBd:"rgba(200,150,62,0.3)",
-    tx:"#F0EDE4",tx2:"#C8C4B4",tx3:"rgba(240,237,228,0.45)",
-    acc:"#C8963E",acc2:"#A87030",gold:"#C8963E",green:"#6FCF97",
-    bd:"rgba(200,150,62,0.18)",shadow:"0 2px 20px rgba(0,0,0,0.4)",
-    doneBg:"rgba(27,67,50,0.3)",doneBd:"rgba(45,106,79,0.4)",doneTx:"#6FCF97",
-    nextBd:"#C8963E",
-    tipBg:"rgba(200,150,62,0.08)",tipBd:"rgba(200,150,62,0.2)",tipTx:"#D4AA30",
-    btn:"#1B4332",btnTx:"#F0EDE4",
-    progBg:"rgba(255,255,255,0.08)",progFill:"linear-gradient(90deg,#1B4332,#C8963E)",
-    celebBg:"rgba(9,21,8,0.96)",
-    dotOn:"#6FCF97",dotOff:"rgba(255,255,255,0.12)",dotDone:"#C8963E",
-    nav:"#101E10",navBd:"rgba(200,150,62,0.18)",
-    hero:"#071A0E",
-    ink:"rgba(200,150,62,0.3)",
-    icon:"☘️", label:"Coill",
-  },
-  ban: {   // Bán — pure white linen + woven gold (light)
-    dark:false,
-    bg:"#FAFAF7",bg2:"#F2F0EA",card:"#FFFFFF",cardAlt:"#F8F6F0",
-    phrase:"#F5F3EC",phraseBd:"rgba(180,130,40,0.28)",
-    tx:"#1A1208",tx2:"#3D2E0E",tx3:"rgba(80,58,14,0.55)",
-    acc:"#B8880A",acc2:"#8A6200",gold:"#C8963E",green:"#1B4332",
-    bd:"rgba(180,130,40,0.22)",shadow:"0 2px 16px rgba(180,130,40,0.1)",
-    doneBg:"rgba(27,67,50,0.07)",doneBd:"rgba(27,67,50,0.25)",doneTx:"#1B4332",
-    nextBd:"#B8880A",
-    tipBg:"rgba(180,130,40,0.06)",tipBd:"rgba(180,130,40,0.18)",tipTx:"#7A5500",
-    btn:"#1B4332",btnTx:"#FAFAF7",
-    progBg:"rgba(180,130,40,0.1)",progFill:"linear-gradient(90deg,#1B4332,#C8963E)",
-    celebBg:"rgba(250,250,247,0.97)",
-    dotOn:"#B8880A",dotOff:"rgba(180,130,40,0.18)",dotDone:"#1B4332",
-    nav:"#FFFFFF",navBd:"rgba(180,130,40,0.2)",
-    hero:"#1B4332",
-    ink:"rgba(180,130,40,0.35)",
-    icon:"✦", label:"Bán",
+    bg:"#060D07",bg2:"#0A1A0C",card:"#0D1C0E",cardAlt:"#112014",
+    phrase:"#162A1C",phraseBd:"rgba(200,148,50,0.32)",
+    tx:"#EDE9DF",tx2:"#C4BFA8",tx3:"rgba(237,233,223,0.42)",
+    acc:"#C4923A",acc2:"#A07028",gold:"#C4923A",green:"#5EC488",
+    bd:"rgba(200,148,50,0.16)",shadow:"0 2px 24px rgba(0,0,0,0.55)",
+    doneBg:"rgba(25,62,45,0.35)",doneBd:"rgba(40,98,68,0.45)",doneTx:"#5EC488",
+    nextBd:"#C4923A",
+    tipBg:"rgba(196,146,58,0.08)",tipBd:"rgba(196,146,58,0.22)",tipTx:"#D0A828",
+    btn:"#183828",btnTx:"#EDE9DF",
+    progBg:"rgba(255,255,255,0.07)",progFill:"linear-gradient(90deg,#183828,#C4923A)",
+    celebBg:"rgba(6,13,7,0.97)",
+    dotOn:"#5EC488",dotOff:"rgba(255,255,255,0.1)",dotDone:"#C4923A",
+    nav:"#080F09",navBd:"rgba(196,146,58,0.15)",
+    hero:"#050C06",
+    ink:"rgba(196,146,58,0.28)",
   },
 };
 
@@ -1513,13 +1493,7 @@ export default function App() {
       sbUpdateScore(authUser.id,nm,ns.xp||0,(ns.done||[]).length,ns.streak||0);
     }
   },[authUser]);
-  const cycleTheme=async()=>{
-    const order=["coill","ban"];
-    const next=order[(order.indexOf(theme)+1)%order.length];
-    setTheme(next);
-    if(st)await save({...st,theme:next});
-  };
-  const toggle=cycleTheme; // alias so all existing toggle calls still work
+  const toggle=()=>{}; // single theme — no-op kept for compatibility
 
   const speak=useCallback(async(text)=>{
     setSpeakLoading(true);
@@ -1797,7 +1771,7 @@ html{-webkit-font-smoothing:antialiased}
 button:active{opacity:0.85;transform:scale(0.98)!important}
 body{background:${c.bg}}
 @media(min-width:520px){
-  body{background:${theme==="ban"?"linear-gradient(160deg,#EDEAE0 0%,#F5F3EC 50%,#EDEAE0 100%)":"linear-gradient(160deg,#050e07 0%,#0c2010 40%,#060e08 100%)"};min-height:100vh}
+  body{background:linear-gradient(160deg,#040b05 0%,#091508 40%,#050c06 100%);min-height:100vh}
   .af{max-width:480px;margin:0 auto;position:relative;box-shadow:0 0 0 1px ${c.bd},0 8px 60px ${c.dark?"rgba(0,0,0,0.95)":"rgba(0,0,0,0.25)"},0 30px 120px ${c.dark?"rgba(0,0,0,0.8)":"rgba(0,0,0,0.15)"}}
 }
 `;
@@ -2573,7 +2547,7 @@ body{background:${c.bg}}
             Ar ais
           </button>
           <div style={{display:"flex",alignItems:"center",gap:6}}>
-            <span style={{...bd,fontSize:"0.72rem",color:c.tx3}}>Lá {ch.day} / 30</span>
+            <span style={{...bd,fontSize:"0.72rem",color:c.tx3}}>Lá {ch.day} / {CH.length}</span>
             <div style={{display:"flex",alignItems:"center",gap:6}}>
               <div style={{display:"flex",gap:3}}>
                 {[1,2,3,4,5].map(i=>(
@@ -3020,7 +2994,7 @@ body{background:${c.bg}}
                 <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:10,marginBottom:18,flexWrap:"wrap"}}>
                   <div style={{background:"rgba(255,255,255,0.1)",border:"1px solid rgba(255,255,255,0.18)",borderRadius:22,padding:"7px 20px"}}>
                     <span style={{...hd,fontSize:"1.05rem",color:"#fff"}}>Lá {selDay}</span>
-                    <span style={{...bd,fontSize:"0.78rem",color:"rgba(255,255,255,0.45)",marginLeft:7}}>/ 30</span>
+                    <span style={{...bd,fontSize:"0.78rem",color:"rgba(255,255,255,0.45)",marginLeft:7}}>/ {CH.length}</span>
                   </div>
                   {st.streak>=2&&(
                     <div style={{background:`${c.gold}20`,border:`1px solid ${c.gold}40`,borderRadius:22,padding:"7px 16px"}}>
@@ -3098,7 +3072,6 @@ body{background:${c.bg}}
               <button onClick={()=>setView("home")} style={{display:"flex",alignItems:"center",gap:6,background:"rgba(255,255,255,0.12)",border:"1px solid rgba(255,255,255,0.2)",borderRadius:10,padding:"7px 12px",cursor:"pointer",color:"rgba(255,255,255,0.85)",...bd,fontSize:"0.82rem",fontWeight:600}}>← Baile <span style={{opacity:0.5,fontWeight:400,fontSize:"0.72rem"}}>· Home</span></button>
               <h1 style={{...hd,fontSize:"1.6rem",color:"#fff"}}>📖 Foclóir</h1>
             </div>
-            <button onClick={toggle} style={{background:"rgba(255,255,255,0.1)",border:"1px solid rgba(255,255,255,0.2)",borderRadius:8,width:34,height:34,cursor:"pointer",color:"#fff",fontSize:"0.9rem"}}>{theme==="coill"?"☘️":"✦"}</button>
           </div>
           <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Cuardach... / Search" style={{width:"100%",padding:"10px 14px",borderRadius:10,border:"none",background:"rgba(255,255,255,0.15)",color:"#fff",fontSize:"0.9rem",fontFamily:"'Lato',sans-serif",outline:"none",boxSizing:"border-box"}}/>
         </div>
@@ -3280,24 +3253,13 @@ body{background:${c.bg}}
           {/* APPEARANCE */}
           <div style={{...hd,fontSize:"0.65rem",color:c.tx3,letterSpacing:"0.12em",marginBottom:10}}>TÉAMA · APPEARANCE</div>
           <div style={{background:c.card,border:`1px solid ${c.bd}`,borderRadius:12,marginBottom:20,overflow:"hidden",boxShadow:c.shadow}}>
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:0}}>
-              {[
-                {key:"coill",icon:"☘️",name:"Coill",sub:"Foraois"},
-                {key:"ban",icon:"✦",name:"Bán",sub:"Línéadach"},
-              ].map((t,i)=>(
-                <button key={t.key} onClick={async()=>{setTheme(t.key);if(st)await save({...st,theme:t.key});}} style={{
-                  border:"none",
-                  borderRight:i<1?`1px solid ${c.bd}`:"none",
-                  background:theme===t.key?c.acc+"18":"none",
-                  padding:"16px 8px",cursor:"pointer",textAlign:"center",
-                  outline:"none",
-                }}>
-                  <div style={{fontSize:"1.5rem",marginBottom:6}}>{t.icon}</div>
-                  <div style={{...hd,fontSize:"0.78rem",fontWeight:700,color:theme===t.key?c.acc:c.tx,lineHeight:1.2}}>{t.name}</div>
-                  <div style={{...bd,fontSize:"0.6rem",color:c.tx3,marginTop:2}}>{t.sub}</div>
-                  {theme===t.key&&<div style={{width:20,height:3,borderRadius:2,background:c.acc,margin:"6px auto 0"}}/>}
-                </button>
-              ))}
+            <div style={{display:"flex",alignItems:"center",gap:14,padding:"16px 20px"}}>
+              <span style={{fontSize:"1.5rem"}}>☘️</span>
+              <div>
+                <div style={{...hd,fontSize:"0.88rem",fontWeight:700,color:c.acc}}>Coill · An Fhoraois</div>
+                <div style={{...bd,fontSize:"0.68rem",color:c.tx3,marginTop:2}}>Deep forest green · Celtic gold</div>
+              </div>
+              <div style={{marginLeft:"auto",width:10,height:10,borderRadius:"50%",background:c.acc}}/>
             </div>
           </div>
 
@@ -3365,7 +3327,7 @@ body{background:${c.bg}}
           <div style={{...hd,fontSize:"0.65rem",color:c.tx3,letterSpacing:"0.12em",marginBottom:10}}>YOUR PROGRESS</div>
           <div style={{background:c.card,border:`1px solid ${c.bd}`,borderRadius:12,marginBottom:20,overflow:"hidden",boxShadow:c.shadow}}>
             {[
-              {icon:"✅",label:"Days completed",val:`${st.done.length} / 30`},
+              {icon:"✅",label:"Days completed",val:`${st.done.length} / ${CH.length}`},
               {icon:"⭐",label:"Bonus challenges",val:`${st.bonus.length}`},
               {icon:"🎯",label:"Mini tasks done",val:`${taskCount}`},
               {icon:"🔥",label:"Best streak",val:`${st.best} days`},
@@ -3783,7 +3745,6 @@ body{background:${c.bg}}
               <button onClick={()=>setView("home")} style={{display:"flex",alignItems:"center",gap:6,background:"rgba(255,255,255,0.12)",border:"1px solid rgba(255,255,255,0.2)",borderRadius:10,padding:"7px 12px",cursor:"pointer",color:"rgba(255,255,255,0.85)",...bd,fontSize:"0.82rem",fontWeight:600}}>← Baile <span style={{opacity:0.5,fontWeight:400,fontSize:"0.72rem"}}>· Home</span></button>
               <h1 style={{...hd,fontSize:"1.3rem",fontWeight:800,color:"#fff",margin:0}}>☘️ 30 Lá <span style={{fontWeight:400,fontSize:"0.9rem",opacity:0.5}}>· Days</span></h1>
             </div>
-            <button onClick={toggle} style={{background:"rgba(255,255,255,0.15)",border:"none",borderRadius:10,width:32,height:32,cursor:"pointer",color:"#fff",fontSize:"0.85rem"}}>{theme==="coill"?"☘️":"✦"}</button>
           </div>
           {/* Big progress number */}
           <div style={{textAlign:"center",marginBottom:14}}>
@@ -3923,7 +3884,7 @@ body{background:${c.bg}}
   const storyFull = _two.length > 210 ? _st.split(". ")[0]+"…" : _two;
 
   return(
-    <div className="af" style={{minHeight:"100vh",background:c.dark?"#071508":c.bg,color:c.tx,display:"flex",flexDirection:"column"}}>
+    <div className="af" style={{minHeight:"100vh",background:c.bg,color:c.tx,display:"flex",flexDirection:"column"}}>
       <style>{css}</style>
 
       {/* ── TOP BAR ── */}
@@ -3950,9 +3911,6 @@ body{background:${c.bg}}
               setLeaderData(rows);setMyRankData(rank);setLeaderLoading(false);
             }
           }} style={{background:"none",border:"none",fontSize:"1.05rem",cursor:"pointer",padding:4,lineHeight:1,color:"rgba(200,150,62,0.75)"}}>🏆</button>
-          <button onClick={toggle} style={{background:"none",border:"none",fontSize:"1rem",cursor:"pointer",padding:4,lineHeight:1,opacity:0.6}}>
-            {theme==="coill"?"☘️":"✦"}
-          </button>
           <button onClick={()=>setShowAuth(true)} style={{background:"none",border:"none",cursor:"pointer",padding:4,lineHeight:1}}>
             {authUser
               ? <span style={{display:"flex",alignItems:"center",justifyContent:"center",width:22,height:22,borderRadius:"50%",
@@ -3969,14 +3927,10 @@ body{background:${c.bg}}
       {/* ── PHRASE STAGE ── */}
       <div style={{
         flex:1,display:"flex",flexDirection:"column",position:"relative",overflow:"hidden",
-        background:c.dark
-          ? `radial-gradient(ellipse 110% 55% at 50% -5%, rgba(200,150,62,0.11) 0%, transparent 58%),
-             radial-gradient(ellipse 60% 45% at 8% 92%, rgba(45,106,79,0.16) 0%, transparent 52%),
-             radial-gradient(ellipse 45% 35% at 92% 78%, rgba(200,150,62,0.07) 0%, transparent 45%),
-             linear-gradient(175deg, #071208 0%, #0D2018 40%, #091612 72%, #060e08 100%)`
-          : `radial-gradient(ellipse 120% 60% at 50% -10%, rgba(180,130,40,0.1) 0%, transparent 55%),
-             radial-gradient(ellipse 70% 50% at 0% 100%, rgba(27,67,50,0.06) 0%, transparent 50%),
-             linear-gradient(175deg, ${c.bg2||c.bg} 0%, ${c.bg} 100%)`,
+        background:`radial-gradient(ellipse 120% 60% at 50% -8%, rgba(196,146,58,0.13) 0%, transparent 55%),
+             radial-gradient(ellipse 65% 50% at 6% 90%, rgba(30,80,50,0.22) 0%, transparent 50%),
+             radial-gradient(ellipse 50% 40% at 94% 75%, rgba(196,146,58,0.08) 0%, transparent 45%),
+             linear-gradient(175deg, #060d07 0%, #0a1a0c 38%, #081408 68%, #060d07 100%)`,
       }}>
         {/* Subtle diamond texture overlay */}
         <div style={{
@@ -4144,14 +4098,19 @@ body{background:${c.bg}}
           {e:"☰",l:"Níos mó",active:false,a:()=>{haptic();setView("stats");}},
         ].map(({e,l,active,a},i)=>(
           <button key={i} onClick={a||undefined} style={{
-            flex:1,padding:"10px 4px 10px",border:"none",
+            flex:"1 1 0",minWidth:0,padding:"9px 2px 8px",border:"none",
             cursor:a?"pointer":"default",background:"transparent",
-            display:"flex",flexDirection:"column",alignItems:"center",gap:3,
+            display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:2,
           }}>
-            <span style={{fontSize:"1.2rem",lineHeight:1}}>{e}</span>
-            <span style={{...bd,fontSize:"0.52rem",fontWeight:active?800:400,
-              color:active?c.acc:(c.dark?"rgba(240,237,228,0.28)":c.tx3),
-              letterSpacing:"0.02em"}}>{l}</span>
+            <span style={{fontSize:"1.15rem",lineHeight:1,display:"block"}}>{e}</span>
+            <span style={{
+              ...bd,fontSize:"0.48rem",fontWeight:active?800:400,
+              color:active?c.acc:"rgba(237,233,223,0.28)",
+              letterSpacing:"0.01em",lineHeight:1.2,
+              overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",
+              maxWidth:"100%",
+            }}>{l}</span>
+            {active&&<div style={{width:16,height:2,borderRadius:1,background:c.acc,marginTop:2}}/>}
           </button>
         ))}
       </div>
