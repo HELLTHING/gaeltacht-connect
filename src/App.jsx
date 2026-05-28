@@ -1807,6 +1807,8 @@ export default function App() {
 @keyframes tileFlip{0%{transform:rotateX(0deg)}50%{transform:rotateX(-90deg)}100%{transform:rotateX(0deg)}}
 @keyframes tilePop{0%{transform:scale(1)}50%{transform:scale(1.12)}100%{transform:scale(1)}}
 @keyframes tileShake{0%,100%{transform:translateX(0)}15%{transform:translateX(-6px)}35%{transform:translateX(6px)}55%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+@keyframes slowGlow{0%,100%{opacity:0.55}50%{opacity:1}}
+@keyframes driftUp{0%{transform:translateY(0)}100%{transform:translateY(-8px)}}
 html{-webkit-font-smoothing:antialiased}
 button:active{opacity:0.85;transform:scale(0.98)!important}
 body{background:${c.bg}}
@@ -3980,101 +3982,167 @@ body{background:${c.bg}}
       </div>
 
       {/* ── PHRASE STAGE ── */}
-      <div style={{flex:1,display:"flex",flexDirection:"column",padding:"0 24px 20px",position:"relative",overflow:"hidden"}}>
+      <div style={{
+        flex:1,display:"flex",flexDirection:"column",position:"relative",overflow:"hidden",
+        background:c.dark
+          ? `radial-gradient(ellipse 110% 55% at 50% -5%, rgba(200,150,62,0.11) 0%, transparent 58%),
+             radial-gradient(ellipse 60% 45% at 8% 92%, rgba(45,106,79,0.16) 0%, transparent 52%),
+             radial-gradient(ellipse 45% 35% at 92% 78%, rgba(200,150,62,0.07) 0%, transparent 45%),
+             linear-gradient(175deg, #071208 0%, #0D2018 40%, #091612 72%, #060e08 100%)`
+          : `radial-gradient(ellipse 100% 50% at 50% 0%, rgba(27,67,50,0.06) 0%, transparent 55%),
+             linear-gradient(175deg, ${c.bg2||c.bg} 0%, ${c.bg} 100%)`,
+      }}>
+        {/* Subtle diamond texture overlay */}
+        <div style={{
+          position:"absolute",inset:0,pointerEvents:"none",opacity:c.dark?1:0.4,
+          backgroundImage:`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='44'%3E%3Cpath d='M22 2 L42 22 L22 42 L2 22 Z' fill='none' stroke='rgba(200,150,62,0.055)' stroke-width='0.6'/%3E%3C/svg%3E")`,
+          backgroundSize:"44px 44px",
+        }}/>
 
-        {/* Ambient glows */}
-        <div style={{position:"absolute",width:260,height:260,borderRadius:"50%",
-          background:"radial-gradient(ellipse,rgba(200,150,62,0.07) 0%,transparent 70%)",
-          top:"-5%",right:"-10%",pointerEvents:"none"}}/>
-        <div style={{position:"absolute",width:180,height:180,borderRadius:"50%",
-          background:"radial-gradient(ellipse,rgba(45,106,79,0.1) 0%,transparent 70%)",
-          bottom:"25%",left:"-8%",pointerEvents:"none"}}/>
+        {/* Slow breathing top glow */}
+        <div style={{
+          position:"absolute",width:"70%",height:"35%",
+          background:"radial-gradient(ellipse, rgba(200,150,62,0.07) 0%, transparent 70%)",
+          top:0,left:"15%",pointerEvents:"none",
+          animation:"slowGlow 5s ease-in-out infinite",
+        }}/>
 
-        {/* Day label */}
-        <div style={{...bd,fontSize:"0.5rem",color:c.dark?"rgba(200,150,62,0.4)":c.tx3,
-          letterSpacing:"0.28em",textTransform:"uppercase",marginTop:24,textAlign:"center"}}>
-          {allDone?"Tá Gaeilge agat 🏆":`Lá ${nextDay} · ${todayCh?.e||""}`}
-        </div>
+        {/* Content */}
+        <div style={{flex:1,display:"flex",flexDirection:"column",padding:"18px 26px 20px",position:"relative",zIndex:1}}>
 
-        {/* THE PHRASE — center of the universe */}
-        <div style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",textAlign:"center",gap:0,padding:"8px 0"}}>
+          {/* Day badge */}
           <div style={{
-            ...hd,
-            fontSize:"clamp(2.6rem,11vw,3.8rem)",
-            fontWeight:900,
-            color:c.dark?"#C8963E":c.acc,
-            fontStyle:"italic",
-            lineHeight:1.05,
-            marginBottom:10,
-            letterSpacing:"-0.025em",
-            textShadow:c.dark?"0 2px 30px rgba(200,150,62,0.2)":"none",
+            alignSelf:"center",
+            ...bd,fontSize:"0.48rem",letterSpacing:"0.28em",textTransform:"uppercase",
+            color:c.dark?"rgba(200,150,62,0.38)":c.tx3,
+            border:`1px solid ${c.dark?"rgba(200,150,62,0.12)":c.bd}`,
+            borderRadius:20,padding:"4px 12px",marginBottom:18,
           }}>
-            {allDone?"Tá Gaeilge agat!":todayCh?.p}
-          </div>
-          <div style={{...bd,fontSize:"0.82rem",color:c.dark?"rgba(200,150,62,0.42)":c.tx3,marginBottom:22,letterSpacing:"0.02em"}}>
-            {allDone?"You have Irish":todayCh?.m}
-          </div>
-          <div style={{
-            maxWidth:290,
-            ...bd,fontSize:"0.7rem",
-            color:c.dark?"rgba(240,237,228,0.35)":c.tx3,
-            lineHeight:1.75,fontStyle:"italic",
-          }}>
-            "{(todayCh?.story||"").split(". ")[0].slice(0,82)}…"
-          </div>
-        </div>
-
-        {/* Bottom section */}
-        <div style={{display:"flex",flexDirection:"column",gap:12}}>
-          {/* XP bar */}
-          <div style={{display:"flex",alignItems:"center",gap:8}}>
-            <span style={{...bd,fontSize:"0.57rem",fontWeight:800,color:c.dark?"rgba(200,150,62,0.45)":c.tx3,whiteSpace:"nowrap"}}>L{level}</span>
-            <div style={{flex:1,height:3,background:c.dark?"rgba(255,255,255,0.07)":c.progBg,borderRadius:10,overflow:"hidden"}}>
-              <div style={{height:"100%",width:`${levelPct}%`,background:c.progFill,borderRadius:10,transition:"width 0.6s ease"}}/>
-            </div>
-            <span style={{...bd,fontSize:"0.57rem",color:c.dark?"rgba(240,237,228,0.28)":c.tx3,whiteSpace:"nowrap"}}>{xp} XP</span>
+            {allDone?"Tá Gaeilge agat 🏆":`Lá ${nextDay} · ${todayCh?.e||""}`}
           </div>
 
-          {/* Mission pills */}
-          <div style={{display:"flex",gap:5,justifyContent:"center",flexWrap:"wrap"}}>
-            {[
-              {l:"Ceacht",done:missionLesson,a:()=>{haptic();setPrevView("home");setSelDay(nextDay);setView("day");}},
-              {l:"Focail",done:missionFocail,a:()=>{haptic();setView("focail");}},
-              {l:"Flash",done:missionFlash,a:()=>{haptic();startFlash();}},
-              {l:"Quiz",done:missionQuiz,a:()=>{haptic();startDailyQuiz();}},
-            ].map(({l,done,a},i)=>(
-              <button key={i} onClick={a} style={{
-                padding:"5px 11px",border:`1px solid ${done?(c.dark?"rgba(111,207,151,0.4)":c.doneBd):(c.dark?"rgba(255,255,255,0.1)":c.bd)}`,
-                borderRadius:20,cursor:"pointer",
-                background:done?(c.dark?"rgba(111,207,151,0.1)":c.doneBg):"transparent",
-                ...bd,fontSize:"0.63rem",fontWeight:700,
-                color:done?(c.dark?"#6FCF97":c.doneTx):(c.dark?"rgba(240,237,228,0.38)":c.tx3),
+          {/* ── THE STORY ── */}
+          <div style={{marginBottom:20}}>
+            <div style={{
+              ...bd,fontSize:"0.43rem",color:c.dark?"rgba(200,150,62,0.35)":"rgba(27,67,50,0.5)",
+              letterSpacing:"0.24em",textTransform:"uppercase",marginBottom:10,
+            }}>Stair · History</div>
+            <p style={{
+              ...hd,
+              fontSize:"0.87rem",
+              color:c.dark?"rgba(240,237,228,0.68)":c.tx2,
+              lineHeight:1.82,
+              fontStyle:"italic",
+              margin:0,
+            }}>
+              {(()=>{
+                const s=todayCh?.story||"";
+                const two=s.split(". ").slice(0,2).join(". ")+".";
+                return two.length>210?s.split(". ")[0]+"…":two;
+              })()}
+            </p>
+          </div>
+
+          {/* Divider */}
+          <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:20}}>
+            <div style={{flex:1,height:"1px",background:c.dark?"linear-gradient(90deg,transparent,rgba(200,150,62,0.18))":"linear-gradient(90deg,transparent,rgba(27,67,50,0.15))"}}/>
+            <div style={{fontSize:"0.6rem",color:c.dark?"rgba(200,150,62,0.28)":"rgba(27,67,50,0.3)",letterSpacing:"0.15em"}}>✦ ✦ ✦</div>
+            <div style={{flex:1,height:"1px",background:c.dark?"linear-gradient(90deg,rgba(200,150,62,0.18),transparent)":"linear-gradient(90deg,rgba(27,67,50,0.15),transparent)"}}/>
+          </div>
+
+          {/* ── THE PHRASE ── */}
+          <div style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",textAlign:"center"}}>
+            <div style={{
+              ...bd,fontSize:"0.43rem",
+              color:c.dark?"rgba(200,150,62,0.35)":"rgba(27,67,50,0.5)",
+              letterSpacing:"0.24em",textTransform:"uppercase",marginBottom:14,
+            }}>Frása an Lae</div>
+
+            {/* Phrase glow backdrop */}
+            <div style={{position:"relative",display:"inline-block"}}>
+              <div style={{
+                position:"absolute",inset:"-20px -30px",
+                background:"radial-gradient(ellipse, rgba(200,150,62,0.1) 0%, transparent 70%)",
+                pointerEvents:"none",
+              }}/>
+              <div style={{
+                ...hd,
+                fontSize:"clamp(2.4rem,10vw,3.5rem)",
+                fontWeight:900,
+                color:c.dark?"#C8963E":c.acc,
+                fontStyle:"italic",
+                lineHeight:1.05,
+                letterSpacing:"-0.025em",
+                textShadow:c.dark?"0 0 60px rgba(200,150,62,0.18), 0 4px 20px rgba(0,0,0,0.4)":"none",
+                position:"relative",
               }}>
-                {done?"✓ ":""}{l}
-              </button>
-            ))}
+                {allDone?"Tá Gaeilge agat!":todayCh?.p}
+              </div>
+            </div>
+
+            <div style={{
+              ...bd,fontSize:"0.78rem",
+              color:c.dark?"rgba(200,150,62,0.38)":c.tx3,
+              marginTop:10,letterSpacing:"0.04em",
+              fontStyle:"italic",
+            }}>
+              {allDone?"You have Irish":todayCh?.m}
+            </div>
           </div>
 
-          {/* CTA */}
-          <button onClick={()=>{haptic([10,20,10]);setPrevView("home");
-            if(allDone){setView("map");}else{setSelDay(nextDay);setView("day");}
-          }} style={{
-            width:"100%",padding:"18px",border:"none",cursor:"pointer",
-            background:missionLesson
-              ?(c.dark?"rgba(111,207,151,0.14)":"rgba(27,67,50,0.08)")
-              :"linear-gradient(135deg,#2D6A4F 0%,#1B4332 100%)",
-            borderRadius:16,
-            display:"flex",alignItems:"center",justifyContent:"center",gap:10,
-            animation:missionLesson?"none":"breathe 2.4s ease infinite",
-            boxShadow:missionLesson?"none":"0 4px 24px rgba(27,67,50,0.65)",
-            border:missionLesson?`1px solid ${c.doneBd}`:"none",
-          }}>
-            <span style={{...bd,fontSize:"1.05rem",fontWeight:800,letterSpacing:"0.01em",
-              color:missionLesson?c.doneTx:"#fff"}}>
-              {missionLesson?"Léigh arís":"Lean ar aghaidh"}
-            </span>
-            {!missionLesson&&<span style={{fontSize:"1.1rem",color:"rgba(255,255,255,0.6)"}}>→</span>}
-          </button>
+          {/* ── BOTTOM ── */}
+          <div style={{display:"flex",flexDirection:"column",gap:11,marginTop:16}}>
+            {/* XP bar */}
+            <div style={{display:"flex",alignItems:"center",gap:8}}>
+              <span style={{...bd,fontSize:"0.54rem",fontWeight:800,color:c.dark?"rgba(200,150,62,0.38)":c.tx3,whiteSpace:"nowrap"}}>L{level}</span>
+              <div style={{flex:1,height:2,background:c.dark?"rgba(255,255,255,0.07)":c.progBg,borderRadius:10,overflow:"hidden"}}>
+                <div style={{height:"100%",width:`${levelPct}%`,background:c.progFill,borderRadius:10,transition:"width 0.6s ease"}}/>
+              </div>
+              <span style={{...bd,fontSize:"0.54rem",color:c.dark?"rgba(240,237,228,0.22)":c.tx3,whiteSpace:"nowrap"}}>{xp} XP</span>
+            </div>
+
+            {/* Mission pills */}
+            <div style={{display:"flex",gap:5,justifyContent:"center"}}>
+              {[
+                {l:"Ceacht",done:missionLesson,a:()=>{haptic();setPrevView("home");setSelDay(nextDay);setView("day");}},
+                {l:"Focail",done:missionFocail,a:()=>{haptic();setView("focail");}},
+                {l:"Flash",done:missionFlash,a:()=>{haptic();startFlash();}},
+                {l:"Quiz",done:missionQuiz,a:()=>{haptic();startDailyQuiz();}},
+              ].map(({l,done,a},i)=>(
+                <button key={i} onClick={a} style={{
+                  padding:"5px 10px",
+                  border:`1px solid ${done?(c.dark?"rgba(111,207,151,0.35)":c.doneBd):(c.dark?"rgba(255,255,255,0.09)":c.bd)}`,
+                  borderRadius:20,cursor:"pointer",
+                  background:done?(c.dark?"rgba(111,207,151,0.09)":c.doneBg):"transparent",
+                  ...bd,fontSize:"0.61rem",fontWeight:700,
+                  color:done?(c.dark?"#6FCF97":c.doneTx):(c.dark?"rgba(240,237,228,0.32)":c.tx3),
+                }}>
+                  {done?"✓ ":""}{l}
+                </button>
+              ))}
+            </div>
+
+            {/* CTA */}
+            <button onClick={()=>{haptic([10,20,10]);setPrevView("home");
+              if(allDone){setView("map");}else{setSelDay(nextDay);setView("day");}
+            }} style={{
+              width:"100%",padding:"17px",border:"none",cursor:"pointer",
+              background:missionLesson
+                ?(c.dark?"rgba(111,207,151,0.13)":"rgba(27,67,50,0.07)")
+                :"linear-gradient(135deg,#2D6A4F 0%,#1B4332 100%)",
+              borderRadius:14,
+              display:"flex",alignItems:"center",justifyContent:"center",gap:10,
+              animation:missionLesson?"none":"breathe 2.4s ease infinite",
+              boxShadow:missionLesson?"none":"0 4px 22px rgba(27,67,50,0.6)",
+              outline:missionLesson?`1px solid ${c.doneBd}`:"none",
+            }}>
+              <span style={{...bd,fontSize:"1rem",fontWeight:800,letterSpacing:"0.01em",
+                color:missionLesson?c.doneTx:"#fff"}}>
+                {missionLesson?"Léigh arís":"Lean ar aghaidh"}
+              </span>
+              {!missionLesson&&<span style={{fontSize:"1rem",color:"rgba(255,255,255,0.5)"}}>→</span>}
+            </button>
+          </div>
         </div>
       </div>
 
