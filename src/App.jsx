@@ -1777,7 +1777,7 @@ export default function App() {
   );
   if(!st)return null;
 
-  const total=st.done.length;
+  const total=(st.done||[]).length;
   const nextDay=total<CH.length?total+1:CH.length;
   const pct=total/CH.length;
   const currentCh=CH[nextDay-1];
@@ -3935,7 +3935,9 @@ body{background:${c.bg}}
 
 
   const todayCh = CH[nextDay-1];
-  const storyTeaser = (todayCh?.story||"").split(". ")[0].slice(0,90)+"…";
+  const _st = todayCh?.story || "";
+  const _two = _st.split(". ").slice(0,2).join(". ")+".";
+  const storyFull = _two.length > 210 ? _st.split(". ")[0]+"…" : _two;
 
   return(
     <div className="af" style={{minHeight:"100vh",background:c.dark?"#071508":c.bg,color:c.tx,display:"flex",flexDirection:"column"}}>
@@ -4035,11 +4037,7 @@ body{background:${c.bg}}
               fontStyle:"italic",
               margin:0,
             }}>
-              {(()=>{
-                const s=todayCh?.story||"";
-                const two=s.split(". ").slice(0,2).join(". ")+".";
-                return two.length>210?s.split(". ")[0]+"…":two;
-              })()}
+              {storyFull}
             </p>
           </div>
 
