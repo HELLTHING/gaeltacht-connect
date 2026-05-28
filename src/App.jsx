@@ -122,7 +122,7 @@ const WK = [
 ];
 
 const THEMES = {
-  coill: {   // Coill = Forest — dark green + gold (default)
+  coill: {   // Coill = Forest — dark deep green + gold (default)
     dark:true,
     bg:"#091508",bg2:"#0D1F0F",card:"#101E10",cardAlt:"#142014",
     phrase:"#1A2E20",phraseBd:"rgba(200,150,62,0.3)",
@@ -139,42 +139,26 @@ const THEMES = {
     nav:"#101E10",navBd:"rgba(200,150,62,0.18)",
     hero:"#071A0E",
     ink:"rgba(200,150,62,0.3)",
+    icon:"☘️", label:"Coill",
   },
-  parchment: {  // Lámhscríbhinn = Manuscript — warm Celtic parchment
+  ban: {   // Bán — pure white linen + woven gold (light)
     dark:false,
-    bg:"#FDFAF4",bg2:"#F5EFE0",card:"#FFFFFF",cardAlt:"#FAF6EE",
-    phrase:"#EEF7F1",phraseBd:"#C9DDD1",
-    tx:"#1A1A18",tx2:"#3D3D38",tx3:"#7A7A70",
-    acc:"#1B4332",acc2:"#0D2E1F",gold:"#C9A227",green:"#1B4332",
-    bd:"#D8D0C0",shadow:"0 2px 12px rgba(27,67,50,0.08)",
-    doneBg:"#EAF4EE",doneBd:"#A8CCBA",doneTx:"#1B4332",
-    nextBd:"#1B4332",
-    tipBg:"#FBF7EC",tipBd:"#E8DDB8",tipTx:"#4A3B00",
-    btn:"#1B4332",btnTx:"#fff",
-    progBg:"#E5DFD0",progFill:"linear-gradient(90deg,#1B4332,#C9A227)",
-    celebBg:"rgba(253,250,244,0.96)",
-    dotOn:"#1B4332",dotOff:"#D8D0C0",dotDone:"#1B4332",
-    nav:"#FFFFFF",navBd:"#E8E0D0",
+    bg:"#FAFAF7",bg2:"#F2F0EA",card:"#FFFFFF",cardAlt:"#F8F6F0",
+    phrase:"#F5F3EC",phraseBd:"rgba(180,130,40,0.28)",
+    tx:"#1A1208",tx2:"#3D2E0E",tx3:"rgba(80,58,14,0.55)",
+    acc:"#B8880A",acc2:"#8A6200",gold:"#C8963E",green:"#1B4332",
+    bd:"rgba(180,130,40,0.22)",shadow:"0 2px 16px rgba(180,130,40,0.1)",
+    doneBg:"rgba(27,67,50,0.07)",doneBd:"rgba(27,67,50,0.25)",doneTx:"#1B4332",
+    nextBd:"#B8880A",
+    tipBg:"rgba(180,130,40,0.06)",tipBd:"rgba(180,130,40,0.18)",tipTx:"#7A5500",
+    btn:"#1B4332",btnTx:"#FAFAF7",
+    progBg:"rgba(180,130,40,0.1)",progFill:"linear-gradient(90deg,#1B4332,#C8963E)",
+    celebBg:"rgba(250,250,247,0.97)",
+    dotOn:"#B8880A",dotOff:"rgba(180,130,40,0.18)",dotDone:"#1B4332",
+    nav:"#FFFFFF",navBd:"rgba(180,130,40,0.2)",
     hero:"#1B4332",
-    ink:"#1B4332",
-  },
-  oiche: {   // Farraige = Atlantic Ocean — deep blue, Irish sea
-    dark:true,
-    bg:"#050C12",bg2:"#081018",card:"#0C1620",cardAlt:"#101C28",
-    phrase:"#101C28",phraseBd:"rgba(79,172,219,0.3)",
-    tx:"#E4EEF8",tx2:"#A8C4D8",tx3:"rgba(228,238,248,0.4)",
-    acc:"#4FACDB",acc2:"#3A8BB8",gold:"#7ECFEA",green:"#4FACDB",
-    bd:"rgba(79,172,219,0.18)",shadow:"0 2px 20px rgba(0,0,0,0.45)",
-    doneBg:"rgba(27,67,100,0.3)",doneBd:"rgba(45,100,150,0.4)",doneTx:"#7ECFEA",
-    nextBd:"#4FACDB",
-    tipBg:"rgba(79,172,219,0.08)",tipBd:"rgba(79,172,219,0.2)",tipTx:"#7ECFEA",
-    btn:"#1A4060",btnTx:"#E4EEF8",
-    progBg:"rgba(255,255,255,0.08)",progFill:"linear-gradient(90deg,#1A4060,#4FACDB)",
-    celebBg:"rgba(5,12,18,0.96)",
-    dotOn:"#4FACDB",dotOff:"rgba(255,255,255,0.12)",dotDone:"#7ECFEA",
-    nav:"#0C1620",navBd:"rgba(79,172,219,0.18)",
-    hero:"#071015",
-    ink:"rgba(79,172,219,0.3)",
+    ink:"rgba(180,130,40,0.35)",
+    icon:"✦", label:"Bán",
   },
 };
 
@@ -1482,7 +1466,7 @@ export default function App() {
 
   useEffect(()=>{(async()=>{
     const [s]=await Promise.all([loadS(),new Promise(r=>setTimeout(r,1700))]);
-    if(s){setSt(s);if(s.theme&&THEMES[s.theme])setTheme(s.theme);}
+    if(s){setSt(s);setTheme(s.theme&&THEMES[s.theme]?s.theme:"coill");}
     else{const i={done:[],bonus:[],tasksDone:[],streak:0,best:0,theme:"coill",onboarded:true,started:new Date().toISOString(),dailyLog:{},county:null,notifEnabled:false};await saveS(i);setSt(i)}
     setLoading(false);
     // Fetch community count in background
@@ -1530,7 +1514,7 @@ export default function App() {
     }
   },[authUser]);
   const cycleTheme=async()=>{
-    const order=["coill","parchment","oiche"];
+    const order=["coill","ban"];
     const next=order[(order.indexOf(theme)+1)%order.length];
     setTheme(next);
     if(st)await save({...st,theme:next});
@@ -1813,7 +1797,7 @@ html{-webkit-font-smoothing:antialiased}
 button:active{opacity:0.85;transform:scale(0.98)!important}
 body{background:${c.bg}}
 @media(min-width:520px){
-  body{background:${theme==="parchment"?"linear-gradient(160deg,#E0D8C8 0%,#EDE7D8 50%,#E0D8C8 100%)":theme==="oiche"?"linear-gradient(160deg,#020508 0%,#060e15 40%,#020508 100%)":"linear-gradient(160deg,#050e07 0%,#0c2010 40%,#060e08 100%)"};min-height:100vh}
+  body{background:${theme==="ban"?"linear-gradient(160deg,#EDEAE0 0%,#F5F3EC 50%,#EDEAE0 100%)":"linear-gradient(160deg,#050e07 0%,#0c2010 40%,#060e08 100%)"};min-height:100vh}
   .af{max-width:480px;margin:0 auto;position:relative;box-shadow:0 0 0 1px ${c.bd},0 8px 60px ${c.dark?"rgba(0,0,0,0.95)":"rgba(0,0,0,0.25)"},0 30px 120px ${c.dark?"rgba(0,0,0,0.8)":"rgba(0,0,0,0.15)"}}
 }
 `;
@@ -3114,7 +3098,7 @@ body{background:${c.bg}}
               <button onClick={()=>setView("home")} style={{display:"flex",alignItems:"center",gap:6,background:"rgba(255,255,255,0.12)",border:"1px solid rgba(255,255,255,0.2)",borderRadius:10,padding:"7px 12px",cursor:"pointer",color:"rgba(255,255,255,0.85)",...bd,fontSize:"0.82rem",fontWeight:600}}>← Baile <span style={{opacity:0.5,fontWeight:400,fontSize:"0.72rem"}}>· Home</span></button>
               <h1 style={{...hd,fontSize:"1.6rem",color:"#fff"}}>📖 Foclóir</h1>
             </div>
-            <button onClick={toggle} style={{background:"rgba(255,255,255,0.1)",border:"1px solid rgba(255,255,255,0.2)",borderRadius:8,width:34,height:34,cursor:"pointer",color:"#fff",fontSize:"0.9rem"}}>{theme==="coill"?"🌲":theme==="parchment"?"📜":"🌊"}</button>
+            <button onClick={toggle} style={{background:"rgba(255,255,255,0.1)",border:"1px solid rgba(255,255,255,0.2)",borderRadius:8,width:34,height:34,cursor:"pointer",color:"#fff",fontSize:"0.9rem"}}>{theme==="coill"?"☘️":"✦"}</button>
           </div>
           <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Cuardach... / Search" style={{width:"100%",padding:"10px 14px",borderRadius:10,border:"none",background:"rgba(255,255,255,0.15)",color:"#fff",fontSize:"0.9rem",fontFamily:"'Lato',sans-serif",outline:"none",boxSizing:"border-box"}}/>
         </div>
@@ -3296,15 +3280,14 @@ body{background:${c.bg}}
           {/* APPEARANCE */}
           <div style={{...hd,fontSize:"0.65rem",color:c.tx3,letterSpacing:"0.12em",marginBottom:10}}>TÉAMA · APPEARANCE</div>
           <div style={{background:c.card,border:`1px solid ${c.bd}`,borderRadius:12,marginBottom:20,overflow:"hidden",boxShadow:c.shadow}}>
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:0}}>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:0}}>
               {[
-                {key:"coill",icon:"🌲",name:"Coill",sub:"Forest"},
-                {key:"parchment",icon:"📜",name:"Lámhscríbhinn",sub:"Manuscript"},
-                {key:"oiche",icon:"🌊",name:"Farraige",sub:"Atlantic"},
+                {key:"coill",icon:"☘️",name:"Coill",sub:"Foraois"},
+                {key:"ban",icon:"✦",name:"Bán",sub:"Línéadach"},
               ].map((t,i)=>(
                 <button key={t.key} onClick={async()=>{setTheme(t.key);if(st)await save({...st,theme:t.key});}} style={{
                   border:"none",
-                  borderRight:i<2?`1px solid ${c.bd}`:"none",
+                  borderRight:i<1?`1px solid ${c.bd}`:"none",
                   background:theme===t.key?c.acc+"18":"none",
                   padding:"16px 8px",cursor:"pointer",textAlign:"center",
                   outline:"none",
@@ -3800,7 +3783,7 @@ body{background:${c.bg}}
               <button onClick={()=>setView("home")} style={{display:"flex",alignItems:"center",gap:6,background:"rgba(255,255,255,0.12)",border:"1px solid rgba(255,255,255,0.2)",borderRadius:10,padding:"7px 12px",cursor:"pointer",color:"rgba(255,255,255,0.85)",...bd,fontSize:"0.82rem",fontWeight:600}}>← Baile <span style={{opacity:0.5,fontWeight:400,fontSize:"0.72rem"}}>· Home</span></button>
               <h1 style={{...hd,fontSize:"1.3rem",fontWeight:800,color:"#fff",margin:0}}>☘️ 30 Lá <span style={{fontWeight:400,fontSize:"0.9rem",opacity:0.5}}>· Days</span></h1>
             </div>
-            <button onClick={toggle} style={{background:"rgba(255,255,255,0.15)",border:"none",borderRadius:10,width:32,height:32,cursor:"pointer",color:"#fff",fontSize:"0.85rem"}}>{theme==="coill"?"🌲":theme==="parchment"?"📜":"🌊"}</button>
+            <button onClick={toggle} style={{background:"rgba(255,255,255,0.15)",border:"none",borderRadius:10,width:32,height:32,cursor:"pointer",color:"#fff",fontSize:"0.85rem"}}>{theme==="coill"?"☘️":"✦"}</button>
           </div>
           {/* Big progress number */}
           <div style={{textAlign:"center",marginBottom:14}}>
@@ -3968,7 +3951,7 @@ body{background:${c.bg}}
             }
           }} style={{background:"none",border:"none",fontSize:"1.05rem",cursor:"pointer",padding:4,lineHeight:1,color:"rgba(200,150,62,0.75)"}}>🏆</button>
           <button onClick={toggle} style={{background:"none",border:"none",fontSize:"1rem",cursor:"pointer",padding:4,lineHeight:1,opacity:0.6}}>
-            {theme==="coill"?"🌲":theme==="parchment"?"📜":"🌊"}
+            {theme==="coill"?"☘️":"✦"}
           </button>
           <button onClick={()=>setShowAuth(true)} style={{background:"none",border:"none",cursor:"pointer",padding:4,lineHeight:1}}>
             {authUser
@@ -3991,7 +3974,8 @@ body{background:${c.bg}}
              radial-gradient(ellipse 60% 45% at 8% 92%, rgba(45,106,79,0.16) 0%, transparent 52%),
              radial-gradient(ellipse 45% 35% at 92% 78%, rgba(200,150,62,0.07) 0%, transparent 45%),
              linear-gradient(175deg, #071208 0%, #0D2018 40%, #091612 72%, #060e08 100%)`
-          : `radial-gradient(ellipse 100% 50% at 50% 0%, rgba(27,67,50,0.06) 0%, transparent 55%),
+          : `radial-gradient(ellipse 120% 60% at 50% -10%, rgba(180,130,40,0.1) 0%, transparent 55%),
+             radial-gradient(ellipse 70% 50% at 0% 100%, rgba(27,67,50,0.06) 0%, transparent 50%),
              linear-gradient(175deg, ${c.bg2||c.bg} 0%, ${c.bg} 100%)`,
       }}>
         {/* Subtle diamond texture overlay */}
