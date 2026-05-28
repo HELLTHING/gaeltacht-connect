@@ -976,7 +976,7 @@ function getHistoryFact(date){return HISTORY_FACTS[getDayOfYear(date)%HISTORY_FA
 
 // ── Melody synthesizer (Celtic harp + tin whistle via Web Audio) ──
 // Notes: [frequency_hz, duration_beats] — D major pentatonic at ~♩=160
-function haptic(pattern=[10]){try{navigator.vibrate&&navigator.vibrate(pattern);}catch{}}
+function haptic(pattern=[10]){_unlockAudio();try{navigator.vibrate&&navigator.vibrate(pattern);}catch{}}
 
 // ── Ceol audio player (WAV files) ────────────────────────────────────────────
 let _ceolAudio=null;
@@ -1048,15 +1048,21 @@ const SONGS=[
 // ── Celtic Web Audio sound effects ──────────────────────────
 // D major pentatonic — the most common scale in Irish traditional music
 let _audioCtx=null;
-async function _ctx(){
+function _unlockAudio(){
+  try{
+    if(!_audioCtx)_audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+    if(_audioCtx.state==='suspended')_audioCtx.resume().catch(()=>{});
+  }catch{}
+}
+function _ctx(){
   if(!_audioCtx)_audioCtx=new(window.AudioContext||window.webkitAudioContext)();
-  if(_audioCtx.state==='suspended')await _audioCtx.resume();
+  if(_audioCtx.state==='suspended')_audioCtx.resume().catch(()=>{});
   return _audioCtx;
 }
 // Celtic harp: triangle wave + harmonics + fast pluck decay
-async function _harp(freq,delay=0,vol=0.28,dur=1.5){
+function _harp(freq,delay=0,vol=0.28,dur=1.5){
   try{
-    const c=await _ctx(),t=c.currentTime+delay;
+    const c=_ctx(),t=c.currentTime+delay;
     [1,2,3].forEach((h,i)=>{
       const o=c.createOscillator(),g=c.createGain();
       o.connect(g);g.connect(c.destination);
@@ -1069,9 +1075,9 @@ async function _harp(freq,delay=0,vol=0.28,dur=1.5){
   }catch{}
 }
 // Tin whistle: sine wave + LFO vibrato
-async function _whistle(freq,dur,delay=0,vol=0.17){
+function _whistle(freq,dur,delay=0,vol=0.17){
   try{
-    const c=await _ctx(),t=c.currentTime+delay;
+    const c=_ctx(),t=c.currentTime+delay;
     const o=c.createOscillator(),g=c.createGain();
     const lfo=c.createOscillator(),lg=c.createGain();
     lfo.frequency.value=5.5;lg.gain.value=5;
@@ -1086,27 +1092,15 @@ async function _whistle(freq,dur,delay=0,vol=0.17){
   }catch{}
 }
 function playSound(type){
-  _ctx().then(c=>{
-    // D pentatonic: D4 F#4 A4 B4 D5 (Irish traditional scale)
+  try{
+    const c=_ctx();
     const P=[293.66,369.99,440,493.88,587.33];
-    if(type==='complete'){
-      P.forEach((f,i)=>_harp(f,i*0.11,0.26,1.6));
-    }
-    else if(type==='correct'){
-      _whistle(P[1],0.28,0,0.16);
-      _whistle(P[3],0.38,0.24,0.16);
-    }
-    else if(type==='wrong'){
-      _harp(P[0]*0.5,0,0.22,0.55);
-    }
-    else if(type==='bonus'){
-      P.forEach((f,i)=>_harp(f,i*0.07,0.24,1.4));
-      _harp(P[0]*2,0.44,0.18,1.2);
-    }
-    else if(type==='open'){
-      _harp(P[2],0,0.16,1.3);
-    }
-  }).catch(()=>{});
+    if(type==='complete'){P.forEach((f,i)=>_harp(f,i*0.11,0.26,1.6));}
+    else if(type==='correct'){_whistle(P[1],0.28,0,0.16);_whistle(P[3],0.38,0.24,0.16);}
+    else if(type==='wrong'){_harp(P[0]*0.5,0,0.22,0.55);}
+    else if(type==='bonus'){P.forEach((f,i)=>_harp(f,i*0.07,0.24,1.4));_harp(P[0]*2,0.44,0.18,1.2);}
+    else if(type==='open'){_harp(P[2],0,0.16,1.3);}
+  }catch{}
 }
 
 // Daily challenge type colours
