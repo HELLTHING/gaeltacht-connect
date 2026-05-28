@@ -2517,12 +2517,12 @@ body{background:${c.bg}}
   // ═══════════════════════════════
   if(view==="day"&&selDay){
     const ch=CH[selDay-1];
-    const done=st.done.includes(ch.day);
-    const bDone=st.bonus.includes(ch.day);
-    const locked=ch.day>1&&!st.done.includes(ch.day-1)&&!done;
+    const _done=st.done||[];const _bonus=st.bonus||[];
+    const done=_done.includes(ch.day);
+    const bDone=_bonus.includes(ch.day);
+    const locked=ch.day>1&&!_done.includes(ch.day-1)&&!done;
     const dayColor=CAT_CLR[ch.cat]||c.acc;
-    // mark lesson opened for today's day (for mission tracking)
-    const todayDayNum=CH.findIndex(d=>!st.done.includes(d.day))+1||CH.length;
+    const todayDayNum=CH.findIndex(d=>!_done.includes(d.day))+1||CH.length;
     if(selDay===todayDayNum&&!st.dailyLog?.[todayKey()+"_lesson"]){
       earnXP(20, todayKey()+"_lesson");
       earnAchievement("first_lesson");
@@ -2577,7 +2577,7 @@ body{background:${c.bg}}
               <div style={{padding:"24px 22px 28px"}}>
                 {/* Category + title */}
                 <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:ch.story?16:16}}>
-                  <span style={{fontSize:"1rem"}}>{CATS[ch.cat]}</span>
+                  <span style={{fontSize:"1rem"}}>{CATS[ch.cat]||"📝"}</span>
                   <div>
                     <div style={{...hd,fontSize:"1.6rem",fontWeight:700,color:c.tx,lineHeight:1.2}}>{ch.t}</div>
                     <div style={{...bd,fontSize:"0.82rem",color:c.tx3,fontStyle:"italic"}}>{ch.e}</div>
@@ -3135,7 +3135,7 @@ body{background:${c.bg}}
         </div>
         <div style={{padding:"20px",maxWidth:500,margin:"0 auto"}}>
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:24}}>
-            {[{label:"Days done",val:total,icon:"✅"},{label:"Bonus done",val:st.bonus.length,icon:"⭐"},{label:"Best streak",val:st.best,icon:"🏆"},{label:"Current streak",val:st.streak,icon:"🔥"},{label:"Days since start",val:daysSince,icon:"📅"},{label:"Complete",val:Math.round(total/CH.length*100)+"%",icon:"📊"}].map((s,i)=>(
+            {[{label:"Days done",val:total,icon:"✅"},{label:"Bonus done",val:(st.bonus||[]).length,icon:"⭐"},{label:"Best streak",val:st.best||0,icon:"🏆"},{label:"Current streak",val:st.streak||0,icon:"🔥"},{label:"Days since start",val:daysSince,icon:"📅"},{label:"Complete",val:Math.round(total/CH.length*100)+"%",icon:"📊"}].map((s,i)=>(
               <div key={i} style={{background:c.card,border:`1px solid ${c.bd}`,borderRadius:12,padding:"14px 16px",boxShadow:c.shadow,animation:`rise 0.4s ${i*0.05}s ease both`}}>
                 <div style={{fontSize:"1.1rem",marginBottom:5}}>{s.icon}</div>
                 <div style={{...hd,fontSize:"1.6rem",fontWeight:800,color:c.acc}}>{s.val}</div>
@@ -3145,7 +3145,7 @@ body{background:${c.bg}}
           </div>
           <div style={{...hd,fontSize:"0.82rem",fontWeight:700,color:c.tx,marginBottom:12}}>Week by week</div>
           {WK.map((w,wi)=>{
-            const dn=st.done.filter(d=>d>w.start&&d<=w.end).length;
+            const dn=(st.done||[]).filter(d=>d>w.start&&d<=w.end).length;
             return(
               <div key={wi} style={{marginBottom:14,animation:`rise 0.4s ${wi*0.08}s ease both`}}>
                 <div style={{display:"flex",justifyContent:"space-between",marginBottom:5}}>
@@ -3772,8 +3772,8 @@ body{background:${c.bg}}
           <div style={{display:"flex",gap:8,marginBottom:20}}>
             {[
               {label:"Completed",val:total,icon:"✅",clr:c.acc},
-              {label:"Bonus",val:st.bonus.length,icon:"⭐",clr:c.gold},
-              ...(st.streak>=2?[{label:"Streak",val:`${st.streak} 🔥`,icon:null,clr:c.gold}]:[]),
+              {label:"Bonus",val:(st.bonus||[]).length,icon:"⭐",clr:c.gold},
+              ...((st.streak||0)>=2?[{label:"Streak",val:`${st.streak||0} 🔥`,icon:null,clr:c.gold}]:[]),
             ].map((s,i)=>(
               <div key={i} style={{flex:1,background:c.card,border:`1px solid ${c.bd}`,borderRadius:12,padding:"10px 8px",textAlign:"center",boxShadow:c.shadow}}>
                 <div style={{...hd,fontSize:"1.3rem",color:s.clr,lineHeight:1}}>{s.val}</div>
@@ -3785,7 +3785,7 @@ body{background:${c.bg}}
           {/* ── WEEKS ── */}
           {WK.map((w,wi)=>{
             const wDays=CH.slice(w.start,w.end);
-            const wDone=st.done.filter(d=>d>w.start&&d<=w.end).length;
+            const wDone=(st.done||[]).filter(d=>d>w.start&&d<=w.end).length;
             const wTotal=w.end-w.start;
             const wComplete=wDone===wTotal;
             const wPct=wDone/wTotal;
