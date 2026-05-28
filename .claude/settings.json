@@ -1,0 +1,30 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run build *)",
+      "Bash(npm run build)",
+      "Bash(npm run dev *)",
+      "Bash(npm run preview *)",
+      "Bash(git push -u origin *)",
+      "Bash(git push origin *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git fetch origin *)",
+      "Bash(git checkout *)",
+      "Bash(git merge *)",
+      "Bash(git pull origin *)",
+      "Bash(git branch *)",
+      "Bash(git stash *)",
+      "Bash(curl -s *)",
+      "Bash(node -e *)",
+      "Bash(node scripts/*)",
+      "Bash(npm install *)",
+      "Bash(npm install)",
+      "Bash(pkill *)",
+      "Bash(mkdir -p *)",
+      "Bash(mkdir *)",
+      "Bash(cp *)",
+      "Bash(mv *)"
+    ]
+  }
+}
