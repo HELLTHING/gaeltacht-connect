@@ -1,4 +1,48 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" rx="80" fill="#2D6A4F"/>
-  <text x="256" y="360" font-size="320" text-anchor="middle" font-family="serif">☘️</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <defs>
+    <radialGradient id="bg" cx="40%" cy="35%" r="70%">
+      <stop offset="0%" stop-color="#1B4332"/>
+      <stop offset="100%" stop-color="#0D2218"/>
+    </radialGradient>
+    <radialGradient id="leaf" cx="40%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#6FCF97"/>
+      <stop offset="55%" stop-color="#40B074"/>
+      <stop offset="100%" stop-color="#2D7A54"/>
+    </radialGradient>
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#C8963E" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#C8963E" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="4.096" stdDeviation="9.216" flood-color="#000" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="512" height="512" rx="112.64" fill="url(#bg)"/>
+
+  <!-- Ambient gold glow -->
+  <circle cx="256" cy="256" r="225.28" fill="url(#glow)"/>
+
+  <!-- Gold accent ring -->
+  <circle cx="256" cy="245.76" r="184.72959999999998" fill="none" stroke="#C8963E" stroke-width="3.072" opacity="0.22"/>
+
+  <!-- Three leaves (group with shadow filter) -->
+  <g filter="url(#shadow)">
+    <circle cx="256" cy="172.672" r="79.36" fill="url(#leaf)"/>
+    <circle cx="184.576" cy="297.2672" r="79.36" fill="url(#leaf)"/>
+    <circle cx="327.424" cy="297.2672" r="79.36" fill="url(#leaf)"/>
+  </g>
+
+  <!-- Center vein point -->
+  <circle cx="256" cy="250.88" r="25.3952" fill="#1B4332" opacity="0.55"/>
+
+  <!-- Subtle leaf vein lines -->
+  <line x1="256" y1="192.512" x2="256" y2="115.53280000000001" stroke="#1B4332" stroke-width="4.096" stroke-linecap="round" opacity="0.3"/>
+  <line x1="202.0352" y1="297.2672" x2="130.6112" y2="273.4592" stroke="#1B4332" stroke-width="4.096" stroke-linecap="round" opacity="0.3"/>
+  <line x1="309.96479999999997" y1="297.2672" x2="381.3888" y2="273.4592" stroke="#1B4332" stroke-width="4.096" stroke-linecap="round" opacity="0.3"/>
+
+  <!-- Stem -->
+  <path d="M256 289.33119999999997 Q202.752 367.104 176.128 422.656"
+    stroke="#40B074" stroke-width="26.624" stroke-linecap="round" fill="none" filter="url(#shadow)"/>
 </svg>
