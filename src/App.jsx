@@ -1608,17 +1608,6 @@ export default function App() {
     }
   },[]);
 
-  const earnXP=useCallback(async(amount,logKey)=>{
-    if(!st)return;
-    const prevXP=st.xp||0;
-    const xp=prevXP+amount;
-    const dl=logKey?{...(st.dailyLog||{}),[logKey]:true}:(st.dailyLog||{});
-    await save({...st,xp,dailyLog:dl});
-    if(prevXP<100&&xp>=100) setTimeout(()=>earnAchievement("xp_100"),400);
-    if(prevXP<500&&xp>=500) setTimeout(()=>earnAchievement("xp_500"),400);
-    if(prevXP<1000&&xp>=1000) setTimeout(()=>earnAchievement("xp_1000"),400);
-  },[st,save,earnAchievement]);
-
   const earnAchievement=useCallback(async(id)=>{
     if(!st)return;
     const already=(st.achievements||[]);
@@ -1630,6 +1619,17 @@ export default function App() {
     setAchToast(def);
     setTimeout(()=>setAchToast(null),3200);
   },[st,save]);
+
+  const earnXP=useCallback(async(amount,logKey)=>{
+    if(!st)return;
+    const prevXP=st.xp||0;
+    const xp=prevXP+amount;
+    const dl=logKey?{...(st.dailyLog||{}),[logKey]:true}:(st.dailyLog||{});
+    await save({...st,xp,dailyLog:dl});
+    if(prevXP<100&&xp>=100) setTimeout(()=>earnAchievement("xp_100"),400);
+    if(prevXP<500&&xp>=500) setTimeout(()=>earnAchievement("xp_500"),400);
+    if(prevXP<1000&&xp>=1000) setTimeout(()=>earnAchievement("xp_1000"),400);
+  },[st,save,earnAchievement]);
 
   const scheduleNotif=useCallback(()=>{
     if(Notification.permission!=="granted")return;
