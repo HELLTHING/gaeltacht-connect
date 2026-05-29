@@ -1755,6 +1755,7 @@ export default function App() {
 @keyframes confetti-fall{from{transform:translateY(0) rotate(0deg);opacity:1}to{transform:translateY(110vh) rotate(720deg);opacity:0}}
 @keyframes shamrock-spin{0%{transform:scale(0) rotate(-30deg)}60%{transform:scale(1.2) rotate(8deg)}100%{transform:scale(1) rotate(0deg)}}
 @keyframes slide-up{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
+@keyframes toast-slide-in{from{opacity:0;transform:translateX(110%) scale(0.92)}to{opacity:1;transform:translateX(0) scale(1)}}
 @keyframes pulse-ring{0%{transform:scale(1);opacity:0.6}100%{transform:scale(1.6);opacity:0}}
 @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-5px)}40%{transform:translateX(5px)}60%{transform:translateX(-3px)}80%{transform:translateX(3px)}}
 @keyframes correctPop{0%{transform:scale(1)}50%{transform:scale(1.04)}100%{transform:scale(1)}}
@@ -2799,20 +2800,20 @@ body{background:${c.bg}}
         {/* ── ACHIEVEMENT TOAST ── */}
         {achToast&&(
           <div style={{
-            position:"fixed",bottom:88,left:"50%",transform:"translateX(-50%)",
-            background:c.dark?"rgba(20,30,20,0.97)":"rgba(255,252,245,0.97)",
-            border:`1.5px solid ${c.acc}`,borderRadius:16,
-            padding:"12px 20px",zIndex:200,
-            display:"flex",alignItems:"center",gap:12,
-            boxShadow:"0 8px 32px rgba(0,0,0,0.35)",
-            animation:"slide-up 0.35s ease",
-            maxWidth:320,width:"90vw",
+            position:"fixed",top:"env(safe-area-inset-top,20px)",right:16,
+            background:"rgba(10,20,12,0.97)",
+            border:`1px solid rgba(200,148,50,0.28)`,borderLeft:`3px solid rgba(200,148,50,0.85)`,borderRadius:14,
+            padding:"13px 16px 13px 14px",zIndex:300,
+            display:"flex",alignItems:"center",gap:13,
+            boxShadow:"0 8px 40px rgba(0,0,0,0.5),0 0 0 1px rgba(200,148,50,0.1)",
+            animation:"toast-slide-in 0.4s cubic-bezier(0.34,1.56,0.64,1)",
+            maxWidth:"min(300px,calc(100vw - 32px))",
           }}>
-            <div style={{fontSize:"2rem",lineHeight:1,flexShrink:0}}>{achToast.icon}</div>
-            <div>
-              <div style={{...bd,fontSize:"0.62rem",color:c.acc,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",marginBottom:1}}>Achievement unlocked</div>
-              <div style={{...hd,fontSize:"1rem",color:c.tx,fontWeight:800}}>{achToast.name}</div>
-              <div style={{...bd,fontSize:"0.72rem",color:c.tx3}}>{achToast.nameEn} · {achToast.desc}</div>
+            <div style={{width:40,height:40,borderRadius:"50%",background:"rgba(200,148,50,0.12)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"1.35rem",flexShrink:0}}>{achToast.icon}</div>
+            <div style={{minWidth:0}}>
+              <div style={{...bd,fontSize:"0.55rem",color:c.acc,fontWeight:700,letterSpacing:"0.12em",textTransform:"uppercase",marginBottom:2}}>Gradam · Achievement</div>
+              <div style={{...hd,fontSize:"0.95rem",color:"#EDE9DF",fontWeight:800,lineHeight:1.2}}>{achToast.name}</div>
+              <div style={{...bd,fontSize:"0.68rem",color:"rgba(237,233,223,0.45)",marginTop:2,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{achToast.nameEn} · {achToast.desc}</div>
             </div>
           </div>
         )}
@@ -3862,6 +3863,75 @@ body{background:${c.bg}}
   }
 
   // ═══════════════════════════════
+  // MENU VIEW — Níos mó
+  // ═══════════════════════════════
+  if(view==="menu"){
+    return(
+      <div className="af" style={{minHeight:"100vh",background:c.bg,color:c.tx,paddingBottom:40,animation:"fadeIn 0.25s ease"}}>
+        <style>{css}</style>
+        <div style={{background:c.hero,padding:"20px 20px 28px",position:"relative",overflow:"hidden"}}>
+          <div style={{position:"absolute",inset:0,pointerEvents:"none",backgroundImage:`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='44'%3E%3Cpath d='M22 2 L42 22 L22 42 L2 22 Z' fill='none' stroke='rgba(200,150,62,0.04)' stroke-width='0.6'/%3E%3C/svg%3E")`,backgroundSize:"44px 44px"}}/>
+          <div style={{display:"flex",justifyContent:"flex-start",marginBottom:16,position:"relative"}}>
+            <button onClick={()=>setView("home")} style={{display:"flex",alignItems:"center",gap:6,background:"rgba(255,255,255,0.1)",border:"1px solid rgba(255,255,255,0.18)",borderRadius:10,padding:"7px 12px",cursor:"pointer",color:"rgba(255,255,255,0.85)",...bd,fontSize:"0.82rem",fontWeight:600}}>← Baile <span style={{opacity:0.5,fontWeight:400,fontSize:"0.72rem"}}>· Home</span></button>
+          </div>
+          <div style={{position:"relative"}}>
+            <h1 style={{...hd,fontSize:"1.6rem",fontWeight:800,color:"#fff",marginBottom:3}}>Níos mó</h1>
+            <p style={{...bd,fontSize:"0.78rem",color:"rgba(255,255,255,0.55)",marginBottom:16}}>Explore more</p>
+            <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+              <div style={{...bd,fontSize:"0.68rem",fontWeight:700,background:"rgba(200,148,50,0.15)",border:"1px solid rgba(200,148,50,0.28)",borderRadius:20,padding:"4px 12px",color:c.acc}}>L{level}</div>
+              <div style={{...bd,fontSize:"0.68rem",fontWeight:700,background:"rgba(200,148,50,0.15)",border:"1px solid rgba(200,148,50,0.28)",borderRadius:20,padding:"4px 12px",color:c.acc}}>{xp} XP</div>
+              <div style={{...bd,fontSize:"0.68rem",fontWeight:700,background:"rgba(200,148,50,0.15)",border:"1px solid rgba(200,148,50,0.28)",borderRadius:20,padding:"4px 12px",color:c.acc}}>{total}/{CH.length} lá</div>
+            </div>
+          </div>
+        </div>
+        <div style={{padding:"20px 16px",maxWidth:500,margin:"0 auto"}}>
+          <div style={{...bd,fontSize:"0.6rem",color:c.tx3,letterSpacing:"0.14em",textTransform:"uppercase",marginBottom:14}}>Rannóga · Sections</div>
+          <div style={{display:"flex",flexDirection:"column",gap:10}}>
+            {[
+              {icon:"📊",ga:"Dul Chun Cinn",en:"Progress & Achievements",v:"stats"},
+              {icon:"📖",ga:"Treoir Teanga",en:"Language & Grammar Guide",v:"guide"},
+              {icon:"🎵",ga:"Ceol na hÉireann",en:"Irish Music & Songs",v:"ceol"},
+              {icon:"⚙️",ga:"Socruithe",en:"Settings & Profile",v:"settings"},
+            ].map(({icon,ga,en,v},i)=>(
+              <button key={i} onClick={()=>{haptic();setPrevView("menu");setView(v);}} style={{
+                display:"flex",alignItems:"center",gap:16,
+                background:c.card,border:`1px solid ${c.bd}`,borderRadius:16,
+                padding:"18px 20px",cursor:"pointer",textAlign:"left",
+                boxShadow:c.shadow,animation:`rise 0.35s ${i*0.07}s ease both`,
+              }}>
+                <span style={{fontSize:"1.7rem",lineHeight:1,flexShrink:0,width:40,textAlign:"center"}}>{icon}</span>
+                <div style={{flex:1,minWidth:0}}>
+                  <div style={{...hd,fontSize:"1rem",fontWeight:700,color:c.tx,marginBottom:2,lineHeight:1.2}}>{ga}</div>
+                  <div style={{...bd,fontSize:"0.72rem",color:c.tx3,lineHeight:1.3}}>{en}</div>
+                </div>
+                <span style={{color:c.tx3,fontSize:"1.1rem",opacity:0.3,flexShrink:0}}>›</span>
+              </button>
+            ))}
+            <button onClick={()=>{haptic();setShowLeaderboard(true);if(!leaderData){setLeaderLoading(true);Promise.all([sbLeaderboard(),authUser?.id?sbMyRank(authUser.id):Promise.resolve(null)]).then(([rows,rank])=>{setLeaderData(rows);setMyRankData(rank);setLeaderLoading(false);});}}} style={{
+              display:"flex",alignItems:"center",gap:16,
+              background:c.card,border:`1px solid ${c.bd}`,borderRadius:16,
+              padding:"18px 20px",cursor:"pointer",textAlign:"left",
+              boxShadow:c.shadow,animation:"rise 0.35s 0.28s ease both",
+            }}>
+              <span style={{fontSize:"1.7rem",lineHeight:1,flexShrink:0,width:40,textAlign:"center"}}>🌍</span>
+              <div style={{flex:1,minWidth:0}}>
+                <div style={{...hd,fontSize:"1rem",fontWeight:700,color:c.tx,marginBottom:2,lineHeight:1.2}}>Clárbhord</div>
+                <div style={{...bd,fontSize:"0.72rem",color:c.tx3,lineHeight:1.3}}>Global Leaderboard</div>
+              </div>
+              <span style={{color:c.tx3,fontSize:"1.1rem",opacity:0.3,flexShrink:0}}>›</span>
+            </button>
+          </div>
+          <div style={{marginTop:24,background:c.cardAlt,border:`1px solid ${c.bd}`,borderRadius:14,padding:"16px 20px"}}>
+            <div style={{...bd,fontSize:"0.55rem",color:"rgba(200,148,50,0.45)",letterSpacing:"0.15em",textTransform:"uppercase",marginBottom:8}}>Seanfhocal · Proverb</div>
+            <div style={{...hd,fontSize:"0.88rem",fontStyle:"italic",color:c.acc,lineHeight:1.55,marginBottom:6}}>"Is fearr Gaeilge briste ná Béarla cliste"</div>
+            <div style={{...bd,fontSize:"0.72rem",color:c.tx3,lineHeight:1.4}}>Broken Irish is better than clever English</div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ═══════════════════════════════
   // HOME VIEW — App menu
   // ═══════════════════════════════
   const today = new Date();
@@ -3876,6 +3946,8 @@ body{background:${c.bg}}
   const xp = st?.xp || 0;
   const level = Math.floor(xp / 100) + 1;
   const levelPct = xp % 100;
+  const _hr = new Date().getHours();
+  const greeting = _hr<12?"Maidin mhaith":_hr<18?"Dia dhuit":"Tráthnóna maith";
 
 
   const todayCh = CH[nextDay-1];
@@ -3889,8 +3961,10 @@ body{background:${c.bg}}
 
       {/* ── TOP BAR ── */}
       <div style={{display:"flex",alignItems:"center",padding:"16px 20px 0",zIndex:10,flexShrink:0}}>
-        <span style={{fontSize:"1rem",marginRight:6}}>☘️</span>
-        <span style={{...hd,fontSize:"0.9rem",fontWeight:800,color:c.dark?"rgba(240,237,228,0.8)":c.tx,letterSpacing:"-0.01em"}}>Gaeltacht</span>
+        <div>
+          <div style={{...hd,fontSize:"0.95rem",fontWeight:800,color:c.acc,letterSpacing:"-0.01em",lineHeight:1}}>{greeting}</div>
+          <div style={{...bd,fontSize:"0.5rem",color:c.tx3,letterSpacing:"0.06em",marginTop:2}}>☘️ Gaeltacht Connect</div>
+        </div>
         <div style={{marginLeft:"auto",display:"flex",alignItems:"center",gap:6}}>
           {st?.streak>=1&&(
             <div style={{display:"flex",alignItems:"center",gap:3,
@@ -3962,16 +4036,23 @@ body{background:${c.bg}}
           </div>
 
           {/* ── THE STORY ── */}
-          <div style={{marginBottom:20}}>
+          <div style={{
+            marginBottom:18,
+            background:"rgba(22,42,28,0.45)",
+            border:"1px solid rgba(200,148,50,0.1)",
+            borderLeft:"2.5px solid rgba(200,148,50,0.38)",
+            borderRadius:"0 12px 12px 0",
+            padding:"12px 14px",
+          }}>
             <div style={{
-              ...bd,fontSize:"0.43rem",color:c.dark?"rgba(200,150,62,0.35)":"rgba(27,67,50,0.5)",
-              letterSpacing:"0.24em",textTransform:"uppercase",marginBottom:10,
+              ...bd,fontSize:"0.43rem",color:"rgba(200,148,50,0.42)",
+              letterSpacing:"0.24em",textTransform:"uppercase",marginBottom:8,
             }}>Stair · History</div>
             <p style={{
               ...hd,
-              fontSize:"0.87rem",
-              color:c.dark?"rgba(240,237,228,0.68)":c.tx2,
-              lineHeight:1.82,
+              fontSize:"0.83rem",
+              color:"rgba(240,237,228,0.6)",
+              lineHeight:1.78,
               fontStyle:"italic",
               margin:0,
             }}>
@@ -4040,11 +4121,11 @@ body{background:${c.bg}}
             {/* Mission pills */}
             <div style={{display:"flex",gap:5,justifyContent:"center"}}>
               {[
-                {l:"Ceacht",done:missionLesson,a:()=>{haptic();setPrevView("home");setSelDay(nextDay);setView("day");}},
-                {l:"Focail",done:missionFocail,a:()=>{haptic();setView("focail");}},
-                {l:"Flash",done:missionFlash,a:()=>{haptic();startFlash();}},
-                {l:"Quiz",done:missionQuiz,a:()=>{haptic();startDailyQuiz();}},
-              ].map(({l,done,a},i)=>(
+                {ic:"📚",l:"Ceacht",done:missionLesson,a:()=>{haptic();setPrevView("home");setSelDay(nextDay);setView("day");}},
+                {ic:"🟩",l:"Focail",done:missionFocail,a:()=>{haptic();setView("focail");}},
+                {ic:"⚡",l:"Flash",done:missionFlash,a:()=>{haptic();startFlash();}},
+                {ic:"🧠",l:"Quiz",done:missionQuiz,a:()=>{haptic();startDailyQuiz();}},
+              ].map(({ic,l,done,a},i)=>(
                 <button key={i} onClick={a} style={{
                   padding:"5px 10px",
                   border:`1px solid ${done?(c.dark?"rgba(111,207,151,0.35)":c.doneBd):(c.dark?"rgba(255,255,255,0.09)":c.bd)}`,
@@ -4053,7 +4134,7 @@ body{background:${c.bg}}
                   ...bd,fontSize:"0.61rem",fontWeight:700,
                   color:done?(c.dark?"#6FCF97":c.doneTx):(c.dark?"rgba(240,237,228,0.32)":c.tx3),
                 }}>
-                  {done?"✓ ":""}{l}
+                  {done?"✓ ":<span style={{marginRight:"2px",fontSize:"0.72rem"}}>{ic}</span>}{l}
                 </button>
               ))}
             </div>
@@ -4095,7 +4176,7 @@ body{background:${c.bg}}
           {e:"🟩",l:"Focail",active:false,a:()=>{haptic();setView("focail");}},
           {e:"🗺️",l:"Léarscáil",active:false,a:()=>{haptic();setPrevView("home");setView("map");}},
           {e:"📖",l:"Foclóir",active:false,a:()=>{haptic();setPrevView("home");setView("dict");}},
-          {e:"☰",l:"Níos mó",active:false,a:()=>{haptic();setView("stats");}},
+          {e:"☰",l:"Níos mó",active:false,a:()=>{haptic();setView("menu");}},
         ].map(({e,l,active,a},i)=>(
           <button key={i} onClick={a||undefined} style={{
             flex:"1 1 0",minWidth:0,padding:"9px 2px 8px",border:"none",
@@ -4173,17 +4254,19 @@ body{background:${c.bg}}
 
       {/* ── ACHIEVEMENT TOAST ── */}
       {achToast&&(
-        <div style={{position:"fixed",bottom:80,left:"50%",transform:"translateX(-50%)",
-          background:c.dark?"rgba(20,30,20,0.97)":"rgba(255,252,245,0.97)",
-          border:`1.5px solid ${c.acc}`,borderRadius:16,padding:"12px 20px",zIndex:200,
-          display:"flex",alignItems:"center",gap:12,
-          boxShadow:"0 8px 32px rgba(0,0,0,0.35)",animation:"slide-up 0.35s ease",
-          maxWidth:320,width:"90vw"}}>
-          <div style={{fontSize:"2rem",lineHeight:1,flexShrink:0}}>{achToast.icon}</div>
-          <div>
-            <div style={{...bd,fontSize:"0.62rem",color:c.acc,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",marginBottom:1}}>Achievement unlocked</div>
-            <div style={{...hd,fontSize:"1rem",color:c.tx,fontWeight:800}}>{achToast.name}</div>
-            <div style={{...bd,fontSize:"0.72rem",color:c.tx3}}>{achToast.nameEn} · {achToast.desc}</div>
+        <div style={{position:"fixed",top:"env(safe-area-inset-top,20px)",right:16,
+          background:"rgba(10,20,12,0.97)",
+          border:"1px solid rgba(200,148,50,0.28)",borderLeft:"3px solid rgba(200,148,50,0.85)",borderRadius:14,
+          padding:"13px 16px 13px 14px",zIndex:300,
+          display:"flex",alignItems:"center",gap:13,
+          boxShadow:"0 8px 40px rgba(0,0,0,0.5),0 0 0 1px rgba(200,148,50,0.1)",
+          animation:"toast-slide-in 0.4s cubic-bezier(0.34,1.56,0.64,1)",
+          maxWidth:"min(300px,calc(100vw - 32px))"}}>
+          <div style={{width:40,height:40,borderRadius:"50%",background:"rgba(200,148,50,0.12)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"1.35rem",flexShrink:0}}>{achToast.icon}</div>
+          <div style={{minWidth:0}}>
+            <div style={{...bd,fontSize:"0.55rem",color:c.acc,fontWeight:700,letterSpacing:"0.12em",textTransform:"uppercase",marginBottom:2}}>Gradam · Achievement</div>
+            <div style={{...hd,fontSize:"0.95rem",color:"#EDE9DF",fontWeight:800,lineHeight:1.2}}>{achToast.name}</div>
+            <div style={{...bd,fontSize:"0.68rem",color:"rgba(237,233,223,0.45)",marginTop:2,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{achToast.nameEn} · {achToast.desc}</div>
           </div>
         </div>
       )}
