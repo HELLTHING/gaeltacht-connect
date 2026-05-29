@@ -1772,7 +1772,7 @@ html{-webkit-font-smoothing:antialiased}
 button:active{opacity:0.85;transform:scale(0.98)!important}
 body{background:${c.bg}}
 @media(min-width:520px){
-  body{background:linear-gradient(160deg,#040b05 0%,#091508 40%,#050c06 100%);min-height:100vh}
+  body{background:linear-gradient(160deg,#030904 0%,#071205 40%,#040a05 100%);min-height:100vh}
   .af{max-width:480px;margin:0 auto;position:relative;box-shadow:0 0 0 1px ${c.bd},0 8px 60px ${c.dark?"rgba(0,0,0,0.95)":"rgba(0,0,0,0.25)"},0 30px 120px ${c.dark?"rgba(0,0,0,0.8)":"rgba(0,0,0,0.15)"}}
 }
 `;
@@ -3875,8 +3875,8 @@ body{background:${c.bg}}
             <button onClick={()=>setView("home")} style={{display:"flex",alignItems:"center",gap:6,background:"rgba(255,255,255,0.1)",border:"1px solid rgba(255,255,255,0.18)",borderRadius:10,padding:"7px 12px",cursor:"pointer",color:"rgba(255,255,255,0.85)",...bd,fontSize:"0.82rem",fontWeight:600}}>← Baile <span style={{opacity:0.5,fontWeight:400,fontSize:"0.72rem"}}>· Home</span></button>
           </div>
           <div style={{position:"relative"}}>
-            <h1 style={{...hd,fontSize:"1.6rem",fontWeight:800,color:"#fff",marginBottom:3}}>Níos mó</h1>
-            <p style={{...bd,fontSize:"0.78rem",color:"rgba(255,255,255,0.55)",marginBottom:16}}>Explore more</p>
+            <h1 style={{...hd,fontSize:"1.8rem",fontWeight:900,fontStyle:"italic",color:"#EDE9DF",marginBottom:2,lineHeight:1}}>Roghanna</h1>
+            <p style={{...bd,fontSize:"0.65rem",color:"rgba(200,148,50,0.7)",letterSpacing:"0.2em",textTransform:"uppercase",marginBottom:16}}>Your sections · Níos mó</p>
             <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
               <div style={{...bd,fontSize:"0.68rem",fontWeight:700,background:"rgba(200,148,50,0.15)",border:"1px solid rgba(200,148,50,0.28)",borderRadius:20,padding:"4px 12px",color:c.acc}}>L{level}</div>
               <div style={{...bd,fontSize:"0.68rem",fontWeight:700,background:"rgba(200,148,50,0.15)",border:"1px solid rgba(200,148,50,0.28)",borderRadius:20,padding:"4px 12px",color:c.acc}}>{xp} XP</div>
@@ -3885,45 +3885,50 @@ body{background:${c.bg}}
           </div>
         </div>
         <div style={{padding:"20px 16px",maxWidth:500,margin:"0 auto"}}>
-          <div style={{...bd,fontSize:"0.6rem",color:c.tx3,letterSpacing:"0.14em",textTransform:"uppercase",marginBottom:14}}>Rannóga · Sections</div>
-          <div style={{display:"flex",flexDirection:"column",gap:10}}>
+          <div style={{...bd,fontSize:"0.58rem",color:c.tx3,letterSpacing:"0.14em",textTransform:"uppercase",marginBottom:14}}>Rannóga · Sections</div>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:12}}>
             {[
-              {icon:"📊",ga:"Dul Chun Cinn",en:"Progress & Achievements",v:"stats"},
-              {icon:"📖",ga:"Treoir Teanga",en:"Language & Grammar Guide",v:"guide"},
-              {icon:"🎵",ga:"Ceol na hÉireann",en:"Irish Music & Songs",v:"ceol"},
-              {icon:"⚙️",ga:"Socruithe",en:"Settings & Profile",v:"settings"},
+              {icon:"📊",ga:"Dul Chun Cinn",en:"Progress",v:"stats",action:null},
+              {icon:"📖",ga:"Treoir",en:"Language Guide",v:"guide",action:null},
+              {icon:"🎵",ga:"Ceol",en:"Irish Songs",v:"ceol",action:null},
+              {icon:"⚙️",ga:"Socruithe",en:"Settings",v:"settings",action:null},
             ].map(({icon,ga,en,v},i)=>(
               <button key={i} onClick={()=>{haptic();setPrevView("menu");setView(v);}} style={{
-                display:"flex",alignItems:"center",gap:16,
-                background:c.card,border:`1px solid ${c.bd}`,borderRadius:16,
-                padding:"18px 20px",cursor:"pointer",textAlign:"left",
-                boxShadow:c.shadow,animation:`rise 0.35s ${i*0.07}s ease both`,
+                display:"flex",flexDirection:"column",alignItems:"flex-start",gap:10,
+                background:c.card,border:`1px solid ${c.bd}`,borderRadius:18,
+                padding:"18px 16px",cursor:"pointer",textAlign:"left",
+                boxShadow:c.shadow,animation:`rise 0.35s ${i*0.06}s ease both`,
+                transition:"border-color 0.2s",
               }}>
-                <span style={{fontSize:"1.7rem",lineHeight:1,flexShrink:0,width:40,textAlign:"center"}}>{icon}</span>
-                <div style={{flex:1,minWidth:0}}>
-                  <div style={{...hd,fontSize:"1rem",fontWeight:700,color:c.tx,marginBottom:2,lineHeight:1.2}}>{ga}</div>
-                  <div style={{...bd,fontSize:"0.72rem",color:c.tx3,lineHeight:1.3}}>{en}</div>
+                <div style={{
+                  width:44,height:44,borderRadius:12,
+                  background:"rgba(200,148,50,0.1)",border:"1px solid rgba(200,148,50,0.18)",
+                  display:"flex",alignItems:"center",justifyContent:"center",
+                  fontSize:"1.4rem",lineHeight:1,flexShrink:0,
+                }}>{icon}</div>
+                <div>
+                  <div style={{...hd,fontSize:"0.92rem",fontWeight:700,color:c.tx,marginBottom:2,lineHeight:1.15}}>{ga}</div>
+                  <div style={{...bd,fontSize:"0.68rem",color:c.tx3,lineHeight:1.3}}>{en}</div>
                 </div>
-                <span style={{color:c.tx3,fontSize:"1.1rem",opacity:0.3,flexShrink:0}}>›</span>
               </button>
             ))}
-            <button onClick={()=>{haptic();setShowLeaderboard(true);if(!leaderData){setLeaderLoading(true);Promise.all([sbLeaderboard(),authUser?.id?sbMyRank(authUser.id):Promise.resolve(null)]).then(([rows,rank])=>{setLeaderData(rows);setMyRankData(rank);setLeaderLoading(false);});}}} style={{
-              display:"flex",alignItems:"center",gap:16,
-              background:c.card,border:`1px solid ${c.bd}`,borderRadius:16,
-              padding:"18px 20px",cursor:"pointer",textAlign:"left",
-              boxShadow:c.shadow,animation:"rise 0.35s 0.28s ease both",
-            }}>
-              <span style={{fontSize:"1.7rem",lineHeight:1,flexShrink:0,width:40,textAlign:"center"}}>🌍</span>
-              <div style={{flex:1,minWidth:0}}>
-                <div style={{...hd,fontSize:"1rem",fontWeight:700,color:c.tx,marginBottom:2,lineHeight:1.2}}>Clárbhord</div>
-                <div style={{...bd,fontSize:"0.72rem",color:c.tx3,lineHeight:1.3}}>Global Leaderboard</div>
-              </div>
-              <span style={{color:c.tx3,fontSize:"1.1rem",opacity:0.3,flexShrink:0}}>›</span>
-            </button>
           </div>
-          <div style={{marginTop:24,background:c.cardAlt,border:`1px solid ${c.bd}`,borderRadius:14,padding:"16px 20px"}}>
-            <div style={{...bd,fontSize:"0.55rem",color:"rgba(200,148,50,0.45)",letterSpacing:"0.15em",textTransform:"uppercase",marginBottom:8}}>Seanfhocal · Proverb</div>
-            <div style={{...hd,fontSize:"0.88rem",fontStyle:"italic",color:c.acc,lineHeight:1.55,marginBottom:6}}>"Is fearr Gaeilge briste ná Béarla cliste"</div>
+          <button onClick={()=>{haptic();setShowLeaderboard(true);if(!leaderData){setLeaderLoading(true);Promise.all([sbLeaderboard(),authUser?.id?sbMyRank(authUser.id):Promise.resolve(null)]).then(([rows,rank])=>{setLeaderData(rows);setMyRankData(rank);setLeaderLoading(false);});}}} style={{
+            width:"100%",display:"flex",alignItems:"center",gap:14,
+            background:c.card,border:`1px solid ${c.bd}`,borderRadius:16,
+            padding:"16px 20px",cursor:"pointer",textAlign:"left",
+            boxShadow:c.shadow,animation:"rise 0.35s 0.26s ease both",
+          }}>
+            <div style={{width:44,height:44,borderRadius:12,background:"rgba(200,148,50,0.1)",border:"1px solid rgba(200,148,50,0.18)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"1.4rem",lineHeight:1,flexShrink:0}}>🌍</div>
+            <div style={{flex:1,minWidth:0}}>
+              <div style={{...hd,fontSize:"0.92rem",fontWeight:700,color:c.tx,marginBottom:2,lineHeight:1.15}}>Clárbhord</div>
+              <div style={{...bd,fontSize:"0.68rem",color:c.tx3,lineHeight:1.3}}>Global Leaderboard</div>
+            </div>
+            <span style={{color:c.tx3,fontSize:"1.1rem",opacity:0.3,flexShrink:0}}>›</span>
+          </button>
+          <div style={{marginTop:20,background:c.cardAlt,border:`1px solid ${c.bd}`,borderRadius:14,padding:"16px 20px"}}>
+            <div style={{...bd,fontSize:"0.52rem",color:"rgba(200,148,50,0.42)",letterSpacing:"0.15em",textTransform:"uppercase",marginBottom:8}}>Seanfhocal · Proverb</div>
+            <div style={{...hd,fontSize:"0.92rem",fontStyle:"italic",color:c.acc,lineHeight:1.55,marginBottom:6}}>"Is fearr Gaeilge briste ná Béarla cliste"</div>
             <div style={{...bd,fontSize:"0.72rem",color:c.tx3,lineHeight:1.4}}>Broken Irish is better than clever English</div>
           </div>
         </div>
@@ -3962,8 +3967,8 @@ body{background:${c.bg}}
       {/* ── TOP BAR ── */}
       <div style={{display:"flex",alignItems:"center",padding:"16px 20px 0",zIndex:10,flexShrink:0}}>
         <div>
-          <div style={{...hd,fontSize:"0.95rem",fontWeight:800,color:c.acc,letterSpacing:"-0.01em",lineHeight:1}}>{greeting}</div>
-          <div style={{...bd,fontSize:"0.5rem",color:c.tx3,letterSpacing:"0.06em",marginTop:2}}>☘️ Gaeltacht Connect</div>
+          <div style={{...hd,fontSize:"1.05rem",fontWeight:900,fontStyle:"italic",color:c.acc,letterSpacing:"-0.01em",lineHeight:1}}>{greeting}</div>
+          <div style={{...bd,fontSize:"0.46rem",color:"rgba(237,233,223,0.3)",letterSpacing:"0.12em",marginTop:3,textTransform:"uppercase"}}>☘️ Gaeltacht Connect</div>
         </div>
         <div style={{marginLeft:"auto",display:"flex",alignItems:"center",gap:6}}>
           {st?.streak>=1&&(
@@ -4001,15 +4006,16 @@ body{background:${c.bg}}
       {/* ── PHRASE STAGE ── */}
       <div style={{
         flex:1,display:"flex",flexDirection:"column",position:"relative",overflow:"hidden",
-        background:`radial-gradient(ellipse 120% 60% at 50% -8%, rgba(196,146,58,0.13) 0%, transparent 55%),
-             radial-gradient(ellipse 65% 50% at 6% 90%, rgba(30,80,50,0.22) 0%, transparent 50%),
-             radial-gradient(ellipse 50% 40% at 94% 75%, rgba(196,146,58,0.08) 0%, transparent 45%),
-             linear-gradient(175deg, #060d07 0%, #0a1a0c 38%, #081408 68%, #060d07 100%)`,
+        background:`radial-gradient(ellipse 130% 55% at 50% -5%, rgba(196,146,58,0.17) 0%, transparent 52%),
+             radial-gradient(ellipse 70% 55% at 5% 92%, rgba(30,80,50,0.28) 0%, transparent 48%),
+             radial-gradient(ellipse 55% 45% at 95% 72%, rgba(196,146,58,0.1) 0%, transparent 42%),
+             radial-gradient(ellipse 40% 30% at 50% 50%, rgba(10,28,14,0.4) 0%, transparent 100%),
+             linear-gradient(175deg, #050c06 0%, #091608 38%, #070f08 68%, #040b05 100%)`,
       }}>
         {/* Subtle diamond texture overlay */}
         <div style={{
           position:"absolute",inset:0,pointerEvents:"none",opacity:c.dark?1:0.4,
-          backgroundImage:`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='44'%3E%3Cpath d='M22 2 L42 22 L22 42 L2 22 Z' fill='none' stroke='rgba(200,150,62,0.055)' stroke-width='0.6'/%3E%3C/svg%3E")`,
+          backgroundImage:`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='44'%3E%3Cpath d='M22 2 L42 22 L22 42 L2 22 Z' fill='none' stroke='rgba(200,148,50,0.075)' stroke-width='0.7'/%3E%3C/svg%3E")`,
           backgroundSize:"44px 44px",
         }}/>
 
@@ -4022,89 +4028,69 @@ body{background:${c.bg}}
         }}/>
 
         {/* Content */}
-        <div style={{flex:1,display:"flex",flexDirection:"column",padding:"18px 26px 20px",position:"relative",zIndex:1}}>
+        <div style={{flex:1,display:"flex",flexDirection:"column",padding:"14px 24px 18px",position:"relative",zIndex:1}}>
 
           {/* Day badge */}
           <div style={{
             alignSelf:"center",
-            ...bd,fontSize:"0.48rem",letterSpacing:"0.28em",textTransform:"uppercase",
-            color:c.dark?"rgba(200,150,62,0.38)":c.tx3,
-            border:`1px solid ${c.dark?"rgba(200,150,62,0.12)":c.bd}`,
-            borderRadius:20,padding:"4px 12px",marginBottom:18,
+            ...bd,fontSize:"0.46rem",letterSpacing:"0.3em",textTransform:"uppercase",
+            color:"rgba(200,148,50,0.42)",
+            border:"1px solid rgba(200,148,50,0.14)",
+            borderRadius:20,padding:"4px 14px",marginBottom:16,
           }}>
             {allDone?"Tá Gaeilge agat 🏆":`Lá ${nextDay} · ${todayCh?.e||""}`}
           </div>
 
-          {/* ── THE STORY ── */}
-          <div style={{
-            marginBottom:18,
-            background:"rgba(22,42,28,0.45)",
-            border:"1px solid rgba(200,148,50,0.1)",
-            borderLeft:"2.5px solid rgba(200,148,50,0.38)",
-            borderRadius:"0 12px 12px 0",
-            padding:"12px 14px",
-          }}>
-            <div style={{
-              ...bd,fontSize:"0.43rem",color:"rgba(200,148,50,0.42)",
-              letterSpacing:"0.24em",textTransform:"uppercase",marginBottom:8,
-            }}>Stair · History</div>
-            <p style={{
-              ...hd,
-              fontSize:"0.83rem",
-              color:"rgba(240,237,228,0.6)",
-              lineHeight:1.78,
-              fontStyle:"italic",
-              margin:0,
-            }}>
-              {storyFull}
-            </p>
-          </div>
-
-          {/* Divider */}
-          <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:20}}>
-            <div style={{flex:1,height:"1px",background:c.dark?"linear-gradient(90deg,transparent,rgba(200,150,62,0.18))":"linear-gradient(90deg,transparent,rgba(27,67,50,0.15))"}}/>
-            <div style={{fontSize:"0.6rem",color:c.dark?"rgba(200,150,62,0.28)":"rgba(27,67,50,0.3)",letterSpacing:"0.15em"}}>✦ ✦ ✦</div>
-            <div style={{flex:1,height:"1px",background:c.dark?"linear-gradient(90deg,rgba(200,150,62,0.18),transparent)":"linear-gradient(90deg,rgba(27,67,50,0.15),transparent)"}}/>
-          </div>
-
-          {/* ── THE PHRASE ── */}
-          <div style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",textAlign:"center"}}>
-            <div style={{
-              ...bd,fontSize:"0.43rem",
-              color:c.dark?"rgba(200,150,62,0.35)":"rgba(27,67,50,0.5)",
-              letterSpacing:"0.24em",textTransform:"uppercase",marginBottom:14,
-            }}>Frása an Lae</div>
-
-            {/* Phrase glow backdrop */}
-            <div style={{position:"relative",display:"inline-block"}}>
+          {/* ── THE PHRASE (hero) ── */}
+          <div style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",textAlign:"center",minHeight:120}}>
+            {/* Glow halo */}
+            <div style={{position:"relative",display:"inline-block",marginBottom:14}}>
               <div style={{
-                position:"absolute",inset:"-20px -30px",
-                background:"radial-gradient(ellipse, rgba(200,150,62,0.1) 0%, transparent 70%)",
+                position:"absolute",inset:"-32px -40px",
+                background:"radial-gradient(ellipse, rgba(200,148,50,0.14) 0%, transparent 68%)",
                 pointerEvents:"none",
               }}/>
               <div style={{
                 ...hd,
-                fontSize:"clamp(2.4rem,10vw,3.5rem)",
+                fontSize:"clamp(2.7rem,11vw,4rem)",
                 fontWeight:900,
-                color:c.dark?"#C8963E":c.acc,
+                color:"#CFA050",
                 fontStyle:"italic",
-                lineHeight:1.05,
+                lineHeight:1.02,
                 letterSpacing:"-0.025em",
-                textShadow:c.dark?"0 0 60px rgba(200,150,62,0.18), 0 4px 20px rgba(0,0,0,0.4)":"none",
+                textShadow:"0 0 80px rgba(200,148,50,0.22), 0 2px 28px rgba(0,0,0,0.55)",
                 position:"relative",
               }}>
                 {allDone?"Tá Gaeilge agat!":todayCh?.p}
               </div>
             </div>
-
             <div style={{
-              ...bd,fontSize:"0.78rem",
-              color:c.dark?"rgba(200,150,62,0.38)":c.tx3,
-              marginTop:10,letterSpacing:"0.04em",
-              fontStyle:"italic",
+              ...hd,fontSize:"0.85rem",fontStyle:"italic",
+              color:"rgba(237,233,223,0.4)",
+              letterSpacing:"0.02em",lineHeight:1.4,
             }}>
               {allDone?"You have Irish":todayCh?.m}
             </div>
+          </div>
+
+          {/* ── THE STORY (below phrase) ── */}
+          <div style={{
+            background:"rgba(18,36,22,0.5)",
+            borderLeft:"2px solid rgba(200,148,50,0.32)",
+            borderRadius:"0 10px 10px 0",
+            padding:"10px 13px",
+            marginBottom:14,
+          }}>
+            <div style={{
+              ...bd,fontSize:"0.41rem",color:"rgba(200,148,50,0.38)",
+              letterSpacing:"0.26em",textTransform:"uppercase",marginBottom:6,
+            }}>Stair · History</div>
+            <p style={{
+              ...hd,fontSize:"0.8rem",color:"rgba(237,233,223,0.55)",
+              lineHeight:1.72,fontStyle:"italic",margin:0,
+            }}>
+              {storyFull}
+            </p>
           </div>
 
           {/* ── BOTTOM ── */}
