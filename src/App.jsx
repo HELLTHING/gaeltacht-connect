@@ -3911,9 +3911,6 @@ body{background:${c.bg}}
   const xp = st?.xp || 0;
   const level = Math.floor(xp / 100) + 1;
   const levelPct = xp % 100;
-  const _hr = new Date().getHours();
-  const greeting = _hr<12?"Maidin mhaith":_hr<18?"Dia dhuit":"Tráthnóna maith";
-  const greetingEn = _hr<12?"Good morning":_hr<18?"Hello":"Good evening";
 
 
   const todayCh = CH[nextDay-1];
@@ -3927,9 +3924,9 @@ body{background:${c.bg}}
 
       {/* ── TOP BAR ── */}
       <div style={{display:"flex",alignItems:"center",padding:"16px 20px 0",zIndex:10,flexShrink:0}}>
-        <div>
-          <div style={{...hd,fontSize:"1.05rem",fontWeight:900,fontStyle:"italic",color:c.acc,letterSpacing:"-0.01em",lineHeight:1}}>{greeting}</div>
-          <div style={{...bd,fontSize:"0.6rem",color:"rgba(237,233,223,0.5)",letterSpacing:"0.04em",marginTop:3}}>{greetingEn}</div>
+        <div style={{display:"flex",alignItems:"center",gap:6}}>
+          <span style={{fontSize:"1rem"}}>☘️</span>
+          <span style={{...hd,fontSize:"0.9rem",fontWeight:800,color:"rgba(240,237,228,0.8)",letterSpacing:"-0.01em"}}>Gaeltacht</span>
         </div>
         <div style={{marginLeft:"auto",display:"flex",alignItems:"center",gap:6}}>
           {st?.streak>=1&&(
