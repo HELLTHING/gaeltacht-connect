@@ -2051,10 +2051,6 @@ body{background:${c.bg}}
             }
             <div style={{color:c.tx3,fontSize:"0.75rem",marginTop:2}}>/{fw.pr}/ · {fw.m}</div>
             <div style={{display:"flex",gap:8,justifyContent:"center",marginTop:10,flexWrap:"wrap"}}>
-              <button onClick={()=>speak(fw.w)} style={{
-                background:"none",border:`1px solid ${c.bd}`,borderRadius:8,
-                padding:"8px 16px",color:c.tx2,fontSize:"0.8rem",cursor:"pointer"
-              }}>🔊 Éist · Listen</button>
               <button onClick={()=>{
                 const score=done==="won"?`${guesses.length}/6`:"X/6";
                 const txt=`Focail #${dayNum} ${score}\n${fw.w.toUpperCase()} — ${fw.m}\n\n${focailEmoji(colors)}\n\n☘️ gaeltachtconnect.com — Irish word of the day`;
@@ -2374,14 +2370,6 @@ body{background:${c.bg}}
                 <div style={{position:"absolute",top:0,left:0,right:0,height:2,background:`linear-gradient(90deg,transparent 0%,${c.gold} 50%,transparent 100%)`}}/>
                 <div style={{...hd,fontSize:"2.2rem",fontWeight:700,color:c.acc,lineHeight:1.25,marginBottom:8}}>{q.phrase}</div>
                 <div style={{...bd,fontSize:"0.74rem",color:c.tx3,fontStyle:"italic",marginBottom:14,letterSpacing:"0.04em"}}>/{q.pr}/</div>
-                <button onClick={()=>speak(q.phrase)} style={{
-                  background:c.phraseBd,border:"none",borderRadius:20,
-                  padding:"6px 16px",color:c.acc,...bd,fontSize:"0.78rem",
-                  cursor:"pointer",display:"inline-flex",alignItems:"center",gap:6,
-                }}>
-                  <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M15.54 8.46a5 5 0 010 7.07" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round"/></svg>
-                  Éist · Listen
-                </button>
               </div>
 
               {/* Question */}
@@ -2611,32 +2599,7 @@ body{background:${c.bg}}
                   </div>
                   <div style={{...bd,fontSize:"0.78rem",color:c.gold,opacity:0.7,letterSpacing:"0.04em",marginBottom:8,fontStyle:"italic"}}>{ch.m}</div>
                   <div style={{...bd,fontSize:"0.84rem",color:c.tx3,letterSpacing:"0.06em",marginBottom:14,fontStyle:"italic"}}>/ {ch.pr} /</div>
-                  <button onClick={()=>speak(ch.p)} style={{
-                    background:speakError==="no-voice"?`rgba(180,70,0,0.08)`:c.phrase,
-                    border:`1px solid ${speakError==="no-voice"?`rgba(180,70,0,0.35)`:c.phraseBd}`,
-                    borderRadius:20,padding:"7px 18px",
-                    color:speakError==="no-voice"?`#B44600`:c.acc,
-                    ...bd,fontSize:"0.85rem",cursor:"pointer",
-                    display:"inline-flex",alignItems:"center",gap:7,marginBottom:speakError?6:10,
-                    transition:"all 0.2s",
-                  }}>
-                    {speakLoading
-                      ?<><span style={{animation:"breathe 0.8s ease infinite"}}>⏳</span> Ag lódáil…</>
-                      :speakError==="no-voice"
-                      ?<>🔇 Níl guth Gaeilge · Tap to retry</>
-                      :<><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M15.54 8.46a5 5 0 010 7.07" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round"/></svg>Éist le fuaim <span style={{opacity:0.55,fontSize:"0.75rem"}}>· Listen</span></>
-                    }
-                  </button>
-                  {speakError==="no-voice"&&(
-                    <div style={{...bd,fontSize:"0.72rem",color:c.tx3,marginBottom:10,lineHeight:1.55,maxWidth:280,textAlign:"center"}}>
-                      Install an Irish voice: <strong style={{color:c.tx2}}>iOS</strong> Settings → Accessibility → Spoken Content → Voices → Irish · <strong style={{color:c.tx2}}>Android</strong> Settings → Text-to-speech → Add Irish
-                    </div>
-                  )}
-                  {speakError==="ok-accent"&&(
-                    <div style={{...bd,fontSize:"0.72rem",color:c.tx3,marginBottom:10,lineHeight:1.55,maxWidth:280,textAlign:"center",opacity:0.75}}>
-                      No native Irish voice — approximation only. For real pronunciation, install an Irish voice.
-                    </div>
-                  )}
+                  <div style={{marginBottom:10}}/>
                 </div>
 
                 {/* Challenge */}
@@ -3070,7 +3033,7 @@ body{background:${c.bg}}
         <div style={{background:c.hero,padding:"20px 20px 20px"}}>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
             <div style={{display:"flex",alignItems:"center",gap:10}}>
-              <button onClick={()=>setView("home")} style={{display:"flex",alignItems:"center",gap:6,background:"rgba(255,255,255,0.12)",border:"1px solid rgba(255,255,255,0.2)",borderRadius:10,padding:"7px 12px",cursor:"pointer",color:"rgba(255,255,255,0.85)",...bd,fontSize:"0.82rem",fontWeight:600}}>← Baile <span style={{opacity:0.5,fontWeight:400,fontSize:"0.72rem"}}>· Home</span></button>
+              <button onClick={()=>setView(prevView||"home")} style={{display:"flex",alignItems:"center",gap:6,background:"rgba(255,255,255,0.12)",border:"1px solid rgba(255,255,255,0.2)",borderRadius:10,padding:"7px 12px",cursor:"pointer",color:"rgba(255,255,255,0.85)",...bd,fontSize:"0.82rem",fontWeight:600}}>← {prevView==="menu"?"Roghanna":"Baile"} <span style={{opacity:0.5,fontWeight:400,fontSize:"0.72rem"}}>{prevView==="menu"?"· Menu":"· Home"}</span></button>
               <h1 style={{...hd,fontSize:"1.6rem",color:"#fff"}}>📖 Foclóir</h1>
             </div>
           </div>
@@ -3095,9 +3058,6 @@ body{background:${c.bg}}
                 <div style={{...bd,fontSize:"0.7rem",color:c.tx3}}>/{w.pr}/</div>
                 <div style={{...bd,fontSize:"0.82rem",color:c.tx2}}>{w.m}</div>
               </div>
-              <button onClick={()=>speak(w.p)} style={{background:c.cardAlt,border:`1px solid ${c.bd}`,borderRadius:8,width:34,height:34,flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",fontSize:"0.95rem",opacity:speakLoading?0.5:1}}>
-                {speakLoading?"⏳":speakError==="no-voice"?"🔇":"🔊"}
-              </button>
             </div>
           ))}
           {filtered.length===0&&<div style={{textAlign:"center",padding:"40px",...bd,color:c.tx3,fontStyle:"italic"}}>Níor aimsíodh aon rud — Nothing found</div>}
@@ -3119,7 +3079,7 @@ body{background:${c.bg}}
         <style>{css}</style>
         <div style={{background:c.hero,padding:"20px 20px 32px",textAlign:"center"}}>
           <div style={{display:"flex",justifyContent:"flex-start",marginBottom:16}}>
-            <button onClick={()=>setView("home")} style={{display:"flex",alignItems:"center",gap:6,background:"rgba(255,255,255,0.12)",border:"1px solid rgba(255,255,255,0.2)",borderRadius:10,padding:"7px 12px",cursor:"pointer",color:"rgba(255,255,255,0.85)",...bd,fontSize:"0.82rem",fontWeight:600}}>← Baile <span style={{opacity:0.5,fontWeight:400,fontSize:"0.72rem"}}>· Home</span></button>
+            <button onClick={()=>setView(prevView||"home")} style={{display:"flex",alignItems:"center",gap:6,background:"rgba(255,255,255,0.12)",border:"1px solid rgba(255,255,255,0.2)",borderRadius:10,padding:"7px 12px",cursor:"pointer",color:"rgba(255,255,255,0.85)",...bd,fontSize:"0.82rem",fontWeight:600}}>← {prevView==="menu"?"Roghanna":"Baile"} <span style={{opacity:0.5,fontWeight:400,fontSize:"0.72rem"}}>{prevView==="menu"?"· Menu":"· Home"}</span></button>
           </div>
           <h1 style={{...hd,fontSize:"1.4rem",fontWeight:800,color:"#fff",marginBottom:4}}>Mo Dhul Chun Cinn</h1>
           <p style={{...bd,fontSize:"0.82rem",color:"rgba(255,255,255,0.65)",marginBottom:20}}>My Progress</p>
@@ -3245,7 +3205,7 @@ body{background:${c.bg}}
         <style>{css}</style>
         <div style={{background:c.hero,padding:"20px 20px 20px"}}>
           <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:12}}>
-            <button onClick={()=>setView("home")} style={{display:"flex",alignItems:"center",gap:6,background:"rgba(255,255,255,0.12)",border:"1px solid rgba(255,255,255,0.2)",borderRadius:10,padding:"7px 12px",cursor:"pointer",color:"rgba(255,255,255,0.85)",...bd,fontSize:"0.82rem",fontWeight:600}}>← Baile <span style={{opacity:0.5,fontWeight:400,fontSize:"0.72rem"}}>· Home</span></button>
+            <button onClick={()=>setView(prevView||"home")} style={{display:"flex",alignItems:"center",gap:6,background:"rgba(255,255,255,0.12)",border:"1px solid rgba(255,255,255,0.2)",borderRadius:10,padding:"7px 12px",cursor:"pointer",color:"rgba(255,255,255,0.85)",...bd,fontSize:"0.82rem",fontWeight:600}}>← {prevView==="menu"?"Roghanna":"Baile"} <span style={{opacity:0.5,fontWeight:400,fontSize:"0.72rem"}}>{prevView==="menu"?"· Menu":"· Home"}</span></button>
           </div>
           <h1 style={{...hd,fontSize:"1.8rem",color:"#fff"}}>⚙️ Socruithe <span style={{fontWeight:400,fontSize:"1.1rem",opacity:0.55}}>· Settings</span></h1>
         </div>
@@ -3556,7 +3516,7 @@ body{background:${c.bg}}
         {/* Header */}
         <div style={{background:c.hero,padding:"20px 20px 0"}}>
           <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:14}}>
-            <button onClick={()=>setView("home")} style={{display:"flex",alignItems:"center",gap:6,background:"rgba(255,255,255,0.12)",border:"1px solid rgba(255,255,255,0.2)",borderRadius:10,padding:"7px 12px",cursor:"pointer",color:"rgba(255,255,255,0.85)",...bd,fontSize:"0.82rem",fontWeight:600}}>← Baile <span style={{opacity:0.5,fontWeight:400,fontSize:"0.72rem"}}>· Home</span></button>
+            <button onClick={()=>setView(prevView||"home")} style={{display:"flex",alignItems:"center",gap:6,background:"rgba(255,255,255,0.12)",border:"1px solid rgba(255,255,255,0.2)",borderRadius:10,padding:"7px 12px",cursor:"pointer",color:"rgba(255,255,255,0.85)",...bd,fontSize:"0.82rem",fontWeight:600}}>← {prevView==="menu"?"Roghanna":"Baile"} <span style={{opacity:0.5,fontWeight:400,fontSize:"0.72rem"}}>{prevView==="menu"?"· Menu":"· Home"}</span></button>
           </div>
           <h1 style={{...hd,fontSize:"1.7rem",color:"#fff",marginBottom:4}}>📚 Fuaimeanna & Gramadach</h1>
           <p style={{...bd,fontSize:"0.75rem",color:"rgba(255,255,255,0.55)",marginBottom:0,paddingBottom:0}}>Pronunciation · Grammar · How Irish works</p>
@@ -3743,7 +3703,7 @@ body{background:${c.bg}}
         <div style={{background:c.hero,padding:"20px 20px 28px"}}>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:18}}>
             <div style={{display:"flex",alignItems:"center",gap:10}}>
-              <button onClick={()=>setView("home")} style={{display:"flex",alignItems:"center",gap:6,background:"rgba(255,255,255,0.12)",border:"1px solid rgba(255,255,255,0.2)",borderRadius:10,padding:"7px 12px",cursor:"pointer",color:"rgba(255,255,255,0.85)",...bd,fontSize:"0.82rem",fontWeight:600}}>← Baile <span style={{opacity:0.5,fontWeight:400,fontSize:"0.72rem"}}>· Home</span></button>
+              <button onClick={()=>setView(prevView||"home")} style={{display:"flex",alignItems:"center",gap:6,background:"rgba(255,255,255,0.12)",border:"1px solid rgba(255,255,255,0.2)",borderRadius:10,padding:"7px 12px",cursor:"pointer",color:"rgba(255,255,255,0.85)",...bd,fontSize:"0.82rem",fontWeight:600}}>← {prevView==="menu"?"Roghanna":"Baile"} <span style={{opacity:0.5,fontWeight:400,fontSize:"0.72rem"}}>{prevView==="menu"?"· Menu":"· Home"}</span></button>
               <h1 style={{...hd,fontSize:"1.3rem",fontWeight:800,color:"#fff",margin:0}}>☘️ 30 Lá <span style={{fontWeight:400,fontSize:"0.9rem",opacity:0.5}}>· Days</span></h1>
             </div>
           </div>
@@ -3953,6 +3913,7 @@ body{background:${c.bg}}
   const levelPct = xp % 100;
   const _hr = new Date().getHours();
   const greeting = _hr<12?"Maidin mhaith":_hr<18?"Dia dhuit":"Tráthnóna maith";
+  const greetingEn = _hr<12?"Good morning":_hr<18?"Hello":"Good evening";
 
 
   const todayCh = CH[nextDay-1];
@@ -3968,7 +3929,11 @@ body{background:${c.bg}}
       <div style={{display:"flex",alignItems:"center",padding:"16px 20px 0",zIndex:10,flexShrink:0}}>
         <div>
           <div style={{...hd,fontSize:"1.05rem",fontWeight:900,fontStyle:"italic",color:c.acc,letterSpacing:"-0.01em",lineHeight:1}}>{greeting}</div>
-          <div style={{...bd,fontSize:"0.46rem",color:"rgba(237,233,223,0.3)",letterSpacing:"0.12em",marginTop:3,textTransform:"uppercase"}}>☘️ Gaeltacht Connect</div>
+          <div style={{display:"flex",alignItems:"center",gap:5,marginTop:3}}>
+            <span style={{...bd,fontSize:"0.48rem",color:"rgba(237,233,223,0.38)",letterSpacing:"0.02em"}}>{greetingEn}</span>
+            <span style={{color:"rgba(237,233,223,0.18)",fontSize:"0.4rem"}}>·</span>
+            <span style={{...bd,fontSize:"0.44rem",color:"rgba(237,233,223,0.2)",letterSpacing:"0.08em",textTransform:"uppercase"}}>☘️ Gaeltacht</span>
+          </div>
         </div>
         <div style={{marginLeft:"auto",display:"flex",alignItems:"center",gap:6}}>
           {st?.streak>=1&&(
