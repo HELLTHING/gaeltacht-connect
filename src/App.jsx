@@ -3929,11 +3929,7 @@ body{background:${c.bg}}
       <div style={{display:"flex",alignItems:"center",padding:"16px 20px 0",zIndex:10,flexShrink:0}}>
         <div>
           <div style={{...hd,fontSize:"1.05rem",fontWeight:900,fontStyle:"italic",color:c.acc,letterSpacing:"-0.01em",lineHeight:1}}>{greeting}</div>
-          <div style={{display:"flex",alignItems:"center",gap:5,marginTop:3}}>
-            <span style={{...bd,fontSize:"0.48rem",color:"rgba(237,233,223,0.38)",letterSpacing:"0.02em"}}>{greetingEn}</span>
-            <span style={{color:"rgba(237,233,223,0.18)",fontSize:"0.4rem"}}>·</span>
-            <span style={{...bd,fontSize:"0.44rem",color:"rgba(237,233,223,0.2)",letterSpacing:"0.08em",textTransform:"uppercase"}}>☘️ Gaeltacht</span>
-          </div>
+          <div style={{...bd,fontSize:"0.6rem",color:"rgba(237,233,223,0.5)",letterSpacing:"0.04em",marginTop:3}}>{greetingEn}</div>
         </div>
         <div style={{marginLeft:"auto",display:"flex",alignItems:"center",gap:6}}>
           {st?.streak>=1&&(
