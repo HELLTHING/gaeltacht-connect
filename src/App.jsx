@@ -1755,7 +1755,8 @@ export default function App() {
   if(!st)return null;
 
   const total=(st.done||[]).length;
-  const nextDay=total<CH.length?total+1:CH.length;
+  const _doneSt=st.done||[];
+  const nextDay=CH.find(d=>!_doneSt.includes(d.day))?.day??CH.length;
   const pct=total/CH.length;
   const currentCh=CH[nextDay-1];
   const allDone=total===CH.length;
@@ -2540,7 +2541,7 @@ body{background:${c.bg}}
     const bDone=_bonus.includes(ch.day);
     const locked=ch.day>1&&!_done.includes(ch.day-1)&&!done;
     const dayColor=CAT_CLR[ch.cat]||c.acc;
-    const todayDayNum=CH.findIndex(d=>!_done.includes(d.day))+1||CH.length;
+    const todayDayNum=CH.find(d=>!_done.includes(d.day))?.day??CH.length;
     if(selDay===todayDayNum&&!st.dailyLog?.[todayKey()+"_lesson"]){
       earnXP(20, todayKey()+"_lesson");
       earnAchievement("first_lesson");
