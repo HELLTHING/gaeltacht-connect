@@ -1756,6 +1756,7 @@ export default function App() {
 @keyframes shamrock-spin{0%{transform:scale(0) rotate(-30deg)}60%{transform:scale(1.2) rotate(8deg)}100%{transform:scale(1) rotate(0deg)}}
 @keyframes slide-up{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
 @keyframes toast-slide-in{from{opacity:0;transform:translateX(110%) scale(0.92)}to{opacity:1;transform:translateX(0) scale(1)}}
+@keyframes gold-shimmer{0%,100%{filter:brightness(1) drop-shadow(0 0 8px rgba(200,148,50,0.15))}50%{filter:brightness(1.12) drop-shadow(0 0 20px rgba(200,148,50,0.32))}}
 @keyframes pulse-ring{0%{transform:scale(1);opacity:0.6}100%{transform:scale(1.6);opacity:0}}
 @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-5px)}40%{transform:translateX(5px)}60%{transform:translateX(-3px)}80%{transform:translateX(3px)}}
 @keyframes correctPop{0%{transform:scale(1)}50%{transform:scale(1.04)}100%{transform:scale(1)}}
@@ -1779,6 +1780,7 @@ body{background:${c.bg}}
 
   const hd = {fontFamily:"'Playfair Display',Georgia,serif",letterSpacing:"0.01em"};
   const bd = {fontFamily:"'Lato',system-ui,sans-serif"};
+  const ir = {fontFamily:"'Cormorant Garamond','Playfair Display',Georgia,serif",letterSpacing:"0.01em"};
 
   // ═══════════════════════════════
   // FOCAIL VIEW — Daily Irish Wordle
@@ -4001,33 +4003,46 @@ body{background:${c.bg}}
 
           {/* ── THE PHRASE (hero) ── */}
           <div style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",textAlign:"center",minHeight:120}}>
-            {/* Glow halo */}
-            <div style={{position:"relative",display:"inline-block",marginBottom:14}}>
+            <div style={{
+              position:"relative",width:"100%",
+              background:"linear-gradient(145deg,rgba(18,38,22,0.62),rgba(10,22,13,0.82))",
+              border:"1px solid rgba(200,148,50,0.22)",
+              borderRadius:22,padding:"26px 20px",
+              boxShadow:"inset 0 1px 0 rgba(200,148,50,0.1),0 8px 36px rgba(0,0,0,0.45)",
+              overflow:"hidden",
+            }}>
+              {/* Corner ornaments */}
+              {[[{top:8,left:8},{top:8,right:8},{bottom:8,left:8},{bottom:8,right:8}]].flat().map((pos,i)=>(
+                <div key={i} style={{position:"absolute",...pos,width:16,height:16,
+                  backgroundImage:`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16'%3E%3Cpath d='M8 1 L15 8 L8 15 L1 8 Z' fill='none' stroke='rgba(200%2C148%2C50%2C0.32)' stroke-width='1'/%3E%3Cpath d='M8 4 L12 8 L8 12 L4 8 Z' fill='none' stroke='rgba(200%2C148%2C50%2C0.15)' stroke-width='0.8'/%3E%3C/svg%3E")`,
+                  backgroundSize:"contain",pointerEvents:"none",
+                }}/>
+              ))}
+              {/* Label */}
+              <div style={{...bd,fontSize:"0.44rem",color:"rgba(200,148,50,0.38)",letterSpacing:"0.3em",textTransform:"uppercase",marginBottom:16}}>Frása an Lae</div>
+              {/* Phrase */}
               <div style={{
-                position:"absolute",inset:"-32px -40px",
-                background:"radial-gradient(ellipse, rgba(200,148,50,0.14) 0%, transparent 68%)",
-                pointerEvents:"none",
-              }}/>
-              <div style={{
-                ...hd,
+                ...ir,
                 fontSize:"clamp(2.7rem,11vw,4rem)",
-                fontWeight:900,
+                fontWeight:700,
                 color:"#CFA050",
                 fontStyle:"italic",
                 lineHeight:1.02,
-                letterSpacing:"-0.025em",
-                textShadow:"0 0 80px rgba(200,148,50,0.22), 0 2px 28px rgba(0,0,0,0.55)",
-                position:"relative",
+                letterSpacing:"-0.02em",
+                textShadow:"0 0 60px rgba(200,148,50,0.2), 0 2px 24px rgba(0,0,0,0.5)",
+                animation:"gold-shimmer 4s ease-in-out infinite",
+                marginBottom:12,
               }}>
                 {allDone?"Tá Gaeilge agat!":todayCh?.p}
               </div>
-            </div>
-            <div style={{
-              ...hd,fontSize:"0.85rem",fontStyle:"italic",
-              color:"rgba(237,233,223,0.4)",
-              letterSpacing:"0.02em",lineHeight:1.4,
-            }}>
-              {allDone?"You have Irish":todayCh?.m}
+              {/* Translation */}
+              <div style={{
+                ...hd,fontSize:"0.83rem",fontStyle:"italic",
+                color:"rgba(237,233,223,0.38)",
+                letterSpacing:"0.02em",lineHeight:1.4,
+              }}>
+                {allDone?"You have Irish":todayCh?.m}
+              </div>
             </div>
           </div>
 
@@ -4053,13 +4068,31 @@ body{background:${c.bg}}
 
           {/* ── BOTTOM ── */}
           <div style={{display:"flex",flexDirection:"column",gap:11,marginTop:16}}>
-            {/* XP bar */}
-            <div style={{display:"flex",alignItems:"center",gap:8}}>
-              <span style={{...bd,fontSize:"0.54rem",fontWeight:800,color:c.dark?"rgba(200,150,62,0.38)":c.tx3,whiteSpace:"nowrap"}}>L{level}</span>
-              <div style={{flex:1,height:2,background:c.dark?"rgba(255,255,255,0.07)":c.progBg,borderRadius:10,overflow:"hidden"}}>
-                <div style={{height:"100%",width:`${levelPct}%`,background:c.progFill,borderRadius:10,transition:"width 0.6s ease"}}/>
-              </div>
-              <span style={{...bd,fontSize:"0.54rem",color:c.dark?"rgba(240,237,228,0.22)":c.tx3,whiteSpace:"nowrap"}}>{xp} XP</span>
+            {/* Progress rings */}
+            <div style={{display:"flex",justifyContent:"center",gap:28}}>
+              {[
+                {pct:total/CH.length,top:`${total}`,bot:`/${CH.length}`,label:"LAETHANTA"},
+                {pct:levelPct/100,top:`L${level}`,bot:`${xp} XP`,label:"LEIBHÉAL"},
+              ].map(({pct,top,bot,label},i)=>{
+                const r=20,circ=2*Math.PI*r;
+                return(
+                  <div key={i} style={{display:"flex",flexDirection:"column",alignItems:"center",gap:3}}>
+                    <div style={{position:"relative",width:52,height:52}}>
+                      <svg width="52" height="52" viewBox="0 0 52 52" style={{transform:"rotate(-90deg)"}}>
+                        <circle cx="26" cy="26" r={r} fill="none" stroke="rgba(255,255,255,0.07)" strokeWidth="3"/>
+                        <circle cx="26" cy="26" r={r} fill="none" stroke="#C4923A" strokeWidth="3"
+                          strokeDasharray={`${Math.min(pct,1)*circ} ${circ}`} strokeLinecap="round"
+                          style={{transition:"stroke-dasharray 1s ease"}}/>
+                      </svg>
+                      <div style={{position:"absolute",inset:0,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center"}}>
+                        <span style={{...bd,fontSize:"0.68rem",fontWeight:800,color:"#EDE9DF",lineHeight:1}}>{top}</span>
+                        <span style={{...bd,fontSize:"0.46rem",color:"rgba(237,233,223,0.3)",lineHeight:1.2}}>{bot}</span>
+                      </div>
+                    </div>
+                    <span style={{...bd,fontSize:"0.4rem",color:"rgba(200,148,50,0.4)",letterSpacing:"0.1em"}}>{label}</span>
+                  </div>
+                );
+              })}
             </div>
 
             {/* Mission pills */}
