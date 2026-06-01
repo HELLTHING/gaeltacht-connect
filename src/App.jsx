@@ -4096,7 +4096,7 @@ body{background:${c.bg}}
             </div>
 
             {/* Mission pills */}
-            <div style={{display:"flex",gap:5,justifyContent:"center"}}>
+            <div style={{display:"flex",gap:5}}>
               {[
                 {ic:"📚",l:"Ceacht",done:missionLesson,a:()=>{haptic();setPrevView("home");setSelDay(nextDay);setView("day");}},
                 {ic:"🟩",l:"Focail",done:missionFocail,a:()=>{haptic();setView("focail");}},
@@ -4104,14 +4104,20 @@ body{background:${c.bg}}
                 {ic:"🧠",l:"Quiz",done:missionQuiz,a:()=>{haptic();startDailyQuiz();}},
               ].map(({ic,l,done,a},i)=>(
                 <button key={i} onClick={a} style={{
-                  padding:"5px 10px",
+                  flex:"1 1 0",minWidth:0,
+                  padding:"6px 4px",
                   border:`1px solid ${done?(c.dark?"rgba(111,207,151,0.35)":c.doneBd):(c.dark?"rgba(255,255,255,0.09)":c.bd)}`,
                   borderRadius:20,cursor:"pointer",
                   background:done?(c.dark?"rgba(111,207,151,0.09)":c.doneBg):"transparent",
-                  ...bd,fontSize:"0.61rem",fontWeight:700,
+                  ...bd,fontSize:"0.6rem",fontWeight:700,textAlign:"center",
                   color:done?(c.dark?"#6FCF97":c.doneTx):(c.dark?"rgba(240,237,228,0.32)":c.tx3),
+                  display:"flex",alignItems:"center",justifyContent:"center",gap:3,
+                  overflow:"hidden",
                 }}>
-                  {done?"✓ ":<span style={{marginRight:"2px",fontSize:"0.72rem"}}>{ic}</span>}{l}
+                  {done
+                    ?<>✓ {l}</>
+                    :<><span style={{fontSize:"0.7rem"}}>{ic}</span>{l}</>
+                  }
                 </button>
               ))}
             </div>
