@@ -124,21 +124,21 @@ const WK = [
 const THEMES = {
   coill: {
     dark:true,
-    bg:"#060D07",bg2:"#0A1A0C",card:"#0D1C0E",cardAlt:"#112014",
-    phrase:"#162A1C",phraseBd:"rgba(200,148,50,0.32)",
-    tx:"#EDE9DF",tx2:"#C4BFA8",tx3:"rgba(237,233,223,0.42)",
-    acc:"#C4923A",acc2:"#A07028",gold:"#C4923A",green:"#5EC488",
-    bd:"rgba(200,148,50,0.16)",shadow:"0 2px 24px rgba(0,0,0,0.55)",
-    doneBg:"rgba(25,62,45,0.35)",doneBd:"rgba(40,98,68,0.45)",doneTx:"#5EC488",
-    nextBd:"#C4923A",
-    tipBg:"rgba(196,146,58,0.08)",tipBd:"rgba(196,146,58,0.22)",tipTx:"#D0A828",
-    btn:"#183828",btnTx:"#EDE9DF",
-    progBg:"rgba(255,255,255,0.07)",progFill:"linear-gradient(90deg,#183828,#C4923A)",
-    celebBg:"rgba(6,13,7,0.97)",
-    dotOn:"#5EC488",dotOff:"rgba(255,255,255,0.1)",dotDone:"#C4923A",
-    nav:"#080F09",navBd:"rgba(196,146,58,0.15)",
-    hero:"#050C06",
-    ink:"rgba(196,146,58,0.28)",
+    bg:"#030905",bg2:"#071404",card:"#0A190B",cardAlt:"#0E1C11",
+    phrase:"#142617",phraseBd:"rgba(210,155,55,0.38)",
+    tx:"#EDE9DF",tx2:"#C4BFA8",tx3:"rgba(237,233,223,0.44)",
+    acc:"#D4983C",acc2:"#A87830",gold:"#D4983C",green:"#5EC488",
+    bd:"rgba(210,155,55,0.18)",shadow:"0 2px 28px rgba(0,0,0,0.65)",
+    doneBg:"rgba(20,55,38,0.40)",doneBd:"rgba(35,90,62,0.50)",doneTx:"#5EC488",
+    nextBd:"#D4983C",
+    tipBg:"rgba(212,152,60,0.09)",tipBd:"rgba(212,152,60,0.25)",tipTx:"#D4A840",
+    btn:"#142E20",btnTx:"#EDE9DF",
+    progBg:"rgba(255,255,255,0.07)",progFill:"linear-gradient(90deg,#142E20,#D4983C)",
+    celebBg:"rgba(3,9,5,0.98)",
+    dotOn:"#5EC488",dotOff:"rgba(255,255,255,0.1)",dotDone:"#D4983C",
+    nav:"#050C06",navBd:"rgba(210,155,55,0.17)",
+    hero:"#020804",
+    ink:"rgba(210,155,55,0.30)",
   },
 };
 
@@ -4104,17 +4104,18 @@ body{background:${c.bg}}
       {/* ── PHRASE STAGE ── */}
       <div style={{
         flex:1,display:"flex",flexDirection:"column",position:"relative",overflow:"hidden",
-        background:`radial-gradient(ellipse 130% 55% at 50% -5%, rgba(196,146,58,0.17) 0%, transparent 52%),
-             radial-gradient(ellipse 70% 55% at 5% 92%, rgba(30,80,50,0.28) 0%, transparent 48%),
-             radial-gradient(ellipse 55% 45% at 95% 72%, rgba(196,146,58,0.1) 0%, transparent 42%),
-             radial-gradient(ellipse 40% 30% at 50% 50%, rgba(10,28,14,0.4) 0%, transparent 100%),
-             linear-gradient(175deg, #050c06 0%, #091608 38%, #070f08 68%, #040b05 100%)`,
+        background:`radial-gradient(ellipse 140% 60% at 50% -5%, rgba(212,152,60,0.22) 0%, transparent 55%),
+             radial-gradient(ellipse 75% 60% at 3% 95%, rgba(25,75,45,0.32) 0%, transparent 50%),
+             radial-gradient(ellipse 60% 50% at 97% 70%, rgba(212,152,60,0.13) 0%, transparent 44%),
+             radial-gradient(ellipse 45% 35% at 50% 50%, rgba(8,22,11,0.45) 0%, transparent 100%),
+             radial-gradient(ellipse 100% 30% at 50% 100%, rgba(5,15,7,0.6) 0%, transparent 70%),
+             linear-gradient(175deg, #030a05 0%, #071406 38%, #060d07 68%, #020804 100%)`,
       }}>
-        {/* Subtle diamond texture overlay */}
+        {/* Celtic diamond texture overlay */}
         <div style={{
           position:"absolute",inset:0,pointerEvents:"none",opacity:c.dark?1:0.4,
-          backgroundImage:`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='44'%3E%3Cpath d='M22 2 L42 22 L22 42 L2 22 Z' fill='none' stroke='rgba(200,148,50,0.075)' stroke-width='0.7'/%3E%3C/svg%3E")`,
-          backgroundSize:"44px 44px",
+          backgroundImage:`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='38' height='38'%3E%3Cpath d='M19 2 L36 19 L19 36 L2 19 Z' fill='none' stroke='rgba(210,155,55,0.08)' stroke-width='0.6'/%3E%3Ccircle cx='19' cy='19' r='1.2' fill='none' stroke='rgba(210,155,55,0.05)' stroke-width='0.5'/%3E%3C/svg%3E")`,
+          backgroundSize:"38px 38px",
         }}/>
 
         {/* Slow breathing top glow */}
@@ -4345,26 +4346,30 @@ body{background:${c.bg}}
           {e:<svg width="18" height="14" viewBox="0 0 18 14" fill="none"><rect x="0" y="0" width="18" height="2" rx="1" fill="currentColor"/><rect x="0" y="6" width="18" height="2" rx="1" fill="currentColor"/><rect x="0" y="12" width="18" height="2" rx="1" fill="currentColor"/></svg>,l:"Níos mó",s:"More",active:false,a:()=>{haptic();setView("menu");}},
         ].map(({e,l,s,active,a},i)=>(
           <button key={i} onClick={a||undefined} style={{
-            flex:"1 1 0",minWidth:0,padding:"8px 2px 7px",border:"none",
+            flex:"1 1 0",width:0,minWidth:0,padding:"9px 4px 8px",border:"none",
             cursor:a?"pointer":"default",background:"transparent",
-            display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:1,
+            display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"flex-start",gap:0,
           }}>
-            <span style={{fontSize:"1.15rem",lineHeight:1,display:"flex",alignItems:"center",justifyContent:"center",color:active?"rgba(237,233,223,0.9)":"rgba(237,233,223,0.55)"}}>{e}</span>
             <span style={{
-              ...bd,fontSize:"0.48rem",fontWeight:active?800:500,
-              color:active?c.acc:"rgba(237,233,223,0.62)",
-              letterSpacing:"0.01em",lineHeight:1.2,
+              height:22,width:"100%",display:"flex",alignItems:"center",justifyContent:"center",
+              fontSize:"1.1rem",lineHeight:1,
+              color:active?"rgba(237,233,223,0.92)":"rgba(237,233,223,0.50)",
+            }}>{e}</span>
+            <span style={{
+              ...bd,fontSize:"0.47rem",fontWeight:active?700:500,
+              color:active?c.acc:"rgba(237,233,223,0.58)",
+              letterSpacing:"0.01em",lineHeight:1.3,marginTop:2,
               overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",
-              maxWidth:"100%",
+              width:"100%",textAlign:"center",
             }}>{l}</span>
             <span style={{
-              ...bd,fontSize:"0.38rem",fontWeight:400,
-              color:active?"rgba(200,148,50,0.65)":"rgba(237,233,223,0.35)",
-              letterSpacing:"0.04em",lineHeight:1,
+              ...bd,fontSize:"0.37rem",fontWeight:400,
+              color:active?`rgba(212,152,60,0.70)`:"rgba(237,233,223,0.32)",
+              letterSpacing:"0.04em",lineHeight:1.2,marginTop:1,
               overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",
-              maxWidth:"100%",
+              width:"100%",textAlign:"center",
             }}>{s}</span>
-            {active&&<div style={{width:16,height:2,borderRadius:1,background:c.acc,marginTop:2}}/>}
+            <div style={{height:3,width:16,borderRadius:2,marginTop:3,background:active?c.acc:"transparent"}}/>
           </button>
         ))}
       </div>
