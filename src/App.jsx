@@ -3925,17 +3925,19 @@ body{background:${c.bg}}
       <style>{css}</style>
 
       {/* ── TOP BAR ── */}
-      <div style={{display:"flex",alignItems:"center",padding:"16px 20px 0",zIndex:10,flexShrink:0}}>
+      <div style={{display:"flex",alignItems:"center",padding:"14px 18px 12px",zIndex:10,flexShrink:0}}>
         <div style={{display:"flex",alignItems:"center",gap:6}}>
           <span style={{fontSize:"1rem"}}>☘️</span>
           <span style={{...hd,fontSize:"0.9rem",fontWeight:800,color:"rgba(240,237,228,0.8)",letterSpacing:"-0.01em"}}>Gaeltacht</span>
         </div>
-        <div style={{marginLeft:"auto",display:"flex",alignItems:"center",gap:6}}>
+        <div style={{marginLeft:"auto",display:"flex",alignItems:"center",gap:4}}>
           {st?.streak>=1&&(
-            <div style={{display:"flex",alignItems:"center",gap:3,
+            <div style={{
+              display:"flex",alignItems:"center",gap:3,
               background:"rgba(255,120,0,0.13)",border:"1px solid rgba(255,120,0,0.28)",
-              borderRadius:20,padding:"3px 9px"}}>
-              <span style={{fontSize:"0.88rem"}}>🔥</span>
+              borderRadius:20,padding:"0 9px",height:28,
+            }}>
+              <span style={{fontSize:"0.85rem",lineHeight:1}}>🔥</span>
               <span style={{...bd,fontSize:"0.75rem",fontWeight:800,color:"#FF7A00"}}>{st.streak}</span>
             </div>
           )}
@@ -3949,17 +3951,22 @@ body{background:${c.bg}}
               ]);
               setLeaderData(rows);setMyRankData(rank);setLeaderLoading(false);
             }
-          }} style={{background:"none",border:"none",fontSize:"1.05rem",cursor:"pointer",padding:4,lineHeight:1,color:"rgba(200,150,62,0.75)"}}>🏆</button>
-          <button onClick={()=>setShowAuth(true)} style={{background:"none",border:"none",cursor:"pointer",padding:4,lineHeight:1}}>
+          }} style={{background:"none",border:"none",cursor:"pointer",padding:0,lineHeight:1,
+            width:28,height:28,display:"flex",alignItems:"center",justifyContent:"center",
+            fontSize:"1.05rem",color:"rgba(200,150,62,0.75)"}}>🏆</button>
+          <button onClick={()=>setShowAuth(true)} style={{background:"none",border:"none",cursor:"pointer",padding:0,lineHeight:1,
+            width:28,height:28,display:"flex",alignItems:"center",justifyContent:"center"}}>
             {authUser
               ? <span style={{display:"flex",alignItems:"center",justifyContent:"center",width:22,height:22,borderRadius:"50%",
                   background:"rgba(200,150,62,0.85)",color:"#111",...bd,fontWeight:800,fontSize:"0.65rem"}}>
                   {authUser.email?.[0]?.toUpperCase()||"?"}
                 </span>
-              : <span style={{fontSize:"1rem",opacity:0.45}}>☁️</span>
+              : <span style={{fontSize:"1rem",opacity:0.45,lineHeight:1}}>☁️</span>
             }
           </button>
-          <button onClick={()=>setView("settings")} style={{background:"none",border:"none",fontSize:"1rem",cursor:"pointer",padding:4,lineHeight:1,opacity:0.45}}>⚙️</button>
+          <button onClick={()=>setView("settings")} style={{background:"none",border:"none",cursor:"pointer",padding:0,lineHeight:1,
+            width:28,height:28,display:"flex",alignItems:"center",justifyContent:"center",
+            fontSize:"1rem",opacity:0.45}}>⚙️</button>
         </div>
       </div>
 
