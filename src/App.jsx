@@ -634,7 +634,7 @@ const shareProgress = async (day, total, streak) => {
       const blob = await(await fetch(img)).blob();
       const file = new File([blob],"gaeltacht-day-"+day+".png",{type:"image/png"});
       if(navigator.canShare({files:[file]})){
-        await navigator.share({title:`Lá ${day} — Gaeltacht Connect`,text:`I just completed Day ${day} of the 30 Day Gaeltacht Challenge! 🇮🇪☘️ #GaeltachtConnect`,files:[file]});
+        await navigator.share({title:`Lá ${day} — Gaeltacht Connect`,text:`I just completed Day ${day} of the 60 Day Gaeltacht Challenge! 🇮🇪☘️ #GaeltachtConnect`,files:[file]});
         return;
       }
     } catch(e) { if(e.name==="AbortError") return; }
@@ -1667,69 +1667,88 @@ export default function App() {
 
   if(loading) return (
     <div style={{
-      background:"linear-gradient(160deg,#050e07 0%,#0b1e10 40%,#060e08 100%)",
+      background:"#060d07",
       display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",
       position:"fixed",inset:0,overflow:"hidden",
     }}>
       <style>{`
         @keyframes shamrockIn{0%{transform:scale(0) rotate(-20deg);opacity:0}65%{transform:scale(1.2) rotate(6deg);opacity:1}100%{transform:scale(1) rotate(0deg);opacity:1}}
-        @keyframes fadeUpIn{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
-        @keyframes goldPulse{0%,100%{box-shadow:0 0 40px rgba(200,150,62,0.2),0 16px 60px rgba(0,0,0,0.6)}50%{box-shadow:0 0 80px rgba(200,150,62,0.45),0 16px 60px rgba(0,0,0,0.6)}}
+        @keyframes fadeUpIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+        @keyframes goldPulse{0%,100%{box-shadow:0 0 40px rgba(200,150,62,0.18),0 16px 60px rgba(0,0,0,0.7)}50%{box-shadow:0 0 90px rgba(200,150,62,0.4),0 16px 60px rgba(0,0,0,0.7)}}
         @keyframes barFill{from{width:0}to{width:100%}}
-        @keyframes glowRing{0%,100%{opacity:0.15;transform:scale(1)}50%{opacity:0.35;transform:scale(1.05)}}
+        @keyframes glowDrift{0%,100%{opacity:0.12;transform:translate(-50%,-60%) scale(1)}50%{opacity:0.28;transform:translate(-50%,-58%) scale(1.08)}}
+        @keyframes celticFade{from{opacity:0}to{opacity:1}}
         .sp-sh{animation:shamrockIn 1s cubic-bezier(0.34,1.56,0.64,1) both}
-        .sp-t1{animation:fadeUpIn 0.7s 0.6s ease both;opacity:0}
+        .sp-t1{animation:fadeUpIn 0.7s 0.65s ease both;opacity:0}
         .sp-t2{animation:fadeUpIn 0.6s 0.9s ease both;opacity:0}
-        .sp-t3{animation:fadeUpIn 0.6s 1.05s ease both;opacity:0}
-        .sp-dv{animation:fadeUpIn 0.5s 1.2s ease both;opacity:0}
-        .sp-bar{animation:fadeUpIn 0.4s 1.35s ease both,barFill 0.9s 1.55s ease both;opacity:0;width:0}
-        body{background:#060d08}
+        .sp-t3{animation:fadeUpIn 0.5s 1.1s ease both;opacity:0}
+        .sp-ph{animation:fadeUpIn 0.6s 1.25s ease both;opacity:0}
+        .sp-dv{animation:fadeUpIn 0.5s 1.4s ease both;opacity:0}
+        .sp-bar{animation:fadeUpIn 0.3s 1.55s ease both,barFill 0.9s 1.65s ease both;opacity:0;width:0}
+        body{background:#060d07}
       `}</style>
 
-      {/* ambient glow */}
-      <div style={{position:"absolute",width:500,height:500,borderRadius:"50%",
-        background:"radial-gradient(ellipse,rgba(45,106,79,0.18) 0%,transparent 70%)",
-        top:"50%",left:"50%",transform:"translate(-50%,-60%)",pointerEvents:"none",
-        animation:"glowRing 3s ease-in-out infinite"}}/>
+      {/* Celtic diamond pattern - subtle */}
+      <div style={{position:"absolute",inset:0,pointerEvents:"none",animation:"celticFade 2s 0.5s ease both",opacity:0,backgroundImage:`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='50' height='50'%3E%3Cpath d='M25 3 L47 25 L25 47 L3 25 Z' fill='none' stroke='rgba(200,150,62,0.025)' stroke-width='0.6'/%3E%3C/svg%3E")`,backgroundSize:"50px 50px"}}/>
 
+      {/* Ambient radial glow */}
+      <div style={{position:"absolute",width:600,height:600,borderRadius:"50%",
+        background:"radial-gradient(ellipse,rgba(30,80,50,0.2) 0%,transparent 65%)",
+        top:"50%",left:"50%",transform:"translate(-50%,-60%)",pointerEvents:"none",
+        animation:"glowDrift 4s ease-in-out infinite"}}/>
+
+      {/* Bottom ambient */}
+      <div style={{position:"absolute",width:400,height:300,borderRadius:"50%",
+        background:"radial-gradient(ellipse,rgba(200,148,50,0.06) 0%,transparent 70%)",
+        bottom:"-10%",left:"50%",transform:"translateX(-50%)",pointerEvents:"none"}}/>
+
+      {/* Shamrock icon */}
       <div className="sp-sh" style={{
-        width:100,height:100,borderRadius:32,
-        background:"linear-gradient(145deg,#0E2A1C,#1B4332)",
-        border:"2px solid rgba(200,150,62,0.4)",
-        animation:"shamrockIn 1s cubic-bezier(0.34,1.56,0.64,1) both, goldPulse 2.5s 1s ease-in-out infinite",
+        width:108,height:108,borderRadius:34,
+        background:"linear-gradient(145deg,#0e2a1c,#183828)",
+        border:"1.5px solid rgba(200,150,62,0.35)",
+        animation:"shamrockIn 1s cubic-bezier(0.34,1.56,0.64,1) both, goldPulse 3s 1s ease-in-out infinite",
         display:"flex",alignItems:"center",justifyContent:"center",
-        fontSize:"3.2rem",marginBottom:32,
-        boxShadow:"0 20px 60px rgba(0,0,0,0.6)",
+        fontSize:"3.4rem",marginBottom:30,
+        boxShadow:"0 24px 70px rgba(0,0,0,0.7),inset 0 1px 0 rgba(200,150,62,0.12)",
       }}>☘️</div>
 
       <div className="sp-t1" style={{
         fontFamily:"'Playfair Display',Georgia,serif",
-        fontSize:"2.5rem",fontWeight:900,color:"#F0EDE4",
-        letterSpacing:"-0.03em",lineHeight:1,marginBottom:8,textAlign:"center",
+        fontSize:"clamp(2.2rem,8vw,2.8rem)",fontWeight:900,color:"#EDE9DF",
+        letterSpacing:"-0.03em",lineHeight:1,marginBottom:6,textAlign:"center",
       }}>Gaeltacht Connect</div>
 
       <div className="sp-t2" style={{
         fontFamily:"'Lato',system-ui,sans-serif",
-        fontSize:"0.62rem",color:"rgba(200,150,62,0.85)",
-        letterSpacing:"0.28em",textTransform:"uppercase",fontWeight:700,
-        marginBottom:6,
+        fontSize:"0.58rem",color:"rgba(200,150,62,0.8)",
+        letterSpacing:"0.3em",textTransform:"uppercase",fontWeight:700,
+        marginBottom:4,
       }}>An Ghaeilge Bheo</div>
 
       <div className="sp-t3" style={{
         fontFamily:"'Lato',system-ui,sans-serif",
-        fontSize:"0.72rem",color:"rgba(240,237,228,0.4)",
-        letterSpacing:"0.04em",fontWeight:400,
-        marginBottom:36,textAlign:"center",
-      }}>The Living Irish</div>
+        fontSize:"0.68rem",color:"rgba(237,233,223,0.32)",
+        letterSpacing:"0.05em",fontWeight:400,
+        marginBottom:28,textAlign:"center",
+      }}>The Living Irish · 60 Real-World Challenges</div>
 
-      <div className="sp-dv" style={{display:"flex",alignItems:"center",gap:12,width:220,marginBottom:28}}>
-        <div style={{flex:1,height:1,background:"linear-gradient(90deg,transparent,rgba(200,150,62,0.4))"}}/>
-        <div style={{color:"rgba(200,150,62,0.6)",fontSize:"0.7rem",letterSpacing:"0.1em"}}>✦</div>
-        <div style={{flex:1,height:1,background:"linear-gradient(90deg,rgba(200,150,62,0.4),transparent)"}}/>
+      {/* Irish phrase */}
+      <div className="sp-ph" style={{
+        fontFamily:"'Cormorant Garamond','Playfair Display',Georgia,serif",
+        fontSize:"1.35rem",fontStyle:"italic",fontWeight:600,
+        color:"rgba(200,150,62,0.55)",
+        textAlign:"center",marginBottom:28,letterSpacing:"0.02em",
+      }}>Is fearr Gaeilge briste<br/>ná Béarla cliste</div>
+
+      <div className="sp-dv" style={{display:"flex",alignItems:"center",gap:10,width:200,marginBottom:24}}>
+        <div style={{flex:1,height:"1px",background:"linear-gradient(90deg,transparent,rgba(200,150,62,0.35))"}}/>
+        <div style={{color:"rgba(200,150,62,0.5)",fontSize:"0.65rem"}}>◆</div>
+        <div style={{flex:1,height:"1px",background:"linear-gradient(90deg,rgba(200,150,62,0.35),transparent)"}}/>
       </div>
 
-      <div style={{width:140,height:2,background:"rgba(255,255,255,0.06)",borderRadius:2,overflow:"hidden"}}>
-        <div className="sp-bar" style={{height:"100%",background:"linear-gradient(90deg,rgba(45,106,79,0.8),rgba(200,150,62,0.8))",borderRadius:2}}/>
+      <div style={{width:160,height:2,background:"rgba(255,255,255,0.05)",borderRadius:2,overflow:"hidden"}}>
+        <div className="sp-bar" style={{height:"100%",background:"linear-gradient(90deg,rgba(30,80,50,0.9),rgba(200,150,62,0.9))",borderRadius:2}}/>
       </div>
     </div>
   );
@@ -1855,20 +1874,22 @@ body{background:${c.bg}}
       const letter=(submitted?(guesses[ri]?.[ci]||""):isCurrent?(focailInput[ci]||""):"").toUpperCase();
       const col=submitted?(colors[ri]?.[ci]||"n"):null;
       const isNew=submitted&&ri===guesses.length-1;
-      const bg=col==="g"?"#22c55e":col==="y"?"#c9a227":col==="n"?(c.dark?"#2d3748":"#9ca3af"):"transparent";
-      const bdr=submitted?"2px solid transparent":
-        isCurrent&&focailInput[ci]?`2px solid ${c.acc}`:
-        isCurrent?`2px solid ${c.bd}`:`2px solid ${c.bd}44`;
+      const bg=col==="g"?"rgba(34,197,94,0.75)":col==="y"?"rgba(201,162,39,0.75)":col==="n"?"rgba(20,30,22,0.9)":"rgba(10,20,12,0.4)";
+      const bdr=submitted?"1px solid transparent":
+        isCurrent&&focailInput[ci]?"1px solid rgba(200,148,50,0.7)":
+        isCurrent?"1px solid rgba(200,148,50,0.25)":"1px solid rgba(255,255,255,0.07)";
       return(
         <div key={ci} style={{
           width:54,height:54,display:"flex",alignItems:"center",justifyContent:"center",
-          background:bg,border:bdr,borderRadius:8,
+          background:bg,border:bdr,borderRadius:10,
           fontSize:"1.5rem",fontWeight:800,
-          color:submitted?"#fff":c.tx,
-          fontFamily:"Georgia,serif",
+          color:submitted?"#fff":"rgba(237,233,223,0.85)",
+          fontFamily:"'Cormorant Garamond','Playfair Display',Georgia,serif",
+          fontStyle:"italic",
           transition:"background 0.3s,border 0.15s",
           animation:isCurrent&&focailShake?`tileShake 0.4s ease`:
                     isNew?`tileFlip 0.5s ease ${ci*0.1}s both`:"none",
+          boxShadow:submitted&&col==="g"?"0 0 12px rgba(34,197,94,0.3)":submitted&&col==="y"?"0 0 8px rgba(201,162,39,0.2)":"none",
         }}>{letter}</div>
       );
     };
@@ -1880,9 +1901,9 @@ body{background:${c.bg}}
       ["á","é","í","ó","ú"],
     ];
     const kbBg=(k)=>{
-      if(k==="↵"||k==="⌫") return c.dark?"#3d4a5c":"#5a6a7a";
+      if(k==="↵"||k==="⌫") return "rgba(200,148,50,0.15)";
       const col=keyCol[focailNorm(k)];
-      return col==="g"?"#22c55e":col==="y"?"#c9a227":col==="n"?(c.dark?"#2d3748":"#9ca3af"):(c.dark?"#2a3544":"#b8c4cc");
+      return col==="g"?"rgba(34,197,94,0.65)":col==="y"?"rgba(201,162,39,0.65)":col==="n"?"rgba(15,25,17,0.9)":"rgba(20,38,25,0.7)";
     };
 
     const showIntro = !st.focailIntroSeen && guesses.length===0 && !done;
@@ -1921,14 +1942,14 @@ body{background:${c.bg}}
         )}
 
         {/* Header */}
-        <div style={{width:"100%",maxWidth:420,display:"flex",alignItems:"center",padding:"10px 14px 8px",borderBottom:`1px solid ${c.bd}33`}}>
-          <button onClick={()=>setView("home")} style={{background:"none",border:"none",color:c.tx2,fontSize:"1.5rem",cursor:"pointer",padding:"2px 8px",lineHeight:1}}>←</button>
+        <div style={{width:"100%",maxWidth:420,display:"flex",alignItems:"center",padding:"12px 14px 10px",borderBottom:"1px solid rgba(200,148,50,0.12)"}}>
+          <button onClick={()=>setView("home")} style={{background:"none",border:"none",color:"rgba(237,233,223,0.35)",fontSize:"1.4rem",cursor:"pointer",padding:"2px 8px",lineHeight:1}}>←</button>
           <div style={{flex:1,textAlign:"center"}}>
-            <div style={{fontFamily:"Georgia,serif",fontWeight:800,fontSize:"1.35rem",letterSpacing:5,color:c.acc}}>FOCAIL</div>
-            <div style={{fontSize:"0.68rem",color:c.tx3,marginTop:1,fontFamily:"'Lato',system-ui,sans-serif"}}>#{dayNum} · Focal Gaeilge an Lae</div>
+            <div style={{fontFamily:"'Cormorant Garamond','Playfair Display',Georgia,serif",fontWeight:700,fontStyle:"italic",fontSize:"1.7rem",letterSpacing:4,color:"#CFA050",lineHeight:1}}>Focail</div>
+            <div style={{fontSize:"0.58rem",color:"rgba(237,233,223,0.28)",marginTop:3,fontFamily:"'Lato',system-ui,sans-serif",letterSpacing:"0.12em",textTransform:"uppercase"}}>#{dayNum} · Focal Gaeilge an Lae</div>
           </div>
           <button onClick={()=>setShowFocailStats(true)} style={{
-            background:"none",border:"none",color:c.tx3,fontSize:"1.1rem",cursor:"pointer",padding:"2px 8px",lineHeight:1
+            background:"none",border:"none",color:"rgba(237,233,223,0.35)",fontSize:"1.1rem",cursor:"pointer",padding:"2px 8px",lineHeight:1
           }}>📊</button>
         </div>
 
@@ -2044,14 +2065,14 @@ body{background:${c.bg}}
 
         {/* Result banner */}
         {done&&(
-          <div style={{textAlign:"center",padding:"6px 20px 4px",width:"100%",maxWidth:420,borderTop:`1px solid ${c.bd}22`}}>
+          <div style={{textAlign:"center",padding:"8px 20px 6px",width:"100%",maxWidth:420,borderTop:"1px solid rgba(200,148,50,0.1)"}}>
             {done==="won"
-              ?<div style={{color:"#22c55e",fontWeight:800,fontSize:"1.05rem",fontFamily:"Georgia,serif"}}>🎉 Maith thú! +30 XP</div>
-              :<div style={{color:c.tx2,fontSize:"0.95rem"}}>
-                  An focal: <span style={{color:c.acc,fontWeight:800,fontFamily:"Georgia,serif"}}>{fw.w.toUpperCase()}</span>
+              ?<div style={{...ir,color:"rgba(34,197,94,0.85)",fontWeight:700,fontSize:"1.15rem",fontStyle:"italic"}}>Maith thú! <span style={{...bd,fontSize:"0.75rem",fontStyle:"normal",color:"rgba(200,148,50,0.6)",fontWeight:700}}>+30 XP</span></div>
+              :<div style={{...bd,color:"rgba(237,233,223,0.5)",fontSize:"0.88rem"}}>
+                  An focal: <span style={{...ir,color:"#CFA050",fontWeight:700,fontSize:"1.05rem",fontStyle:"italic"}}>{fw.w.toUpperCase()}</span>
                 </div>
             }
-            <div style={{color:c.tx3,fontSize:"0.75rem",marginTop:2}}>/{fw.pr}/ · {fw.m}</div>
+            <div style={{...bd,color:"rgba(237,233,223,0.3)",fontSize:"0.7rem",marginTop:3,letterSpacing:"0.04em"}}>/{fw.pr}/ · {fw.m}</div>
             <div style={{display:"flex",gap:8,justifyContent:"center",marginTop:10,flexWrap:"wrap"}}>
               <button onClick={()=>{
                 const score=done==="won"?`${guesses.length}/6`:"X/6";
@@ -2059,11 +2080,13 @@ body{background:${c.bg}}
                 if(navigator.share) navigator.share({title:"Focail",text:txt});
                 else navigator.clipboard?.writeText(txt).then(()=>alert("Copied to clipboard!"));
               }} style={{
-                background:c.acc,border:"none",borderRadius:8,
-                padding:"8px 20px",color:"#111",fontSize:"0.82rem",fontWeight:800,cursor:"pointer"
+                background:"linear-gradient(135deg,rgba(200,148,50,0.85),rgba(160,112,30,0.85))",
+                border:"none",borderRadius:10,
+                padding:"9px 22px",color:"rgba(6,13,7,0.9)",fontSize:"0.82rem",fontWeight:800,cursor:"pointer",
+                boxShadow:"0 4px 16px rgba(200,148,50,0.25)",
               }}>↗ Roinn · Share</button>
               {focailStats&&focailStats.plays>0&&(
-                <div style={{width:"100%",textAlign:"center",marginTop:8,fontSize:"0.68rem",color:c.tx3}}>
+                <div style={{width:"100%",textAlign:"center",marginTop:6,...bd,fontSize:"0.65rem",color:"rgba(237,233,223,0.25)"}}>
                   {focailStats.plays.toLocaleString()} players today · {Math.round(focailStats.wins/focailStats.plays*100)}% solved
                 </div>
               )}
@@ -2077,16 +2100,20 @@ body{background:${c.bg}}
             <div key={ri} style={{display:"flex",gap:ri===3?10:4,justifyContent:"center",width:"100%",paddingLeft:ri===1?14:0}}>
               {row.map(k=>(
                 <button key={k} onClick={()=>handleFKey(k)} style={{
-                  minWidth:k==="↵"?46:k==="⌫"?46:ri===3?40:31,
-                  height:ri===3?42:50,
-                  background:kbBg(k),color:"#fff",border:"none",borderRadius:6,
-                  fontSize:ri===3?"1.1rem":k==="↵"||k==="⌫"?"0.74rem":"0.95rem",
-                  fontWeight:ri===3?700:600,
-                  fontFamily:ri===3?"Georgia,serif":"inherit",
+                  minWidth:k==="↵"?48:k==="⌫"?48:ri===3?40:32,
+                  height:ri===3?44:52,
+                  background:kbBg(k),
+                  color:k==="↵"||k==="⌫"?"rgba(200,148,50,0.85)":"rgba(237,233,223,0.85)",
+                  border:`1px solid ${k==="↵"||k==="⌫"?"rgba(200,148,50,0.25)":"rgba(255,255,255,0.06)"}`,
+                  borderRadius:8,
+                  fontSize:ri===3?"1.15rem":k==="↵"||k==="⌫"?"0.62rem":"0.9rem",
+                  fontWeight:ri===3?700:700,
+                  fontFamily:ri===3?"'Cormorant Garamond','Playfair Display',Georgia,serif":"inherit",
+                  fontStyle:ri===3?"italic":"normal",
                   cursor:"pointer",transition:"background 0.2s",
-                  boxShadow:"0 2px 4px rgba(0,0,0,0.25)",
-                  letterSpacing:ri===3?0:0,
-                  opacity:done?0.6:1,
+                  boxShadow:"0 2px 6px rgba(0,0,0,0.3)",
+                  opacity:done?0.55:1,
+                  letterSpacing:ri===3?"0.02em":0,
                 }}>{k==="↵"?"ENTER":k==="⌫"?"⌫":k.toUpperCase()}</button>
               ))}
             </div>
@@ -2528,28 +2555,22 @@ body{background:${c.bg}}
     }
 
     return(
-      <div className="af" style={{minHeight:"100vh",background:c.bg,color:c.tx,paddingBottom:24}}>
+      <div className="af" style={{minHeight:"100vh",background:c.bg,color:c.tx,paddingBottom:32}}>
         <style>{css}</style>
 
         {/* ── TOP NAV ── */}
-        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"16px 20px"}}>
-          <button onClick={()=>{setView(prevView);setSelDay(null)}} style={{display:"flex",alignItems:"center",gap:8,background:c.card,border:`1px solid ${c.bd}`,borderRadius:10,cursor:"pointer",color:c.tx,...bd,fontSize:"0.9rem",padding:"8px 14px",fontWeight:600}}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"14px 18px 10px"}}>
+          <button onClick={()=>{setView(prevView);setSelDay(null)}} style={{display:"flex",alignItems:"center",gap:6,background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.08)",borderRadius:10,cursor:"pointer",color:"rgba(237,233,223,0.6)",...bd,fontSize:"0.82rem",padding:"7px 13px"}}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
             Ar ais
           </button>
-          <div style={{display:"flex",alignItems:"center",gap:6}}>
-            <span style={{...bd,fontSize:"0.72rem",color:c.tx3}}>Lá {ch.day} / {CH.length}</span>
-            <div style={{display:"flex",alignItems:"center",gap:6}}>
-              <div style={{display:"flex",gap:3}}>
-                {[1,2,3,4,5].map(i=>(
-                  <div key={i} style={{width:5,height:5,borderRadius:"50%",background:i<=ch.d?dayColor:c.bd}}/>
-                ))}
-              </div>
-              {ch.tasks&&(()=>{
-                const done=(st.tasksDone||[]).filter(k=>k.startsWith(`${ch.day}-`)).length;
-                return done>0?<span style={{...bd,fontSize:"0.6rem",color:dayColor,background:dayColor+"18",borderRadius:10,padding:"2px 7px",border:`1px solid ${dayColor}44`}}>{done}/{ch.tasks.length} tasks</span>:null;
-              })()}
+          <div style={{display:"flex",alignItems:"center",gap:8}}>
+            <div style={{display:"flex",gap:3}}>
+              {[1,2,3,4,5].map(i=>(
+                <div key={i} style={{width:5,height:5,borderRadius:"50%",background:i<=ch.d?dayColor:"rgba(255,255,255,0.12)",transition:"background 0.3s"}}/>
+              ))}
             </div>
+            <span style={{...bd,fontSize:"0.7rem",color:"rgba(237,233,223,0.3)",letterSpacing:"0.05em"}}>Lá {ch.day}</span>
           </div>
         </div>
 
@@ -2560,106 +2581,184 @@ body{background:${c.bg}}
             <p style={{...bd,fontSize:"0.9rem",color:c.tx3}}>Complete Day {ch.day-1} first.</p>
           </div>
         ):(
-          <div style={{maxWidth:520,margin:"0 auto",padding:"0 20px 20px",animation:"rise 0.4s ease"}}>
+          <div style={{maxWidth:520,margin:"0 auto",padding:"0 16px 20px",animation:"rise 0.4s ease"}}>
 
-            {/* ── PHRASE HERO ── */}
-            <div style={{background:c.card,border:`1px solid ${c.bd}`,borderRadius:20,overflow:"hidden",boxShadow:c.shadow,marginBottom:16}}>
-              <div style={{height:4,background:dayColor}}/>
-              <div style={{padding:"24px 22px 28px"}}>
-                {/* Category + title */}
-                <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:ch.story?16:16}}>
-                  <span style={{fontSize:"1rem"}}>{CATS[ch.cat]||"📝"}</span>
-                  <div>
-                    <div style={{...hd,fontSize:"1.6rem",fontWeight:700,color:c.tx,lineHeight:1.2}}>{ch.t}</div>
-                    <div style={{...bd,fontSize:"0.82rem",color:c.tx3,fontStyle:"italic"}}>{ch.e}</div>
-                  </div>
+            {/* ── HERO CARD ── */}
+            <div style={{
+              position:"relative",borderRadius:24,overflow:"hidden",
+              marginBottom:14,
+              boxShadow:`0 20px 60px rgba(0,0,0,0.5),0 0 0 1px ${dayColor}22`,
+            }}>
+              {/* Gradient header */}
+              <div style={{
+                background:`linear-gradient(160deg,${dayColor}CC 0%,${dayColor}55 60%,rgba(6,13,7,0) 100%)`,
+                padding:"28px 24px 24px",
+                position:"relative",
+              }}>
+                {/* Corner ornaments */}
+                {[{top:10,left:10},{top:10,right:10}].map((pos,i)=>(
+                  <div key={i} style={{position:"absolute",...pos,fontSize:"0.65rem",color:`${dayColor}88`,lineHeight:1,userSelect:"none"}}>◆</div>
+                ))}
+                <div style={{...bd,fontSize:"0.48rem",color:`${dayColor}CC`,letterSpacing:"0.25em",textTransform:"uppercase",marginBottom:10,fontWeight:700}}>
+                  {CATS[ch.cat]||"📝"} · {ch.cat}
                 </div>
+                <div style={{...hd,fontSize:"clamp(1.7rem,6vw,2.2rem)",fontWeight:700,color:"rgba(237,233,223,0.95)",lineHeight:1.15,marginBottom:4}}>
+                  {ch.t}
+                </div>
+                <div style={{...bd,fontSize:"0.82rem",color:"rgba(237,233,223,0.45)",fontStyle:"italic"}}>{ch.e}</div>
+              </div>
 
-                {/* ── SCÉAL ── Story of the day */}
-                {ch.story&&(
-                  <div style={{marginBottom:20}}>
-                    <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:12}}>
-                      <div style={{height:1.5,flex:1,background:`linear-gradient(90deg,${dayColor}55,transparent)`}}/>
-                      <span style={{...bd,fontSize:"0.55rem",color:dayColor,letterSpacing:"0.18em",textTransform:"uppercase",fontWeight:700,opacity:0.9}}>Stair · History</span>
-                      <div style={{height:1.5,flex:1,background:`linear-gradient(90deg,transparent,${dayColor}55)`}}/>
-                    </div>
-                    <div style={{borderLeft:`3px solid ${dayColor}`,paddingLeft:16,paddingRight:2}}>
-                      {ch.story.split("\n\n").map((para,i)=>(
-                        <p key={i} style={{...bd,fontSize:"0.9rem",color:c.tx2,lineHeight:1.85,margin:i>0?"14px 0 0":"0"}}>{para}</p>
-                      ))}
-                    </div>
+              {/* Phrase section */}
+              <div style={{
+                background:"rgba(6,13,7,0.92)",
+                borderTop:`1px solid ${dayColor}33`,
+                padding:"28px 24px 24px",
+                textAlign:"center",
+                position:"relative",
+              }}>
+                <div style={{position:"absolute",top:0,left:"15%",right:"15%",height:"1px",background:`linear-gradient(90deg,transparent,${dayColor}55,transparent)`}}/>
+                <div style={{...bd,fontSize:"0.45rem",color:c.gold,letterSpacing:"0.28em",textTransform:"uppercase",marginBottom:18,opacity:0.6}}>An Frása · The Phrase</div>
+                <div style={{
+                  ...ir,
+                  fontSize:"clamp(2.6rem,10vw,3.6rem)",
+                  fontWeight:700,fontStyle:"italic",
+                  color:"#CFA050",
+                  lineHeight:1.15,
+                  marginBottom:10,
+                  animation:"gold-shimmer 4s ease-in-out infinite",
+                }}>
+                  {ch.p}
+                </div>
+                <div style={{...bd,fontSize:"0.7rem",color:"rgba(200,148,50,0.55)",letterSpacing:"0.06em",fontStyle:"italic",marginBottom:6}}>
+                  {ch.m}
+                </div>
+                {ch.pr&&(
+                  <div style={{...bd,fontSize:"0.72rem",color:"rgba(237,233,223,0.22)",letterSpacing:"0.06em",fontStyle:"italic"}}>
+                    / {ch.pr} /
                   </div>
                 )}
+              </div>
 
-                {/* Big phrase */}
-                <div style={{textAlign:"center",padding:"28px 8px 24px",margin:"0 0 20px",position:"relative",background:`radial-gradient(ellipse at center,${c.gold}09 0%,transparent 70%)`}}>
-                  <div style={{position:"absolute",top:0,left:"10%",right:"10%",height:"1.5px",background:`linear-gradient(90deg,transparent,${c.gold}70,transparent)`}}/>
-                  <div style={{position:"absolute",bottom:0,left:"10%",right:"10%",height:"1.5px",background:`linear-gradient(90deg,transparent,${c.gold}70,transparent)`}}/>
-                  <div style={{...bd,fontSize:"0.55rem",color:c.gold,letterSpacing:"0.22em",textTransform:"uppercase",marginBottom:14,opacity:0.7}}>✦ An Frása ✦</div>
-                  <div style={{...hd,fontSize:"2.4rem",fontWeight:700,fontStyle:"italic",color:c.acc,lineHeight:1.2,marginBottom:6,textAlign:"center"}}>
-                    {ch.p}
-                  </div>
-                  <div style={{...bd,fontSize:"0.78rem",color:c.gold,opacity:0.7,letterSpacing:"0.04em",marginBottom:8,fontStyle:"italic"}}>{ch.m}</div>
-                  <div style={{...bd,fontSize:"0.84rem",color:c.tx3,letterSpacing:"0.06em",marginBottom:14,fontStyle:"italic"}}>/ {ch.pr} /</div>
-                  <div style={{marginBottom:10}}/>
-                </div>
-
-                {/* Challenge */}
-                <p style={{...bd,fontSize:"0.95rem",color:c.tx2,lineHeight:1.75,margin:0}}>{ch.ch}</p>
+              {/* Challenge text */}
+              <div style={{
+                background:"rgba(8,16,9,0.96)",
+                borderTop:`1px solid rgba(255,255,255,0.05)`,
+                padding:"18px 24px 22px",
+              }}>
+                <div style={{...bd,fontSize:"0.48rem",color:"rgba(200,148,50,0.45)",letterSpacing:"0.2em",textTransform:"uppercase",marginBottom:10,fontWeight:700}}>Do dhúshlán · Your challenge</div>
+                <p style={{...bd,fontSize:"0.93rem",color:"rgba(237,233,223,0.78)",lineHeight:1.8,margin:0}}>{ch.ch}</p>
               </div>
             </div>
 
+            {/* ── SCÉAL ── Story */}
+            {ch.story&&(
+              <div style={{
+                background:"rgba(10,20,12,0.6)",
+                border:"1px solid rgba(200,148,50,0.12)",
+                borderRadius:18,padding:"18px 20px",marginBottom:12,
+              }}>
+                <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:14}}>
+                  <div style={{height:"1px",flex:1,background:`linear-gradient(90deg,${dayColor}44,transparent)`}}/>
+                  <span style={{...bd,fontSize:"0.48rem",color:c.gold,letterSpacing:"0.2em",textTransform:"uppercase",fontWeight:700,opacity:0.7}}>Stair · History</span>
+                  <div style={{height:"1px",flex:1,background:`linear-gradient(90deg,transparent,${dayColor}44)`}}/>
+                </div>
+                <div style={{borderLeft:`2px solid ${dayColor}66`,paddingLeft:14}}>
+                  {ch.story.split("\n\n").map((para,i)=>(
+                    <p key={i} style={{...bd,fontSize:"0.88rem",color:"rgba(237,233,223,0.62)",lineHeight:1.85,margin:i>0?"12px 0 0":"0"}}>{para}</p>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* ── TIP ── */}
-            <div style={{background:c.tipBg,border:`1px solid ${c.tipBd}`,borderRadius:14,padding:"14px 18px",marginBottom:12,display:"flex",gap:12,alignItems:"flex-start"}}>
-              <span style={{fontSize:"1rem",flexShrink:0,marginTop:1}}>💡</span>
-              <p style={{...bd,fontSize:"0.88rem",color:c.tipTx,lineHeight:1.65,margin:0}}>{ch.tip}</p>
+            <div style={{
+              background:`linear-gradient(135deg,${dayColor}14,rgba(10,20,12,0.4))`,
+              border:`1px solid ${dayColor}28`,
+              borderRadius:16,padding:"14px 18px",marginBottom:10,
+              display:"flex",gap:12,alignItems:"flex-start",
+            }}>
+              <div style={{width:28,height:28,borderRadius:8,background:`${dayColor}22`,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,fontSize:"0.85rem",marginTop:1}}>💡</div>
+              <div>
+                <div style={{...bd,fontSize:"0.48rem",color:dayColor,letterSpacing:"0.18em",textTransform:"uppercase",fontWeight:700,marginBottom:5,opacity:0.8}}>Leid · Tip</div>
+                <p style={{...bd,fontSize:"0.88rem",color:"rgba(237,233,223,0.65)",lineHeight:1.65,margin:0}}>{ch.tip}</p>
+              </div>
             </div>
 
             {/* ── BONUS ── */}
-            <div style={{background:bDone?c.doneBg:c.cardAlt,border:`1px solid ${bDone?c.doneBd:c.bd}`,borderRadius:14,padding:"14px 18px",marginBottom:16,display:"flex",alignItems:"center",gap:12}}>
-              <span style={{fontSize:"1rem",flexShrink:0}}>⭐</span>
-              <div style={{flex:1}}>
-                <div style={{...bd,fontSize:"0.65rem",color:c.gold,letterSpacing:"0.1em",textTransform:"uppercase",fontWeight:700,marginBottom:3}}>Bonus</div>
-                <p style={{...bd,fontSize:"0.88rem",color:c.tx2,margin:0,lineHeight:1.5}}>{ch.b}</p>
+            <div style={{
+              background:bDone?"rgba(34,197,94,0.07)":"rgba(10,20,12,0.5)",
+              border:`1px solid ${bDone?"rgba(34,197,94,0.25)":"rgba(200,148,50,0.15)"}`,
+              borderRadius:16,padding:"14px 18px",marginBottom:14,
+              display:"flex",alignItems:"center",gap:12,
+            }}>
+              <div style={{width:28,height:28,borderRadius:8,background:"rgba(200,148,50,0.12)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,fontSize:"0.85rem"}}>⭐</div>
+              <div style={{flex:1,minWidth:0}}>
+                <div style={{...bd,fontSize:"0.48rem",color:c.gold,letterSpacing:"0.18em",textTransform:"uppercase",fontWeight:700,marginBottom:4,opacity:0.8}}>Bónas · Bonus</div>
+                <p style={{...bd,fontSize:"0.88rem",color:"rgba(237,233,223,0.62)",margin:0,lineHeight:1.5}}>{ch.b}</p>
               </div>
               {done&&!bDone&&(
-                <button onClick={()=>doBonus(ch.day)} style={{background:"none",border:`1px solid ${c.gold}88`,borderRadius:8,padding:"6px 14px",color:c.gold,...bd,fontSize:"0.78rem",fontWeight:700,cursor:"pointer",flexShrink:0}}>
-                  Déanta · Done
+                <button onClick={()=>doBonus(ch.day)} style={{background:"none",border:`1px solid rgba(200,148,50,0.4)`,borderRadius:10,padding:"7px 14px",color:c.gold,...bd,fontSize:"0.75rem",fontWeight:700,cursor:"pointer",flexShrink:0,whiteSpace:"nowrap"}}>
+                  Déanta ✓
                 </button>
               )}
-              {bDone&&<span style={{fontSize:"1.1rem"}}>✅</span>}
+              {bDone&&<span style={{fontSize:"1.1rem",flexShrink:0}}>✅</span>}
             </div>
 
             {/* ── MINI TASKS ── */}
-            <div style={{marginBottom:20}}>
-              <div style={{...bd,fontSize:"0.65rem",color:c.tx3,letterSpacing:"0.1em",textTransform:"uppercase",fontWeight:700,marginBottom:10}}>Mini challenges</div>
-              {ch.tasks&&ch.tasks.map((task,i)=>{
-                const key=`${ch.day}-${i}`;
-                const isDone=st.tasksDone&&st.tasksDone.includes(key);
-                return(
-                  <div key={i} onClick={()=>doTask(ch.day,i)}
-                    style={{display:"flex",alignItems:"center",gap:12,background:isDone?c.doneBg:c.card,border:`1px solid ${isDone?c.doneBd:c.bd}`,borderRadius:12,padding:"13px 16px",marginBottom:8,cursor:"pointer",transition:"all 0.2s"}}>
-                    <span style={{fontSize:"1.1rem",flexShrink:0}}>{task.icon}</span>
-                    <span style={{...bd,fontSize:"0.88rem",color:isDone?c.doneTx:c.tx2,flex:1,lineHeight:1.45,textDecoration:isDone?"line-through":"none"}}>{task.text}</span>
-                    <div style={{width:20,height:20,borderRadius:"50%",border:`1.5px solid ${isDone?c.doneTx:c.bd}`,background:isDone?c.doneTx:"none",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
-                      {isDone&&<svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#fff" strokeWidth="1.8" strokeLinecap="round"/></svg>}
+            {ch.tasks&&ch.tasks.length>0&&(
+              <div style={{marginBottom:18}}>
+                <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:12}}>
+                  <div style={{height:"1px",flex:1,background:"rgba(255,255,255,0.06)"}}/>
+                  <span style={{...bd,fontSize:"0.48rem",color:"rgba(237,233,223,0.28)",letterSpacing:"0.18em",textTransform:"uppercase",fontWeight:700}}>Mionchallengí · Mini tasks</span>
+                  <div style={{height:"1px",flex:1,background:"rgba(255,255,255,0.06)"}}/>
+                </div>
+                {ch.tasks.map((task,i)=>{
+                  const key=`${ch.day}-${i}`;
+                  const isDone=st.tasksDone&&st.tasksDone.includes(key);
+                  return(
+                    <div key={i} onClick={()=>doTask(ch.day,i)}
+                      style={{
+                        display:"flex",alignItems:"center",gap:12,
+                        background:isDone?"rgba(34,197,94,0.06)":"rgba(10,20,12,0.5)",
+                        border:`1px solid ${isDone?"rgba(34,197,94,0.2)":"rgba(255,255,255,0.07)"}`,
+                        borderRadius:14,padding:"13px 16px",marginBottom:8,cursor:"pointer",
+                        transition:"all 0.2s",
+                      }}>
+                      <span style={{fontSize:"1.05rem",flexShrink:0,opacity:isDone?0.5:1}}>{task.icon}</span>
+                      <span style={{...bd,fontSize:"0.86rem",color:isDone?"rgba(34,197,94,0.55)":"rgba(237,233,223,0.65)",flex:1,lineHeight:1.45,textDecoration:isDone?"line-through":"none"}}>{task.text}</span>
+                      <div style={{width:22,height:22,borderRadius:"50%",border:`1.5px solid ${isDone?"rgba(34,197,94,0.5)":"rgba(255,255,255,0.15)"}`,background:isDone?"rgba(34,197,94,0.2)":"none",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+                        {isDone&&<svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="rgba(34,197,94,0.9)" strokeWidth="1.8" strokeLinecap="round"/></svg>}
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
-            </div>
+                  );
+                })}
+              </div>
+            )}
 
             {/* ── ACTION ── */}
             {!done?(
-              <button onClick={()=>doComplete(ch.day)} style={{width:"100%",padding:"17px",borderRadius:14,background:c.btn,border:"none",color:c.btnTx,...hd,fontSize:"1.2rem",letterSpacing:"0.02em",cursor:"pointer"}}>
+              <button onClick={()=>doComplete(ch.day)} style={{
+                width:"100%",padding:"17px",borderRadius:16,
+                background:`linear-gradient(135deg,${c.gold} 0%,#A0701E 100%)`,
+                border:"none",
+                color:"rgba(6,13,7,0.95)",...hd,fontSize:"1.15rem",letterSpacing:"0.02em",cursor:"pointer",
+                fontWeight:700,
+                boxShadow:`0 8px 30px rgba(200,148,50,0.25)`,
+              }}>
                 Déanta — Mark complete ✓
               </button>
             ):(
               <div>
-                <div style={{width:"100%",padding:"15px",borderRadius:14,background:c.doneBg,border:`1px solid ${c.doneBd}`,textAlign:"center",...hd,fontSize:"1rem",color:c.doneTx,marginBottom:12}}>
+                <div style={{
+                  width:"100%",padding:"15px",borderRadius:14,
+                  background:"rgba(34,197,94,0.08)",
+                  border:"1px solid rgba(34,197,94,0.22)",
+                  textAlign:"center",...hd,fontSize:"1rem",
+                  color:"rgba(34,197,94,0.8)",marginBottom:12,
+                }}>
                   ✅ Lá {ch.day} completed!
                 </div>
-                <button onClick={()=>shareProgress(ch.day,total,st.streak)} style={{width:"100%",background:"none",border:`1px solid ${c.bd}`,borderRadius:12,padding:"12px",color:c.tx3,...bd,fontSize:"0.85rem",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:8}}>
+                <button onClick={()=>shareProgress(ch.day,total,st.streak)} style={{width:"100%",background:"none",border:"1px solid rgba(255,255,255,0.08)",borderRadius:12,padding:"12px",color:"rgba(237,233,223,0.38)",...bd,fontSize:"0.85rem",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:8}}>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
                   Share progress
                 </button>
@@ -2667,12 +2766,12 @@ body{background:${c.bg}}
             )}
 
             {/* ── NAV ARROWS ── */}
-            <div style={{display:"flex",justifyContent:"space-between",marginTop:16}}>
+            <div style={{display:"flex",justifyContent:"space-between",marginTop:16,gap:8}}>
               {ch.day>1
-                ?<button onClick={()=>setSelDay(ch.day-1)} style={{background:"none",border:`1px solid ${c.bd}`,borderRadius:10,padding:"9px 16px",color:c.tx3,...bd,fontSize:"0.82rem",cursor:"pointer"}}>← Lá {ch.day-1}</button>
-                :<div/>}
-              {ch.day<30&&(
-                <button onClick={()=>setSelDay(ch.day+1)} style={{background:"none",border:`1px solid ${c.bd}`,borderRadius:10,padding:"9px 16px",color:c.tx3,...bd,fontSize:"0.82rem",cursor:"pointer"}}>Lá {ch.day+1} →</button>
+                ?<button onClick={()=>setSelDay(ch.day-1)} style={{flex:1,background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.08)",borderRadius:12,padding:"10px 14px",color:"rgba(237,233,223,0.35)",...bd,fontSize:"0.8rem",cursor:"pointer",textAlign:"center"}}>← Lá {ch.day-1}</button>
+                :<div style={{flex:1}}/>}
+              {ch.day<CH.length&&(
+                <button onClick={()=>setSelDay(ch.day+1)} style={{flex:1,background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.08)",borderRadius:12,padding:"10px 14px",color:"rgba(237,233,223,0.35)",...bd,fontSize:"0.8rem",cursor:"pointer",textAlign:"center"}}>Lá {ch.day+1} →</button>
               )}
             </div>
           </div>
@@ -3032,14 +3131,15 @@ body{background:${c.bg}}
     return(
       <div className="af" style={{minHeight:"100vh",background:c.bg,color:c.tx,animation:"fadeIn 0.25s ease",paddingBottom:24}}>
         <style>{css}</style>
-        <div style={{background:c.hero,padding:"20px 20px 20px"}}>
-          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
+        <div style={{background:"linear-gradient(180deg,#0a1a0b 0%,#060d07 100%)",padding:"16px 18px 18px",position:"relative",overflow:"hidden",borderBottom:"1px solid rgba(200,148,50,0.1)"}}>
+          <div style={{position:"absolute",inset:0,pointerEvents:"none",backgroundImage:`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Cpath d='M20 2 L38 20 L20 38 L2 20 Z' fill='none' stroke='rgba(200,150,62,0.03)' stroke-width='0.5'/%3E%3C/svg%3E")`,backgroundSize:"40px 40px"}}/>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14,position:"relative"}}>
             <div style={{display:"flex",alignItems:"center",gap:10}}>
-              <button onClick={()=>setView(prevView||"home")} style={{display:"flex",alignItems:"center",gap:6,background:"rgba(255,255,255,0.12)",border:"1px solid rgba(255,255,255,0.2)",borderRadius:10,padding:"7px 12px",cursor:"pointer",color:"rgba(255,255,255,0.85)",...bd,fontSize:"0.82rem",fontWeight:600}}>← {prevView==="menu"?"Roghanna":"Baile"} <span style={{opacity:0.5,fontWeight:400,fontSize:"0.72rem"}}>{prevView==="menu"?"· Menu":"· Home"}</span></button>
-              <h1 style={{...hd,fontSize:"1.6rem",color:"#fff"}}>📖 Foclóir</h1>
+              <button onClick={()=>setView(prevView||"home")} style={{display:"flex",alignItems:"center",gap:6,background:"rgba(255,255,255,0.07)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:10,padding:"7px 12px",cursor:"pointer",color:"rgba(237,233,223,0.6)",...bd,fontSize:"0.82rem"}}>← {prevView==="menu"?"Roghanna":"Baile"} <span style={{opacity:0.5,fontWeight:400,fontSize:"0.72rem"}}>{prevView==="menu"?"· Menu":"· Home"}</span></button>
+              <h1 style={{...hd,fontSize:"1.4rem",color:"rgba(237,233,223,0.85)"}}>Foclóir</h1>
             </div>
           </div>
-          <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Cuardach... / Search" style={{width:"100%",padding:"10px 14px",borderRadius:10,border:"none",background:"rgba(255,255,255,0.15)",color:"#fff",fontSize:"0.9rem",fontFamily:"'Lato',sans-serif",outline:"none",boxSizing:"border-box"}}/>
+          <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Cuardach... / Search" style={{position:"relative",width:"100%",padding:"11px 16px",borderRadius:12,border:"1px solid rgba(200,148,50,0.2)",background:"rgba(10,20,12,0.7)",color:"rgba(237,233,223,0.8)",fontSize:"0.9rem",fontFamily:"'Lato',sans-serif",outline:"none",boxSizing:"border-box"}}/>
         </div>
         <div style={{display:"flex",gap:6,padding:"10px 14px",overflowX:"auto",borderBottom:`1px solid ${c.bd}`}}>
           {dictCats.map(cat=>(
@@ -3079,74 +3179,92 @@ body{background:${c.bg}}
     return(
       <div className="af" style={{minHeight:"100vh",background:c.bg,color:c.tx,animation:"fadeIn 0.25s ease",paddingBottom:24}}>
         <style>{css}</style>
-        <div style={{background:c.hero,padding:"20px 20px 32px",textAlign:"center"}}>
-          <div style={{display:"flex",justifyContent:"flex-start",marginBottom:16}}>
-            <button onClick={()=>setView(prevView||"home")} style={{display:"flex",alignItems:"center",gap:6,background:"rgba(255,255,255,0.12)",border:"1px solid rgba(255,255,255,0.2)",borderRadius:10,padding:"7px 12px",cursor:"pointer",color:"rgba(255,255,255,0.85)",...bd,fontSize:"0.82rem",fontWeight:600}}>← {prevView==="menu"?"Roghanna":"Baile"} <span style={{opacity:0.5,fontWeight:400,fontSize:"0.72rem"}}>{prevView==="menu"?"· Menu":"· Home"}</span></button>
+        <div style={{background:"linear-gradient(180deg,#0a1a0b 0%,#060d07 100%)",padding:"16px 18px 28px",textAlign:"center",position:"relative",overflow:"hidden",borderBottom:"1px solid rgba(200,148,50,0.1)"}}>
+          <div style={{position:"absolute",inset:0,pointerEvents:"none",backgroundImage:`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Cpath d='M20 2 L38 20 L20 38 L2 20 Z' fill='none' stroke='rgba(200,150,62,0.03)' stroke-width='0.5'/%3E%3C/svg%3E")`,backgroundSize:"40px 40px"}}/>
+          <div style={{display:"flex",justifyContent:"flex-start",marginBottom:16,position:"relative"}}>
+            <button onClick={()=>setView(prevView||"home")} style={{display:"flex",alignItems:"center",gap:6,background:"rgba(255,255,255,0.07)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:10,padding:"7px 12px",cursor:"pointer",color:"rgba(237,233,223,0.6)",...bd,fontSize:"0.82rem"}}>← {prevView==="menu"?"Roghanna":"Baile"} <span style={{opacity:0.5,fontWeight:400,fontSize:"0.72rem"}}>{prevView==="menu"?"· Menu":"· Home"}</span></button>
           </div>
-          <h1 style={{...hd,fontSize:"1.4rem",fontWeight:800,color:"#fff",marginBottom:4}}>Mo Dhul Chun Cinn</h1>
-          <p style={{...bd,fontSize:"0.82rem",color:"rgba(255,255,255,0.65)",marginBottom:20}}>My Progress</p>
-          <div style={{position:"relative",width:120,height:120,margin:"0 auto"}}>
-            <svg width="120" height="120" viewBox="0 0 120 120" style={{transform:"rotate(-90deg)"}}>
-              <circle cx="60" cy="60" r="50" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="8"/>
-              <circle cx="60" cy="60" r="50" fill="none" stroke="#fff" strokeWidth="8" strokeDasharray={`${(total/CH.length)*314} 314`} strokeLinecap="round" style={{transition:"stroke-dasharray 1s ease"}}/>
-            </svg>
-            <div style={{position:"absolute",inset:0,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center"}}>
-              <span style={{...hd,fontSize:"2rem",fontWeight:800,color:"#fff",lineHeight:1}}>{total}</span>
-              <span style={{...bd,fontSize:"0.6rem",color:"rgba(255,255,255,0.65)"}}>of {CH.length}</span>
+          <div style={{position:"relative"}}>
+            <h1 style={{...hd,fontSize:"1.6rem",fontWeight:800,color:"rgba(237,233,223,0.9)",marginBottom:2}}>Mo Dhul Chun Cinn</h1>
+            <p style={{...bd,fontSize:"0.6rem",color:"rgba(200,148,50,0.6)",marginBottom:20,letterSpacing:"0.18em",textTransform:"uppercase"}}>My Progress</p>
+            <div style={{position:"relative",width:130,height:130,margin:"0 auto"}}>
+              <svg width="130" height="130" viewBox="0 0 130 130" style={{transform:"rotate(-90deg)"}}>
+                <circle cx="65" cy="65" r="54" fill="none" stroke="rgba(255,255,255,0.07)" strokeWidth="7"/>
+                <circle cx="65" cy="65" r="54" fill="none" stroke="url(#statsGrad)" strokeWidth="7" strokeDasharray={`${(total/CH.length)*339} 339`} strokeLinecap="round" style={{transition:"stroke-dasharray 1s ease"}}/>
+                <defs><linearGradient id="statsGrad" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stopColor="#2D6A4F"/><stop offset="100%" stopColor="#C4923A"/></linearGradient></defs>
+              </svg>
+              <div style={{position:"absolute",inset:0,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center"}}>
+                <span style={{...ir,fontSize:"2.4rem",fontWeight:700,fontStyle:"italic",color:"#CFA050",lineHeight:1}}>{total}</span>
+                <span style={{...bd,fontSize:"0.52rem",color:"rgba(237,233,223,0.35)",letterSpacing:"0.06em"}}>of {CH.length}</span>
+              </div>
             </div>
           </div>
         </div>
         <div style={{padding:"20px",maxWidth:500,margin:"0 auto"}}>
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:24}}>
-            {[{label:"Days done",val:total,icon:"✅"},{label:"Bonus done",val:(st.bonus||[]).length,icon:"⭐"},{label:"Best streak",val:st.best||0,icon:"🏆"},{label:"Current streak",val:st.streak||0,icon:"🔥"},{label:"Days since start",val:daysSince,icon:"📅"},{label:"Complete",val:Math.round(total/CH.length*100)+"%",icon:"📊"}].map((s,i)=>(
-              <div key={i} style={{background:c.card,border:`1px solid ${c.bd}`,borderRadius:12,padding:"14px 16px",boxShadow:c.shadow,animation:`rise 0.4s ${i*0.05}s ease both`}}>
-                <div style={{fontSize:"1.1rem",marginBottom:5}}>{s.icon}</div>
-                <div style={{...hd,fontSize:"1.6rem",fontWeight:800,color:c.acc}}>{s.val}</div>
-                <div style={{...bd,fontSize:"0.68rem",color:c.tx3,marginTop:2}}>{s.label}</div>
+            {[{label:"Laethanta",val:total,icon:"✅"},{label:"Bónas",val:(st.bonus||[]).length,icon:"⭐"},{label:"Is fearr",val:st.best||0,icon:"🏆"},{label:"Sraith",val:st.streak||0,icon:"🔥"},{label:"Ón tús",val:daysSince,icon:"📅"},{label:"Iomlán",val:Math.round(total/CH.length*100)+"%",icon:"📊"}].map((s,i)=>(
+              <div key={i} style={{
+                background:"rgba(10,20,12,0.6)",
+                border:"1px solid rgba(200,148,50,0.1)",
+                borderRadius:14,padding:"14px 16px",
+                animation:`rise 0.4s ${i*0.05}s ease both`,
+              }}>
+                <div style={{fontSize:"1rem",marginBottom:6}}>{s.icon}</div>
+                <div style={{...hd,fontSize:"1.7rem",fontWeight:800,color:"rgba(200,148,50,0.85)"}}>{s.val}</div>
+                <div style={{...bd,fontSize:"0.58rem",color:"rgba(237,233,223,0.28)",marginTop:3,letterSpacing:"0.08em",textTransform:"uppercase"}}>{s.label}</div>
               </div>
             ))}
           </div>
-          <div style={{...hd,fontSize:"0.82rem",fontWeight:700,color:c.tx,marginBottom:12}}>Week by week</div>
+          <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:14}}>
+            <div style={{height:"1px",flex:1,background:"rgba(255,255,255,0.05)"}}/>
+            <span style={{...bd,fontSize:"0.48rem",color:"rgba(200,148,50,0.4)",letterSpacing:"0.2em",textTransform:"uppercase",fontWeight:700}}>Seachtain ar seachtain</span>
+            <div style={{height:"1px",flex:1,background:"rgba(255,255,255,0.05)"}}/>
+          </div>
           {WK.map((w,wi)=>{
             const dn=(st.done||[]).filter(d=>d>w.start&&d<=w.end).length;
+            const wpct=dn/(w.end-w.start);
             return(
               <div key={wi} style={{marginBottom:14,animation:`rise 0.4s ${wi*0.08}s ease both`}}>
-                <div style={{display:"flex",justifyContent:"space-between",marginBottom:5}}>
-                  <span style={{...bd,fontSize:"0.78rem",color:c.tx2}}>Week {wi+1} — {w.en}</span>
-                  <span style={{...hd,fontSize:"0.72rem",fontWeight:700,color:wkColors[wi]}}>{dn}/{w.end-w.start}</span>
+                <div style={{display:"flex",justifyContent:"space-between",marginBottom:6,alignItems:"center"}}>
+                  <span style={{...bd,fontSize:"0.75rem",color:"rgba(237,233,223,0.55)"}}>{w.en}</span>
+                  <span style={{...bd,fontSize:"0.65rem",fontWeight:700,color:dn===(w.end-w.start)?"rgba(200,148,50,0.7)":"rgba(237,233,223,0.28)"}}>{dn}/{w.end-w.start}</span>
                 </div>
-                <div style={{height:8,borderRadius:4,background:c.progBg,overflow:"hidden"}}>
-                  <div style={{width:`${(dn/(w.end-w.start))*100}%`,height:"100%",borderRadius:4,background:wkColors[wi],transition:"width 0.8s ease"}}/>
+                <div style={{height:6,borderRadius:3,background:"rgba(255,255,255,0.05)",overflow:"hidden"}}>
+                  <div style={{width:`${wpct*100}%`,height:"100%",borderRadius:3,background:wpct===1?"rgba(200,148,50,0.6)":"rgba(200,148,50,0.35)",transition:"width 0.8s ease"}}/>
                 </div>
               </div>
             );
           })}
           {/* ── ACHIEVEMENTS ── */}
-          <div style={{...bd,fontSize:"0.65rem",color:c.tx3,letterSpacing:"0.1em",textTransform:"uppercase",fontWeight:700,marginTop:28,marginBottom:12}}>Achievements</div>
+          <div style={{display:"flex",alignItems:"center",gap:8,marginTop:28,marginBottom:14}}>
+            <div style={{height:"1px",flex:1,background:"rgba(255,255,255,0.05)"}}/>
+            <span style={{...bd,fontSize:"0.48rem",color:"rgba(200,148,50,0.4)",letterSpacing:"0.2em",textTransform:"uppercase",fontWeight:700}}>Gradaim · Achievements</span>
+            <div style={{height:"1px",flex:1,background:"rgba(255,255,255,0.05)"}}/>
+          </div>
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:24}}>
             {ACHIEVEMENTS.map((a,i)=>(
               <div key={a.id} style={{
-                background:a.unlocked?c.card:c.cardAlt,
-                border:`1px solid ${a.unlocked?c.doneBd:c.bd}`,
+                background:a.unlocked?"rgba(10,20,12,0.7)":"rgba(6,13,7,0.4)",
+                border:`1px solid ${a.unlocked?"rgba(200,148,50,0.22)":"rgba(255,255,255,0.06)"}`,
                 borderRadius:14,padding:"14px 16px",
-                opacity:a.unlocked?1:0.45,
+                opacity:a.unlocked?1:0.4,
                 transition:"all 0.3s",
                 animation:`rise 0.4s ${i*0.06}s ease both`,
               }}>
-                <div style={{fontSize:"1.6rem",marginBottom:8,filter:a.unlocked?"none":"grayscale(1)"}}>{a.icon}</div>
-                <div style={{...hd,fontSize:"0.95rem",color:a.unlocked?c.acc:c.tx3,marginBottom:1}}>{a.name}</div>
-                <div style={{...bd,fontSize:"0.68rem",color:c.tx3,fontStyle:"italic",marginBottom:4}}>{a.nameEn}</div>
-                <div style={{...bd,fontSize:"0.7rem",color:c.tx3,lineHeight:1.4}}>{a.desc}</div>
+                <div style={{fontSize:"1.5rem",marginBottom:8,filter:a.unlocked?"none":"grayscale(1)"}}>{a.icon}</div>
+                <div style={{...hd,fontSize:"0.9rem",color:a.unlocked?"rgba(200,148,50,0.85)":"rgba(237,233,223,0.3)",marginBottom:1}}>{a.name}</div>
+                <div style={{...bd,fontSize:"0.63rem",color:"rgba(237,233,223,0.28)",fontStyle:"italic",marginBottom:4}}>{a.nameEn}</div>
+                <div style={{...bd,fontSize:"0.68rem",color:"rgba(237,233,223,0.38)",lineHeight:1.4}}>{a.desc}</div>
                 {a.unlocked&&(
-                  <div style={{...bd,fontSize:"0.62rem",color:c.doneTx,marginTop:6,fontWeight:700}}>✓ Unlocked</div>
+                  <div style={{...bd,fontSize:"0.58rem",color:"rgba(34,197,94,0.6)",marginTop:6,fontWeight:700}}>✓ Díghlasáilte</div>
                 )}
               </div>
             ))}
           </div>
 
-          <div style={{padding:"16px",background:c.cardAlt,border:`1px solid ${c.bd}`,borderRadius:14,textAlign:"center",marginBottom:20}}>
-            <p style={{...hd,fontSize:"0.88rem",fontStyle:"italic",color:c.tx3,lineHeight:1.7}}>
-              {total===0?"Every journey begins with one word."
+          <div style={{padding:"18px 20px",background:"rgba(10,20,12,0.5)",border:"1px solid rgba(200,148,50,0.1)",borderRadius:14,textAlign:"center",marginBottom:20}}>
+            <p style={{...ir,fontSize:"1rem",fontStyle:"italic",color:"rgba(200,148,50,0.5)",lineHeight:1.7,margin:0}}>
+              {total===0?"Tosaíonn turas fada le céim amháin."
               :total<10?"You've started. That's more than most."
               :total<20?"You're not just learning — you're reviving."
               :total<30?"The first milestone is close. Keep going."
@@ -3162,9 +3280,9 @@ body{background:${c.bg}}
               setView("quiz");
             }} style={{
               width:"100%",padding:"15px",borderRadius:14,
-              background:c.card,border:`1px solid ${c.bd}`,
-              color:c.acc,...hd,fontSize:"1rem",letterSpacing:"0.02em",
-              cursor:"pointer",boxShadow:c.shadow,marginBottom:12,
+              background:"rgba(10,20,12,0.6)",border:"1px solid rgba(200,148,50,0.2)",
+              color:"rgba(200,148,50,0.8)",...hd,fontSize:"1rem",letterSpacing:"0.02em",
+              cursor:"pointer",marginBottom:12,
               display:"flex",alignItems:"center",justifyContent:"center",gap:10,
             }}>
               <span>🧠</span> Practice quiz — test yourself
@@ -3172,7 +3290,7 @@ body{background:${c.bg}}
           )}
 
           <div style={{textAlign:"center",marginBottom:8}}>
-            <button onClick={doReset} style={{background:"none",border:`1px solid ${c.bd}`,borderRadius:8,padding:"8px 20px",color:c.tx3,...bd,fontSize:"0.72rem",cursor:"pointer"}}>Reset progress</button>
+            <button onClick={doReset} style={{background:"none",border:"1px solid rgba(255,255,255,0.07)",borderRadius:8,padding:"8px 20px",color:"rgba(237,233,223,0.2)",...bd,fontSize:"0.7rem",cursor:"pointer"}}>Reset progress</button>
           </div>
         </div>
       </div>
@@ -3205,11 +3323,12 @@ body{background:${c.bg}}
     return(
       <div className="af" style={{minHeight:"100vh",background:c.bg,color:c.tx,paddingBottom:24,animation:"fadeIn 0.25s ease"}}>
         <style>{css}</style>
-        <div style={{background:c.hero,padding:"20px 20px 20px"}}>
-          <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:12}}>
-            <button onClick={()=>setView(prevView||"home")} style={{display:"flex",alignItems:"center",gap:6,background:"rgba(255,255,255,0.12)",border:"1px solid rgba(255,255,255,0.2)",borderRadius:10,padding:"7px 12px",cursor:"pointer",color:"rgba(255,255,255,0.85)",...bd,fontSize:"0.82rem",fontWeight:600}}>← {prevView==="menu"?"Roghanna":"Baile"} <span style={{opacity:0.5,fontWeight:400,fontSize:"0.72rem"}}>{prevView==="menu"?"· Menu":"· Home"}</span></button>
+        <div style={{background:"linear-gradient(180deg,#0a1a0b 0%,#060d07 100%)",padding:"16px 18px 20px",position:"relative",overflow:"hidden",borderBottom:"1px solid rgba(200,148,50,0.1)"}}>
+          <div style={{position:"absolute",inset:0,pointerEvents:"none",backgroundImage:`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Cpath d='M20 2 L38 20 L20 38 L2 20 Z' fill='none' stroke='rgba(200,150,62,0.03)' stroke-width='0.5'/%3E%3C/svg%3E")`,backgroundSize:"40px 40px"}}/>
+          <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:14,position:"relative"}}>
+            <button onClick={()=>setView(prevView||"home")} style={{display:"flex",alignItems:"center",gap:6,background:"rgba(255,255,255,0.07)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:10,padding:"7px 12px",cursor:"pointer",color:"rgba(237,233,223,0.6)",...bd,fontSize:"0.82rem"}}>← {prevView==="menu"?"Roghanna":"Baile"} <span style={{opacity:0.5,fontWeight:400,fontSize:"0.72rem"}}>{prevView==="menu"?"· Menu":"· Home"}</span></button>
           </div>
-          <h1 style={{...hd,fontSize:"1.8rem",color:"#fff"}}>⚙️ Socruithe <span style={{fontWeight:400,fontSize:"1.1rem",opacity:0.55}}>· Settings</span></h1>
+          <h1 style={{...hd,fontSize:"1.5rem",color:"rgba(237,233,223,0.85)",position:"relative"}}>Socruithe <span style={{fontWeight:400,fontSize:"0.9rem",color:"rgba(200,148,50,0.5)"}}>· Settings</span></h1>
         </div>
         <div style={{maxWidth:500,margin:"0 auto",padding:"20px 16px"}}>
 
@@ -3516,23 +3635,24 @@ body{background:${c.bg}}
       <div className="af" style={{minHeight:"100vh",background:c.bg,color:c.tx,paddingBottom:40,animation:"fadeIn 0.25s ease"}}>
         <style>{css}</style>
         {/* Header */}
-        <div style={{background:c.hero,padding:"20px 20px 0"}}>
-          <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:14}}>
-            <button onClick={()=>setView(prevView||"home")} style={{display:"flex",alignItems:"center",gap:6,background:"rgba(255,255,255,0.12)",border:"1px solid rgba(255,255,255,0.2)",borderRadius:10,padding:"7px 12px",cursor:"pointer",color:"rgba(255,255,255,0.85)",...bd,fontSize:"0.82rem",fontWeight:600}}>← {prevView==="menu"?"Roghanna":"Baile"} <span style={{opacity:0.5,fontWeight:400,fontSize:"0.72rem"}}>{prevView==="menu"?"· Menu":"· Home"}</span></button>
+        <div style={{background:"linear-gradient(180deg,#0a1a0b 0%,#060d07 100%)",padding:"16px 18px 0",position:"relative",overflow:"hidden"}}>
+          <div style={{position:"absolute",inset:0,pointerEvents:"none",backgroundImage:`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Cpath d='M20 2 L38 20 L20 38 L2 20 Z' fill='none' stroke='rgba(200,150,62,0.03)' stroke-width='0.5'/%3E%3C/svg%3E")`,backgroundSize:"40px 40px"}}/>
+          <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:14,position:"relative"}}>
+            <button onClick={()=>setView(prevView||"home")} style={{display:"flex",alignItems:"center",gap:6,background:"rgba(255,255,255,0.07)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:10,padding:"7px 12px",cursor:"pointer",color:"rgba(237,233,223,0.6)",...bd,fontSize:"0.82rem"}}>← {prevView==="menu"?"Roghanna":"Baile"} <span style={{opacity:0.5,fontWeight:400,fontSize:"0.72rem"}}>{prevView==="menu"?"· Menu":"· Home"}</span></button>
           </div>
-          <h1 style={{...hd,fontSize:"1.7rem",color:"#fff",marginBottom:4}}>📚 Fuaimeanna & Gramadach</h1>
-          <p style={{...bd,fontSize:"0.75rem",color:"rgba(255,255,255,0.55)",marginBottom:0,paddingBottom:0}}>Pronunciation · Grammar · How Irish works</p>
+          <h1 style={{...hd,fontSize:"1.5rem",color:"rgba(237,233,223,0.85)",marginBottom:3,position:"relative"}}>Fuaimeanna & Gramadach</h1>
+          <p style={{...bd,fontSize:"0.6rem",color:"rgba(200,148,50,0.5)",marginBottom:0,paddingBottom:0,letterSpacing:"0.16em",textTransform:"uppercase",position:"relative"}}>Pronunciation · Grammar · How Irish works</p>
           {/* Tabs */}
-          <div style={{display:"flex",gap:0,marginTop:14,borderBottom:"2px solid rgba(255,255,255,0.12)"}}>
-            {[{id:"fuaimeanna",label:"Fuaimeanna 🔊",sub:"Sounds"},{id:"gramadach",label:"Gramadach 📖",sub:"Grammar"}].map(t=>(
+          <div style={{display:"flex",gap:0,marginTop:14,borderBottom:"1px solid rgba(255,255,255,0.07)",position:"relative"}}>
+            {[{id:"fuaimeanna",label:"Fuaimeanna",sub:"Sounds"},{id:"gramadach",label:"Gramadach",sub:"Grammar"}].map(t=>(
               <button key={t.id} onClick={()=>setGuideTab(t.id)} style={{
                 flex:1,background:"none",border:"none",cursor:"pointer",
                 padding:"10px 0 12px",
-                borderBottom:`2px solid ${guideTab===t.id?c.gold:"transparent"}`,
-                marginBottom:"-2px",
+                borderBottom:`2px solid ${guideTab===t.id?"rgba(200,148,50,0.7)":"transparent"}`,
+                marginBottom:"-1px",
               }}>
-                <div style={{...bd,fontSize:"0.78rem",fontWeight:700,color:guideTab===t.id?c.gold:"rgba(255,255,255,0.5)"}}>{t.label}</div>
-                <div style={{...bd,fontSize:"0.58rem",color:"rgba(255,255,255,0.35)",marginTop:1}}>{t.sub}</div>
+                <div style={{...bd,fontSize:"0.75rem",fontWeight:700,color:guideTab===t.id?"rgba(200,148,50,0.85)":"rgba(237,233,223,0.35)"}}>{t.label}</div>
+                <div style={{...bd,fontSize:"0.55rem",color:guideTab===t.id?"rgba(200,148,50,0.45)":"rgba(237,233,223,0.2)",marginTop:2}}>{t.sub}</div>
               </button>
             ))}
           </div>
@@ -3702,20 +3822,20 @@ body{background:${c.bg}}
         <style>{css}</style>
 
         {/* ── HERO HEADER ── */}
-        <div style={{background:c.hero,padding:"20px 20px 28px"}}>
-          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:18}}>
-            <div style={{display:"flex",alignItems:"center",gap:10}}>
-              <button onClick={()=>setView(prevView||"home")} style={{display:"flex",alignItems:"center",gap:6,background:"rgba(255,255,255,0.12)",border:"1px solid rgba(255,255,255,0.2)",borderRadius:10,padding:"7px 12px",cursor:"pointer",color:"rgba(255,255,255,0.85)",...bd,fontSize:"0.82rem",fontWeight:600}}>← {prevView==="menu"?"Roghanna":"Baile"} <span style={{opacity:0.5,fontWeight:400,fontSize:"0.72rem"}}>{prevView==="menu"?"· Menu":"· Home"}</span></button>
-              <h1 style={{...hd,fontSize:"1.3rem",fontWeight:800,color:"#fff",margin:0}}>☘️ 30 Lá <span style={{fontWeight:400,fontSize:"0.9rem",opacity:0.5}}>· Days</span></h1>
-            </div>
+        <div style={{background:"linear-gradient(180deg,#0a1a0b 0%,#060d07 100%)",padding:"16px 18px 24px",position:"relative",overflow:"hidden",borderBottom:"1px solid rgba(200,148,50,0.1)"}}>
+          {/* Celtic diamond pattern overlay */}
+          <div style={{position:"absolute",inset:0,pointerEvents:"none",backgroundImage:`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Cpath d='M20 2 L38 20 L20 38 L2 20 Z' fill='none' stroke='rgba(200,150,62,0.035)' stroke-width='0.5'/%3E%3C/svg%3E")`,backgroundSize:"40px 40px"}}/>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20,position:"relative"}}>
+            <button onClick={()=>setView(prevView||"home")} style={{display:"flex",alignItems:"center",gap:6,background:"rgba(255,255,255,0.07)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:10,padding:"7px 12px",cursor:"pointer",color:"rgba(237,233,223,0.6)",...bd,fontSize:"0.82rem"}}>← {prevView==="menu"?"Roghanna":"Baile"} <span style={{opacity:0.5,fontWeight:400,fontSize:"0.72rem"}}>{prevView==="menu"?"· Menu":"· Home"}</span></button>
+            <div style={{...bd,fontSize:"0.48rem",color:"rgba(200,148,50,0.45)",letterSpacing:"0.22em",textTransform:"uppercase"}}>Léarscáil · Map</div>
           </div>
           {/* Big progress number */}
-          <div style={{textAlign:"center",marginBottom:14}}>
-            <div style={{...hd,fontSize:"3.2rem",fontWeight:800,color:"#fff",lineHeight:1}}>
-              {total}<span style={{fontSize:"1.4rem",fontWeight:400,opacity:0.45}}>/{CH.length}</span>
+          <div style={{textAlign:"center",marginBottom:16,position:"relative"}}>
+            <div style={{...ir,fontSize:"clamp(3.5rem,14vw,5rem)",fontWeight:700,fontStyle:"italic",color:"#CFA050",lineHeight:1,animation:"gold-shimmer 5s ease-in-out infinite"}}>
+              {total}<span style={{fontSize:"clamp(1.5rem,5vw,2rem)",fontWeight:600,opacity:0.45,fontStyle:"normal"}}>/{CH.length}</span>
             </div>
-            <div style={{...bd,fontSize:"0.78rem",color:"rgba(255,255,255,0.55)",marginTop:4,fontStyle:"italic"}}>
-              {total===0?"Your journey begins with a single word."
+            <div style={{...bd,fontSize:"0.7rem",color:"rgba(237,233,223,0.35)",marginTop:6,fontStyle:"italic",letterSpacing:"0.03em"}}>
+              {total===0?"Tosaíonn turas fada le céim amháin."
               :total<10?"Every word you speak makes the language stronger."
               :total<20?"You're not just learning — you're reviving."
               :total<30?`${30-total} days to Level 1. The old words are proud of you.`
@@ -3723,9 +3843,9 @@ body{background:${c.bg}}
               :"Tá Gaeilge agat. You did it."}
             </div>
           </div>
-          {/* Header progress bar */}
-          <div style={{height:4,borderRadius:2,background:"rgba(255,255,255,0.2)",overflow:"hidden"}}>
-            <div style={{width:`${pct*100}%`,height:"100%",background:"rgba(255,255,255,0.85)",borderRadius:2,transition:"width 0.6s ease"}}/>
+          {/* Progress bar */}
+          <div style={{height:3,borderRadius:2,background:"rgba(255,255,255,0.07)",overflow:"hidden",position:"relative"}}>
+            <div style={{width:`${pct*100}%`,height:"100%",background:"linear-gradient(90deg,#C4923A,#E8B85A)",borderRadius:2,transition:"width 0.8s ease",boxShadow:"0 0 8px rgba(200,148,50,0.4)"}}/>
           </div>
         </div>
 
@@ -3734,13 +3854,18 @@ body{background:${c.bg}}
           {/* ── STATS ROW ── */}
           <div style={{display:"flex",gap:8,marginBottom:20}}>
             {[
-              {label:"Completed",val:total,icon:"✅",clr:c.acc},
-              {label:"Bonus",val:(st.bonus||[]).length,icon:"⭐",clr:c.gold},
-              ...((st.streak||0)>=2?[{label:"Streak",val:`${st.streak||0} 🔥`,icon:null,clr:c.gold}]:[]),
+              {label:"Críochnaithe",val:total,icon:"✅",clr:c.acc},
+              {label:"Bónas",val:(st.bonus||[]).length,icon:"⭐",clr:c.gold},
+              ...((st.streak||0)>=2?[{label:"Sraith",val:`${st.streak||0} 🔥`,icon:null,clr:c.gold}]:[]),
             ].map((s,i)=>(
-              <div key={i} style={{flex:1,background:c.card,border:`1px solid ${c.bd}`,borderRadius:12,padding:"10px 8px",textAlign:"center",boxShadow:c.shadow}}>
-                <div style={{...hd,fontSize:"1.3rem",color:s.clr,lineHeight:1}}>{s.val}</div>
-                <div style={{...bd,fontSize:"0.6rem",color:c.tx3,marginTop:3}}>{s.label}</div>
+              <div key={i} style={{
+                flex:1,
+                background:"rgba(10,20,12,0.6)",
+                border:"1px solid rgba(200,148,50,0.12)",
+                borderRadius:14,padding:"11px 8px",textAlign:"center",
+              }}>
+                <div style={{...hd,fontSize:"1.4rem",color:s.clr,lineHeight:1,fontWeight:700}}>{s.val}</div>
+                <div style={{...bd,fontSize:"0.52rem",color:"rgba(237,233,223,0.3)",marginTop:4,letterSpacing:"0.08em",textTransform:"uppercase"}}>{s.label}</div>
               </div>
             ))}
           </div>
@@ -3755,21 +3880,25 @@ body{background:${c.bg}}
             return (
               <div key={wi} style={{marginBottom:24}}>
                 {/* Week header */}
-                <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:8}}>
-                  <div style={{background:wComplete?c.acc:`${c.acc}15`,border:`1px solid ${wComplete?c.acc:c.bd}`,borderRadius:8,padding:"4px 12px"}}>
-                    <span style={{...hd,fontSize:"0.75rem",fontWeight:700,color:wComplete?"#fff":c.acc}}>Seachtain {wi+1}</span>
+                <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:10}}>
+                  <div style={{
+                    background:wComplete?"rgba(200,148,50,0.2)":"rgba(200,148,50,0.07)",
+                    border:`1px solid ${wComplete?"rgba(200,148,50,0.5)":"rgba(200,148,50,0.15)"}`,
+                    borderRadius:8,padding:"4px 11px",
+                  }}>
+                    <span style={{...bd,fontSize:"0.55rem",fontWeight:800,color:wComplete?c.gold:"rgba(200,148,50,0.5)",letterSpacing:"0.06em",textTransform:"uppercase"}}>{wi+1}</span>
                   </div>
                   <div style={{lineHeight:1.2}}>
-                    <span style={{...hd,fontSize:"0.78rem",color:c.tx}}>{w.name}</span>
-                    <span style={{...bd,fontSize:"0.65rem",color:c.tx3,opacity:0.7}}> · {w.en}</span>
+                    <span style={{...hd,fontSize:"0.82rem",color:wComplete?"rgba(237,233,223,0.85)":"rgba(237,233,223,0.5)",fontWeight:wComplete?700:400}}>{w.name}</span>
+                    <span style={{...bd,fontSize:"0.62rem",color:"rgba(237,233,223,0.25)"}}> · {w.en}</span>
                   </div>
-                  {wComplete&&<span style={{fontSize:"0.85rem"}}>🏅</span>}
+                  {wComplete&&<span style={{fontSize:"0.8rem"}}>🏅</span>}
                   <div style={{flex:1}}/>
-                  <span style={{...bd,fontSize:"0.65rem",color:wComplete?c.acc:c.tx3,fontWeight:wComplete?700:400}}>{wDone}/{wTotal}</span>
+                  <span style={{...bd,fontSize:"0.6rem",color:wComplete?"rgba(200,148,50,0.7)":"rgba(237,233,223,0.2)",fontWeight:wComplete?700:400}}>{wDone}/{wTotal}</span>
                 </div>
                 {/* Week mini progress */}
-                <div style={{height:3,borderRadius:2,background:c.progBg,overflow:"hidden",marginBottom:10}}>
-                  <div style={{width:`${wPct*100}%`,height:"100%",background:wComplete?c.acc:c.progFill,borderRadius:2,transition:"width 0.4s"}}/>
+                <div style={{height:2,borderRadius:2,background:"rgba(255,255,255,0.05)",overflow:"hidden",marginBottom:10}}>
+                  <div style={{width:`${wPct*100}%`,height:"100%",background:wComplete?"rgba(200,148,50,0.6)":"rgba(200,148,50,0.3)",borderRadius:2,transition:"width 0.4s"}}/>
                 </div>
                 {/* Day cards */}
                 <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(130px,1fr))",gap:8}}>
@@ -3782,25 +3911,25 @@ body{background:${c.bg}}
                     const cc=CAT_CLR[ch.cat]||c.acc;
                     return (
                       <button key={ch.day} onClick={()=>{setPrevView("map");setSelDay(ch.day);setView("day")}} style={{
-                        background:here?`${cc}12`:dn?`${c.acc}08`:c.card,
-                        border:here?`2px solid ${cc}`:dn?`1px solid ${c.acc}30`:`1px solid ${c.bd}`,
+                        background:here?`linear-gradient(145deg,${cc}22,${cc}08)`:dn?"rgba(200,148,50,0.05)":"rgba(10,20,12,0.5)",
+                        border:here?`1px solid ${cc}55`:dn?"1px solid rgba(200,148,50,0.2)":"1px solid rgba(255,255,255,0.06)",
                         borderRadius:14,padding:0,cursor:lk?"not-allowed":"pointer",
-                        opacity:lk?0.25:1,textAlign:"left",width:"100%",
-                        boxShadow:here?`0 6px 22px ${cc}40,0 2px 8px rgba(0,0,0,0.1)`:dn?"none":nx?c.shadow:"none",
+                        opacity:lk?0.2:1,textAlign:"left",width:"100%",
+                        boxShadow:here?`0 8px 24px ${cc}35`:"none",
                         overflow:"hidden",transition:"all 0.2s",
                       }}>
-                        <div style={{height:here?4:3,background:here?cc:dn?c.acc:lk?"transparent":cc,opacity:here?1:dn?0.7:0.5}}/>
+                        <div style={{height:3,background:here?cc:dn?"rgba(200,148,50,0.4)":lk?"transparent":`${cc}30`,transition:"background 0.3s"}}/>
                         <div style={{padding:"10px 12px 12px"}}>
-                          <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:7}}>
-                            <span style={{fontSize:"1.1rem"}}>{lk?"🔒":dn?"✅":CATS[ch.cat]}</span>
+                          <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:6}}>
+                            <span style={{fontSize:"1rem",opacity:lk?0.4:1}}>{lk?"🔒":dn?"✅":CATS[ch.cat]}</span>
                             <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:2}}>
-                              {bn&&<span style={{fontSize:"0.62rem",lineHeight:1}}>⭐</span>}
-                              {here&&<span style={{...bd,fontSize:"0.54rem",background:cc,color:"#fff",borderRadius:5,padding:"2px 6px",fontWeight:800,letterSpacing:"0.06em"}}>NEXT</span>}
+                              {bn&&<span style={{fontSize:"0.6rem",lineHeight:1}}>⭐</span>}
+                              {here&&<span style={{...bd,fontSize:"0.5rem",background:`${cc}CC`,color:"#fff",borderRadius:5,padding:"2px 6px",fontWeight:800,letterSpacing:"0.08em"}}>NEXT</span>}
                             </div>
                           </div>
-                          <div style={{...bd,fontSize:"0.58rem",color:here?cc:c.tx3,letterSpacing:"0.07em",textTransform:"uppercase",marginBottom:3,fontWeight:here?700:400}}>Lá {ch.day}</div>
-                          <div style={{...hd,fontSize:"0.86rem",fontWeight:700,color:here?cc:dn?c.acc:nx?c.tx:c.tx3,lineHeight:1.2,marginBottom:2}}>{ch.t}</div>
-                          <div style={{...bd,fontSize:"0.67rem",color:c.tx3,fontStyle:"italic",lineHeight:1.3}}>{ch.e}</div>
+                          <div style={{...bd,fontSize:"0.52rem",color:here?cc:"rgba(237,233,223,0.25)",letterSpacing:"0.08em",textTransform:"uppercase",marginBottom:3,fontWeight:here?700:400}}>Lá {ch.day}</div>
+                          <div style={{...hd,fontSize:"0.84rem",fontWeight:700,color:here?cc:dn?"rgba(200,148,50,0.7)":nx?"rgba(237,233,223,0.75)":"rgba(237,233,223,0.3)",lineHeight:1.2,marginBottom:2}}>{ch.t}</div>
+                          <div style={{...bd,fontSize:"0.64rem",color:"rgba(237,233,223,0.28)",fontStyle:"italic",lineHeight:1.3}}>{ch.e}</div>
                         </div>
                       </button>
                     );
@@ -3811,12 +3940,12 @@ body{background:${c.bg}}
           })}
 
           {/* ── FOOTER ── */}
-          <div style={{textAlign:"center",padding:"20px 0 16px",borderTop:`1px solid ${c.bd}`}}>
-            <p style={{...hd,fontSize:"0.88rem",fontStyle:"italic",color:c.tx3,lineHeight:1.5,marginBottom:8}}>
+          <div style={{textAlign:"center",padding:"20px 0 16px",borderTop:"1px solid rgba(255,255,255,0.05)"}}>
+            <p style={{...ir,fontSize:"0.95rem",fontStyle:"italic",color:"rgba(200,148,50,0.45)",lineHeight:1.6,marginBottom:6}}>
               "Is fearr Gaeilge briste ná Béarla cliste"
             </p>
-            <div style={{...bd,fontSize:"0.68rem",color:c.tx3,opacity:0.45,marginBottom:14}}>☘️ Gaeltacht Connect — Built in Ireland</div>
-            <button onClick={doReset} style={{background:"none",border:"none",color:c.tx3,...bd,fontSize:"0.65rem",cursor:"pointer",opacity:0.3,textDecoration:"underline"}}>Reset progress</button>
+            <div style={{...bd,fontSize:"0.62rem",color:"rgba(237,233,223,0.2)",marginBottom:14,letterSpacing:"0.06em"}}>☘️ Gaeltacht Connect · Built in Ireland</div>
+            <button onClick={doReset} style={{background:"none",border:"none",color:"rgba(237,233,223,0.18)",...bd,fontSize:"0.6rem",cursor:"pointer",textDecoration:"underline"}}>Reset progress</button>
           </div>
           <div style={{height:16}}/>
         </div>
