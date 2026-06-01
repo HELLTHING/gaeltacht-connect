@@ -4283,30 +4283,46 @@ body{background:${c.bg}}
             </div>
 
             {/* CTA */}
-            <button onClick={()=>{haptic([10,20,10]);setPrevView("home");
-              if(allDone){setView("map");}else{setSelDay(nextDay);setView("day");}
-            }} style={{
-              width:"100%",padding:"17px",border:"none",cursor:"pointer",
-              background:missionLesson
-                ?(c.dark?"rgba(111,207,151,0.13)":"rgba(27,67,50,0.07)")
-                :"linear-gradient(135deg,#2D6A4F 0%,#1B4332 100%)",
-              borderRadius:14,
-              display:"flex",alignItems:"center",justifyContent:"center",gap:10,
-              animation:missionLesson?"none":"breathe 2.4s ease infinite",
-              boxShadow:missionLesson?"none":"0 4px 22px rgba(27,67,50,0.6)",
-              outline:missionLesson?`1px solid ${c.doneBd}`:"none",
-            }}>
-              <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:1}}>
-                <span style={{...bd,fontSize:"1rem",fontWeight:800,letterSpacing:"0.01em",
-                  color:missionLesson?c.doneTx:"#fff",lineHeight:1.2}}>
-                  {missionLesson?"Léigh arís":"Lean ar aghaidh"}
+            {allDone?(
+              <button onClick={()=>{haptic([10,20,10]);setPrevView("home");setView("map");}} style={{
+                width:"100%",padding:"16px",border:"none",cursor:"pointer",
+                background:"linear-gradient(135deg,#2D6A4F 0%,#1B4332 100%)",
+                borderRadius:14,display:"flex",alignItems:"center",justifyContent:"center",gap:10,
+                boxShadow:"0 4px 22px rgba(27,67,50,0.6)",
+              }}>
+                <span style={{...hd,fontSize:"1rem",fontWeight:800,color:"#fff"}}>Féach ar an léarscáil</span>
+                <span style={{fontSize:"0.9rem",color:"rgba(255,255,255,0.5)"}}>→</span>
+              </button>
+            ):missionLesson?(
+              /* Lesson already seen — small secondary link, not a big CTA */
+              <button onClick={()=>{haptic();setPrevView("home");setSelDay(nextDay);setView("day");}} style={{
+                width:"100%",padding:"11px",border:"1px solid rgba(255,255,255,0.08)",cursor:"pointer",
+                background:"transparent",borderRadius:12,
+                display:"flex",alignItems:"center",justifyContent:"center",gap:8,
+              }}>
+                <span style={{...bd,fontSize:"0.8rem",color:"rgba(237,233,223,0.45)"}}>
+                  📖 Lá {nextDay} — full lesson
                 </span>
-                <span style={{...bd,fontSize:"0.52rem",opacity:0.75,fontWeight:400,color:missionLesson?c.doneTx:"#fff",letterSpacing:"0.06em"}}>
-                  {missionLesson?"Read again":"Continue"}
-                </span>
-              </div>
-              {!missionLesson&&<span style={{fontSize:"1rem",color:"rgba(255,255,255,0.5)"}}>→</span>}
-            </button>
+              </button>
+            ):(
+              <button onClick={()=>{haptic([10,20,10]);setPrevView("home");setSelDay(nextDay);setView("day");}} style={{
+                width:"100%",padding:"17px",border:"none",cursor:"pointer",
+                background:"linear-gradient(135deg,#2D6A4F 0%,#1B4332 100%)",
+                borderRadius:14,display:"flex",alignItems:"center",justifyContent:"center",gap:10,
+                animation:"breathe 2.4s ease infinite",
+                boxShadow:"0 4px 22px rgba(27,67,50,0.6)",
+              }}>
+                <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:1}}>
+                  <span style={{...bd,fontSize:"1rem",fontWeight:800,color:"#fff",lineHeight:1.2}}>
+                    Lean ar aghaidh
+                  </span>
+                  <span style={{...bd,fontSize:"0.52rem",opacity:0.7,fontWeight:400,color:"#fff",letterSpacing:"0.06em"}}>
+                    Continue · Day {nextDay}
+                  </span>
+                </div>
+                <span style={{fontSize:"1rem",color:"rgba(255,255,255,0.5)"}}>→</span>
+              </button>
+            )}
           </div>
         </div>
       </div>
