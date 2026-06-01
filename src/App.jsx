@@ -1777,6 +1777,9 @@ export default function App() {
 @keyframes shamrock-spin{0%{transform:scale(0) rotate(-30deg)}60%{transform:scale(1.2) rotate(8deg)}100%{transform:scale(1) rotate(0deg)}}
 @keyframes slide-up{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
 @keyframes toast-slide-in{from{opacity:0;transform:translateX(110%) scale(0.92)}to{opacity:1;transform:translateX(0) scale(1)}}
+@keyframes achIn{from{opacity:0;transform:scale(0.72) translateY(28px)}to{opacity:1;transform:scale(1) translateY(0)}}
+@keyframes achGlow{0%,100%{box-shadow:0 0 0 0 rgba(212,152,60,0.10)}50%{box-shadow:0 0 32px 6px rgba(212,152,60,0.26)}}
+@keyframes achShimmer{from{left:-100%}to{left:220%}}
 @keyframes gold-shimmer{0%,100%{filter:brightness(1) drop-shadow(0 0 8px rgba(200,148,50,0.15))}50%{filter:brightness(1.12) drop-shadow(0 0 20px rgba(200,148,50,0.32))}}
 @keyframes pulse-ring{0%{transform:scale(1);opacity:0.6}100%{transform:scale(1.6);opacity:0}}
 @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-5px)}40%{transform:translateX(5px)}60%{transform:translateX(-3px)}80%{transform:translateX(3px)}}
@@ -2863,23 +2866,61 @@ body{background:${c.bg}}
           </div>
         )}
 
-        {/* ── ACHIEVEMENT TOAST ── */}
+        {/* ── ACHIEVEMENT MODAL ── */}
         {achToast&&(
-          <div style={{
-            position:"fixed",top:"env(safe-area-inset-top,20px)",right:16,
-            background:"rgba(10,20,12,0.97)",
-            border:`1px solid rgba(200,148,50,0.28)`,borderLeft:`3px solid rgba(200,148,50,0.85)`,borderRadius:14,
-            padding:"13px 16px 13px 14px",zIndex:300,
-            display:"flex",alignItems:"center",gap:13,
-            boxShadow:"0 8px 40px rgba(0,0,0,0.5),0 0 0 1px rgba(200,148,50,0.1)",
-            animation:"toast-slide-in 0.4s cubic-bezier(0.34,1.56,0.64,1)",
-            maxWidth:"min(300px,calc(100vw - 32px))",
+          <div onClick={()=>setAchToast(null)} style={{
+            position:"fixed",inset:0,zIndex:350,
+            display:"flex",alignItems:"center",justifyContent:"center",padding:"24px",
+            background:"rgba(2,6,3,0.86)",
+            backdropFilter:"blur(22px)",WebkitBackdropFilter:"blur(22px)",
+            animation:"fadeIn 0.2s ease",
           }}>
-            <div style={{width:40,height:40,borderRadius:"50%",background:"rgba(200,148,50,0.12)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"1.35rem",flexShrink:0}}>{achToast.icon}</div>
-            <div style={{minWidth:0}}>
-              <div style={{...bd,fontSize:"0.55rem",color:c.acc,fontWeight:700,letterSpacing:"0.12em",textTransform:"uppercase",marginBottom:2}}>Gradam · Achievement</div>
-              <div style={{...hd,fontSize:"0.95rem",color:"#EDE9DF",fontWeight:800,lineHeight:1.2}}>{achToast.name}</div>
-              <div style={{...bd,fontSize:"0.68rem",color:"rgba(237,233,223,0.45)",marginTop:2,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{achToast.nameEn} · {achToast.desc}</div>
+            <div style={{position:"relative",width:"min(288px,calc(100vw - 48px))",animation:"achIn 0.55s cubic-bezier(0.34,1.56,0.64,1)"}}>
+              <div style={{
+                background:"linear-gradient(155deg,#0E2012 0%,#071408 60%,#0B1C0D 100%)",
+                border:"1px solid rgba(212,152,60,0.52)",borderRadius:22,
+                padding:"28px 22px 24px",textAlign:"center",overflow:"hidden",position:"relative",
+                boxShadow:"0 0 0 1px rgba(212,152,60,0.10),0 0 70px rgba(212,152,60,0.15),0 28px 90px rgba(0,0,0,0.80),inset 0 1px 0 rgba(212,152,60,0.20)",
+              }}>
+                <div style={{position:"absolute",inset:0,pointerEvents:"none",
+                  backgroundImage:`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='38' height='38'%3E%3Cpath d='M19 2 L36 19 L19 36 L2 19 Z' fill='none' stroke='rgba(210,155,55,0.07)' stroke-width='0.6'/%3E%3C/svg%3E")`,
+                  backgroundSize:"38px 38px"}}/>
+                <div style={{position:"absolute",top:0,left:"-100%",width:"60%",height:"100%",
+                  background:"linear-gradient(90deg,transparent,rgba(212,152,60,0.07),transparent)",
+                  animation:"achShimmer 1.8s ease 0.35s forwards",pointerEvents:"none"}}/>
+                <div style={{...bd,fontSize:"0.46rem",color:"rgba(212,152,60,0.60)",fontWeight:700,
+                  letterSpacing:"0.22em",textTransform:"uppercase",marginBottom:22,position:"relative",zIndex:1}}>
+                  ☘ Gradam Gnóthaithe ☘
+                </div>
+                <div style={{width:76,height:76,borderRadius:"50%",margin:"0 auto 18px",
+                  background:"radial-gradient(circle,rgba(212,152,60,0.22) 0%,rgba(212,152,60,0.06) 55%,transparent 100%)",
+                  border:"1px solid rgba(212,152,60,0.42)",
+                  display:"flex",alignItems:"center",justifyContent:"center",fontSize:"2.1rem",
+                  animation:"achGlow 2.4s ease-in-out infinite",position:"relative",zIndex:1}}>
+                  {achToast.icon}
+                </div>
+                <div style={{...ir,fontSize:"1.6rem",fontWeight:700,color:"#EDE9DF",
+                  lineHeight:1.15,marginBottom:6,position:"relative",zIndex:1}}>
+                  {achToast.name}
+                </div>
+                <div style={{...bd,fontSize:"0.72rem",color:c.acc,fontWeight:600,
+                  marginBottom:14,position:"relative",zIndex:1,letterSpacing:"0.02em"}}>
+                  {achToast.nameEn}
+                </div>
+                <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:12,position:"relative",zIndex:1}}>
+                  <div style={{flex:1,height:"1px",background:"rgba(212,152,60,0.20)"}}/>
+                  <span style={{color:"rgba(212,152,60,0.40)",fontSize:"0.5rem"}}>◆</span>
+                  <div style={{flex:1,height:"1px",background:"rgba(212,152,60,0.20)"}}/>
+                </div>
+                <div style={{...bd,fontSize:"0.72rem",color:"rgba(237,233,223,0.50)",
+                  lineHeight:1.6,position:"relative",zIndex:1,marginBottom:18}}>
+                  {achToast.desc}
+                </div>
+                <div style={{...bd,fontSize:"0.44rem",color:"rgba(237,233,223,0.18)",
+                  letterSpacing:"0.12em",textTransform:"uppercase",position:"relative",zIndex:1}}>
+                  Tap anywhere · Cliceáil
+                </div>
+              </div>
             </div>
           </div>
         )}
@@ -4431,21 +4472,61 @@ body{background:${c.bg}}
         </div>
       )}
 
-      {/* ── ACHIEVEMENT TOAST ── */}
+      {/* ── ACHIEVEMENT MODAL ── */}
       {achToast&&(
-        <div style={{position:"fixed",top:"env(safe-area-inset-top,20px)",right:16,
-          background:"rgba(10,20,12,0.97)",
-          border:"1px solid rgba(200,148,50,0.28)",borderLeft:"3px solid rgba(200,148,50,0.85)",borderRadius:14,
-          padding:"13px 16px 13px 14px",zIndex:300,
-          display:"flex",alignItems:"center",gap:13,
-          boxShadow:"0 8px 40px rgba(0,0,0,0.5),0 0 0 1px rgba(200,148,50,0.1)",
-          animation:"toast-slide-in 0.4s cubic-bezier(0.34,1.56,0.64,1)",
-          maxWidth:"min(300px,calc(100vw - 32px))"}}>
-          <div style={{width:40,height:40,borderRadius:"50%",background:"rgba(200,148,50,0.12)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"1.35rem",flexShrink:0}}>{achToast.icon}</div>
-          <div style={{minWidth:0}}>
-            <div style={{...bd,fontSize:"0.55rem",color:c.acc,fontWeight:700,letterSpacing:"0.12em",textTransform:"uppercase",marginBottom:2}}>Gradam · Achievement</div>
-            <div style={{...hd,fontSize:"0.95rem",color:"#EDE9DF",fontWeight:800,lineHeight:1.2}}>{achToast.name}</div>
-            <div style={{...bd,fontSize:"0.68rem",color:"rgba(237,233,223,0.45)",marginTop:2,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{achToast.nameEn} · {achToast.desc}</div>
+        <div onClick={()=>setAchToast(null)} style={{
+          position:"fixed",inset:0,zIndex:350,
+          display:"flex",alignItems:"center",justifyContent:"center",padding:"24px",
+          background:"rgba(2,6,3,0.86)",
+          backdropFilter:"blur(22px)",WebkitBackdropFilter:"blur(22px)",
+          animation:"fadeIn 0.2s ease",
+        }}>
+          <div style={{position:"relative",width:"min(288px,calc(100vw - 48px))",animation:"achIn 0.55s cubic-bezier(0.34,1.56,0.64,1)"}}>
+            <div style={{
+              background:"linear-gradient(155deg,#0E2012 0%,#071408 60%,#0B1C0D 100%)",
+              border:"1px solid rgba(212,152,60,0.52)",borderRadius:22,
+              padding:"28px 22px 24px",textAlign:"center",overflow:"hidden",position:"relative",
+              boxShadow:"0 0 0 1px rgba(212,152,60,0.10),0 0 70px rgba(212,152,60,0.15),0 28px 90px rgba(0,0,0,0.80),inset 0 1px 0 rgba(212,152,60,0.20)",
+            }}>
+              <div style={{position:"absolute",inset:0,pointerEvents:"none",
+                backgroundImage:`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='38' height='38'%3E%3Cpath d='M19 2 L36 19 L19 36 L2 19 Z' fill='none' stroke='rgba(210,155,55,0.07)' stroke-width='0.6'/%3E%3C/svg%3E")`,
+                backgroundSize:"38px 38px"}}/>
+              <div style={{position:"absolute",top:0,left:"-100%",width:"60%",height:"100%",
+                background:"linear-gradient(90deg,transparent,rgba(212,152,60,0.07),transparent)",
+                animation:"achShimmer 1.8s ease 0.35s forwards",pointerEvents:"none"}}/>
+              <div style={{...bd,fontSize:"0.46rem",color:"rgba(212,152,60,0.60)",fontWeight:700,
+                letterSpacing:"0.22em",textTransform:"uppercase",marginBottom:22,position:"relative",zIndex:1}}>
+                ☘ Gradam Gnóthaithe ☘
+              </div>
+              <div style={{width:76,height:76,borderRadius:"50%",margin:"0 auto 18px",
+                background:"radial-gradient(circle,rgba(212,152,60,0.22) 0%,rgba(212,152,60,0.06) 55%,transparent 100%)",
+                border:"1px solid rgba(212,152,60,0.42)",
+                display:"flex",alignItems:"center",justifyContent:"center",fontSize:"2.1rem",
+                animation:"achGlow 2.4s ease-in-out infinite",position:"relative",zIndex:1}}>
+                {achToast.icon}
+              </div>
+              <div style={{...ir,fontSize:"1.6rem",fontWeight:700,color:"#EDE9DF",
+                lineHeight:1.15,marginBottom:6,position:"relative",zIndex:1}}>
+                {achToast.name}
+              </div>
+              <div style={{...bd,fontSize:"0.72rem",color:c.acc,fontWeight:600,
+                marginBottom:14,position:"relative",zIndex:1,letterSpacing:"0.02em"}}>
+                {achToast.nameEn}
+              </div>
+              <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:12,position:"relative",zIndex:1}}>
+                <div style={{flex:1,height:"1px",background:"rgba(212,152,60,0.20)"}}/>
+                <span style={{color:"rgba(212,152,60,0.40)",fontSize:"0.5rem"}}>◆</span>
+                <div style={{flex:1,height:"1px",background:"rgba(212,152,60,0.20)"}}/>
+              </div>
+              <div style={{...bd,fontSize:"0.72rem",color:"rgba(237,233,223,0.50)",
+                lineHeight:1.6,position:"relative",zIndex:1,marginBottom:18}}>
+                {achToast.desc}
+              </div>
+              <div style={{...bd,fontSize:"0.44rem",color:"rgba(237,233,223,0.18)",
+                letterSpacing:"0.12em",textTransform:"uppercase",position:"relative",zIndex:1}}>
+                Tap anywhere · Cliceáil
+              </div>
+            </div>
           </div>
         </div>
       )}
