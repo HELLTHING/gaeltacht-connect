@@ -1632,7 +1632,7 @@ export default function App() {
   const doComplete=async(d)=>{
     if(!st||st.done.includes(d))return;
     const nd=[...st.done,d];const k=calcStreak(nd);
-    await save({...st,done:nd,streak:k,best:Math.max(k,st.best)});
+    await save({...st,done:nd,streak:k,best:Math.max(k,st.best||0)});
     playSound('complete');
     setCeleb("day");
     // Trigger quiz after completing weeks 1, 2, 3
@@ -2718,7 +2718,7 @@ body{background:${c.bg}}
                   const key=`${ch.day}-${i}`;
                   const isDone=st.tasksDone&&st.tasksDone.includes(key);
                   return(
-                    <div key={i} onClick={()=>doTask(ch.day,i)}
+                    <div key={key} onClick={()=>doTask(ch.day,i)}
                       style={{
                         display:"flex",alignItems:"center",gap:12,
                         background:isDone?"rgba(34,197,94,0.06)":"rgba(10,20,12,0.5)",
@@ -3411,10 +3411,10 @@ body{background:${c.bg}}
           <div style={{...hd,fontSize:"0.65rem",color:c.tx3,letterSpacing:"0.12em",marginBottom:10}}>YOUR PROGRESS</div>
           <div style={{background:c.card,border:`1px solid ${c.bd}`,borderRadius:12,marginBottom:20,overflow:"hidden",boxShadow:c.shadow}}>
             {[
-              {icon:"✅",label:"Days completed",val:`${st.done.length} / ${CH.length}`},
-              {icon:"⭐",label:"Bonus challenges",val:`${st.bonus.length}`},
+              {icon:"✅",label:"Days completed",val:`${(st.done||[]).length} / ${CH.length}`},
+              {icon:"⭐",label:"Bonus challenges",val:`${(st.bonus||[]).length}`},
               {icon:"🎯",label:"Mini tasks done",val:`${taskCount}`},
-              {icon:"🔥",label:"Best streak",val:`${st.best} days`},
+              {icon:"🔥",label:"Best streak",val:`${st.best||0} days`},
               {icon:"📅",label:"Days since start",val:`${st.started?Math.floor((Date.now()-new Date(st.started).getTime())/(864e5)):0}`},
             ].map((row,i,arr)=>(
               <div key={i} style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"13px 18px",borderBottom:i<arr.length-1?`2px solid ${c.bd}`:"none"}}>
@@ -3818,7 +3818,7 @@ body{background:${c.bg}}
   }
 
   if(view==="map"){
-    const isNext=(day)=>day===nextDay&&!st.done.includes(day);
+    const isNext=(day)=>day===nextDay&&!(st.done||[]).includes(day);
     return (
       <div className="af" style={{minHeight:"100vh",background:c.bg,color:c.tx,paddingBottom:24,animation:"rise 0.3s ease"}}>
         <style>{css}</style>
@@ -3905,9 +3905,10 @@ body{background:${c.bg}}
                 {/* Day cards */}
                 <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(130px,1fr))",gap:8}}>
                   {wDays.map(ch=>{
-                    const dn=st.done.includes(ch.day);
-                    const bn=st.bonus.includes(ch.day);
-                    const lk=ch.day>1&&!st.done.includes(ch.day-1)&&!dn;
+                    const _dn=st.done||[];const _bn=st.bonus||[];
+                    const dn=_dn.includes(ch.day);
+                    const bn=_bn.includes(ch.day);
+                    const lk=ch.day>1&&!_dn.includes(ch.day-1)&&!dn;
                     const nx=!dn&&!lk;
                     const here=isNext(ch.day);
                     const cc=CAT_CLR[ch.cat]||c.acc;
