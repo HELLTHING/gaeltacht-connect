@@ -4155,7 +4155,7 @@ body{background:${c.bg}}
                 }}/>
               ))}
               {/* Label */}
-              <div style={{...bd,fontSize:"0.44rem",color:"rgba(200,148,50,0.38)",letterSpacing:"0.3em",textTransform:"uppercase",marginBottom:16}}>Frása an Lae <span style={{opacity:0.5,letterSpacing:"0.1em"}}>· Phrase of the Day</span></div>
+              <div style={{...bd,fontSize:"0.44rem",color:"rgba(200,148,50,0.7)",letterSpacing:"0.3em",textTransform:"uppercase",marginBottom:16}}>Frása an Lae <span style={{opacity:0.7,letterSpacing:"0.1em"}}>· Phrase of the Day</span></div>
               {/* Phrase */}
               <div style={{
                 ...ir,
@@ -4174,7 +4174,7 @@ body{background:${c.bg}}
               {/* Translation */}
               <div style={{
                 ...hd,fontSize:"0.83rem",fontStyle:"italic",
-                color:"rgba(237,233,223,0.38)",
+                color:"rgba(237,233,223,0.65)",
                 letterSpacing:"0.02em",lineHeight:1.4,
               }}>
                 {allDone?"You have Irish":todayCh?.m}
@@ -4191,11 +4191,11 @@ body{background:${c.bg}}
             marginBottom:14,
           }}>
             <div style={{
-              ...bd,fontSize:"0.41rem",color:"rgba(200,148,50,0.38)",
+              ...bd,fontSize:"0.41rem",color:"rgba(200,148,50,0.72)",
               letterSpacing:"0.26em",textTransform:"uppercase",marginBottom:6,
             }}>Stair · History</div>
             <p style={{
-              ...hd,fontSize:"0.8rem",color:"rgba(237,233,223,0.55)",
+              ...hd,fontSize:"0.8rem",color:"rgba(237,233,223,0.78)",
               lineHeight:1.72,fontStyle:"italic",margin:0,
             }}>
               {storyFull}
@@ -4222,10 +4222,10 @@ body{background:${c.bg}}
                       </svg>
                       <div style={{position:"absolute",inset:0,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center"}}>
                         <span style={{...bd,fontSize:"0.68rem",fontWeight:800,color:"#EDE9DF",lineHeight:1}}>{top}</span>
-                        <span style={{...bd,fontSize:"0.46rem",color:"rgba(237,233,223,0.3)",lineHeight:1.2}}>{bot}</span>
+                        <span style={{...bd,fontSize:"0.46rem",color:"rgba(237,233,223,0.55)",lineHeight:1.2}}>{bot}</span>
                       </div>
                     </div>
-                    <span style={{...bd,fontSize:"0.4rem",color:"rgba(200,148,50,0.4)",letterSpacing:"0.08em",textAlign:"center"}}>{label}<br/><span style={{opacity:0.45,letterSpacing:"0.05em",fontWeight:400}}>{sub}</span></span>
+                    <span style={{...bd,fontSize:"0.4rem",color:"rgba(200,148,50,0.7)",letterSpacing:"0.08em",textAlign:"center"}}>{label}<br/><span style={{opacity:0.7,letterSpacing:"0.05em",fontWeight:400}}>{sub}</span></span>
                   </div>
                 );
               })}
@@ -4246,14 +4246,14 @@ body{background:${c.bg}}
                   borderRadius:20,cursor:"pointer",
                   background:done?(c.dark?"rgba(111,207,151,0.09)":c.doneBg):"transparent",
                   textAlign:"center",
-                  color:done?(c.dark?"#6FCF97":c.doneTx):(c.dark?"rgba(240,237,228,0.32)":c.tx3),
+                  color:done?(c.dark?"#6FCF97":c.doneTx):(c.dark?"rgba(240,237,228,0.72)":c.tx3),
                   display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:1,
                   overflow:"hidden",
                 }}>
                   <span style={{...bd,fontSize:"0.6rem",fontWeight:700,display:"flex",alignItems:"center",gap:2}}>
                     {done?<>✓ {l}</>:<><span style={{fontSize:"0.7rem"}}>{ic}</span>{l}</>}
                   </span>
-                  {!done&&<span style={{...bd,fontSize:"0.42rem",opacity:0.38,fontWeight:400,lineHeight:1}}>{s}</span>}
+                  {!done&&<span style={{...bd,fontSize:"0.42rem",opacity:0.6,fontWeight:400,lineHeight:1}}>{s}</span>}
                 </button>
               ))}
             </div>
@@ -4277,7 +4277,7 @@ body{background:${c.bg}}
                   color:missionLesson?c.doneTx:"#fff",lineHeight:1.2}}>
                   {missionLesson?"Léigh arís":"Lean ar aghaidh"}
                 </span>
-                <span style={{...bd,fontSize:"0.52rem",opacity:0.5,fontWeight:400,color:missionLesson?c.doneTx:"#fff",letterSpacing:"0.06em"}}>
+                <span style={{...bd,fontSize:"0.52rem",opacity:0.75,fontWeight:400,color:missionLesson?c.doneTx:"#fff",letterSpacing:"0.06em"}}>
                   {missionLesson?"Read again":"Continue"}
                 </span>
               </div>
@@ -4307,17 +4307,17 @@ body{background:${c.bg}}
             cursor:a?"pointer":"default",background:"transparent",
             display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:1,
           }}>
-            <span style={{fontSize:"1.15rem",lineHeight:1,display:"flex",alignItems:"center",justifyContent:"center",color:active?"rgba(237,233,223,0.9)":"rgba(237,233,223,0.38)"}}>{e}</span>
+            <span style={{fontSize:"1.15rem",lineHeight:1,display:"flex",alignItems:"center",justifyContent:"center",color:active?"rgba(237,233,223,0.9)":"rgba(237,233,223,0.55)"}}>{e}</span>
             <span style={{
-              ...bd,fontSize:"0.48rem",fontWeight:active?800:400,
-              color:active?c.acc:"rgba(237,233,223,0.28)",
+              ...bd,fontSize:"0.48rem",fontWeight:active?800:500,
+              color:active?c.acc:"rgba(237,233,223,0.62)",
               letterSpacing:"0.01em",lineHeight:1.2,
               overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",
               maxWidth:"100%",
             }}>{l}</span>
             <span style={{
               ...bd,fontSize:"0.38rem",fontWeight:400,
-              color:active?"rgba(200,148,50,0.38)":"rgba(237,233,223,0.14)",
+              color:active?"rgba(200,148,50,0.65)":"rgba(237,233,223,0.35)",
               letterSpacing:"0.04em",lineHeight:1,
               overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",
               maxWidth:"100%",
