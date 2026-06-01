@@ -2562,7 +2562,7 @@ body{background:${c.bg}}
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"14px 18px 10px"}}>
           <button onClick={()=>{setView(prevView);setSelDay(null)}} style={{display:"flex",alignItems:"center",gap:6,background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.08)",borderRadius:10,cursor:"pointer",color:"rgba(237,233,223,0.6)",...bd,fontSize:"0.82rem",padding:"7px 13px"}}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
-            Ar ais
+            Ar ais <span style={{fontSize:"0.65rem",opacity:0.45,fontWeight:400,marginLeft:2}}>· Back</span>
           </button>
           <div style={{display:"flex",alignItems:"center",gap:8}}>
             <div style={{display:"flex",gap:3}}>
@@ -2617,7 +2617,7 @@ body{background:${c.bg}}
                 position:"relative",
               }}>
                 <div style={{position:"absolute",top:0,left:"15%",right:"15%",height:"1px",background:`linear-gradient(90deg,transparent,${dayColor}55,transparent)`}}/>
-                <div style={{...bd,fontSize:"0.45rem",color:c.gold,letterSpacing:"0.28em",textTransform:"uppercase",marginBottom:18,opacity:0.6}}>An Frása · The Phrase</div>
+                <div style={{...bd,fontSize:"0.45rem",color:c.gold,letterSpacing:"0.22em",textTransform:"uppercase",marginBottom:18,opacity:0.6}}>An Frása <span style={{opacity:0.55,letterSpacing:"0.1em"}}>· The Phrase</span></div>
                 <div style={{
                   ...ir,
                   fontSize:"clamp(2.6rem,10vw,3.6rem)",
@@ -2698,7 +2698,7 @@ body{background:${c.bg}}
               </div>
               {done&&!bDone&&(
                 <button onClick={()=>doBonus(ch.day)} style={{background:"none",border:`1px solid rgba(200,148,50,0.4)`,borderRadius:10,padding:"7px 14px",color:c.gold,...bd,fontSize:"0.75rem",fontWeight:700,cursor:"pointer",flexShrink:0,whiteSpace:"nowrap"}}>
-                  Déanta ✓
+                  Déanta <span style={{opacity:0.55,fontWeight:400,fontSize:"0.65rem"}}>· Done ✓</span>
                 </button>
               )}
               {bDone&&<span style={{fontSize:"1.1rem",flexShrink:0}}>✅</span>}
@@ -2745,7 +2745,7 @@ body{background:${c.bg}}
                 fontWeight:700,
                 boxShadow:`0 8px 30px rgba(200,148,50,0.25)`,
               }}>
-                Déanta — Mark complete ✓
+                Déanta <span style={{opacity:0.65,fontWeight:500,fontSize:"0.9rem"}}>— Mark complete ✓</span>
               </button>
             ):(
               <div>
@@ -4155,7 +4155,7 @@ body{background:${c.bg}}
                 }}/>
               ))}
               {/* Label */}
-              <div style={{...bd,fontSize:"0.44rem",color:"rgba(200,148,50,0.38)",letterSpacing:"0.3em",textTransform:"uppercase",marginBottom:16}}>Frása an Lae</div>
+              <div style={{...bd,fontSize:"0.44rem",color:"rgba(200,148,50,0.38)",letterSpacing:"0.3em",textTransform:"uppercase",marginBottom:16}}>Frása an Lae <span style={{opacity:0.5,letterSpacing:"0.1em"}}>· Phrase of the Day</span></div>
               {/* Phrase */}
               <div style={{
                 ...ir,
@@ -4207,9 +4207,9 @@ body{background:${c.bg}}
             {/* Progress rings */}
             <div style={{display:"flex",justifyContent:"center",gap:28}}>
               {[
-                {pct:total/CH.length,top:`${total}`,bot:`/${CH.length}`,label:"LAETHANTA"},
-                {pct:levelPct/100,top:`L${level}`,bot:`${xp} XP`,label:"LEIBHÉAL"},
-              ].map(({pct,top,bot,label},i)=>{
+                {pct:total/CH.length,top:`${total}`,bot:`/${CH.length}`,label:"LAETHANTA",sub:"Days"},
+                {pct:levelPct/100,top:`L${level}`,bot:`${xp} XP`,label:"LEIBHÉAL",sub:"Level"},
+              ].map(({pct,top,bot,label,sub},i)=>{
                 const r=20,circ=2*Math.PI*r;
                 return(
                   <div key={i} style={{display:"flex",flexDirection:"column",alignItems:"center",gap:3}}>
@@ -4225,7 +4225,7 @@ body{background:${c.bg}}
                         <span style={{...bd,fontSize:"0.46rem",color:"rgba(237,233,223,0.3)",lineHeight:1.2}}>{bot}</span>
                       </div>
                     </div>
-                    <span style={{...bd,fontSize:"0.4rem",color:"rgba(200,148,50,0.4)",letterSpacing:"0.1em"}}>{label}</span>
+                    <span style={{...bd,fontSize:"0.4rem",color:"rgba(200,148,50,0.4)",letterSpacing:"0.08em",textAlign:"center"}}>{label}<br/><span style={{opacity:0.45,letterSpacing:"0.05em",fontWeight:400}}>{sub}</span></span>
                   </div>
                 );
               })}
@@ -4234,26 +4234,26 @@ body{background:${c.bg}}
             {/* Mission pills */}
             <div style={{display:"flex",gap:5}}>
               {[
-                {ic:"📚",l:"Ceacht",done:missionLesson,a:()=>{haptic();setPrevView("home");setSelDay(nextDay);setView("day");}},
-                {ic:"🟩",l:"Focail",done:missionFocail,a:()=>{haptic();setView("focail");}},
-                {ic:"⚡",l:"Flash",done:missionFlash,a:()=>{haptic();startFlash();}},
-                {ic:"🧠",l:"Quiz",done:missionQuiz,a:()=>{haptic();startDailyQuiz();}},
-              ].map(({ic,l,done,a},i)=>(
+                {ic:"📚",l:"Ceacht",s:"Lesson",done:missionLesson,a:()=>{haptic();setPrevView("home");setSelDay(nextDay);setView("day");}},
+                {ic:"🟩",l:"Focail",s:"Words",done:missionFocail,a:()=>{haptic();setView("focail");}},
+                {ic:"⚡",l:"Flash",s:"Cards",done:missionFlash,a:()=>{haptic();startFlash();}},
+                {ic:"🧠",l:"Quiz",s:"Quiz",done:missionQuiz,a:()=>{haptic();startDailyQuiz();}},
+              ].map(({ic,l,s,done,a},i)=>(
                 <button key={i} onClick={a} style={{
                   flex:"1 1 0",minWidth:0,
-                  padding:"6px 4px",
+                  padding:"5px 4px 6px",
                   border:`1px solid ${done?(c.dark?"rgba(111,207,151,0.35)":c.doneBd):(c.dark?"rgba(255,255,255,0.09)":c.bd)}`,
                   borderRadius:20,cursor:"pointer",
                   background:done?(c.dark?"rgba(111,207,151,0.09)":c.doneBg):"transparent",
-                  ...bd,fontSize:"0.6rem",fontWeight:700,textAlign:"center",
+                  textAlign:"center",
                   color:done?(c.dark?"#6FCF97":c.doneTx):(c.dark?"rgba(240,237,228,0.32)":c.tx3),
-                  display:"flex",alignItems:"center",justifyContent:"center",gap:3,
+                  display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:1,
                   overflow:"hidden",
                 }}>
-                  {done
-                    ?<>✓ {l}</>
-                    :<><span style={{fontSize:"0.7rem"}}>{ic}</span>{l}</>
-                  }
+                  <span style={{...bd,fontSize:"0.6rem",fontWeight:700,display:"flex",alignItems:"center",gap:2}}>
+                    {done?<>✓ {l}</>:<><span style={{fontSize:"0.7rem"}}>{ic}</span>{l}</>}
+                  </span>
+                  {!done&&<span style={{...bd,fontSize:"0.42rem",opacity:0.38,fontWeight:400,lineHeight:1}}>{s}</span>}
                 </button>
               ))}
             </div>
@@ -4272,10 +4272,15 @@ body{background:${c.bg}}
               boxShadow:missionLesson?"none":"0 4px 22px rgba(27,67,50,0.6)",
               outline:missionLesson?`1px solid ${c.doneBd}`:"none",
             }}>
-              <span style={{...bd,fontSize:"1rem",fontWeight:800,letterSpacing:"0.01em",
-                color:missionLesson?c.doneTx:"#fff"}}>
-                {missionLesson?"Léigh arís":"Lean ar aghaidh"}
-              </span>
+              <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:1}}>
+                <span style={{...bd,fontSize:"1rem",fontWeight:800,letterSpacing:"0.01em",
+                  color:missionLesson?c.doneTx:"#fff",lineHeight:1.2}}>
+                  {missionLesson?"Léigh arís":"Lean ar aghaidh"}
+                </span>
+                <span style={{...bd,fontSize:"0.52rem",opacity:0.5,fontWeight:400,color:missionLesson?c.doneTx:"#fff",letterSpacing:"0.06em"}}>
+                  {missionLesson?"Read again":"Continue"}
+                </span>
+              </div>
               {!missionLesson&&<span style={{fontSize:"1rem",color:"rgba(255,255,255,0.5)"}}>→</span>}
             </button>
           </div>
@@ -4291,16 +4296,16 @@ body{background:${c.bg}}
         paddingBottom:"env(safe-area-inset-bottom,0px)",
       }}>
         {[
-          {e:"☘️",l:"Baile",active:true,a:null},
-          {e:"🟩",l:"Focail",active:false,a:()=>{haptic();setView("focail");}},
-          {e:"🗺️",l:"Léarscáil",active:false,a:()=>{haptic();setPrevView("home");setView("map");}},
-          {e:"📖",l:"Foclóir",active:false,a:()=>{haptic();setPrevView("home");setView("dict");}},
-          {e:<svg width="18" height="14" viewBox="0 0 18 14" fill="none"><rect x="0" y="0" width="18" height="2" rx="1" fill="currentColor"/><rect x="0" y="6" width="18" height="2" rx="1" fill="currentColor"/><rect x="0" y="12" width="18" height="2" rx="1" fill="currentColor"/></svg>,l:"Níos mó",active:false,a:()=>{haptic();setView("menu");}},
-        ].map(({e,l,active,a},i)=>(
+          {e:"☘️",l:"Baile",s:"Home",active:true,a:null},
+          {e:"🟩",l:"Focail",s:"Words",active:false,a:()=>{haptic();setView("focail");}},
+          {e:"🗺️",l:"Léarscáil",s:"Map",active:false,a:()=>{haptic();setPrevView("home");setView("map");}},
+          {e:"📖",l:"Foclóir",s:"Dict",active:false,a:()=>{haptic();setPrevView("home");setView("dict");}},
+          {e:<svg width="18" height="14" viewBox="0 0 18 14" fill="none"><rect x="0" y="0" width="18" height="2" rx="1" fill="currentColor"/><rect x="0" y="6" width="18" height="2" rx="1" fill="currentColor"/><rect x="0" y="12" width="18" height="2" rx="1" fill="currentColor"/></svg>,l:"Níos mó",s:"More",active:false,a:()=>{haptic();setView("menu");}},
+        ].map(({e,l,s,active,a},i)=>(
           <button key={i} onClick={a||undefined} style={{
-            flex:"1 1 0",minWidth:0,padding:"9px 2px 8px",border:"none",
+            flex:"1 1 0",minWidth:0,padding:"8px 2px 7px",border:"none",
             cursor:a?"pointer":"default",background:"transparent",
-            display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:2,
+            display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:1,
           }}>
             <span style={{fontSize:"1.15rem",lineHeight:1,display:"flex",alignItems:"center",justifyContent:"center",color:active?"rgba(237,233,223,0.9)":"rgba(237,233,223,0.38)"}}>{e}</span>
             <span style={{
@@ -4310,6 +4315,13 @@ body{background:${c.bg}}
               overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",
               maxWidth:"100%",
             }}>{l}</span>
+            <span style={{
+              ...bd,fontSize:"0.38rem",fontWeight:400,
+              color:active?"rgba(200,148,50,0.38)":"rgba(237,233,223,0.14)",
+              letterSpacing:"0.04em",lineHeight:1,
+              overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",
+              maxWidth:"100%",
+            }}>{s}</span>
             {active&&<div style={{width:16,height:2,borderRadius:1,background:c.acc,marginTop:2}}/>}
           </button>
         ))}
