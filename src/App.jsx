@@ -4182,7 +4182,30 @@ body{background:${c.bg}}
             </div>
           </div>
 
-          {/* ── THE STORY (below phrase) ── */}
+          {/* ── DO DHÚSHLÁN — Today's challenge ── */}
+          {!allDone&&todayCh?.ch&&(
+            <div style={{
+              background:"linear-gradient(135deg,rgba(196,146,58,0.12),rgba(18,36,22,0.6))",
+              border:"1px solid rgba(196,146,58,0.28)",
+              borderRadius:14,
+              padding:"12px 16px",
+              marginBottom:10,
+            }}>
+              <div style={{
+                ...bd,fontSize:"0.41rem",color:"rgba(200,148,50,0.8)",
+                letterSpacing:"0.22em",textTransform:"uppercase",marginBottom:7,fontWeight:700,
+              }}>Do dhúshlán · Today's challenge</div>
+              <p style={{
+                ...bd,fontSize:"0.88rem",color:"rgba(237,233,223,0.88)",
+                lineHeight:1.65,margin:0,
+              }}>
+                {todayCh.ch}
+              </p>
+            </div>
+          )}
+
+          {/* ── THE STORY (below challenge) ── */}
+          {storyFull&&(
           <div style={{
             background:"rgba(18,36,22,0.5)",
             borderLeft:"2px solid rgba(200,148,50,0.32)",
@@ -4201,6 +4224,7 @@ body{background:${c.bg}}
               {storyFull}
             </p>
           </div>
+          )}
 
           {/* ── BOTTOM ── */}
           <div style={{display:"flex",flexDirection:"column",gap:11,marginTop:16}}>
