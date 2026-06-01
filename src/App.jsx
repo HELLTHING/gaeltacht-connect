@@ -4159,14 +4159,14 @@ body{background:${c.bg}}
           {e:"🟩",l:"Focail",active:false,a:()=>{haptic();setView("focail");}},
           {e:"🗺️",l:"Léarscáil",active:false,a:()=>{haptic();setPrevView("home");setView("map");}},
           {e:"📖",l:"Foclóir",active:false,a:()=>{haptic();setPrevView("home");setView("dict");}},
-          {e:"☰",l:"Níos mó",active:false,a:()=>{haptic();setView("menu");}},
+          {e:<svg width="18" height="14" viewBox="0 0 18 14" fill="none"><rect x="0" y="0" width="18" height="2" rx="1" fill="currentColor"/><rect x="0" y="6" width="18" height="2" rx="1" fill="currentColor"/><rect x="0" y="12" width="18" height="2" rx="1" fill="currentColor"/></svg>,l:"Níos mó",active:false,a:()=>{haptic();setView("menu");}},
         ].map(({e,l,active,a},i)=>(
           <button key={i} onClick={a||undefined} style={{
             flex:"1 1 0",minWidth:0,padding:"9px 2px 8px",border:"none",
             cursor:a?"pointer":"default",background:"transparent",
             display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:2,
           }}>
-            <span style={{fontSize:"1.15rem",lineHeight:1,display:"block"}}>{e}</span>
+            <span style={{fontSize:"1.15rem",lineHeight:1,display:"flex",alignItems:"center",justifyContent:"center",color:active?"rgba(237,233,223,0.9)":"rgba(237,233,223,0.38)"}}>{e}</span>
             <span style={{
               ...bd,fontSize:"0.48rem",fontWeight:active?800:400,
               color:active?c.acc:"rgba(237,233,223,0.28)",
