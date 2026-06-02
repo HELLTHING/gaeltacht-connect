@@ -1447,7 +1447,7 @@ export default function App() {
   useEffect(()=>{(async()=>{
     const [s]=await Promise.all([loadS(),new Promise(r=>setTimeout(r,1700))]);
     if(s){setSt(s);setTheme(s.theme&&THEMES[s.theme]?s.theme:"coill");}
-    else{const i={done:[],bonus:[],tasksDone:[],streak:0,best:0,theme:"coill",onboarded:true,started:new Date().toISOString(),dailyLog:{},county:null,notifEnabled:false};await saveS(i);setSt(i)}
+    else{const i={done:[],bonus:[],tasksDone:[],streak:0,best:0,theme:"coill",onboarded:true,started:new Date().toISOString(),dailyLog:{},county:null,notifEnabled:false,lastCompletedDate:null};await saveS(i);setSt(i)}
     setLoading(false);
     // Fetch community count in background
     sbGetCount(todayKey()).then(n=>{if(n!==null)setCommunityCount(n);});
@@ -1630,9 +1630,11 @@ export default function App() {
   const calcStreak=(arr)=>{if(!arr.length)return 0;const s=[...arr].sort((a,b)=>a-b);let k=1;for(let i=s.length-1;i>0;i--){if(s[i]-s[i-1]===1)k++;else break}return k};
 
   const doComplete=async(d)=>{
-    if(!st||st.done.includes(d))return;
+    if(!st||(st.done||[]).includes(d))return;
+    // One challenge per real calendar day (gate skips day 1 so new users aren't blocked)
+    if((st.done||[]).length>0&&st.lastCompletedDate===todayKey())return;
     const nd=[...st.done,d];const k=calcStreak(nd);
-    await save({...st,done:nd,streak:k,best:Math.max(k,st.best||0)});
+    await save({...st,done:nd,streak:k,best:Math.max(k,st.best||0),lastCompletedDate:todayKey()});
     playSound('complete');
     setCeleb("day");
     // Trigger quiz after completing weeks 1, 2, 3
@@ -1661,7 +1663,7 @@ export default function App() {
   };
   const doReset=async()=>{
     if(!confirm("Reset all progress? Cannot undo."))return;
-    await save({done:[],bonus:[],tasksDone:[],streak:0,best:0,theme:"coill",onboarded:true,started:new Date().toISOString(),dailyLog:{},county:null,notifEnabled:false});
+    await save({done:[],bonus:[],tasksDone:[],streak:0,best:0,theme:"coill",onboarded:true,started:new Date().toISOString(),dailyLog:{},county:null,notifEnabled:false,lastCompletedDate:null});
     setView("home");setSelDay(null);
   };
 
@@ -2742,16 +2744,32 @@ body{background:${c.bg}}
 
             {/* ── ACTION ── */}
             {!done?(
-              <button onClick={()=>doComplete(ch.day)} style={{
-                width:"100%",padding:"17px",borderRadius:16,
-                background:`linear-gradient(135deg,${c.gold} 0%,#A0701E 100%)`,
-                border:"none",
-                color:"rgba(6,13,7,0.95)",...hd,fontSize:"1.15rem",letterSpacing:"0.02em",cursor:"pointer",
-                fontWeight:700,
-                boxShadow:`0 8px 30px rgba(200,148,50,0.25)`,
-              }}>
-                Déanta <span style={{opacity:0.65,fontWeight:500,fontSize:"0.9rem"}}>— Mark complete ✓</span>
-              </button>
+              isLockedToday&&ch.day===nextDay?(
+                <div style={{
+                  width:"100%",padding:"15px",borderRadius:14,
+                  background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.08)",
+                  textAlign:"center",
+                }}>
+                  <div style={{fontSize:"1.3rem",marginBottom:4}}>🌙</div>
+                  <div style={{...bd,fontSize:"0.82rem",fontWeight:700,color:"rgba(237,233,223,0.5)",marginBottom:2}}>
+                    Day {total} already done today
+                  </div>
+                  <div style={{...bd,fontSize:"0.62rem",color:"rgba(237,233,223,0.25)"}}>
+                    Come back tomorrow · Tar ar ais amárach
+                  </div>
+                </div>
+              ):(
+                <button onClick={()=>doComplete(ch.day)} style={{
+                  width:"100%",padding:"17px",borderRadius:16,
+                  background:`linear-gradient(135deg,${c.gold} 0%,#A0701E 100%)`,
+                  border:"none",
+                  color:"rgba(6,13,7,0.95)",...hd,fontSize:"1.15rem",letterSpacing:"0.02em",cursor:"pointer",
+                  fontWeight:700,
+                  boxShadow:`0 8px 30px rgba(200,148,50,0.25)`,
+                }}>
+                  Déanta <span style={{opacity:0.65,fontWeight:500,fontSize:"0.9rem"}}>— Mark complete ✓</span>
+                </button>
+              )
             ):(
               <div>
                 <div style={{
@@ -4082,6 +4100,7 @@ body{background:${c.bg}}
   const missionFlash  = !!(st?.dailyLog?.[todayKey()+"_flash"]);
   const missionQuiz   = !!(st?.dailyLog?.[todayKey()+"_vq"]);
   const missionFocail = st?.focailDate===todayKey()&&(st?.focailDone==="won"||st?.focailDone==="lost");
+  const isLockedToday = !allDone && total>0 && st?.lastCompletedDate===todayKey();
   const missionsToday = [missionLesson, missionFlash, missionQuiz, missionFocail].filter(Boolean).length;
   const xp = st?.xp || 0;
   const level = Math.floor(xp / 100) + 1;
@@ -4188,18 +4207,33 @@ body{background:${c.bg}}
             </>
           ):allDone?(
             <>
-              <div style={{textAlign:"center",marginBottom:14,position:"relative",zIndex:1}}>
-                <span style={{fontSize:"2.6rem",display:"block",lineHeight:1}}>🏆</span>
+              {/* ─── POST-60: DAILY PRACTICE MODE ─── */}
+              <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:16,position:"relative",zIndex:1}}>
+                <div style={{...bd,fontSize:"0.44rem",color:"#6FCF97",letterSpacing:"0.22em",textTransform:"uppercase",
+                  background:"rgba(94,196,136,0.10)",border:"1px solid rgba(94,196,136,0.22)",
+                  borderRadius:20,padding:"4px 12px",flexShrink:0}}>60/60 ✓</div>
+                <div style={{...bd,fontSize:"0.58rem",color:"rgba(237,233,223,0.38)"}}>Cleachtadh Laethúil · Daily Practice</div>
               </div>
-              <div style={{...ir,fontSize:"1.85rem",fontWeight:700,color:c.acc,lineHeight:1.1,marginBottom:10,textAlign:"center",position:"relative",zIndex:1}}>Tá Gaeilge agat!</div>
-              <div style={{...bd,fontSize:"0.8rem",color:"rgba(237,233,223,0.52)",marginBottom:20,textAlign:"center",lineHeight:1.65,position:"relative",zIndex:1}}>You completed all 60 challenges. You have Irish.</div>
+              <div style={{...ir,fontSize:"1.85rem",fontWeight:700,color:"#EDE9DF",lineHeight:1.05,marginBottom:4,position:"relative",zIndex:1}}>
+                {dailyC.title}
+              </div>
+              <div style={{...ir,fontSize:"0.95rem",fontStyle:"italic",color:"rgba(212,152,60,0.68)",marginBottom:18,lineHeight:1.3,position:"relative",zIndex:1}}>
+                Tá Gaeilge agat
+              </div>
+              <div style={{height:"1px",background:"rgba(212,152,60,0.15)",marginBottom:14,position:"relative",zIndex:1}}/>
+              <div style={{...bd,fontSize:"0.44rem",color:"rgba(212,152,60,0.60)",letterSpacing:"0.2em",textTransform:"uppercase",marginBottom:8,position:"relative",zIndex:1}}>
+                Dúshlán an Lae · Daily Challenge
+              </div>
+              <div style={{...bd,fontSize:"0.9rem",color:"rgba(237,233,223,0.9)",lineHeight:1.65,marginBottom:20,position:"relative",zIndex:1}}>
+                {dailyC.ch}
+              </div>
               <button onClick={()=>{haptic([10,20,10]);setPrevView("home");setView("map");}} style={{
-                width:"100%",padding:"16px",border:"none",cursor:"pointer",
-                background:"linear-gradient(135deg,#2D6A4F 0%,#1B4332 100%)",
-                borderRadius:14,display:"flex",alignItems:"center",justifyContent:"center",gap:10,
-                boxShadow:"0 4px 22px rgba(27,67,50,0.55)",position:"relative",zIndex:1,
+                width:"100%",padding:"14px",border:"1px solid rgba(94,196,136,0.25)",cursor:"pointer",
+                background:"rgba(94,196,136,0.06)",borderRadius:14,
+                display:"flex",alignItems:"center",justifyContent:"center",gap:8,
+                position:"relative",zIndex:1,
               }}>
-                <span style={{...hd,fontSize:"0.95rem",fontWeight:800,color:"#fff"}}>Féach ar an léarscáil →</span>
+                <span style={{...bd,fontSize:"0.82rem",color:"rgba(94,196,136,0.7)"}}>🗺 Féach ar an léarscáil → View map</span>
               </button>
             </>
           ):(
@@ -4236,7 +4270,27 @@ body{background:${c.bg}}
                 {todayCh?.ch}
               </div>
               {/* CTA */}
-              {missionLesson?(
+              {isLockedToday?(
+                <div style={{
+                  width:"100%",padding:"16px",borderRadius:14,
+                  background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.08)",
+                  textAlign:"center",position:"relative",zIndex:1,
+                }}>
+                  <div style={{fontSize:"1.4rem",marginBottom:6}}>🌙</div>
+                  <div style={{...bd,fontSize:"0.82rem",fontWeight:700,color:"rgba(237,233,223,0.65)",marginBottom:3}}>
+                    Lá {total} déanta · Day {total} complete
+                  </div>
+                  <div style={{...bd,fontSize:"0.62rem",color:"rgba(237,233,223,0.30)"}}>
+                    Lá {nextDay} unlocks tomorrow · Tar ar ais amárach
+                  </div>
+                  <div style={{marginTop:10,height:3,background:"rgba(255,255,255,0.06)",borderRadius:2,overflow:"hidden"}}>
+                    <div style={{height:"100%",width:`${(missionsToday/4)*100}%`,background:"rgba(212,152,60,0.4)",borderRadius:2,transition:"width 0.5s ease"}}/>
+                  </div>
+                  <div style={{...bd,fontSize:"0.44rem",color:"rgba(237,233,223,0.22)",marginTop:4,letterSpacing:"0.08em"}}>
+                    {missionsToday}/4 missions today
+                  </div>
+                </div>
+              ):missionLesson?(
                 <button onClick={()=>{haptic();setPrevView("home");setSelDay(nextDay);setView("day");}} style={{
                   width:"100%",padding:"14px",border:"1px solid rgba(255,255,255,0.09)",cursor:"pointer",
                   background:"rgba(255,255,255,0.04)",borderRadius:14,
