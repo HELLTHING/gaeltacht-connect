@@ -1763,6 +1763,7 @@ export default function App() {
   const pct=total/CH.length;
   const currentCh=CH[nextDay-1];
   const allDone=total===CH.length;
+  const isLockedToday=!allDone&&total>0&&st?.lastCompletedDate===todayKey();
 
   const css=`
 *{margin:0;padding:0;box-sizing:border-box}
@@ -4100,7 +4101,6 @@ body{background:${c.bg}}
   const missionFlash  = !!(st?.dailyLog?.[todayKey()+"_flash"]);
   const missionQuiz   = !!(st?.dailyLog?.[todayKey()+"_vq"]);
   const missionFocail = st?.focailDate===todayKey()&&(st?.focailDone==="won"||st?.focailDone==="lost");
-  const isLockedToday = !allDone && total>0 && st?.lastCompletedDate===todayKey();
   const missionsToday = [missionLesson, missionFlash, missionQuiz, missionFocail].filter(Boolean).length;
   const xp = st?.xp || 0;
   const level = Math.floor(xp / 100) + 1;
