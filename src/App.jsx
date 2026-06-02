@@ -4098,278 +4098,223 @@ body{background:${c.bg}}
       <style>{css}</style>
 
       {/* ── TOP BAR ── */}
-      <div style={{display:"flex",alignItems:"center",padding:"14px 18px 12px",zIndex:10,flexShrink:0}}>
+      <div style={{display:"flex",alignItems:"center",padding:"14px 18px 10px",zIndex:10,flexShrink:0}}>
         <div style={{display:"flex",alignItems:"center",gap:6}}>
           <span style={{fontSize:"1rem"}}>☘️</span>
           <span style={{...hd,fontSize:"0.9rem",fontWeight:800,color:"rgba(240,237,228,0.8)",letterSpacing:"-0.01em"}}>Gaeltacht</span>
         </div>
         <div style={{marginLeft:"auto",display:"flex",alignItems:"center",gap:4}}>
-          {st?.streak>=1&&(
-            <div style={{
-              display:"flex",alignItems:"center",gap:3,
+          {(st?.streak||0)>=1&&(
+            <div style={{display:"flex",alignItems:"center",gap:3,
               background:"rgba(255,120,0,0.13)",border:"1px solid rgba(255,120,0,0.28)",
-              borderRadius:20,padding:"0 9px",height:28,
-            }}>
+              borderRadius:20,padding:"0 9px",height:28}}>
               <span style={{fontSize:"0.85rem",lineHeight:1}}>🔥</span>
               <span style={{...bd,fontSize:"0.75rem",fontWeight:800,color:"#FF7A00"}}>{st.streak}</span>
             </div>
           )}
-          <button onClick={async()=>{
-            setShowLeaderboard(true);
-            if(!leaderData){
-              setLeaderLoading(true);
-              const [rows,rank]=await Promise.all([
-                sbLeaderboard(),
-                authUser?.id?sbMyRank(authUser.id):Promise.resolve(null),
-              ]);
-              setLeaderData(rows);setMyRankData(rank);setLeaderLoading(false);
-            }
-          }} style={{background:"none",border:"none",cursor:"pointer",padding:0,lineHeight:1,
-            width:28,height:28,display:"flex",alignItems:"center",justifyContent:"center",
-            fontSize:"1.05rem",color:"rgba(200,150,62,0.75)"}}>🏆</button>
-          <button onClick={()=>setShowAuth(true)} style={{background:"none",border:"none",cursor:"pointer",padding:0,lineHeight:1,
-            width:28,height:28,display:"flex",alignItems:"center",justifyContent:"center"}}>
-            {authUser
-              ? <span style={{display:"flex",alignItems:"center",justifyContent:"center",width:22,height:22,borderRadius:"50%",
-                  background:"rgba(200,150,62,0.85)",color:"#111",...bd,fontWeight:800,fontSize:"0.65rem"}}>
-                  {authUser.email?.[0]?.toUpperCase()||"?"}
-                </span>
-              : <span style={{fontSize:"1rem",opacity:0.45,lineHeight:1}}>☁️</span>
-            }
+          <button onClick={async()=>{setShowLeaderboard(true);if(!leaderData){setLeaderLoading(true);const [rows,rank]=await Promise.all([sbLeaderboard(),authUser?.id?sbMyRank(authUser.id):Promise.resolve(null)]);setLeaderData(rows);setMyRankData(rank);setLeaderLoading(false);}}} style={{background:"none",border:"none",cursor:"pointer",padding:0,lineHeight:1,width:28,height:28,display:"flex",alignItems:"center",justifyContent:"center",fontSize:"1.05rem",color:"rgba(200,150,62,0.75)"}}>🏆</button>
+          <button onClick={()=>setShowAuth(true)} style={{background:"none",border:"none",cursor:"pointer",padding:0,lineHeight:1,width:28,height:28,display:"flex",alignItems:"center",justifyContent:"center"}}>
+            {authUser?<span style={{display:"flex",alignItems:"center",justifyContent:"center",width:22,height:22,borderRadius:"50%",background:"rgba(200,150,62,0.85)",color:"#111",...bd,fontWeight:800,fontSize:"0.65rem"}}>{authUser.email?.[0]?.toUpperCase()||"?"}</span>:<span style={{fontSize:"1rem",opacity:0.45,lineHeight:1}}>☁️</span>}
           </button>
-          <button onClick={()=>setView("settings")} style={{background:"none",border:"none",cursor:"pointer",padding:0,lineHeight:1,
-            width:28,height:28,display:"flex",alignItems:"center",justifyContent:"center",
-            fontSize:"1rem",opacity:0.45}}>⚙️</button>
+          <button onClick={()=>setView("settings")} style={{background:"none",border:"none",cursor:"pointer",padding:0,lineHeight:1,width:28,height:28,display:"flex",alignItems:"center",justifyContent:"center",fontSize:"1rem",opacity:0.45}}>⚙️</button>
         </div>
       </div>
 
-      {/* ── PHRASE STAGE ── */}
+      {/* ── MAIN SCROLL AREA ── */}
       <div style={{
-        flex:1,display:"flex",flexDirection:"column",position:"relative",overflow:"hidden",
+        flex:1,overflowY:"auto",display:"flex",flexDirection:"column",
+        padding:"4px 18px 24px",gap:12,position:"relative",
         background:`radial-gradient(ellipse 140% 60% at 50% -5%, rgba(212,152,60,0.22) 0%, transparent 55%),
              radial-gradient(ellipse 75% 60% at 3% 95%, rgba(25,75,45,0.32) 0%, transparent 50%),
              radial-gradient(ellipse 60% 50% at 97% 70%, rgba(212,152,60,0.13) 0%, transparent 44%),
-             radial-gradient(ellipse 45% 35% at 50% 50%, rgba(8,22,11,0.45) 0%, transparent 100%),
              radial-gradient(ellipse 100% 30% at 50% 100%, rgba(5,15,7,0.6) 0%, transparent 70%),
              linear-gradient(175deg, #030a05 0%, #071406 38%, #060d07 68%, #020804 100%)`,
       }}>
-        {/* Celtic diamond texture overlay */}
-        <div style={{
-          position:"absolute",inset:0,pointerEvents:"none",opacity:c.dark?1:0.4,
-          backgroundImage:`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='38' height='38'%3E%3Cpath d='M19 2 L36 19 L19 36 L2 19 Z' fill='none' stroke='rgba(210,155,55,0.08)' stroke-width='0.6'/%3E%3Ccircle cx='19' cy='19' r='1.2' fill='none' stroke='rgba(210,155,55,0.05)' stroke-width='0.5'/%3E%3C/svg%3E")`,
-          backgroundSize:"38px 38px",
-        }}/>
-
-        {/* Slow breathing top glow */}
-        <div style={{
-          position:"absolute",width:"70%",height:"35%",
+        <div style={{position:"absolute",inset:0,pointerEvents:"none",
+          backgroundImage:`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='38' height='38'%3E%3Cpath d='M19 2 L36 19 L19 36 L2 19 Z' fill='none' stroke='rgba(210,155,55,0.08)' stroke-width='0.6'/%3E%3C/svg%3E")`,
+          backgroundSize:"38px 38px"}}/>
+        <div style={{position:"absolute",width:"70%",height:"40%",top:0,left:"15%",pointerEvents:"none",
           background:"radial-gradient(ellipse, rgba(200,150,62,0.07) 0%, transparent 70%)",
-          top:0,left:"15%",pointerEvents:"none",
-          animation:"slowGlow 5s ease-in-out infinite",
-        }}/>
+          animation:"slowGlow 5s ease-in-out infinite"}}/>
 
-        {/* Content */}
-        <div style={{flex:1,display:"flex",flexDirection:"column",padding:"14px 24px 18px",position:"relative",zIndex:1}}>
+        {/* ═══════════════════════════
+            DAY CARD — the one thing
+        ═══════════════════════════ */}
+        <div style={{
+          position:"relative",zIndex:1,flex:"none",
+          background:"linear-gradient(145deg,rgba(14,32,18,0.90),rgba(7,14,8,0.96))",
+          border:"1px solid rgba(212,152,60,0.38)",borderRadius:24,
+          padding:"24px 22px 20px",overflow:"hidden",
+          boxShadow:"0 8px 40px rgba(0,0,0,0.55),inset 0 1px 0 rgba(212,152,60,0.15)",
+          animation:"riseStrong 0.45s ease",
+        }}>
+          <div style={{position:"absolute",inset:0,pointerEvents:"none",
+            backgroundImage:`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='38' height='38'%3E%3Cpath d='M19 2 L36 19 L19 36 L2 19 Z' fill='none' stroke='rgba(210,155,55,0.06)' stroke-width='0.6'/%3E%3C/svg%3E")`,
+            backgroundSize:"38px 38px"}}/>
 
-          {/* Day badge */}
-          <div style={{
-            alignSelf:"center",
-            ...bd,fontSize:"0.46rem",letterSpacing:"0.3em",textTransform:"uppercase",
-            color:"rgba(200,148,50,0.42)",
-            border:"1px solid rgba(200,148,50,0.14)",
-            borderRadius:20,padding:"4px 14px",marginBottom:16,
-          }}>
-            {allDone?"Tá Gaeilge agat 🏆":`Lá ${nextDay} · ${todayCh?.e||""}`}
-          </div>
-
-          {/* ── THE PHRASE (hero) ── */}
-          <div style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",textAlign:"center",minHeight:120}}>
-            <div style={{
-              position:"relative",width:"100%",
-              background:"linear-gradient(145deg,rgba(18,38,22,0.62),rgba(10,22,13,0.82))",
-              border:"1px solid rgba(200,148,50,0.22)",
-              borderRadius:22,padding:"26px 20px",
-              boxShadow:"inset 0 1px 0 rgba(200,148,50,0.1),0 8px 36px rgba(0,0,0,0.45)",
-              overflow:"hidden",
-            }}>
-              {/* Corner ornaments */}
-              {[[{top:8,left:8},{top:8,right:8},{bottom:8,left:8},{bottom:8,right:8}]].flat().map((pos,i)=>(
-                <div key={i} style={{position:"absolute",...pos,width:16,height:16,
-                  backgroundImage:`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16'%3E%3Cpath d='M8 1 L15 8 L8 15 L1 8 Z' fill='none' stroke='rgba(200%2C148%2C50%2C0.32)' stroke-width='1'/%3E%3Cpath d='M8 4 L12 8 L8 12 L4 8 Z' fill='none' stroke='rgba(200%2C148%2C50%2C0.15)' stroke-width='0.8'/%3E%3C/svg%3E")`,
-                  backgroundSize:"contain",pointerEvents:"none",
-                }}/>
-              ))}
-              {/* Label */}
-              <div style={{...bd,fontSize:"0.44rem",color:"rgba(200,148,50,0.7)",letterSpacing:"0.3em",textTransform:"uppercase",marginBottom:16}}>Frása an Lae <span style={{opacity:0.7,letterSpacing:"0.1em"}}>· Phrase of the Day</span></div>
-              {/* Phrase */}
-              <div style={{
-                ...ir,
-                fontSize:"clamp(2.7rem,11vw,4rem)",
-                fontWeight:700,
-                color:"#CFA050",
-                fontStyle:"italic",
-                lineHeight:1.02,
-                letterSpacing:"-0.02em",
-                textShadow:"0 0 60px rgba(200,148,50,0.2), 0 2px 24px rgba(0,0,0,0.5)",
-                animation:"gold-shimmer 4s ease-in-out infinite",
-                marginBottom:12,
-              }}>
-                {allDone?"Tá Gaeilge agat!":todayCh?.p}
+          {total===0?(
+            <>
+              <div style={{textAlign:"center",marginBottom:14,position:"relative",zIndex:1}}>
+                <span style={{fontSize:"2.6rem",display:"block",lineHeight:1,animation:"pop 0.5s ease"}}>☘️</span>
               </div>
-              {/* Translation */}
-              <div style={{
-                ...hd,fontSize:"0.83rem",fontStyle:"italic",
-                color:"rgba(237,233,223,0.65)",
-                letterSpacing:"0.02em",lineHeight:1.4,
-              }}>
-                {allDone?"You have Irish":todayCh?.m}
+              <div style={{...ir,fontSize:"1.85rem",fontWeight:700,color:"#EDE9DF",lineHeight:1.1,marginBottom:10,textAlign:"center",position:"relative",zIndex:1}}>
+                Fáilte go Gaeltacht
               </div>
-            </div>
-          </div>
-
-          {/* ── DO DHÚSHLÁN — Today's challenge ── */}
-          {!allDone&&todayCh?.ch&&(
-            <div style={{
-              background:"linear-gradient(135deg,rgba(196,146,58,0.12),rgba(18,36,22,0.6))",
-              border:"1px solid rgba(196,146,58,0.28)",
-              borderRadius:14,
-              padding:"12px 16px",
-              marginBottom:10,
-            }}>
-              <div style={{
-                ...bd,fontSize:"0.41rem",color:"rgba(200,148,50,0.8)",
-                letterSpacing:"0.22em",textTransform:"uppercase",marginBottom:7,fontWeight:700,
-              }}>Do dhúshlán · Today's challenge</div>
-              <p style={{
-                ...bd,fontSize:"0.88rem",color:"rgba(237,233,223,0.88)",
-                lineHeight:1.65,margin:0,
+              <div style={{...bd,fontSize:"0.8rem",color:"rgba(237,233,223,0.50)",marginBottom:20,lineHeight:1.7,textAlign:"center",position:"relative",zIndex:1}}>
+                60 real-world challenges to bring Irish into your daily life. Learn by doing, not by memorising.
+              </div>
+              <div style={{height:"1px",background:"rgba(212,152,60,0.18)",marginBottom:16,position:"relative",zIndex:1}}/>
+              <div style={{...bd,fontSize:"0.44rem",color:"rgba(212,152,60,0.62)",letterSpacing:"0.2em",textTransform:"uppercase",marginBottom:8,position:"relative",zIndex:1}}>Do chéad dhúshlán · Your first challenge</div>
+              <div style={{...bd,fontSize:"0.9rem",color:"rgba(237,233,223,0.9)",lineHeight:1.65,marginBottom:22,position:"relative",zIndex:1}}>{CH[0].ch}</div>
+              <button onClick={()=>{haptic([10,20,10]);setPrevView("home");setSelDay(1);setView("day");}} style={{
+                width:"100%",padding:"16px",border:"none",cursor:"pointer",
+                background:"linear-gradient(135deg,#2D6A4F 0%,#1B4332 100%)",
+                borderRadius:14,display:"flex",alignItems:"center",justifyContent:"center",gap:10,
+                boxShadow:"0 4px 22px rgba(27,67,50,0.55)",animation:"breathe 2.4s ease infinite",
+                position:"relative",zIndex:1,
               }}>
-                {todayCh.ch}
-              </p>
-            </div>
-          )}
-
-          {/* ── THE STORY (below challenge) ── */}
-          {storyFull&&(
-          <div style={{
-            background:"rgba(18,36,22,0.5)",
-            borderLeft:"2px solid rgba(200,148,50,0.32)",
-            borderRadius:"0 10px 10px 0",
-            padding:"10px 13px",
-            marginBottom:14,
-          }}>
-            <div style={{
-              ...bd,fontSize:"0.41rem",color:"rgba(200,148,50,0.72)",
-              letterSpacing:"0.26em",textTransform:"uppercase",marginBottom:6,
-            }}>Stair · History</div>
-            <p style={{
-              ...hd,fontSize:"0.8rem",color:"rgba(237,233,223,0.78)",
-              lineHeight:1.72,fontStyle:"italic",margin:0,
-            }}>
-              {storyFull}
-            </p>
-          </div>
-          )}
-
-          {/* ── BOTTOM ── */}
-          <div style={{display:"flex",flexDirection:"column",gap:11,marginTop:16}}>
-            {/* Progress rings */}
-            <div style={{display:"flex",justifyContent:"center",gap:28}}>
-              {[
-                {pct:total/CH.length,top:`${total}`,bot:`/${CH.length}`,label:"LAETHANTA",sub:"Days"},
-                {pct:levelPct/100,top:`L${level}`,bot:`${xp} XP`,label:"LEIBHÉAL",sub:"Level"},
-              ].map(({pct,top,bot,label,sub},i)=>{
-                const r=20,circ=2*Math.PI*r;
-                return(
-                  <div key={i} style={{display:"flex",flexDirection:"column",alignItems:"center",gap:3}}>
-                    <div style={{position:"relative",width:52,height:52}}>
-                      <svg width="52" height="52" viewBox="0 0 52 52" style={{transform:"rotate(-90deg)"}}>
-                        <circle cx="26" cy="26" r={r} fill="none" stroke="rgba(255,255,255,0.07)" strokeWidth="3"/>
-                        <circle cx="26" cy="26" r={r} fill="none" stroke="#C4923A" strokeWidth="3"
-                          strokeDasharray={`${Math.min(pct,1)*circ} ${circ}`} strokeLinecap="round"
-                          style={{transition:"stroke-dasharray 1s ease"}}/>
-                      </svg>
-                      <div style={{position:"absolute",inset:0,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center"}}>
-                        <span style={{...bd,fontSize:"0.68rem",fontWeight:800,color:"#EDE9DF",lineHeight:1}}>{top}</span>
-                        <span style={{...bd,fontSize:"0.46rem",color:"rgba(237,233,223,0.55)",lineHeight:1.2}}>{bot}</span>
-                      </div>
-                    </div>
-                    <span style={{...bd,fontSize:"0.4rem",color:"rgba(200,148,50,0.7)",letterSpacing:"0.08em",textAlign:"center"}}>{label}<br/><span style={{opacity:0.7,letterSpacing:"0.05em",fontWeight:400}}>{sub}</span></span>
-                  </div>
-                );
-              })}
-            </div>
-
-            {/* Mission pills */}
-            <div style={{display:"flex",gap:5}}>
-              {[
-                {ic:"📚",l:"Ceacht",s:"Lesson",done:missionLesson,a:()=>{haptic();setPrevView("home");setSelDay(nextDay);setView("day");}},
-                {ic:"🟩",l:"Focail",s:"Words",done:missionFocail,a:()=>{haptic();setView("focail");}},
-                {ic:"⚡",l:"Flash",s:"Cards",done:missionFlash,a:()=>{haptic();startFlash();}},
-                {ic:"🧠",l:"Quiz",s:"Quiz",done:missionQuiz,a:()=>{haptic();startDailyQuiz();}},
-              ].map(({ic,l,s,done,a},i)=>(
-                <button key={i} onClick={a} style={{
-                  flex:"1 1 0",minWidth:0,
-                  padding:"5px 4px 6px",
-                  border:`1px solid ${done?(c.dark?"rgba(111,207,151,0.35)":c.doneBd):(c.dark?"rgba(255,255,255,0.09)":c.bd)}`,
-                  borderRadius:20,cursor:"pointer",
-                  background:done?(c.dark?"rgba(111,207,151,0.09)":c.doneBg):"transparent",
-                  textAlign:"center",
-                  color:done?(c.dark?"#6FCF97":c.doneTx):(c.dark?"rgba(240,237,228,0.72)":c.tx3),
-                  display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:1,
-                  overflow:"hidden",
-                }}>
-                  <span style={{...bd,fontSize:"0.6rem",fontWeight:700,display:"flex",alignItems:"center",gap:2}}>
-                    {done?<>✓ {l}</>:<><span style={{fontSize:"0.7rem"}}>{ic}</span>{l}</>}
-                  </span>
-                  {!done&&<span style={{...bd,fontSize:"0.42rem",opacity:0.6,fontWeight:400,lineHeight:1}}>{s}</span>}
-                </button>
-              ))}
-            </div>
-
-            {/* CTA */}
-            {allDone?(
+                <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:2}}>
+                  <span style={{...bd,fontSize:"0.95rem",fontWeight:800,color:"#fff",lineHeight:1.2}}>Tosaigh · Start</span>
+                  <span style={{...bd,fontSize:"0.5rem",opacity:0.65,color:"#fff",letterSpacing:"0.06em"}}>Begin Day 1 of 60</span>
+                </div>
+                <span style={{fontSize:"1rem",color:"rgba(255,255,255,0.5)"}}>→</span>
+              </button>
+            </>
+          ):allDone?(
+            <>
+              <div style={{textAlign:"center",marginBottom:14,position:"relative",zIndex:1}}>
+                <span style={{fontSize:"2.6rem",display:"block",lineHeight:1}}>🏆</span>
+              </div>
+              <div style={{...ir,fontSize:"1.85rem",fontWeight:700,color:c.acc,lineHeight:1.1,marginBottom:10,textAlign:"center",position:"relative",zIndex:1}}>Tá Gaeilge agat!</div>
+              <div style={{...bd,fontSize:"0.8rem",color:"rgba(237,233,223,0.52)",marginBottom:20,textAlign:"center",lineHeight:1.65,position:"relative",zIndex:1}}>You completed all 60 challenges. You have Irish.</div>
               <button onClick={()=>{haptic([10,20,10]);setPrevView("home");setView("map");}} style={{
                 width:"100%",padding:"16px",border:"none",cursor:"pointer",
                 background:"linear-gradient(135deg,#2D6A4F 0%,#1B4332 100%)",
                 borderRadius:14,display:"flex",alignItems:"center",justifyContent:"center",gap:10,
-                boxShadow:"0 4px 22px rgba(27,67,50,0.6)",
+                boxShadow:"0 4px 22px rgba(27,67,50,0.55)",position:"relative",zIndex:1,
               }}>
-                <span style={{...hd,fontSize:"1rem",fontWeight:800,color:"#fff"}}>Féach ar an léarscáil</span>
-                <span style={{fontSize:"0.9rem",color:"rgba(255,255,255,0.5)"}}>→</span>
+                <span style={{...hd,fontSize:"0.95rem",fontWeight:800,color:"#fff"}}>Féach ar an léarscáil →</span>
               </button>
-            ):missionLesson?(
-              /* Lesson already seen — small secondary link, not a big CTA */
-              <button onClick={()=>{haptic();setPrevView("home");setSelDay(nextDay);setView("day");}} style={{
-                width:"100%",padding:"11px",border:"1px solid rgba(255,255,255,0.08)",cursor:"pointer",
-                background:"transparent",borderRadius:12,
-                display:"flex",alignItems:"center",justifyContent:"center",gap:8,
-              }}>
-                <span style={{...bd,fontSize:"0.8rem",color:"rgba(237,233,223,0.45)"}}>
-                  📖 Lá {nextDay} — full lesson
-                </span>
-              </button>
-            ):(
-              <button onClick={()=>{haptic([10,20,10]);setPrevView("home");setSelDay(nextDay);setView("day");}} style={{
-                width:"100%",padding:"17px",border:"none",cursor:"pointer",
-                background:"linear-gradient(135deg,#2D6A4F 0%,#1B4332 100%)",
-                borderRadius:14,display:"flex",alignItems:"center",justifyContent:"center",gap:10,
-                animation:"breathe 2.4s ease infinite",
-                boxShadow:"0 4px 22px rgba(27,67,50,0.6)",
-              }}>
-                <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:1}}>
-                  <span style={{...bd,fontSize:"1rem",fontWeight:800,color:"#fff",lineHeight:1.2}}>
-                    Lean ar aghaidh
-                  </span>
-                  <span style={{...bd,fontSize:"0.52rem",opacity:0.7,fontWeight:400,color:"#fff",letterSpacing:"0.06em"}}>
-                    Continue · Day {nextDay}
-                  </span>
+            </>
+          ):(
+            <>
+              {/* Day + category badge row */}
+              <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:16,position:"relative",zIndex:1}}>
+                <div style={{...bd,fontSize:"0.44rem",color:c.acc,letterSpacing:"0.22em",textTransform:"uppercase",
+                  background:"rgba(212,152,60,0.10)",border:"1px solid rgba(212,152,60,0.22)",
+                  borderRadius:20,padding:"4px 12px",flexShrink:0}}>
+                  Lá {nextDay}
                 </div>
-                <span style={{fontSize:"1rem",color:"rgba(255,255,255,0.5)"}}>→</span>
-              </button>
-            )}
+                <div style={{...bd,fontSize:"0.6rem",color:"rgba(237,233,223,0.38)",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>
+                  {todayCh?.e}
+                </div>
+              </div>
+              {/* Irish title */}
+              <div style={{...ir,fontSize:"2.1rem",fontWeight:700,color:"#EDE9DF",lineHeight:1.05,marginBottom:4,position:"relative",zIndex:1}}>
+                {todayCh?.t}
+              </div>
+              {/* Phrase preview */}
+              <div style={{...ir,fontSize:"1.0rem",fontStyle:"italic",color:"rgba(212,152,60,0.72)",marginBottom:18,lineHeight:1.3,position:"relative",zIndex:1}}>
+                {todayCh?.p}
+              </div>
+              {/* Divider */}
+              <div style={{height:"1px",background:"rgba(212,152,60,0.15)",marginBottom:14,position:"relative",zIndex:1}}/>
+              {/* Challenge */}
+              <div style={{...bd,fontSize:"0.44rem",color:"rgba(212,152,60,0.60)",letterSpacing:"0.2em",textTransform:"uppercase",marginBottom:8,position:"relative",zIndex:1}}>
+                Do dhúshlán · Your challenge
+              </div>
+              <div style={{...bd,fontSize:"0.9rem",color:"rgba(237,233,223,0.9)",lineHeight:1.65,marginBottom:20,position:"relative",zIndex:1}}>
+                {todayCh?.ch}
+              </div>
+              {/* CTA */}
+              {missionLesson?(
+                <button onClick={()=>{haptic();setPrevView("home");setSelDay(nextDay);setView("day");}} style={{
+                  width:"100%",padding:"14px",border:"1px solid rgba(255,255,255,0.09)",cursor:"pointer",
+                  background:"rgba(255,255,255,0.04)",borderRadius:14,
+                  display:"flex",alignItems:"center",justifyContent:"center",gap:8,
+                  position:"relative",zIndex:1,
+                }}>
+                  <span style={{...bd,fontSize:"0.82rem",color:"rgba(237,233,223,0.48)"}}>📖 Lá {nextDay} — revisit lesson</span>
+                </button>
+              ):(
+                <button onClick={()=>{haptic([10,20,10]);setPrevView("home");setSelDay(nextDay);setView("day");}} style={{
+                  width:"100%",padding:"16px",border:"none",cursor:"pointer",
+                  background:"linear-gradient(135deg,#2D6A4F 0%,#1B4332 100%)",
+                  borderRadius:14,display:"flex",alignItems:"center",justifyContent:"center",gap:10,
+                  animation:"breathe 2.4s ease infinite",
+                  boxShadow:"0 4px 22px rgba(27,67,50,0.55)",
+                  position:"relative",zIndex:1,
+                }}>
+                  <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:2}}>
+                    <span style={{...bd,fontSize:"0.95rem",fontWeight:800,color:"#fff",lineHeight:1.2}}>Lean ar aghaidh · Continue</span>
+                    <span style={{...bd,fontSize:"0.5rem",opacity:0.65,color:"#fff",letterSpacing:"0.06em"}}>Open Day {nextDay} lesson</span>
+                  </div>
+                  <span style={{fontSize:"1rem",color:"rgba(255,255,255,0.5)"}}>→</span>
+                </button>
+              )}
+            </>
+          )}
+        </div>
+
+        {/* ═══════════════
+            PROGRESS BAR
+        ═══════════════ */}
+        <div style={{position:"relative",zIndex:1,flex:"none"}}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}}>
+            <span style={{...bd,fontSize:"0.57rem",color:"rgba(237,233,223,0.38)",letterSpacing:"0.04em"}}>Dul chun cinn · Progress</span>
+            <div style={{display:"flex",alignItems:"center",gap:10}}>
+              {(st.streak||0)>=1&&<span style={{...bd,fontSize:"0.57rem",color:"rgba(255,120,0,0.65)"}}>🔥 {st.streak}</span>}
+              <span style={{...bd,fontSize:"0.62rem",fontWeight:700,color:c.acc}}>{total} / {CH.length}</span>
+            </div>
+          </div>
+          <div style={{height:7,background:"rgba(255,255,255,0.07)",borderRadius:4,overflow:"hidden"}}>
+            <div style={{height:"100%",borderRadius:4,transition:"width 1.2s ease",
+              background:"linear-gradient(90deg,#2D6A4F,#D4983C)",
+              width:`${Math.max(pct*100,total>0?2:0)}%`}}/>
+          </div>
+          <div style={{display:"flex",justifyContent:"space-between",marginTop:5}}>
+            <span style={{...bd,fontSize:"0.54rem",color:"rgba(237,233,223,0.22)"}}>L{level} · {xp} XP</span>
+            <span style={{...bd,fontSize:"0.54rem",color:"rgba(237,233,223,0.22)"}}>{Math.round(pct*100)}% complete</span>
           </div>
         </div>
+
+        {/* ═══════════════
+            MISSIONS
+        ═══════════════ */}
+        <div style={{position:"relative",zIndex:1,flex:"none"}}>
+          <div style={{...bd,fontSize:"0.44rem",color:"rgba(237,233,223,0.26)",letterSpacing:"0.16em",textTransform:"uppercase",marginBottom:8}}>
+            Inniu · Today — {missionsToday}/4 done
+          </div>
+          <div style={{display:"flex",gap:6}}>
+            {[
+              {ic:"📚",l:"Ceacht",s:"Lesson",done:missionLesson,a:()=>{haptic();setPrevView("home");setSelDay(nextDay);setView("day");}},
+              {ic:"🟩",l:"Focail",s:"Words",done:missionFocail,a:()=>{haptic();setView("focail");}},
+              {ic:"⚡",l:"Flash",s:"Cards",done:missionFlash,a:()=>{haptic();startFlash();}},
+              {ic:"🧠",l:"Quiz",s:"Quiz",done:missionQuiz,a:()=>{haptic();startDailyQuiz();}},
+            ].map(({ic,l,s,done,a},i)=>(
+              <button key={i} onClick={a} style={{
+                flex:"1 1 0",minWidth:0,padding:"10px 4px 9px",
+                border:`1px solid ${done?"rgba(94,196,136,0.30)":"rgba(255,255,255,0.07)"}`,
+                borderRadius:14,cursor:"pointer",
+                background:done?"rgba(94,196,136,0.07)":"rgba(255,255,255,0.03)",
+                display:"flex",flexDirection:"column",alignItems:"center",gap:3,
+              }}>
+                <span style={{fontSize:"0.95rem",lineHeight:1}}>{done?"✓":ic}</span>
+                <span style={{...bd,fontSize:"0.5rem",fontWeight:700,lineHeight:1,
+                  color:done?"#6FCF97":"rgba(237,233,223,0.62)"}}>{l}</span>
+                <span style={{...bd,fontSize:"0.4rem",fontWeight:400,lineHeight:1,
+                  color:done?"rgba(111,207,151,0.50)":"rgba(237,233,223,0.28)"}}>{s}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Community count */}
+        {(communityCount||0)>0&&(
+          <div style={{position:"relative",zIndex:1,textAlign:"center",...bd,fontSize:"0.58rem",color:"rgba(237,233,223,0.20)",flex:"none"}}>
+            🌍 {communityCount} people learning today
+          </div>
+        )}
       </div>
 
       {/* ── BOTTOM TAB BAR ── */}
