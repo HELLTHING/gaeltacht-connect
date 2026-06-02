@@ -4151,6 +4151,12 @@ body{background:${c.bg}}
           <div style={{position:"absolute",inset:0,pointerEvents:"none",
             backgroundImage:`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='38' height='38'%3E%3Cpath d='M19 2 L36 19 L19 36 L2 19 Z' fill='none' stroke='rgba(210,155,55,0.06)' stroke-width='0.6'/%3E%3C/svg%3E")`,
             backgroundSize:"38px 38px"}}/>
+          {/* Celtic corner ornaments */}
+          {[{top:10,left:10},{top:10,right:10},{bottom:10,left:10},{bottom:10,right:10}].map((pos,i)=>(
+            <div key={i} style={{position:"absolute",...pos,width:18,height:18,pointerEvents:"none",
+              backgroundImage:`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18'%3E%3Cpath d='M9 1 L17 9 L9 17 L1 9 Z' fill='none' stroke='rgba(210%2C155%2C55%2C0.30)' stroke-width='1'/%3E%3Cpath d='M9 5 L13 9 L9 13 L5 9 Z' fill='none' stroke='rgba(210%2C155%2C55%2C0.15)' stroke-width='0.8'/%3E%3C/svg%3E")`,
+              backgroundSize:"contain"}}/>
+          ))}
 
           {total===0?(
             <>
@@ -4213,10 +4219,13 @@ body{background:${c.bg}}
               <div style={{...ir,fontSize:"2.1rem",fontWeight:700,color:"#EDE9DF",lineHeight:1.05,marginBottom:4,position:"relative",zIndex:1}}>
                 {todayCh?.t}
               </div>
-              {/* Phrase preview */}
-              <div style={{...ir,fontSize:"1.0rem",fontStyle:"italic",color:"rgba(212,152,60,0.72)",marginBottom:18,lineHeight:1.3,position:"relative",zIndex:1}}>
-                {todayCh?.p}
-              </div>
+              {/* Phrase preview — first segment only */}
+              {todayCh?.p&&(
+                <div style={{...ir,fontSize:"1.0rem",fontStyle:"italic",color:"rgba(212,152,60,0.70)",marginBottom:18,lineHeight:1.3,position:"relative",zIndex:1,
+                  overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>
+                  {todayCh.p.split("→")[0].trim()}{todayCh.p.includes("→")?" →…":""}
+                </div>
+              )}
               {/* Divider */}
               <div style={{height:"1px",background:"rgba(212,152,60,0.15)",marginBottom:14,position:"relative",zIndex:1}}/>
               {/* Challenge */}
@@ -4257,57 +4266,61 @@ body{background:${c.bg}}
         </div>
 
         {/* ═══════════════
-            PROGRESS BAR
+            PROGRESS BAR — only after day 1
         ═══════════════ */}
-        <div style={{position:"relative",zIndex:1,flex:"none"}}>
-          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}}>
-            <span style={{...bd,fontSize:"0.57rem",color:"rgba(237,233,223,0.38)",letterSpacing:"0.04em"}}>Dul chun cinn · Progress</span>
-            <div style={{display:"flex",alignItems:"center",gap:10}}>
-              {(st.streak||0)>=1&&<span style={{...bd,fontSize:"0.57rem",color:"rgba(255,120,0,0.65)"}}>🔥 {st.streak}</span>}
-              <span style={{...bd,fontSize:"0.62rem",fontWeight:700,color:c.acc}}>{total} / {CH.length}</span>
+        {total>0&&(
+          <div style={{position:"relative",zIndex:1,flex:"none"}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}}>
+              <span style={{...bd,fontSize:"0.57rem",color:"rgba(237,233,223,0.38)",letterSpacing:"0.04em"}}>Dul chun cinn · Progress</span>
+              <div style={{display:"flex",alignItems:"center",gap:10}}>
+                {(st.streak||0)>=1&&<span style={{...bd,fontSize:"0.57rem",color:"rgba(255,120,0,0.65)"}}>🔥 {st.streak}</span>}
+                <span style={{...bd,fontSize:"0.62rem",fontWeight:700,color:c.acc}}>{total} / {CH.length}</span>
+              </div>
+            </div>
+            <div style={{height:7,background:"rgba(255,255,255,0.07)",borderRadius:4,overflow:"hidden"}}>
+              <div style={{height:"100%",borderRadius:4,transition:"width 1.2s ease",
+                background:"linear-gradient(90deg,#2D6A4F,#D4983C)",
+                width:`${Math.max(pct*100,2)}%`}}/>
+            </div>
+            <div style={{display:"flex",justifyContent:"space-between",marginTop:5}}>
+              <span style={{...bd,fontSize:"0.54rem",color:"rgba(237,233,223,0.22)"}}>L{level} · {xp} XP</span>
+              <span style={{...bd,fontSize:"0.54rem",color:"rgba(237,233,223,0.22)"}}>{Math.round(pct*100)}% complete</span>
             </div>
           </div>
-          <div style={{height:7,background:"rgba(255,255,255,0.07)",borderRadius:4,overflow:"hidden"}}>
-            <div style={{height:"100%",borderRadius:4,transition:"width 1.2s ease",
-              background:"linear-gradient(90deg,#2D6A4F,#D4983C)",
-              width:`${Math.max(pct*100,total>0?2:0)}%`}}/>
-          </div>
-          <div style={{display:"flex",justifyContent:"space-between",marginTop:5}}>
-            <span style={{...bd,fontSize:"0.54rem",color:"rgba(237,233,223,0.22)"}}>L{level} · {xp} XP</span>
-            <span style={{...bd,fontSize:"0.54rem",color:"rgba(237,233,223,0.22)"}}>{Math.round(pct*100)}% complete</span>
-          </div>
-        </div>
+        )}
 
         {/* ═══════════════
-            MISSIONS
+            MISSIONS — only after day 1
         ═══════════════ */}
-        <div style={{position:"relative",zIndex:1,flex:"none"}}>
-          <div style={{...bd,fontSize:"0.44rem",color:"rgba(237,233,223,0.26)",letterSpacing:"0.16em",textTransform:"uppercase",marginBottom:8}}>
-            Inniu · Today — {missionsToday}/4 done
+        {total>0&&(
+          <div style={{position:"relative",zIndex:1,flex:"none"}}>
+            <div style={{...bd,fontSize:"0.44rem",color:"rgba(237,233,223,0.26)",letterSpacing:"0.16em",textTransform:"uppercase",marginBottom:8}}>
+              {missionsToday===4?"✓ Inniu · All done!":missionsToday>0?`Inniu · Today — ${missionsToday}/4 done`:"Inniu · Today's practice"}
+            </div>
+            <div style={{display:"flex",gap:6}}>
+              {[
+                {ic:"📚",l:"Ceacht",s:"Lesson",done:missionLesson,a:()=>{haptic();setPrevView("home");setSelDay(nextDay);setView("day");}},
+                {ic:"🟩",l:"Focail",s:"Words",done:missionFocail,a:()=>{haptic();setView("focail");}},
+                {ic:"⚡",l:"Flash",s:"Cards",done:missionFlash,a:()=>{haptic();startFlash();}},
+                {ic:"🧠",l:"Quiz",s:"Quiz",done:missionQuiz,a:()=>{haptic();startDailyQuiz();}},
+              ].map(({ic,l,s,done,a},i)=>(
+                <button key={i} onClick={a} style={{
+                  flex:"1 1 0",minWidth:0,padding:"10px 4px 9px",
+                  border:`1px solid ${done?"rgba(94,196,136,0.30)":"rgba(255,255,255,0.07)"}`,
+                  borderRadius:14,cursor:"pointer",
+                  background:done?"rgba(94,196,136,0.07)":"rgba(255,255,255,0.03)",
+                  display:"flex",flexDirection:"column",alignItems:"center",gap:3,
+                }}>
+                  <span style={{fontSize:"0.95rem",lineHeight:1}}>{done?"✓":ic}</span>
+                  <span style={{...bd,fontSize:"0.5rem",fontWeight:700,lineHeight:1,
+                    color:done?"#6FCF97":"rgba(237,233,223,0.62)"}}>{l}</span>
+                  <span style={{...bd,fontSize:"0.4rem",fontWeight:400,lineHeight:1,
+                    color:done?"rgba(111,207,151,0.50)":"rgba(237,233,223,0.28)"}}>{s}</span>
+                </button>
+              ))}
+            </div>
           </div>
-          <div style={{display:"flex",gap:6}}>
-            {[
-              {ic:"📚",l:"Ceacht",s:"Lesson",done:missionLesson,a:()=>{haptic();setPrevView("home");setSelDay(nextDay);setView("day");}},
-              {ic:"🟩",l:"Focail",s:"Words",done:missionFocail,a:()=>{haptic();setView("focail");}},
-              {ic:"⚡",l:"Flash",s:"Cards",done:missionFlash,a:()=>{haptic();startFlash();}},
-              {ic:"🧠",l:"Quiz",s:"Quiz",done:missionQuiz,a:()=>{haptic();startDailyQuiz();}},
-            ].map(({ic,l,s,done,a},i)=>(
-              <button key={i} onClick={a} style={{
-                flex:"1 1 0",minWidth:0,padding:"10px 4px 9px",
-                border:`1px solid ${done?"rgba(94,196,136,0.30)":"rgba(255,255,255,0.07)"}`,
-                borderRadius:14,cursor:"pointer",
-                background:done?"rgba(94,196,136,0.07)":"rgba(255,255,255,0.03)",
-                display:"flex",flexDirection:"column",alignItems:"center",gap:3,
-              }}>
-                <span style={{fontSize:"0.95rem",lineHeight:1}}>{done?"✓":ic}</span>
-                <span style={{...bd,fontSize:"0.5rem",fontWeight:700,lineHeight:1,
-                  color:done?"#6FCF97":"rgba(237,233,223,0.62)"}}>{l}</span>
-                <span style={{...bd,fontSize:"0.4rem",fontWeight:400,lineHeight:1,
-                  color:done?"rgba(111,207,151,0.50)":"rgba(237,233,223,0.28)"}}>{s}</span>
-              </button>
-            ))}
-          </div>
-        </div>
+        )}
 
         {/* Community count */}
         {(communityCount||0)>0&&(
