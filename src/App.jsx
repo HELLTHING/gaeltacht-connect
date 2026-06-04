@@ -1684,10 +1684,10 @@ export default function App() {
         .sp-t1{animation:fadeUpIn 0.7s 0.65s ease both;opacity:0}
         .sp-t2{animation:fadeUpIn 0.6s 0.9s ease both;opacity:0}
         .sp-t3{animation:fadeUpIn 0.5s 1.1s ease both;opacity:0}
-        .sp-ph{animation:fadeUpIn 0.6s 1.25s ease both;opacity:0}
-        .sp-dv{animation:fadeUpIn 0.5s 1.4s ease both;opacity:0}
-        .sp-bar{animation:fadeUpIn 0.3s 1.55s ease both,barFill 0.9s 1.65s ease both;opacity:0;width:0}
-        body{background:#060d07}
+        .sp-wod{animation:fadeUpIn 0.6s 1.2s ease both;opacity:0}
+        .sp-dv{animation:fadeUpIn 0.5s 1.5s ease both;opacity:0}
+        .sp-bar{animation:fadeUpIn 0.3s 1.6s ease both,barFill 0.9s 1.7s ease both;opacity:0;width:0}
+        body{background:#030905}
       `}</style>
 
       {/* Celtic diamond pattern - subtle */}
@@ -1735,22 +1735,34 @@ export default function App() {
         marginBottom:28,textAlign:"center",
       }}>The Living Irish · 60 Real-World Challenges</div>
 
-      {/* Irish phrase */}
-      <div className="sp-ph" style={{
-        fontFamily:"'Cormorant Garamond','Playfair Display',Georgia,serif",
-        fontSize:"1.35rem",fontStyle:"italic",fontWeight:600,
-        color:"rgba(200,150,62,0.55)",
-        textAlign:"center",marginBottom:28,letterSpacing:"0.02em",
-      }}>Is fearr Gaeilge briste<br/>ná Béarla cliste</div>
+      {/* Word of the Day card */}
+      {(()=>{const w=getWordOfDay(VOCAB,new Date());return(
+        <div className="sp-wod" style={{
+          marginBottom:22,
+          padding:"14px 22px",
+          background:"linear-gradient(145deg,rgba(14,32,18,0.75),rgba(7,14,8,0.9))",
+          border:"1px solid rgba(212,152,60,0.22)",
+          borderRadius:18,minWidth:220,maxWidth:260,textAlign:"center",
+          boxShadow:"0 8px 32px rgba(0,0,0,0.5),inset 0 1px 0 rgba(212,152,60,0.10)",
+        }}>
+          <div style={{fontFamily:"'Lato',sans-serif",fontSize:"0.42rem",color:"rgba(212,152,60,0.55)",letterSpacing:"0.22em",textTransform:"uppercase",marginBottom:8}}>Focal an Lae · Word of the Day</div>
+          <div style={{fontFamily:"'Cormorant Garamond','Playfair Display',Georgia,serif",fontSize:"2rem",fontWeight:700,color:"#EDE9DF",lineHeight:1,marginBottom:4}}>{w.p}</div>
+          <div style={{fontFamily:"'Lato',sans-serif",fontSize:"0.62rem",color:"rgba(212,152,60,0.65)",marginBottom:4,letterSpacing:"0.04em"}}>/{w.pr}/</div>
+          <div style={{fontFamily:"'Lato',sans-serif",fontSize:"0.7rem",color:"rgba(237,233,223,0.48)",fontStyle:"italic"}}>{w.m}</div>
+        </div>
+      );})()}
 
-      <div className="sp-dv" style={{display:"flex",alignItems:"center",gap:10,width:200,marginBottom:24}}>
-        <div style={{flex:1,height:"1px",background:"linear-gradient(90deg,transparent,rgba(200,150,62,0.35))"}}/>
-        <div style={{color:"rgba(200,150,62,0.5)",fontSize:"0.65rem"}}>◆</div>
-        <div style={{flex:1,height:"1px",background:"linear-gradient(90deg,rgba(200,150,62,0.35),transparent)"}}/>
+      <div className="sp-dv" style={{display:"flex",flexDirection:"column",alignItems:"center",gap:8,marginBottom:20}}>
+        <div style={{display:"flex",alignItems:"center",gap:10,width:200}}>
+          <div style={{flex:1,height:"1px",background:"linear-gradient(90deg,transparent,rgba(200,150,62,0.25))"}}/>
+          <div style={{color:"rgba(200,150,62,0.35)",fontSize:"0.55rem"}}>◆</div>
+          <div style={{flex:1,height:"1px",background:"linear-gradient(90deg,rgba(200,150,62,0.25),transparent)"}}/>
+        </div>
+        <div style={{fontFamily:"'Cormorant Garamond',Georgia,serif",fontSize:"0.88rem",fontStyle:"italic",color:"rgba(200,150,62,0.35)",textAlign:"center",letterSpacing:"0.01em"}}>Is fearr Gaeilge briste ná Béarla cliste</div>
       </div>
 
       <div style={{width:160,height:2,background:"rgba(255,255,255,0.05)",borderRadius:2,overflow:"hidden"}}>
-        <div className="sp-bar" style={{height:"100%",background:"linear-gradient(90deg,rgba(30,80,50,0.9),rgba(200,150,62,0.9))",borderRadius:2}}/>
+        <div className="sp-bar" style={{height:"100%",background:"linear-gradient(90deg,rgba(30,80,50,0.9),rgba(212,152,60,0.9))",borderRadius:2}}/>
       </div>
     </div>
   );
@@ -4288,6 +4300,15 @@ body{background:${c.bg}}
                   </div>
                   <div style={{...bd,fontSize:"0.44rem",color:"rgba(237,233,223,0.22)",marginTop:4,letterSpacing:"0.08em"}}>
                     {missionsToday}/4 missions today
+                  </div>
+                  {/* Word of the Day while waiting */}
+                  <div style={{marginTop:14,paddingTop:14,borderTop:"1px solid rgba(255,255,255,0.05)"}}>
+                    <div style={{...bd,fontSize:"0.42rem",color:"rgba(212,152,60,0.45)",letterSpacing:"0.18em",textTransform:"uppercase",marginBottom:7}}>Focal an Lae · Word of the Day</div>
+                    <div style={{display:"flex",alignItems:"baseline",gap:8,flexWrap:"wrap"}}>
+                      <span style={{...ir,fontSize:"1.45rem",fontWeight:700,color:"rgba(237,233,223,0.78)",lineHeight:1}}>{wod.p}</span>
+                      <span style={{...bd,fontSize:"0.6rem",color:"rgba(212,152,60,0.52)"}}>/{wod.pr}/</span>
+                    </div>
+                    <div style={{...bd,fontSize:"0.68rem",color:"rgba(237,233,223,0.38)",marginTop:4,fontStyle:"italic"}}>{wod.m}</div>
                   </div>
                 </div>
               ):missionLesson?(
