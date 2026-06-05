@@ -1483,7 +1483,7 @@ export default function App() {
   useEffect(()=>{(async()=>{
     const [s]=await Promise.all([loadS(),new Promise(r=>setTimeout(r,1700))]);
     if(s){setSt(s);if(s.theme&&THEMES[s.theme])setTheme(s.theme);}
-    else{const i={done:[],bonus:[],tasksDone:[],streak:0,best:0,theme:"coill",onboarded:true,started:new Date().toISOString(),dailyLog:{},county:null,notifEnabled:false};await saveS(i);setSt(i)}
+    else{const i={done:[],bonus:[],tasksDone:[],streak:0,best:0,theme:"coill",onboarded:true,started:new Date().toISOString(),dailyLog:{},county:null,notifEnabled:false,lastCompletedDate:null,shieldCount:1,shieldWeek:null};await saveS(i);setSt(i)}
     setLoading(false);
     // Fetch community count in background
     sbGetCount(todayKey()).then(n=>{if(n!==null)setCommunityCount(n);});
@@ -1652,6 +1652,15 @@ export default function App() {
     if(st&&st.notifEnabled&&Notification.permission==="granted")scheduleNotif();
   },[st?.notifEnabled,scheduleNotif]);
 
+  // Replenish shield once per week (every Monday)
+  useEffect(()=>{
+    if(!st)return;
+    const now=new Date();const d=now.getDay();const diff=now.getDate()-d+(d===0?-6:1);
+    const mon=new Date(now);mon.setDate(diff);
+    const mk=mon.toISOString().split("T")[0];
+    if(st.shieldWeek!==mk){save({...st,shieldCount:1,shieldWeek:mk});}
+  },[st?.shieldWeek,!!st]);
+
   const enableNotifs=useCallback(async()=>{
     const ok = await osRequestPermission();
     if(ok){
@@ -1673,8 +1682,10 @@ export default function App() {
 
   const doComplete=async(d)=>{
     if(!st||st.done.includes(d))return;
+    // Daily lock: one challenge per calendar day (first challenge exempt so new users aren't blocked)
+    if((st.done||[]).length>0&&st.lastCompletedDate===todayKey())return;
     const nd=[...st.done,d];const k=calcStreak(nd);
-    await save({...st,done:nd,streak:k,best:Math.max(k,st.best)});
+    await save({...st,done:nd,streak:k,best:Math.max(k,st.best||0),lastCompletedDate:todayKey()});
     playSound('complete');
     setCeleb("day");
     // Trigger quiz after completing weeks 1, 2, 3
@@ -1703,7 +1714,7 @@ export default function App() {
   };
   const doReset=async()=>{
     if(!confirm("Reset all progress? Cannot undo."))return;
-    await save({done:[],bonus:[],tasksDone:[],streak:0,best:0,theme:"coill",onboarded:true,started:new Date().toISOString(),dailyLog:{},county:null,notifEnabled:false});
+    await save({done:[],bonus:[],tasksDone:[],streak:0,best:0,theme:"coill",onboarded:true,started:new Date().toISOString(),dailyLog:{},county:null,notifEnabled:false,lastCompletedDate:null,shieldCount:1,shieldWeek:null});
     setView("home");setSelDay(null);
   };
 
@@ -1764,11 +1775,26 @@ export default function App() {
         marginBottom:36,textAlign:"center",
       }}>The Living Irish</div>
 
-      <div className="sp-dv" style={{display:"flex",alignItems:"center",gap:12,width:220,marginBottom:28}}>
+      <div className="sp-dv" style={{display:"flex",alignItems:"center",gap:12,width:220,marginBottom:24}}>
         <div style={{flex:1,height:1,background:"linear-gradient(90deg,transparent,rgba(200,150,62,0.4))"}}/>
         <div style={{color:"rgba(200,150,62,0.6)",fontSize:"0.7rem",letterSpacing:"0.1em"}}>✦</div>
         <div style={{flex:1,height:1,background:"linear-gradient(90deg,rgba(200,150,62,0.4),transparent)"}}/>
       </div>
+
+      {/* Word of the Day */}
+      {(()=>{const w=getWordOfDay(VOCAB,new Date());return(
+        <div className="sp-dv" style={{
+          background:"rgba(200,150,62,0.06)",border:"1px solid rgba(200,150,62,0.18)",
+          borderRadius:14,padding:"12px 20px",marginBottom:24,textAlign:"center",width:220,
+        }}>
+          <div style={{fontFamily:"'Lato',sans-serif",fontSize:"0.62rem",color:"rgba(200,150,62,0.6)",letterSpacing:"0.2em",textTransform:"uppercase",marginBottom:6}}>Focal an Lae</div>
+          <div style={{display:"flex",alignItems:"baseline",gap:8,justifyContent:"center",marginBottom:3}}>
+            <span style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:"1.3rem",fontWeight:700,color:"#D4983C",fontStyle:"italic"}}>{w.p}</span>
+            <span style={{fontFamily:"'Lato',sans-serif",fontSize:"0.65rem",color:"rgba(200,150,62,0.45)"}}>/{ w.pr}/</span>
+          </div>
+          <div style={{fontFamily:"'Lato',sans-serif",fontSize:"0.72rem",color:"rgba(240,237,228,0.55)"}}>{w.m}</div>
+        </div>
+      );})()}
 
       <div style={{width:140,height:2,background:"rgba(255,255,255,0.06)",borderRadius:2,overflow:"hidden"}}>
         <div className="sp-bar" style={{height:"100%",background:"linear-gradient(90deg,rgba(45,106,79,0.8),rgba(200,150,62,0.8))",borderRadius:2}}/>
@@ -1782,6 +1808,8 @@ export default function App() {
   const pct=total/CH.length;
   const currentCh=CH[nextDay-1];
   const allDone=total===CH.length;
+  const isLockedToday=!allDone&&total>0&&st?.lastCompletedDate===todayKey();
+  const hoursUntilMidnight=(()=>{const now=new Date();const mid=new Date(now);mid.setHours(24,0,0,0);return Math.ceil((mid-now)/3600000);})();
 
   const css=`
 *{margin:0;padding:0;box-sizing:border-box}
@@ -2272,7 +2300,7 @@ body{background:${c.bg}}
               animation:"flashPop 0.3s cubic-bezier(0.175,0.885,0.32,1.275)",
               boxShadow:c.shadow,
             }}>
-              <div style={{...bd,fontSize:"0.52rem",color:c.gold,letterSpacing:"0.25em",textTransform:"uppercase",marginBottom:14,opacity:0.7}}>
+              <div style={{...bd,fontSize:"0.68rem",color:c.gold,letterSpacing:"0.20em",textTransform:"uppercase",marginBottom:14,opacity:0.7}}>
                 Cad é an Béarla? · What's the English?
               </div>
               <div style={{...hd,fontSize:"2.2rem",fontWeight:700,color:c.acc,textAlign:"center",fontStyle:"italic",lineHeight:1.2}}>
@@ -2631,7 +2659,7 @@ body{background:${c.bg}}
                   <div style={{marginBottom:20}}>
                     <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:12}}>
                       <div style={{height:1.5,flex:1,background:`linear-gradient(90deg,${dayColor}55,transparent)`}}/>
-                      <span style={{...bd,fontSize:"0.55rem",color:dayColor,letterSpacing:"0.18em",textTransform:"uppercase",fontWeight:700,opacity:0.9}}>Stair · History</span>
+                      <span style={{...bd,fontSize:"0.70rem",color:dayColor,letterSpacing:"0.14em",textTransform:"uppercase",fontWeight:700,opacity:0.9}}>Stair · History</span>
                       <div style={{height:1.5,flex:1,background:`linear-gradient(90deg,transparent,${dayColor}55)`}}/>
                     </div>
                     <div style={{borderLeft:`3px solid ${dayColor}`,paddingLeft:16,paddingRight:2}}>
@@ -2646,7 +2674,7 @@ body{background:${c.bg}}
                 <div style={{textAlign:"center",padding:"28px 8px 24px",margin:"0 0 20px",position:"relative",background:`radial-gradient(ellipse at center,${c.gold}09 0%,transparent 70%)`}}>
                   <div style={{position:"absolute",top:0,left:"10%",right:"10%",height:"1.5px",background:`linear-gradient(90deg,transparent,${c.gold}70,transparent)`}}/>
                   <div style={{position:"absolute",bottom:0,left:"10%",right:"10%",height:"1.5px",background:`linear-gradient(90deg,transparent,${c.gold}70,transparent)`}}/>
-                  <div style={{...bd,fontSize:"0.55rem",color:c.gold,letterSpacing:"0.22em",textTransform:"uppercase",marginBottom:14,opacity:0.7}}>✦ An Frása ✦</div>
+                  <div style={{...bd,fontSize:"0.70rem",color:c.gold,letterSpacing:"0.16em",textTransform:"uppercase",marginBottom:14,opacity:0.7}}>✦ An Frása ✦</div>
                   <div style={{...hd,fontSize:"2.4rem",fontWeight:700,fontStyle:"italic",color:c.acc,lineHeight:1.2,marginBottom:6,textAlign:"center"}}>
                     {ch.p}
                   </div>
@@ -3624,7 +3652,7 @@ body{background:${c.bg}}
                 marginBottom:"-2px",
               }}>
                 <div style={{...bd,fontSize:"0.78rem",fontWeight:700,color:guideTab===t.id?c.gold:"rgba(255,255,255,0.5)"}}>{t.label}</div>
-                <div style={{...bd,fontSize:"0.58rem",color:"rgba(255,255,255,0.35)",marginTop:1}}>{t.sub}</div>
+                <div style={{...bd,fontSize:"0.68rem",color:"rgba(255,255,255,0.35)",marginTop:1}}>{t.sub}</div>
               </button>
             ))}
           </div>
@@ -3710,7 +3738,7 @@ body{background:${c.bg}}
                   </div>
                   <div style={{textAlign:"right",flexShrink:0}}>
                     <div style={{...bd,fontSize:"0.6rem",color:c.tx3}}>{r.note}</div>
-                    <div style={{...bd,fontSize:"0.58rem",color:c.tx3,opacity:0.6}}>{r.before_pr} → {r.after_pr}</div>
+                    <div style={{...bd,fontSize:"0.68rem",color:c.tx3,opacity:0.6}}>{r.before_pr} → {r.after_pr}</div>
                   </div>
                 </div>
               ))}
@@ -3728,12 +3756,12 @@ body{background:${c.bg}}
             </div>
             <div style={{marginTop:10,display:"flex",gap:12}}>
               <div style={{flex:1,background:c.dark?"rgba(200,150,62,0.1)":"rgba(200,150,62,0.07)",borderRadius:10,padding:"8px 10px",textAlign:"center"}}>
-                <div style={{...bd,fontSize:"0.58rem",color:c.tx3,marginBottom:3}}>LEATHAN · BROAD</div>
+                <div style={{...bd,fontSize:"0.68rem",color:c.tx3,marginBottom:3}}>LEATHAN · BROAD</div>
                 <div style={{...hd,fontSize:"0.9rem",color:c.gold,fontStyle:"italic"}}>a·o·u</div>
-                <div style={{...bd,fontSize:"0.58rem",color:c.tx3,marginTop:2}}>mar, bord, dul</div>
+                <div style={{...bd,fontSize:"0.68rem",color:c.tx3,marginTop:2}}>mar, bord, dul</div>
               </div>
               <div style={{flex:1,background:c.dark?"rgba(79,172,219,0.1)":"rgba(79,172,219,0.08)",borderRadius:10,padding:"8px 10px",textAlign:"center"}}>
-                <div style={{...bd,fontSize:"0.58rem",color:c.tx3,marginBottom:3}}>CAOL · SLENDER</div>
+                <div style={{...bd,fontSize:"0.68rem",color:c.tx3,marginBottom:3}}>CAOL · SLENDER</div>
                 <div style={{...hd,fontSize:"0.9rem",color:"#4FACDB",fontStyle:"italic"}}>e·i</div>
                 <div style={{...bd,fontSize:"0.62rem",color:c.tx3,marginTop:2}}>mise, féin, tine</div>
               </div>
@@ -3888,10 +3916,10 @@ body{background:${c.bg}}
                             <span style={{fontSize:"1.1rem"}}>{lk?"🔒":dn?"✅":CATS[ch.cat]}</span>
                             <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:2}}>
                               {bn&&<span style={{fontSize:"0.62rem",lineHeight:1}}>⭐</span>}
-                              {here&&<span style={{...bd,fontSize:"0.54rem",background:cc,color:"#fff",borderRadius:5,padding:"2px 6px",fontWeight:800,letterSpacing:"0.06em"}}>NEXT</span>}
+                              {here&&<span style={{...bd,fontSize:"0.68rem",background:cc,color:"#fff",borderRadius:5,padding:"2px 6px",fontWeight:800,letterSpacing:"0.04em"}}>NEXT</span>}
                             </div>
                           </div>
-                          <div style={{...bd,fontSize:"0.58rem",color:here?cc:c.tx3,letterSpacing:"0.07em",textTransform:"uppercase",marginBottom:3,fontWeight:here?700:400}}>Lá {ch.day}</div>
+                          <div style={{...bd,fontSize:"0.68rem",color:here?cc:c.tx3,letterSpacing:"0.05em",textTransform:"uppercase",marginBottom:3,fontWeight:here?700:400}}>Lá {ch.day}</div>
                           <div style={{...hd,fontSize:"0.86rem",fontWeight:700,color:here?cc:dn?c.acc:nx?c.tx:c.tx3,lineHeight:1.2,marginBottom:2}}>{ch.t}</div>
                           <div style={{...bd,fontSize:"0.67rem",color:c.tx3,fontStyle:"italic",lineHeight:1.3}}>{ch.e}</div>
                         </div>
@@ -3938,6 +3966,12 @@ body{background:${c.bg}}
   const _st = todayCh?.story || "";
   const _two = _st.split(". ").slice(0,2).join(". ")+".";
   const storyFull = _two.length > 210 ? _st.split(". ")[0]+"…" : _two;
+
+  const useShield=async()=>{
+    if(!st||(st.shieldCount||0)<=0)return;
+    haptic([30,50,80]);
+    await save({...st,lastCompletedDate:null,shieldCount:(st.shieldCount||1)-1});
+  };
 
   return(
     <div className="af" style={{minHeight:"100vh",background:c.dark?"#071508":c.bg,color:c.tx,display:"flex",flexDirection:"column"}}>
@@ -4012,10 +4046,91 @@ body{background:${c.bg}}
         {/* Content */}
         <div style={{flex:1,display:"flex",flexDirection:"column",padding:"18px 26px 20px",position:"relative",zIndex:1}}>
 
+        {isLockedToday?(
+          /* ── LOCKED STATE ── */
+          <div style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:0}}>
+            {/* Moon + lock message */}
+            <div style={{textAlign:"center",marginBottom:24}}>
+              <div style={{fontSize:"2.6rem",marginBottom:12,lineHeight:1}}>🌙</div>
+              <div style={{...hd,fontSize:"1.5rem",fontWeight:800,color:c.dark?"rgba(240,237,228,0.9)":c.tx,marginBottom:4}}>
+                Lá {total} déanta
+              </div>
+              <div style={{...bd,fontSize:"0.78rem",color:c.tx3,marginBottom:8}}>Day {total} complete · great work</div>
+              <div style={{...bd,fontSize:"0.72rem",color:c.dark?"rgba(200,150,62,0.65)":c.acc}}>
+                Lá {nextDay} unlocks in ~{hoursUntilMidnight}h
+              </div>
+            </div>
+
+            {/* Shield button */}
+            {(st.shieldCount||0)>0?(
+              <button onClick={useShield} style={{
+                display:"flex",alignItems:"center",gap:8,
+                background:"rgba(212,152,60,0.10)",border:"1px solid rgba(212,152,60,0.35)",
+                borderRadius:12,padding:"11px 20px",cursor:"pointer",marginBottom:20,
+              }}>
+                <span style={{fontSize:"1.1rem"}}>🛡️</span>
+                <div style={{textAlign:"left"}}>
+                  <div style={{...bd,fontSize:"0.78rem",fontWeight:700,color:c.acc}}>Use Streak Shield</div>
+                  <div style={{...bd,fontSize:"0.65rem",color:c.tx3}}>{st.shieldCount} remaining · unlocks today</div>
+                </div>
+              </button>
+            ):(
+              <div style={{
+                display:"flex",alignItems:"center",gap:8,
+                background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.08)",
+                borderRadius:12,padding:"11px 20px",marginBottom:20,opacity:0.4,
+              }}>
+                <span style={{fontSize:"1.1rem"}}>🛡️</span>
+                <div style={{...bd,fontSize:"0.72rem",color:c.tx3}}>No shields left · replenishes Monday</div>
+              </div>
+            )}
+
+            {/* Mission pills — still accessible when locked */}
+            <div style={{marginBottom:20,width:"100%"}}>
+              <div style={{...bd,fontSize:"0.65rem",color:c.tx3,textAlign:"center",marginBottom:8}}>
+                While you wait — keep practising:
+              </div>
+              <div style={{display:"flex",gap:6,justifyContent:"center"}}>
+                {[
+                  {l:"Focail",done:missionFocail,a:()=>{haptic();setView("focail");}},
+                  {l:"Flash",done:missionFlash,a:()=>{haptic();startFlash();}},
+                  {l:"Quiz",done:missionQuiz,a:()=>{haptic();startDailyQuiz();}},
+                ].map(({l,done,a},i)=>(
+                  <button key={i} onClick={a} style={{
+                    padding:"6px 12px",
+                    border:`1px solid ${done?(c.dark?"rgba(111,207,151,0.35)":c.doneBd):(c.dark?"rgba(255,255,255,0.09)":c.bd)}`,
+                    borderRadius:20,cursor:"pointer",
+                    background:done?(c.dark?"rgba(111,207,151,0.09)":c.doneBg):"transparent",
+                    ...bd,fontSize:"0.68rem",fontWeight:700,
+                    color:done?(c.dark?"#6FCF97":c.doneTx):(c.dark?"rgba(240,237,228,0.4)":c.tx3),
+                  }}>
+                    {done?"✓ ":""}{l}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Word of the Day */}
+            <div style={{
+              width:"100%",background:"rgba(200,150,62,0.06)",
+              border:"1px solid rgba(200,150,62,0.18)",borderRadius:14,padding:"14px 16px",
+            }}>
+              <div style={{...bd,fontSize:"0.62rem",color:"rgba(200,150,62,0.6)",letterSpacing:"0.18em",textTransform:"uppercase",marginBottom:8}}>
+                Focal an Lae · Word of the Day
+              </div>
+              <div style={{display:"flex",alignItems:"baseline",gap:8,marginBottom:4}}>
+                <span style={{...hd,fontSize:"1.4rem",fontWeight:700,color:c.acc,fontStyle:"italic"}}>{wod.p}</span>
+                <span style={{...bd,fontSize:"0.65rem",color:c.tx3}}>/{wod.pr}/</span>
+              </div>
+              <div style={{...bd,fontSize:"0.75rem",color:c.tx2}}>{wod.m}</div>
+            </div>
+          </div>
+        ):(
+          <>
           {/* Day badge */}
           <div style={{
             alignSelf:"center",
-            ...bd,fontSize:"0.48rem",letterSpacing:"0.28em",textTransform:"uppercase",
+            ...bd,fontSize:"0.66rem",letterSpacing:"0.22em",textTransform:"uppercase",
             color:c.dark?"rgba(200,150,62,0.38)":c.tx3,
             border:`1px solid ${c.dark?"rgba(200,150,62,0.12)":c.bd}`,
             borderRadius:20,padding:"4px 12px",marginBottom:18,
@@ -4026,8 +4141,8 @@ body{background:${c.bg}}
           {/* ── THE STORY ── */}
           <div style={{marginBottom:20}}>
             <div style={{
-              ...bd,fontSize:"0.43rem",color:c.dark?"rgba(200,150,62,0.35)":"rgba(27,67,50,0.5)",
-              letterSpacing:"0.24em",textTransform:"uppercase",marginBottom:10,
+              ...bd,fontSize:"0.64rem",color:c.dark?"rgba(200,150,62,0.35)":"rgba(27,67,50,0.5)",
+              letterSpacing:"0.20em",textTransform:"uppercase",marginBottom:10,
             }}>Stair · History</div>
             <p style={{
               ...hd,
@@ -4051,9 +4166,9 @@ body{background:${c.bg}}
           {/* ── THE PHRASE ── */}
           <div style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",textAlign:"center"}}>
             <div style={{
-              ...bd,fontSize:"0.43rem",
+              ...bd,fontSize:"0.64rem",
               color:c.dark?"rgba(200,150,62,0.35)":"rgba(27,67,50,0.5)",
-              letterSpacing:"0.24em",textTransform:"uppercase",marginBottom:14,
+              letterSpacing:"0.20em",textTransform:"uppercase",marginBottom:14,
             }}>Frása an Lae</div>
 
             {/* Phrase glow backdrop */}
@@ -4092,11 +4207,11 @@ body{background:${c.bg}}
           <div style={{display:"flex",flexDirection:"column",gap:11,marginTop:16}}>
             {/* XP bar */}
             <div style={{display:"flex",alignItems:"center",gap:8}}>
-              <span style={{...bd,fontSize:"0.54rem",fontWeight:800,color:c.dark?"rgba(200,150,62,0.38)":c.tx3,whiteSpace:"nowrap"}}>L{level}</span>
+              <span style={{...bd,fontSize:"0.68rem",fontWeight:800,color:c.dark?"rgba(200,150,62,0.38)":c.tx3,whiteSpace:"nowrap"}}>L{level}</span>
               <div style={{flex:1,height:2,background:c.dark?"rgba(255,255,255,0.07)":c.progBg,borderRadius:10,overflow:"hidden"}}>
                 <div style={{height:"100%",width:`${levelPct}%`,background:c.progFill,borderRadius:10,transition:"width 0.6s ease"}}/>
               </div>
-              <span style={{...bd,fontSize:"0.54rem",color:c.dark?"rgba(240,237,228,0.22)":c.tx3,whiteSpace:"nowrap"}}>{xp} XP</span>
+              <span style={{...bd,fontSize:"0.68rem",color:c.dark?"rgba(240,237,228,0.22)":c.tx3,whiteSpace:"nowrap"}}>{xp} XP</span>
             </div>
 
             {/* Mission pills */}
@@ -4112,7 +4227,7 @@ body{background:${c.bg}}
                   border:`1px solid ${done?(c.dark?"rgba(111,207,151,0.35)":c.doneBd):(c.dark?"rgba(255,255,255,0.09)":c.bd)}`,
                   borderRadius:20,cursor:"pointer",
                   background:done?(c.dark?"rgba(111,207,151,0.09)":c.doneBg):"transparent",
-                  ...bd,fontSize:"0.61rem",fontWeight:700,
+                  ...bd,fontSize:"0.68rem",fontWeight:700,
                   color:done?(c.dark?"#6FCF97":c.doneTx):(c.dark?"rgba(240,237,228,0.32)":c.tx3),
                 }}>
                   {done?"✓ ":""}{l}
@@ -4141,6 +4256,8 @@ body{background:${c.bg}}
               {!missionLesson&&<span style={{fontSize:"1rem",color:"rgba(255,255,255,0.5)"}}>→</span>}
             </button>
           </div>
+          </>
+        )}
         </div>
       </div>
 
@@ -4165,7 +4282,7 @@ body{background:${c.bg}}
             display:"flex",flexDirection:"column",alignItems:"center",gap:3,
           }}>
             <span style={{fontSize:"1.2rem",lineHeight:1}}>{e}</span>
-            <span style={{...bd,fontSize:"0.52rem",fontWeight:active?800:400,
+            <span style={{...bd,fontSize:"0.68rem",fontWeight:active?800:400,
               color:active?c.acc:(c.dark?"rgba(240,237,228,0.28)":c.tx3),
               letterSpacing:"0.02em"}}>{l}</span>
           </button>
