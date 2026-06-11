@@ -1873,6 +1873,16 @@ body{background:${c.bg}}
       await save({...st,seenWelcome:true});
       setView("home");
     };
+    const isReturning=(st?.done||[]).length>0;
+
+    // XP / level values for returning user mode
+    const xpW=st?.xp||0;
+    const levelW=Math.floor(xpW/100)+1;
+    const levelPctW=xpW%100;
+    const totalW=(st?.done||[]).length;
+    const nextDayW=totalW<CH.length?totalW+1:CH.length;
+    const currentChW=CH[nextDayW-1];
+
     return(
       <div style={{
         minHeight:"100vh",background:"linear-gradient(160deg,#030905 0%,#071508 45%,#050c07 100%)",
@@ -1896,96 +1906,271 @@ body{background:${c.bg}}
           background:"radial-gradient(ellipse,rgba(45,106,79,0.14) 0%,transparent 70%)",
           bottom:0,left:0,pointerEvents:"none"}}/>
 
-        {/* Settings gear top-right */}
-        <div style={{position:"absolute",top:16,right:16,zIndex:10}}>
-          <button onClick={()=>setView("settings")} style={{
-            background:"rgba(255,255,255,0.04)",border:"1px solid rgba(200,150,62,0.15)",
-            borderRadius:10,padding:"8px 10px",cursor:"pointer",fontSize:"1rem",color:"rgba(200,150,62,0.6)",
-          }}>⚙️</button>
-        </div>
-
         {/* Main content */}
-        <div style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"40px 28px 24px",position:"relative",zIndex:1}}>
+        <div style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:isReturning?"flex-start":"center",padding:isReturning?"28px 20px 32px":"40px 28px 24px",position:"relative",zIndex:1,overflowY:isReturning?"auto":"visible"}}>
 
-          {/* Logo */}
-          <div style={{
-            width:90,height:90,borderRadius:"50%",
-            background:"radial-gradient(ellipse at 35% 35%,rgba(45,106,79,0.9) 0%,rgba(10,25,11,0.95) 70%)",
-            border:"2px solid rgba(200,150,62,0.4)",
-            display:"flex",alignItems:"center",justifyContent:"center",
-            fontSize:"3rem",marginBottom:28,
-            boxShadow:"0 16px 50px rgba(0,0,0,0.55),0 0 50px rgba(200,150,62,0.12)",
-            animation:"goldPulse 3s ease-in-out infinite",
-          }}>☘️</div>
+          {isReturning ? (
+            /* ── MODE B: RETURNING USER MAIN MENU ── */
+            <div style={{width:"100%",maxWidth:420,display:"flex",flexDirection:"column",gap:16}}>
 
-          {/* Title */}
-          <div style={{...hd,fontSize:"2.8rem",fontWeight:900,color:"#F0EDE4",letterSpacing:"-0.03em",lineHeight:1,marginBottom:8,textAlign:"center",textShadow:"0 2px 20px rgba(0,0,0,0.5)"}}>
-            Gaeltacht<br/>Connect
-          </div>
-
-          <div style={{...bd,fontSize:"0.72rem",color:"rgba(200,150,62,0.8)",letterSpacing:"0.28em",textTransform:"uppercase",fontWeight:700,marginBottom:4}}>
-            An Ghaeilge Bheo
-          </div>
-          <div style={{...bd,fontSize:"0.72rem",color:"rgba(240,237,228,0.35)",letterSpacing:"0.06em",marginBottom:32}}>
-            The Living Irish
-          </div>
-
-          {/* Divider */}
-          <div style={{display:"flex",alignItems:"center",gap:12,width:220,marginBottom:32}}>
-            <div style={{flex:1,height:1,background:"linear-gradient(90deg,transparent,rgba(200,150,62,0.35))"}}/>
-            <span style={{color:"rgba(200,150,62,0.5)",fontSize:"0.7rem"}}>✦</span>
-            <div style={{flex:1,height:1,background:"linear-gradient(90deg,rgba(200,150,62,0.35),transparent)"}}/>
-          </div>
-
-          {/* Auth buttons */}
-          <div style={{width:"100%",maxWidth:340,display:"flex",flexDirection:"column",gap:12}}>
-
-            {/* Register */}
-            <button onClick={()=>{haptic();setAuthMode("up");setShowAuth(true);}} style={{
-              width:"100%",padding:"15px 20px",border:"none",cursor:"pointer",
-              background:"linear-gradient(135deg,#2D6A4F 0%,#1B4332 100%)",
-              borderRadius:14,display:"flex",alignItems:"center",justifyContent:"center",gap:10,
-              boxShadow:"0 4px 20px rgba(27,67,50,0.5)",
-            }}>
-              <span style={{fontSize:"1.1rem"}}>📧</span>
-              <div style={{textAlign:"left"}}>
-                <div style={{...bd,fontSize:"0.95rem",fontWeight:800,color:"#fff"}}>Cláraigh · Register</div>
-                <div style={{...bd,fontSize:"0.65rem",color:"rgba(255,255,255,0.55)"}}>Save progress to cloud</div>
+              {/* Header: small logo + title */}
+              <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:10,marginBottom:4,paddingTop:8}}>
+                <div style={{
+                  width:56,height:56,borderRadius:"50%",
+                  background:"radial-gradient(ellipse at 35% 35%,rgba(45,106,79,0.9) 0%,rgba(10,25,11,0.95) 70%)",
+                  border:"2px solid rgba(200,150,62,0.4)",
+                  display:"flex",alignItems:"center",justifyContent:"center",
+                  fontSize:"1.8rem",
+                  boxShadow:"0 8px 30px rgba(0,0,0,0.5),0 0 30px rgba(200,150,62,0.1)",
+                  animation:"goldPulse 3s ease-in-out infinite",
+                }}>☘️</div>
+                <div style={{...hd,fontSize:"1.3rem",fontWeight:900,color:"#F0EDE4",letterSpacing:"-0.02em",textAlign:"center"}}>
+                  Gaeltacht Connect
+                </div>
               </div>
-            </button>
 
-            {/* Sign In */}
-            <button onClick={()=>{haptic();setAuthMode("in");setShowAuth(true);}} style={{
-              width:"100%",padding:"15px 20px",
-              background:"rgba(200,150,62,0.08)",border:"1px solid rgba(200,150,62,0.3)",
-              borderRadius:14,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:10,
-            }}>
-              <span style={{fontSize:"1.1rem"}}>🔑</span>
-              <div style={{textAlign:"left"}}>
-                <div style={{...bd,fontSize:"0.95rem",fontWeight:800,color:"#D4983C"}}>Sínigh isteach · Sign In</div>
-                <div style={{...bd,fontSize:"0.65rem",color:"rgba(200,150,62,0.5)"}}>Continue with your account</div>
+              {/* Progress card */}
+              <div style={{
+                background:"rgba(10,25,11,0.7)",border:"1px solid rgba(212,152,60,0.4)",
+                borderRadius:16,padding:"14px 16px",
+                boxShadow:"0 0 20px rgba(212,152,60,0.07)",
+              }}>
+                <div style={{display:"flex",alignItems:"center",justifyContent:"space-around",marginBottom:12}}>
+                  <div style={{display:"flex",alignItems:"center",gap:5}}>
+                    <span style={{fontSize:"1rem"}}>🔥</span>
+                    <span style={{...bd,fontSize:"0.78rem",fontWeight:800,color:"#FF7A00"}}>{st?.streak||0} streak</span>
+                  </div>
+                  <div style={{width:1,height:16,background:"rgba(200,150,62,0.2)"}}/>
+                  <div style={{display:"flex",alignItems:"center",gap:5}}>
+                    <span style={{fontSize:"1rem"}}>📅</span>
+                    <span style={{...bd,fontSize:"0.78rem",fontWeight:800,color:"rgba(240,237,228,0.8)"}}>Lá {totalW}/60</span>
+                  </div>
+                  <div style={{width:1,height:16,background:"rgba(200,150,62,0.2)"}}/>
+                  <div style={{display:"flex",alignItems:"center",gap:5}}>
+                    <span style={{fontSize:"1rem"}}>⭐</span>
+                    <span style={{...bd,fontSize:"0.78rem",fontWeight:800,color:"#D4983C"}}>L{levelW}</span>
+                  </div>
+                </div>
+                {/* XP bar */}
+                <div style={{height:4,borderRadius:4,background:"rgba(255,255,255,0.08)",overflow:"hidden"}}>
+                  <div style={{height:"100%",width:`${levelPctW}%`,borderRadius:4,background:"linear-gradient(90deg,#D4983C,#F0C060)",transition:"width 0.4s ease"}}/>
+                </div>
+                <div style={{...bd,fontSize:"0.58rem",color:"rgba(200,150,62,0.5)",marginTop:4,textAlign:"right"}}>{levelPctW}/100 XP to next level</div>
               </div>
-            </button>
 
-            {/* Continue as guest */}
-            <button onClick={enterAsGuest} style={{
-              width:"100%",padding:"13px 20px",
-              background:"transparent",border:"1px solid rgba(255,255,255,0.1)",
-              borderRadius:14,cursor:"pointer",
-              ...bd,fontSize:"0.88rem",color:"rgba(240,237,228,0.4)",fontWeight:400,
-            }}>
-              Lean ar aghaidh · Continue without account
-            </button>
-          </div>
+              {/* Big CTA continue button */}
+              <button onClick={()=>{haptic();setView("home");}} style={{
+                width:"100%",padding:"16px 20px",border:"none",cursor:"pointer",
+                background:"linear-gradient(135deg,#2D6A4F 0%,#1B4332 100%)",
+                borderRadius:16,display:"flex",alignItems:"center",justifyContent:"space-between",
+                boxShadow:"0 6px 24px rgba(27,67,50,0.55)",
+              }}>
+                <div style={{textAlign:"left"}}>
+                  <div style={{...bd,fontSize:"1.05rem",fontWeight:800,color:"#fff"}}>Lean ar aghaidh · Continue →</div>
+                  <div style={{...bd,fontSize:"0.68rem",color:"rgba(255,255,255,0.55)",marginTop:2}}>Day {nextDayW} · {currentChW?.t||""}</div>
+                </div>
+                <span style={{fontSize:"1.6rem"}}>▶</span>
+              </button>
 
-          {/* Fine print */}
-          <div style={{...bd,fontSize:"0.65rem",color:"rgba(240,237,228,0.2)",marginTop:20,textAlign:"center",lineHeight:1.5}}>
-            Progress saved locally · Cloud sync with account<br/>
-            60 days · Irish language · Gaeltacht
-          </div>
+              {/* 2-col menu grid */}
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+                {[
+                  {e:"⚙️",l:"Socruithe",s:"Settings",a:()=>{haptic();setView("settings");}},
+                  {e:"👤",l:"Cuntas",s:"Account",a:()=>{haptic();setShowAuth(true);}},
+                  {e:"📖",l:"Foclóir",s:"Dictionary",a:()=>{haptic();setPrevView("welcome");setView("dict");}},
+                  {e:"🏆",l:"Ceannairí",s:"Leaders",a:async()=>{
+                    haptic();
+                    setShowLeaderboard(true);
+                    if(!leaderData){
+                      setLeaderLoading(true);
+                      const [rows,rank]=await Promise.all([sbLeaderboard(),authUser?.id?sbMyRank(authUser.id):Promise.resolve(null)]);
+                      setLeaderData(rows);setMyRankData(rank);setLeaderLoading(false);
+                    }
+                  }},
+                  {e:"🗺️",l:"Léarscáil",s:"Map",a:()=>{haptic();setPrevView("welcome");setView("map");}},
+                  {e:"📚",l:"Treoir",s:"Guide",a:()=>{haptic();setPrevView("welcome");setView("guide");}},
+                ].map(({e,l,s,a},i)=>(
+                  <button key={i} onClick={a} style={{
+                    padding:"14px 12px",
+                    background:"rgba(10,25,11,0.6)",
+                    border:"1px solid rgba(200,150,62,0.15)",
+                    borderRadius:14,cursor:"pointer",
+                    display:"flex",alignItems:"center",gap:10,
+                    textAlign:"left",
+                    transition:"border-color 0.2s",
+                  }}
+                    onMouseEnter={e2=>{e2.currentTarget.style.borderColor="rgba(212,152,60,0.55)";e2.currentTarget.style.boxShadow="0 0 12px rgba(212,152,60,0.12)";}}
+                    onMouseLeave={e2=>{e2.currentTarget.style.borderColor="rgba(200,150,62,0.15)";e2.currentTarget.style.boxShadow="none";}}>
+                    <span style={{fontSize:"1.2rem"}}>{e}</span>
+                    <div>
+                      <div style={{...bd,fontSize:"0.82rem",fontWeight:700,color:"rgba(240,237,228,0.9)"}}>{l}</div>
+                      <div style={{...bd,fontSize:"0.62rem",color:"rgba(200,150,62,0.55)"}}>{s}</div>
+                    </div>
+                  </button>
+                ))}
+              </div>
+
+              {/* Bottom section */}
+              <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:8,marginTop:4}}>
+                {authUser&&(
+                  <button onClick={async()=>{haptic();await sbSignOut();setAuthUser(null);}} style={{
+                    background:"none",border:"none",cursor:"pointer",
+                    ...bd,fontSize:"0.72rem",color:"rgba(240,237,228,0.3)",padding:"4px 8px",
+                  }}>Sign out</button>
+                )}
+                <div style={{...bd,fontSize:"0.6rem",color:"rgba(240,237,228,0.18)",textAlign:"center",letterSpacing:"0.04em"}}>
+                  v1.0 · Gaeltacht Connect · Built in Ireland
+                </div>
+                <div style={{...bd,fontSize:"0.62rem",color:"rgba(200,150,62,0.35)",textAlign:"center",fontStyle:"italic"}}>
+                  "Is fearr Gaeilge briste ná Béarla cliste"
+                </div>
+              </div>
+            </div>
+          ) : (
+            /* ── MODE A: NEW USER ── */
+            <>
+              {/* Logo */}
+              <div style={{
+                width:100,height:100,borderRadius:"50%",
+                background:"radial-gradient(ellipse at 35% 35%,rgba(45,106,79,0.9) 0%,rgba(10,25,11,0.95) 70%)",
+                border:"2px solid rgba(200,150,62,0.4)",
+                display:"flex",alignItems:"center",justifyContent:"center",
+                fontSize:"3.2rem",marginBottom:28,
+                boxShadow:"0 16px 50px rgba(0,0,0,0.55),0 0 50px rgba(200,150,62,0.12)",
+                animation:"goldPulse 3s ease-in-out infinite",
+              }}>☘️</div>
+
+              {/* Title */}
+              <div style={{...hd,fontSize:"2.8rem",fontWeight:900,color:"#F0EDE4",letterSpacing:"-0.03em",lineHeight:1,marginBottom:8,textAlign:"center",textShadow:"0 2px 20px rgba(0,0,0,0.5)"}}>
+                Gaeltacht<br/>Connect
+              </div>
+
+              <div style={{...bd,fontSize:"0.72rem",color:"rgba(200,150,62,0.8)",letterSpacing:"0.28em",textTransform:"uppercase",fontWeight:700,marginBottom:4}}>
+                An Ghaeilge Bheo
+              </div>
+              <div style={{...bd,fontSize:"0.75rem",color:"rgba(240,237,228,0.4)",letterSpacing:"0.06em",marginBottom:32,fontStyle:"italic"}}>
+                60 days to fluency · Begin your journey
+              </div>
+
+              {/* Divider */}
+              <div style={{display:"flex",alignItems:"center",gap:12,width:220,marginBottom:32}}>
+                <div style={{flex:1,height:1,background:"linear-gradient(90deg,transparent,rgba(200,150,62,0.35))"}}/>
+                <span style={{color:"rgba(200,150,62,0.5)",fontSize:"0.7rem"}}>✦</span>
+                <div style={{flex:1,height:1,background:"linear-gradient(90deg,rgba(200,150,62,0.35),transparent)"}}/>
+              </div>
+
+              {/* Auth buttons */}
+              <div style={{width:"100%",maxWidth:340,display:"flex",flexDirection:"column",gap:12}}>
+
+                {/* Register */}
+                <button onClick={()=>{haptic();setAuthMode("up");setShowAuth(true);}} style={{
+                  width:"100%",padding:"16px 20px",border:"none",cursor:"pointer",
+                  background:"linear-gradient(135deg,#2D6A4F 0%,#1B4332 100%)",
+                  borderRadius:16,display:"flex",alignItems:"center",justifyContent:"center",gap:12,
+                  boxShadow:"0 6px 24px rgba(27,67,50,0.55)",
+                }}>
+                  <span style={{fontSize:"1.2rem"}}>📧</span>
+                  <div style={{textAlign:"left"}}>
+                    <div style={{...bd,fontSize:"1rem",fontWeight:800,color:"#fff"}}>Cláraigh · Register</div>
+                    <div style={{...bd,fontSize:"0.66rem",color:"rgba(255,255,255,0.55)"}}>Save progress to cloud</div>
+                  </div>
+                </button>
+
+                {/* Sign In */}
+                <button onClick={()=>{haptic();setAuthMode("in");setShowAuth(true);}} style={{
+                  width:"100%",padding:"16px 20px",
+                  background:"rgba(200,150,62,0.08)",border:"1.5px solid rgba(200,150,62,0.35)",
+                  borderRadius:16,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:12,
+                  boxShadow:"0 4px 16px rgba(0,0,0,0.2)",
+                }}>
+                  <span style={{fontSize:"1.2rem"}}>🔑</span>
+                  <div style={{textAlign:"left"}}>
+                    <div style={{...bd,fontSize:"1rem",fontWeight:800,color:"#D4983C"}}>Sínigh isteach · Sign In</div>
+                    <div style={{...bd,fontSize:"0.66rem",color:"rgba(200,150,62,0.5)"}}>Continue with your account</div>
+                  </div>
+                </button>
+
+                {/* Continue as guest */}
+                <button onClick={enterAsGuest} style={{
+                  width:"100%",padding:"14px 20px",
+                  background:"transparent",border:"1px solid rgba(255,255,255,0.12)",
+                  borderRadius:16,cursor:"pointer",
+                  ...bd,fontSize:"0.9rem",color:"rgba(240,237,228,0.45)",fontWeight:400,
+                }}>
+                  Lean ar aghaidh · Continue without account
+                </button>
+              </div>
+
+              {/* Fine print */}
+              <div style={{...bd,fontSize:"0.65rem",color:"rgba(240,237,228,0.2)",marginTop:20,textAlign:"center",lineHeight:1.5}}>
+                Progress saved locally · Cloud sync with account<br/>
+                60 days · Irish language · Gaeltacht
+              </div>
+            </>
+          )}
         </div>
 
-        {/* Auth modal (reused) */}
+        {/* Leaderboard modal */}
+        {showLeaderboard&&(
+          <div onClick={e=>{if(e.target===e.currentTarget)setShowLeaderboard(false);}} style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.6)",zIndex:120,display:"flex",alignItems:"flex-end",justifyContent:"center",backdropFilter:"blur(6px)"}}>
+            <div style={{width:"100%",maxWidth:480,background:c.card,borderRadius:"24px 24px 0 0",maxHeight:"88vh",overflow:"hidden",display:"flex",flexDirection:"column",boxShadow:"0 -8px 40px rgba(0,0,0,0.4)"}}>
+              <div style={{display:"flex",justifyContent:"center",paddingTop:10,paddingBottom:4}}>
+                <div style={{width:36,height:4,borderRadius:2,background:"rgba(255,255,255,0.15)"}}/>
+              </div>
+              <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"8px 20px 14px"}}>
+                <div>
+                  <div style={{...hd,fontSize:"1.3rem",fontWeight:800,color:c.tx}}>Clárbhord <span style={{color:c.gold}}>🏆</span></div>
+                  <div style={{...bd,fontSize:"0.68rem",color:c.tx3,marginTop:1}}>Top players by XP</div>
+                </div>
+                <button onClick={()=>setShowLeaderboard(false)} style={{background:"none",border:"none",fontSize:"1.4rem",cursor:"pointer",color:c.tx3,lineHeight:1}}>✕</button>
+              </div>
+              {authUser&&myRankData&&(
+                <div style={{margin:"0 16px 12px",padding:"10px 16px",background:"rgba(200,150,62,0.12)",border:`1px solid ${c.gold}40`,borderRadius:14,display:"flex",alignItems:"center",gap:12}}>
+                  <div style={{...hd,fontSize:"1.5rem",fontWeight:800,color:c.gold,minWidth:40,textAlign:"center"}}>#{myRankData.rank}</div>
+                  <div style={{flex:1}}>
+                    <div style={{...bd,fontSize:"0.75rem",color:c.tx,fontWeight:700}}>Your position</div>
+                    <div style={{...bd,fontSize:"0.68rem",color:c.tx3}}>{myRankData.xp} XP · out of {myRankData.total} players</div>
+                  </div>
+                </div>
+              )}
+              {!authUser&&(
+                <div onClick={()=>{setShowLeaderboard(false);setShowAuth(true);}} style={{margin:"0 16px 12px",padding:"10px 16px",background:"rgba(255,255,255,0.04)",border:`1px dashed ${c.bd}`,borderRadius:14,...bd,fontSize:"0.78rem",color:c.acc,textAlign:"center",cursor:"pointer"}}>
+                  ☁️ Sign in to appear on the leaderboard →
+                </div>
+              )}
+              <div style={{overflowY:"auto",flex:1,padding:"0 16px 28px"}}>
+                {leaderLoading&&<div style={{textAlign:"center",padding:"32px 0",...bd,fontSize:"0.8rem",color:c.tx3}}>Loading…</div>}
+                {!leaderLoading&&leaderData&&leaderData.map((row,i)=>{
+                  const medals=["🥇","🥈","🥉"];
+                  const isMe=authUser?.id===row.id;
+                  const isPodium=i<3;
+                  return(
+                    <div key={row.id||i} style={{display:"flex",alignItems:"center",gap:12,padding:"11px 14px",marginBottom:6,borderRadius:14,
+                      background:isMe?"rgba(200,150,62,0.15)":"rgba(255,255,255,0.04)",
+                      border:isMe?`1px solid ${c.gold}50`:`1px solid ${c.bd}`}}>
+                      <div style={{...bd,fontWeight:800,minWidth:32,textAlign:"center",fontSize:isPodium?"1.4rem":"0.9rem",color:i===0?"#FFD700":i===1?"#C0C0C0":i===2?"#CD7F32":c.tx3}}>
+                        {isPodium?medals[i]:`${i+1}`}
+                      </div>
+                      <div style={{width:32,height:32,borderRadius:"50%",flexShrink:0,background:isMe?c.acc:"rgba(255,255,255,0.1)",display:"flex",alignItems:"center",justifyContent:"center",...bd,fontWeight:800,fontSize:"0.78rem",color:isMe?"#111":c.tx3}}>
+                        {(row.name||"?")[0].toUpperCase()}
+                      </div>
+                      <div style={{flex:1,minWidth:0}}>
+                        <div style={{...bd,fontSize:"0.83rem",fontWeight:700,color:isMe?c.gold:c.tx,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{row.name||"Gaeilgeoir"}{isMe?" (you)":""}</div>
+                        <div style={{...bd,fontSize:"0.65rem",color:c.tx3}}>{row.lessons||0} lessons · {row.streak||0} day streak</div>
+                      </div>
+                      <div style={{textAlign:"right",flexShrink:0}}>
+                        <div style={{...bd,fontSize:"0.9rem",fontWeight:800,color:isPodium?c.gold:c.tx}}>{(row.xp||0).toLocaleString()}</div>
+                        <div style={{...bd,fontSize:"0.6rem",color:c.tx3}}>XP</div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Auth modal */}
         {showAuth&&(
           <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.7)",zIndex:300,display:"flex",alignItems:"flex-end",justifyContent:"center"}}
             onClick={e=>{if(e.target===e.currentTarget){setShowAuth(false);setAuthErr("");}}}>
@@ -4158,9 +4343,14 @@ body{background:${c.bg}}
 
       {/* ── TOP BAR ── */}
       <div style={{display:"flex",alignItems:"center",padding:"16px 20px 0",zIndex:10,flexShrink:0}}>
-        <span style={{fontSize:"1rem",marginRight:6}}>☘️</span>
-        <span style={{...hd,fontSize:"0.9rem",fontWeight:800,color:c.dark?"rgba(240,237,228,0.8)":c.tx,letterSpacing:"-0.01em"}}>Gaeltacht</span>
-        <div style={{marginLeft:"auto",display:"flex",alignItems:"center",gap:6}}>
+        <button onClick={()=>setView("welcome")} style={{
+          background:"none",border:"none",cursor:"pointer",
+          display:"flex",alignItems:"center",gap:6,padding:0,
+        }}>
+          <span style={{fontSize:"1rem"}}>☘️</span>
+          <span style={{...hd,fontSize:"0.9rem",fontWeight:800,color:c.dark?"rgba(240,237,228,0.8)":c.tx,letterSpacing:"-0.01em"}}>Gaeltacht</span>
+        </button>
+        <div style={{marginLeft:"auto",display:"flex",alignItems:"center",gap:8}}>
           {st?.streak>=1&&(
             <div style={{display:"flex",alignItems:"center",gap:3,
               background:"rgba(255,120,0,0.13)",border:"1px solid rgba(255,120,0,0.28)",
@@ -4169,30 +4359,16 @@ body{background:${c.bg}}
               <span style={{...bd,fontSize:"0.75rem",fontWeight:800,color:"#FF7A00"}}>{st.streak}</span>
             </div>
           )}
-          <button onClick={async()=>{
-            setShowLeaderboard(true);
-            if(!leaderData){
-              setLeaderLoading(true);
-              const [rows,rank]=await Promise.all([
-                sbLeaderboard(),
-                authUser?.id?sbMyRank(authUser.id):Promise.resolve(null),
-              ]);
-              setLeaderData(rows);setMyRankData(rank);setLeaderLoading(false);
-            }
-          }} style={{background:"none",border:"none",fontSize:"1.05rem",cursor:"pointer",padding:4,lineHeight:1,color:"rgba(200,150,62,0.75)"}}>🏆</button>
-          <button onClick={toggle} style={{background:"none",border:"none",fontSize:"1rem",cursor:"pointer",padding:4,lineHeight:1,opacity:0.6}}>
-            {theme==="coill"?"🌲":theme==="parchment"?"📜":"🌊"}
-          </button>
-          <button onClick={()=>setShowAuth(true)} style={{background:"none",border:"none",cursor:"pointer",padding:4,lineHeight:1}}>
-            {authUser
-              ? <span style={{display:"flex",alignItems:"center",justifyContent:"center",width:22,height:22,borderRadius:"50%",
-                  background:"rgba(200,150,62,0.85)",color:"#111",...bd,fontWeight:800,fontSize:"0.65rem"}}>
-                  {authUser.email?.[0]?.toUpperCase()||"?"}
-                </span>
-              : <span style={{fontSize:"1rem",opacity:0.45}}>☁️</span>
-            }
-          </button>
-          <button onClick={()=>setView("settings")} style={{background:"none",border:"none",fontSize:"1rem",cursor:"pointer",padding:4,lineHeight:1,opacity:0.45}}>⚙️</button>
+          {authUser&&(
+            <div style={{
+              width:26,height:26,borderRadius:"50%",
+              background:"rgba(200,150,62,0.2)",border:"1px solid rgba(200,150,62,0.3)",
+              display:"flex",alignItems:"center",justifyContent:"center",
+              ...bd,fontWeight:800,fontSize:"0.65rem",color:"#D4983C",
+            }}>
+              {authUser.email?.[0]?.toUpperCase()||"?"}
+            </div>
+          )}
         </div>
       </div>
 
@@ -4453,7 +4629,7 @@ body{background:${c.bg}}
           {e:"🟩",l:"Focail",active:false,a:()=>{haptic();setView("focail");}},
           {e:"🗺️",l:"Léarscáil",active:false,a:()=>{haptic();setPrevView("home");setView("map");}},
           {e:"📖",l:"Foclóir",active:false,a:()=>{haptic();setPrevView("home");setView("dict");}},
-          {e:"☰",l:"Níos mó",active:false,a:()=>{haptic();setView("stats");}},
+          {e:"☰",l:"Clár",active:false,a:()=>{haptic();setView("welcome");}},
         ].map(({e,l,active,a},i)=>(
           <button key={i} onClick={a||undefined} style={{
             flex:1,padding:"10px 4px 10px",border:"none",
