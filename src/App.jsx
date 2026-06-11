@@ -1485,7 +1485,7 @@ export default function App() {
     if(s){
       setSt(s);
       if(s.theme&&THEMES[s.theme])setTheme(s.theme);
-      if(!s.seenWelcome&&(s.done||[]).length===0)setView("welcome");
+      if(!s.seenWelcome)setView("welcome");
     }
     else{
       const i={done:[],bonus:[],tasksDone:[],streak:0,best:0,theme:"coill",onboarded:true,started:new Date().toISOString(),dailyLog:{},county:null,notifEnabled:false,lastCompletedDate:null,shieldCount:1,shieldWeek:null,seenWelcome:false};
@@ -1729,8 +1729,8 @@ export default function App() {
   };
   const doReset=async()=>{
     if(!confirm("Reset all progress? Cannot undo."))return;
-    await save({done:[],bonus:[],tasksDone:[],streak:0,best:0,theme:"coill",onboarded:true,started:new Date().toISOString(),dailyLog:{},county:null,notifEnabled:false,lastCompletedDate:null,shieldCount:1,shieldWeek:null,seenWelcome:true});
-    setView("home");setSelDay(null);
+    await save({done:[],bonus:[],tasksDone:[],streak:0,best:0,theme:"coill",onboarded:true,started:new Date().toISOString(),dailyLog:{},county:null,notifEnabled:false,lastCompletedDate:null,shieldCount:1,shieldWeek:null,seenWelcome:false});
+    setView("welcome");setSelDay(null);
   };
 
   if(loading) return (
