@@ -1482,8 +1482,16 @@ export default function App() {
 
   useEffect(()=>{(async()=>{
     const [s]=await Promise.all([loadS(),new Promise(r=>setTimeout(r,1700))]);
-    if(s){setSt(s);if(s.theme&&THEMES[s.theme])setTheme(s.theme);}
-    else{const i={done:[],bonus:[],tasksDone:[],streak:0,best:0,theme:"coill",onboarded:true,started:new Date().toISOString(),dailyLog:{},county:null,notifEnabled:false,lastCompletedDate:null,shieldCount:1,shieldWeek:null};await saveS(i);setSt(i)}
+    if(s){
+      setSt(s);
+      if(s.theme&&THEMES[s.theme])setTheme(s.theme);
+      if(!s.seenWelcome&&(s.done||[]).length===0)setView("welcome");
+    }
+    else{
+      const i={done:[],bonus:[],tasksDone:[],streak:0,best:0,theme:"coill",onboarded:true,started:new Date().toISOString(),dailyLog:{},county:null,notifEnabled:false,lastCompletedDate:null,shieldCount:1,shieldWeek:null,seenWelcome:false};
+      await saveS(i);setSt(i);
+      setView("welcome");
+    }
     setLoading(false);
     // Fetch community count in background
     sbGetCount(todayKey()).then(n=>{if(n!==null)setCommunityCount(n);});
@@ -1505,6 +1513,13 @@ export default function App() {
       });
     });
   },[]);
+
+  // If user logs in while on welcome screen, mark seen and go home
+  useEffect(()=>{
+    if(authUser&&view==="welcome"&&st){
+      save({...st,seenWelcome:true}).then(()=>setView("home"));
+    }
+  },[authUser]);
 
   // Physical keyboard + stats fetch for Focail
   useEffect(()=>{
@@ -1714,7 +1729,7 @@ export default function App() {
   };
   const doReset=async()=>{
     if(!confirm("Reset all progress? Cannot undo."))return;
-    await save({done:[],bonus:[],tasksDone:[],streak:0,best:0,theme:"coill",onboarded:true,started:new Date().toISOString(),dailyLog:{},county:null,notifEnabled:false,lastCompletedDate:null,shieldCount:1,shieldWeek:null});
+    await save({done:[],bonus:[],tasksDone:[],streak:0,best:0,theme:"coill",onboarded:true,started:new Date().toISOString(),dailyLog:{},county:null,notifEnabled:false,lastCompletedDate:null,shieldCount:1,shieldWeek:null,seenWelcome:true});
     setView("home");setSelDay(null);
   };
 
@@ -1848,6 +1863,170 @@ body{background:${c.bg}}
 
   const hd = {fontFamily:"'Playfair Display',Georgia,serif",letterSpacing:"0.01em"};
   const bd = {fontFamily:"'Lato',system-ui,sans-serif"};
+
+  // ═══════════════════════════════
+  // WELCOME / LANDING VIEW
+  // ═══════════════════════════════
+  if(view==="welcome"){
+    const enterAsGuest=async()=>{
+      haptic([10,20,10]);
+      await save({...st,seenWelcome:true});
+      setView("home");
+    };
+    return(
+      <div style={{
+        minHeight:"100vh",background:"linear-gradient(160deg,#030905 0%,#071508 45%,#050c07 100%)",
+        display:"flex",flexDirection:"column",position:"relative",overflow:"hidden",
+        color:"#EDE9DF",
+      }}>
+        <style>{css}</style>
+
+        {/* Diamond texture */}
+        <div style={{position:"absolute",inset:0,pointerEvents:"none",opacity:0.8,
+          backgroundImage:`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='44'%3E%3Cpath d='M22 2 L42 22 L22 42 L2 22 Z' fill='none' stroke='rgba(200,150,62,0.055)' stroke-width='0.6'/%3E%3C/svg%3E")`,
+          backgroundSize:"44px 44px"}}/>
+
+        {/* Ambient glow top */}
+        <div style={{position:"absolute",width:"80%",height:"40%",
+          background:"radial-gradient(ellipse,rgba(200,150,62,0.09) 0%,transparent 70%)",
+          top:0,left:"10%",pointerEvents:"none"}}/>
+
+        {/* Ambient glow bottom left */}
+        <div style={{position:"absolute",width:"50%",height:"30%",
+          background:"radial-gradient(ellipse,rgba(45,106,79,0.14) 0%,transparent 70%)",
+          bottom:0,left:0,pointerEvents:"none"}}/>
+
+        {/* Settings gear top-right */}
+        <div style={{position:"absolute",top:16,right:16,zIndex:10}}>
+          <button onClick={()=>setView("settings")} style={{
+            background:"rgba(255,255,255,0.04)",border:"1px solid rgba(200,150,62,0.15)",
+            borderRadius:10,padding:"8px 10px",cursor:"pointer",fontSize:"1rem",color:"rgba(200,150,62,0.6)",
+          }}>⚙️</button>
+        </div>
+
+        {/* Main content */}
+        <div style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"40px 28px 24px",position:"relative",zIndex:1}}>
+
+          {/* Logo */}
+          <div style={{
+            width:90,height:90,borderRadius:"50%",
+            background:"radial-gradient(ellipse at 35% 35%,rgba(45,106,79,0.9) 0%,rgba(10,25,11,0.95) 70%)",
+            border:"2px solid rgba(200,150,62,0.4)",
+            display:"flex",alignItems:"center",justifyContent:"center",
+            fontSize:"3rem",marginBottom:28,
+            boxShadow:"0 16px 50px rgba(0,0,0,0.55),0 0 50px rgba(200,150,62,0.12)",
+            animation:"goldPulse 3s ease-in-out infinite",
+          }}>☘️</div>
+
+          {/* Title */}
+          <div style={{...hd,fontSize:"2.8rem",fontWeight:900,color:"#F0EDE4",letterSpacing:"-0.03em",lineHeight:1,marginBottom:8,textAlign:"center",textShadow:"0 2px 20px rgba(0,0,0,0.5)"}}>
+            Gaeltacht<br/>Connect
+          </div>
+
+          <div style={{...bd,fontSize:"0.72rem",color:"rgba(200,150,62,0.8)",letterSpacing:"0.28em",textTransform:"uppercase",fontWeight:700,marginBottom:4}}>
+            An Ghaeilge Bheo
+          </div>
+          <div style={{...bd,fontSize:"0.72rem",color:"rgba(240,237,228,0.35)",letterSpacing:"0.06em",marginBottom:32}}>
+            The Living Irish
+          </div>
+
+          {/* Divider */}
+          <div style={{display:"flex",alignItems:"center",gap:12,width:220,marginBottom:32}}>
+            <div style={{flex:1,height:1,background:"linear-gradient(90deg,transparent,rgba(200,150,62,0.35))"}}/>
+            <span style={{color:"rgba(200,150,62,0.5)",fontSize:"0.7rem"}}>✦</span>
+            <div style={{flex:1,height:1,background:"linear-gradient(90deg,rgba(200,150,62,0.35),transparent)"}}/>
+          </div>
+
+          {/* Auth buttons */}
+          <div style={{width:"100%",maxWidth:340,display:"flex",flexDirection:"column",gap:12}}>
+
+            {/* Register */}
+            <button onClick={()=>{haptic();setAuthMode("up");setShowAuth(true);}} style={{
+              width:"100%",padding:"15px 20px",border:"none",cursor:"pointer",
+              background:"linear-gradient(135deg,#2D6A4F 0%,#1B4332 100%)",
+              borderRadius:14,display:"flex",alignItems:"center",justifyContent:"center",gap:10,
+              boxShadow:"0 4px 20px rgba(27,67,50,0.5)",
+            }}>
+              <span style={{fontSize:"1.1rem"}}>📧</span>
+              <div style={{textAlign:"left"}}>
+                <div style={{...bd,fontSize:"0.95rem",fontWeight:800,color:"#fff"}}>Cláraigh · Register</div>
+                <div style={{...bd,fontSize:"0.65rem",color:"rgba(255,255,255,0.55)"}}>Save progress to cloud</div>
+              </div>
+            </button>
+
+            {/* Sign In */}
+            <button onClick={()=>{haptic();setAuthMode("in");setShowAuth(true);}} style={{
+              width:"100%",padding:"15px 20px",
+              background:"rgba(200,150,62,0.08)",border:"1px solid rgba(200,150,62,0.3)",
+              borderRadius:14,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:10,
+            }}>
+              <span style={{fontSize:"1.1rem"}}>🔑</span>
+              <div style={{textAlign:"left"}}>
+                <div style={{...bd,fontSize:"0.95rem",fontWeight:800,color:"#D4983C"}}>Sínigh isteach · Sign In</div>
+                <div style={{...bd,fontSize:"0.65rem",color:"rgba(200,150,62,0.5)"}}>Continue with your account</div>
+              </div>
+            </button>
+
+            {/* Continue as guest */}
+            <button onClick={enterAsGuest} style={{
+              width:"100%",padding:"13px 20px",
+              background:"transparent",border:"1px solid rgba(255,255,255,0.1)",
+              borderRadius:14,cursor:"pointer",
+              ...bd,fontSize:"0.88rem",color:"rgba(240,237,228,0.4)",fontWeight:400,
+            }}>
+              Lean ar aghaidh · Continue without account
+            </button>
+          </div>
+
+          {/* Fine print */}
+          <div style={{...bd,fontSize:"0.65rem",color:"rgba(240,237,228,0.2)",marginTop:20,textAlign:"center",lineHeight:1.5}}>
+            Progress saved locally · Cloud sync with account<br/>
+            60 days · Irish language · Gaeltacht
+          </div>
+        </div>
+
+        {/* Auth modal (reused) */}
+        {showAuth&&(
+          <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.7)",zIndex:300,display:"flex",alignItems:"flex-end",justifyContent:"center"}}
+            onClick={e=>{if(e.target===e.currentTarget){setShowAuth(false);setAuthErr("");}}}>
+            <div style={{background:c.card,border:`1px solid ${c.bd}`,borderRadius:"24px 24px 0 0",padding:"28px 24px 40px",width:"100%",maxWidth:480,animation:"slide-up 0.3s ease"}}>
+              <div style={{...hd,fontSize:"1.3rem",color:c.tx,marginBottom:4,textAlign:"center"}}>{authMode==="in"?"Fáilte ar ais · Welcome back":"Cláraigh · Register"}</div>
+              <div style={{...bd,fontSize:"0.75rem",color:c.tx3,marginBottom:20,textAlign:"center"}}>{authMode==="in"?"Sign in to sync your progress":"Save your progress to the cloud"}</div>
+              <input type="email" placeholder="Email" value={authEmail} onChange={e=>setAuthEmail(e.target.value)}
+                style={{width:"100%",padding:"12px 14px",borderRadius:10,border:`1px solid ${c.bd}`,background:c.bg,color:c.tx,...bd,fontSize:"0.9rem",marginBottom:10,boxSizing:"border-box"}}/>
+              <input type="password" placeholder="Password (min 6 chars)" value={authPwd} onChange={e=>setAuthPwd(e.target.value)}
+                style={{width:"100%",padding:"12px 14px",borderRadius:10,border:`1px solid ${c.bd}`,background:c.bg,color:c.tx,...bd,fontSize:"0.9rem",marginBottom:authErr?"10px":"16px",boxSizing:"border-box"}}/>
+              {authErr&&<div style={{...bd,fontSize:"0.75rem",color:"#E05252",marginBottom:12}}>{authErr}</div>}
+              <button disabled={authLoading||!authEmail||authPwd.length<6} onClick={async()=>{
+                setAuthLoading(true);setAuthErr("");
+                const d=await sbAuth(authEmail,authPwd,authMode==="up");
+                setAuthLoading(false);
+                if(d.error){setAuthErr(d.error.message||"Something went wrong");}
+                else{
+                  const user=await sbGetUser();
+                  if(user){
+                    setAuthUser(user);
+                    const cloud=user.user_metadata?.progress;
+                    if(cloud&&st){const merged=mergeProgress(st,cloud);await save({...merged,seenWelcome:true});}
+                    else if(st){await save({...st,seenWelcome:true});sbSyncProgress({...st,seenWelcome:true});}
+                  }
+                  setShowAuth(false);setAuthEmail("");setAuthPwd("");
+                  setView("home");
+                }
+              }} style={{
+                width:"100%",padding:"14px",borderRadius:12,border:"none",
+                background:authLoading||!authEmail||authPwd.length<6?c.bd:c.acc,
+                color:"#111",...bd,fontWeight:800,fontSize:"0.95rem",cursor:authLoading||!authEmail||authPwd.length<6?"not-allowed":"pointer",marginBottom:12,
+              }}>{authLoading?"...":(authMode==="in"?"Sínigh isteach · Sign In":"Cláraigh · Register")}</button>
+              <button onClick={()=>{setAuthMode(authMode==="in"?"up":"in");setAuthErr("");}} style={{width:"100%",padding:"10px",background:"none",border:"none",color:c.tx3,...bd,fontSize:"0.8rem",cursor:"pointer"}}>
+                {authMode==="in"?"No account? Register →":"Have an account? Sign in →"}
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
 
   // ═══════════════════════════════
   // FOCAIL VIEW — Daily Irish Wordle
@@ -4327,6 +4506,7 @@ body{background:${c.bg}}
                       const user=await sbGetUser();
                       if(user){setAuthUser(user);const cloud=user.user_metadata?.progress;if(cloud&&st){const merged=mergeProgress(st,cloud);await save(merged);}else if(st){sbSyncProgress(st);}}
                       setShowAuth(false);setAuthEmail("");setAuthPwd("");
+                      if(view==="welcome"&&st){await save({...st,seenWelcome:true});setView("home");}
                     }
                   }} style={{width:"100%",padding:"14px",borderRadius:12,border:"none",
                     background:authLoading||!authEmail||authPwd.length<6?c.bd:c.acc,
