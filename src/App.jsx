@@ -1550,6 +1550,10 @@ export default function App() {
     window.addEventListener("beforeinstallprompt",handler);
     window.addEventListener("appinstalled",()=>{setInstalled(true);setInstallPrompt(null);});
     if(window.matchMedia("(display-mode: standalone)").matches)setInstalled(true);
+    // Auto-reload when new service worker takes control
+    if('serviceWorker' in navigator){
+      navigator.serviceWorker.addEventListener('controllerchange',()=>window.location.reload());
+    }
     return()=>window.removeEventListener("beforeinstallprompt",handler);
   },[]);
 
