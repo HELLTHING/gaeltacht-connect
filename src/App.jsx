@@ -1416,6 +1416,75 @@ const GUIDE_PATTERNS=[
     ]},
 ];
 
+const PUB_PHRASES = [
+  {irish:"Sláinte!",pr:"SLAWN-cheh",en:"Cheers! / To your health!",tip:"The classic Irish toast — raise your glass and make eye contact",emoji:"🍺"},
+  {irish:"Pint Guinness le do thoil",pr:"pint GIN-iss leh duh hull",en:"A pint of Guinness, please",tip:"The most useful sentence in all of Ireland",emoji:"🖤"},
+  {irish:"An bhfuil tú ceart go leor?",pr:"on will too KYART guh lore",en:"Are you alright?",tip:"How Irish people check on each other — a term of endearment",emoji:"🤝"},
+  {irish:"Craic maith!",pr:"KRAK mah",en:"Great fun! / Great craic!",tip:"Say this when the night is going well — locals will love you",emoji:"🎉"},
+  {irish:"Thart arís, le do thoil",pr:"HART ah-REESH leh duh hull",en:"Same again, please",tip:"When you want another round — very important phrase",emoji:"🔄"},
+  {irish:"Is maith liom Éire",pr:"iss MAH lyum AY-reh",en:"I love Ireland",tip:"Say this and you'll make friends for life",emoji:"💚"},
+  {irish:"Cé thú féin?",pr:"KAY hoo HAYN",en:"Who are you? / What's your name?",tip:"Informal — used between friends getting to know each other",emoji:"👋"},
+  {irish:"Go mbeirimid beo ar an am seo arís!",pr:"guh MER-im-id byoh er on om shuh ah-REESH",en:"May we be alive at this time next year!",tip:"The ultimate Irish toast for special occasions",emoji:"✨"},
+];
+
+const COUNTY_LIST = [
+  {en:"Antrim",irish:"Aontroim",province:"Ulster"},{en:"Armagh",irish:"Ard Mhacha",province:"Ulster"},
+  {en:"Carlow",irish:"Ceatharlach",province:"Leinster"},{en:"Cavan",irish:"An Cabhán",province:"Ulster"},
+  {en:"Clare",irish:"An Clár",province:"Munster"},{en:"Cork",irish:"Corcaigh",province:"Munster"},
+  {en:"Derry",irish:"Doire",province:"Ulster"},{en:"Donegal",irish:"Dún na nGall",province:"Ulster"},
+  {en:"Down",irish:"An Dún",province:"Ulster"},{en:"Dublin",irish:"Baile Átha Cliath",province:"Leinster"},
+  {en:"Fermanagh",irish:"Fear Manach",province:"Ulster"},{en:"Galway",irish:"Gaillimh",province:"Connacht"},
+  {en:"Kerry",irish:"Ciarraí",province:"Munster"},{en:"Kildare",irish:"Cill Dara",province:"Leinster"},
+  {en:"Kilkenny",irish:"Cill Chainnigh",province:"Leinster"},{en:"Laois",irish:"Laois",province:"Leinster"},
+  {en:"Leitrim",irish:"Liatroim",province:"Connacht"},{en:"Limerick",irish:"Luimneach",province:"Munster"},
+  {en:"Longford",irish:"An Longfort",province:"Leinster"},{en:"Louth",irish:"Lú",province:"Leinster"},
+  {en:"Mayo",irish:"Maigh Eo",province:"Connacht"},{en:"Meath",irish:"An Mhí",province:"Leinster"},
+  {en:"Monaghan",irish:"Muineachán",province:"Ulster"},{en:"Offaly",irish:"Uíbh Fhailí",province:"Leinster"},
+  {en:"Roscommon",irish:"Ros Comáin",province:"Connacht"},{en:"Sligo",irish:"Sligeach",province:"Connacht"},
+  {en:"Tipperary",irish:"Tiobraid Árann",province:"Munster"},{en:"Tyrone",irish:"Tír Eoghain",province:"Ulster"},
+  {en:"Waterford",irish:"Port Láirge",province:"Munster"},{en:"Westmeath",irish:"An Iarmhí",province:"Leinster"},
+  {en:"Wexford",irish:"Loch Garman",province:"Leinster"},{en:"Wicklow",irish:"Cill Mhantáin",province:"Leinster"},
+];
+const PROVINCE_COLORS = {Ulster:"#1A3070",Leinster:"#155E1A",Munster:"#8A2000",Connacht:"#4A0E5E"};
+
+const SURNAMES = [
+  {en:"Murphy",irish:"Ó Murchadha",meaning:"Sea warrior",origin:"Most common Irish surname — Munster & Connacht"},
+  {en:"Kelly",irish:"Ó Ceallaigh",meaning:"Bright-headed",origin:"Connected to 'ceall' (church) — widespread"},
+  {en:"O'Sullivan",irish:"Ó Súilleabháin",meaning:"Dark-eyed one",origin:"Cork and Kerry — Munster nobility"},
+  {en:"Walsh",irish:"Breathnach",meaning:"The Welshman",origin:"Brought by Welsh settlers with the Normans"},
+  {en:"Smith",irish:"Mac Gabhann",meaning:"Son of the smith",origin:"From 'gabha' — blacksmith"},
+  {en:"O'Brien",irish:"Ó Briain",meaning:"Noble / High",origin:"From Brian Boru, High King of Ireland"},
+  {en:"Byrne",irish:"Ó Broin",meaning:"Raven",origin:"Leinster — particularly Wicklow"},
+  {en:"Ryan",irish:"Ó Maoilriain",meaning:"Little king",origin:"Tipperary and surrounding counties"},
+  {en:"O'Connor",irish:"Ó Conchobhair",meaning:"Lover of hounds",origin:"Connacht and Munster branches"},
+  {en:"O'Neill",irish:"Ó Néill",meaning:"Champion",origin:"Ulster — one of the great royal families"},
+  {en:"Doyle",irish:"Ó Dubhghaill",meaning:"Dark stranger",origin:"Norse-Irish — Leinster coast"},
+  {en:"McCarthy",irish:"Mac Cárthaigh",meaning:"Loving",origin:"Munster — Kings of Desmond"},
+  {en:"Gallagher",irish:"Ó Gallchobhair",meaning:"Eager helper",origin:"Donegal — great Ulster family"},
+  {en:"Kennedy",irish:"Ó Cinnéide",meaning:"Helmeted head",origin:"Clare and Tipperary"},
+  {en:"Lynch",irish:"Ó Loingsigh",meaning:"Mariner / Seafarer",origin:"One of the Tribes of Galway"},
+  {en:"Murray",irish:"Ó Muireadhaigh",meaning:"Lord of the sea",origin:"Ulster and Connacht"},
+  {en:"Quinn",irish:"Ó Cuinn",meaning:"Counsel / Wisdom",origin:"Tyrone and Clare"},
+  {en:"Moore",irish:"Ó Mórdha",meaning:"Noble / Great",origin:"Widespread across Ireland"},
+  {en:"Doherty",irish:"Ó Dochartaigh",meaning:"Unlucky",origin:"Donegal — most common Ulster surname"},
+  {en:"Reilly",irish:"Ó Raghallaigh",meaning:"Courageous",origin:"Cavan — Kings of East Breifne"},
+  {en:"Flanagan",irish:"Ó Flannagáin",meaning:"Red / Ruddy-complexioned",origin:"Roscommon and Fermanagh"},
+  {en:"Fitzgerald",irish:"Mac Gearailt",meaning:"Son of Gerald",origin:"Norman-Irish — Munster nobility"},
+  {en:"Burke",irish:"de Búrca",meaning:"From the fortress",origin:"Norman-Irish — Connacht lords"},
+  {en:"Carroll",irish:"Ó Cearbhaill",meaning:"Hacking in battle",origin:"Offaly — Kings of Ely"},
+  {en:"Connolly",irish:"Ó Conghaile",meaning:"Valiant / Brave",origin:"Connacht and Monaghan"},
+  {en:"Farrell",irish:"Ó Fearghail",meaning:"Man of valour",origin:"Longford — Kings of Annaly"},
+  {en:"Nolan",irish:"Ó Nualláin",meaning:"Famous / Noble",origin:"Carlow and Wexford"},
+  {en:"Power",irish:"de Paor",meaning:"The poor one (humble)",origin:"Norman-Irish — Waterford"},
+  {en:"Higgins",irish:"Ó hUiginn",meaning:"Viking — wise one",origin:"Connacht families"},
+  {en:"Brennan",irish:"Ó Braonáin",meaning:"Sorrow / Moisture",origin:"Kilkenny and Ossory"},
+  {en:"Collins",irish:"Ó Coileáin",meaning:"Young warrior / Whelp",origin:"Cork — Munster"},
+  {en:"Hayes",irish:"Ó hAodha",meaning:"Descendant of Aodh (fire)",origin:"Aodh was a powerful Irish god"},
+  {en:"McGrath",irish:"Mac Craith",meaning:"Son of Grace",origin:"Clare and Waterford"},
+  {en:"Duffy",irish:"Ó Dubhthaigh",meaning:"Dark / Dusky",origin:"Ulster — Monaghan and Donegal"},
+  {en:"Sheridan",irish:"Ó Sirideáin",meaning:"Searcher / Seeker",origin:"Cavan and Longford"},
+];
+
 export default function App() {
   const [st,setSt]=useState(null);
   const [loading,setLoading]=useState(true);
@@ -1469,6 +1538,10 @@ export default function App() {
   const [myRankData,setMyRankData]=useState(null);
   const [leaderLoading,setLeaderLoading]=useState(false);
   const [guideTab,setGuideTab]=useState("fuaimeanna");
+  const [pubIdx,setPubIdx]=useState(0);
+  const [pubFlipped,setPubFlipped]=useState(false);
+  const [showCountyPicker,setShowCountyPicker]=useState(false);
+  const [surnameSearch,setSurnameSearch]=useState("");
   const c = THEMES[theme]||THEMES.coill;
   const dk = c.dark; // keep dk as a convenience boolean for backward compat
 
@@ -1929,6 +2002,33 @@ body{background:${c.bg}}
                 </div>
               </div>
 
+              {/* Community counter badge */}
+              {communityCount!==null&&communityCount>0&&(
+                <div style={{
+                  display:"flex",alignItems:"center",gap:6,
+                  background:"rgba(94,196,136,0.08)",border:"1px solid rgba(94,196,136,0.2)",
+                  borderRadius:20,padding:"5px 14px",marginBottom:16,
+                }}>
+                  <span style={{fontSize:"0.7rem"}}>🟢</span>
+                  <span style={{...bd,fontSize:"0.72rem",color:"#5EC488",fontWeight:600}}>
+                    {communityCount} people learning Irish today
+                  </span>
+                </div>
+              )}
+
+              {/* County chip */}
+              <button onClick={()=>setShowCountyPicker(true)} style={{
+                display:"flex",alignItems:"center",gap:6,
+                background:"rgba(255,255,255,0.04)",border:`1px solid ${c.bd}`,
+                borderRadius:20,padding:"5px 14px",marginBottom:20,cursor:"pointer",
+              }}>
+                <span style={{fontSize:"0.85rem"}}>🗺️</span>
+                <span style={{...bd,fontSize:"0.75rem",color:c.tx2}}>
+                  {st?.county ? `Co. ${st.county}` : "Select your county"}
+                </span>
+                <span style={{fontSize:"0.7rem",color:c.tx3}}>✎</span>
+              </button>
+
               {/* Progress card */}
               <div style={{
                 background:"rgba(10,25,11,0.7)",border:"1px solid rgba(212,152,60,0.4)",
@@ -1972,6 +2072,21 @@ body{background:${c.bg}}
                 <span style={{fontSize:"1.6rem"}}>▶</span>
               </button>
 
+              {/* Pub Mode featured banner */}
+              <button onClick={()=>{haptic([10,20,10]);setPubIdx(0);setPubFlipped(false);setView("pub");}} style={{
+                width:"100%",padding:"14px 18px",marginBottom:12,
+                background:"linear-gradient(135deg,rgba(212,152,60,0.15),rgba(180,100,20,0.1))",
+                border:"1px solid rgba(212,152,60,0.35)",borderRadius:14,cursor:"pointer",
+                display:"flex",alignItems:"center",gap:12,
+              }}>
+                <span style={{fontSize:"1.6rem"}}>🍺</span>
+                <div style={{textAlign:"left"}}>
+                  <div style={{...hd,fontSize:"1rem",fontWeight:700,color:c.acc}}>Mód an Tabhairne · Pub Mode</div>
+                  <div style={{...bd,fontSize:"0.68rem",color:c.tx3}}>8 essential phrases for tonight</div>
+                </div>
+                <span style={{marginLeft:"auto",color:c.acc,fontSize:"1rem"}}>→</span>
+              </button>
+
               {/* 2-col menu grid */}
               <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
                 {[
@@ -2009,6 +2124,19 @@ body{background:${c.bg}}
                   </button>
                 ))}
               </div>
+
+              {/* Surnames tile — full width below grid */}
+              <button onClick={()=>{haptic();setSurnameSearch("");setView("surnames");}} style={{
+                width:"100%",padding:"12px 16px",marginTop:6,
+                background:"rgba(255,255,255,0.03)",border:`1px solid ${c.bd}`,
+                borderRadius:12,cursor:"pointer",display:"flex",alignItems:"center",gap:10,
+              }}>
+                <span style={{fontSize:"1.2rem"}}>🏷️</span>
+                <div style={{textAlign:"left"}}>
+                  <div style={{...bd,fontSize:"0.82rem",fontWeight:700,color:c.tx}}>Sloinnte · Surnames</div>
+                  <div style={{...bd,fontSize:"0.65rem",color:c.tx3}}>What does your family name mean in Irish?</div>
+                </div>
+              </button>
 
               {/* Bottom section */}
               <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:8,marginTop:4}}>
@@ -2058,6 +2186,13 @@ body{background:${c.bg}}
                 <span style={{color:"rgba(200,150,62,0.5)",fontSize:"0.7rem"}}>✦</span>
                 <div style={{flex:1,height:1,background:"linear-gradient(90deg,rgba(200,150,62,0.35),transparent)"}}/>
               </div>
+
+              {/* Community counter — new user mode */}
+              {communityCount!==null&&communityCount>0&&(
+                <div style={{...bd,fontSize:"0.7rem",color:"rgba(94,196,136,0.7)",marginBottom:16,textAlign:"center"}}>
+                  🟢 {communityCount} people learning Irish today
+                </div>
+              )}
 
               {/* Auth buttons */}
               <div style={{width:"100%",maxWidth:340,display:"flex",flexDirection:"column",gap:12}}>
@@ -2206,6 +2341,39 @@ body{background:${c.bg}}
               <button onClick={()=>{setAuthMode(authMode==="in"?"up":"in");setAuthErr("");}} style={{width:"100%",padding:"10px",background:"none",border:"none",color:c.tx3,...bd,fontSize:"0.8rem",cursor:"pointer"}}>
                 {authMode==="in"?"No account? Register →":"Have an account? Sign in →"}
               </button>
+            </div>
+          </div>
+        )}
+
+        {/* County picker modal */}
+        {showCountyPicker&&(
+          <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.7)",zIndex:400,display:"flex",alignItems:"flex-end"}}
+            onClick={e=>{if(e.target===e.currentTarget)setShowCountyPicker(false);}}>
+            <div style={{background:c.card,borderRadius:"24px 24px 0 0",padding:"24px 20px 40px",width:"100%",maxWidth:480,margin:"0 auto",maxHeight:"70vh",overflow:"auto"}}>
+              <div style={{...hd,fontSize:"1.2rem",color:c.tx,marginBottom:4}}>Do Chontae · Your County</div>
+              <div style={{...bd,fontSize:"0.72rem",color:c.tx3,marginBottom:20}}>Choose your county to personalise your experience</div>
+              {["Ulster","Leinster","Munster","Connacht"].map(prov=>(
+                <div key={prov} style={{marginBottom:16}}>
+                  <div style={{...bd,fontSize:"0.65rem",color:c.tx3,letterSpacing:"0.12em",marginBottom:8,fontWeight:700}}>{prov.toUpperCase()}</div>
+                  <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
+                    {COUNTY_LIST.filter(co=>co.province===prov).map(co=>(
+                      <button key={co.en} onClick={async()=>{
+                        haptic([10,20]);
+                        await save({...st,county:co.en});
+                        setShowCountyPicker(false);
+                      }} style={{
+                        padding:"6px 12px",borderRadius:20,cursor:"pointer",
+                        background:st?.county===co.en?PROVINCE_COLORS[prov]:"rgba(255,255,255,0.05)",
+                        border:`1px solid ${st?.county===co.en?"transparent":c.bd}`,
+                        color:st?.county===co.en?"#fff":c.tx2,
+                        ...bd,fontSize:"0.78rem",
+                      }}>
+                        {co.en}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         )}
@@ -4304,6 +4472,158 @@ body{background:${c.bg}}
             <button onClick={doReset} style={{background:"none",border:"none",color:c.tx3,...bd,fontSize:"0.65rem",cursor:"pointer",opacity:0.3,textDecoration:"underline"}}>Reset progress</button>
           </div>
           <div style={{height:16}}/>
+        </div>
+      </div>
+    );
+  }
+
+  // ═══════════════════════════════
+  // PUB MODE VIEW
+  // ═══════════════════════════════
+  if(view==="pub"){
+    const ph=PUB_PHRASES[pubIdx];
+    return(
+      <div style={{minHeight:"100vh",background:"linear-gradient(160deg,#030905,#071208)",color:"#EDE9DF",display:"flex",flexDirection:"column"}}>
+        <style>{css}</style>
+        {/* Header */}
+        <div style={{display:"flex",alignItems:"center",padding:"16px 20px",gap:12}}>
+          <button onClick={()=>setView("welcome")} style={{background:"none",border:"none",color:c.tx3,cursor:"pointer",fontSize:"1.2rem",padding:4,lineHeight:1}}>←</button>
+          <div>
+            <div style={{...hd,fontSize:"1.1rem",fontWeight:800,color:c.tx}}>🍺 Mód an Tabhairne</div>
+            <div style={{...bd,fontSize:"0.7rem",color:c.tx3}}>Pub Mode · Essential Irish phrases</div>
+          </div>
+          <div style={{marginLeft:"auto",...bd,fontSize:"0.75rem",color:c.tx3}}>{pubIdx+1}/{PUB_PHRASES.length}</div>
+        </div>
+
+        {/* Progress dots */}
+        <div style={{display:"flex",gap:5,justifyContent:"center",marginBottom:24}}>
+          {PUB_PHRASES.map((_,i)=>(
+            <div key={i} style={{
+              width:i===pubIdx?20:6,height:6,borderRadius:3,
+              background:i<pubIdx?c.gold:i===pubIdx?c.acc:"rgba(255,255,255,0.1)",
+              transition:"all 0.3s",
+            }}/>
+          ))}
+        </div>
+
+        {/* Card */}
+        <div style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"0 24px 24px"}}>
+          <div style={{fontSize:"3rem",marginBottom:20,lineHeight:1}}>{ph.emoji}</div>
+
+          <div onClick={()=>setPubFlipped(f=>!f)} style={{
+            width:"100%",maxWidth:380,
+            background:pubFlipped
+              ?"linear-gradient(135deg,rgba(45,106,79,0.25),rgba(27,67,50,0.4))"
+              :"linear-gradient(135deg,rgba(212,152,60,0.12),rgba(200,120,30,0.06))",
+            border:`2px solid ${pubFlipped?"rgba(94,196,136,0.4)":"rgba(212,152,60,0.4)"}`,
+            borderRadius:24,padding:"32px 28px",textAlign:"center",cursor:"pointer",
+            boxShadow:pubFlipped?"0 8px 40px rgba(45,106,79,0.25)":"0 8px 40px rgba(212,152,60,0.15)",
+            transition:"all 0.4s",animation:"rise 0.4s ease",
+            minHeight:200,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:10,
+          }}>
+            {!pubFlipped?(
+              <>
+                <div style={{...hd,fontSize:"2.2rem",fontWeight:700,color:c.acc,fontStyle:"italic",lineHeight:1.2,marginBottom:6}}>{ph.irish}</div>
+                <div style={{...bd,fontSize:"0.78rem",color:"rgba(212,152,60,0.6)",letterSpacing:"0.04em"}}>/{ph.pr}/</div>
+                <div style={{...bd,fontSize:"0.68rem",color:c.tx3,marginTop:8}}>Tap to reveal →</div>
+              </>
+            ):(
+              <>
+                <div style={{...hd,fontSize:"1.6rem",fontWeight:700,color:"#5EC488",fontStyle:"italic",lineHeight:1.2}}>{ph.en}</div>
+                <div style={{height:1,width:40,background:"rgba(94,196,136,0.3)",margin:"8px 0"}}/>
+                <div style={{...bd,fontSize:"0.78rem",color:c.tx2,lineHeight:1.6,fontStyle:"italic"}}>"{ph.tip}"</div>
+              </>
+            )}
+          </div>
+
+          {/* Navigation */}
+          <div style={{display:"flex",gap:12,marginTop:24,width:"100%",maxWidth:380}}>
+            {pubIdx>0&&(
+              <button onClick={()=>{setPubIdx(i=>i-1);setPubFlipped(false);haptic();}} style={{
+                flex:1,padding:"13px",background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.1)",
+                borderRadius:14,cursor:"pointer",color:c.tx3,...bd,fontSize:"0.85rem",
+              }}>← Back</button>
+            )}
+            {pubIdx<PUB_PHRASES.length-1?(
+              <button onClick={()=>{setPubIdx(i=>i+1);setPubFlipped(false);haptic([10,20,10]);}} style={{
+                flex:1,padding:"13px",background:"linear-gradient(135deg,#2D6A4F,#1B4332)",border:"none",
+                borderRadius:14,cursor:"pointer",color:"#fff",...bd,fontSize:"0.85rem",fontWeight:700,
+                boxShadow:"0 4px 20px rgba(27,67,50,0.4)",
+              }}>Next phrase →</button>
+            ):(
+              <button onClick={()=>{haptic([20,40,20]);setView("welcome");}} style={{
+                flex:1,padding:"13px",background:"linear-gradient(135deg,#2D6A4F,#1B4332)",border:"none",
+                borderRadius:14,cursor:"pointer",color:"#fff",...bd,fontSize:"0.85rem",fontWeight:700,
+              }}>Sláinte! 🍺 Done</button>
+            )}
+          </div>
+
+          <div style={{...bd,fontSize:"0.65rem",color:c.tx3,marginTop:16,textAlign:"center",opacity:0.5}}>
+            Tap card to flip · Learn the phrase then reveal
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ═══════════════════════════════
+  // SURNAMES VIEW
+  // ═══════════════════════════════
+  if(view==="surnames"){
+    const q=surnameSearch.toLowerCase().trim();
+    const filtered=q.length>0
+      ?SURNAMES.filter(s=>s.en.toLowerCase().includes(q)||s.irish.toLowerCase().includes(q))
+      :SURNAMES;
+    return(
+      <div style={{minHeight:"100vh",background:c.bg,color:c.tx,display:"flex",flexDirection:"column"}}>
+        <style>{css}</style>
+        {/* Header */}
+        <div style={{background:"rgba(3,9,5,0.97)",borderBottom:`1px solid ${c.bd}`,padding:"16px 20px",flexShrink:0,position:"sticky",top:0,zIndex:10}}>
+          <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:12}}>
+            <button onClick={()=>setView("welcome")} style={{background:"none",border:"none",color:c.tx3,cursor:"pointer",fontSize:"1.2rem",padding:4,lineHeight:1}}>←</button>
+            <div>
+              <div style={{...hd,fontSize:"1.1rem",fontWeight:800,color:c.tx}}>Sloinnte · Surnames</div>
+              <div style={{...bd,fontSize:"0.7rem",color:c.tx3}}>Irish meanings of family names</div>
+            </div>
+          </div>
+          <input
+            value={surnameSearch}
+            onChange={e=>setSurnameSearch(e.target.value)}
+            placeholder="Search surname… e.g. Murphy, Kelly"
+            style={{
+              width:"100%",padding:"10px 14px",borderRadius:12,
+              border:`1px solid ${c.bd}`,background:"rgba(255,255,255,0.05)",
+              color:c.tx,...bd,fontSize:"0.9rem",boxSizing:"border-box",
+              outline:"none",
+            }}
+          />
+        </div>
+        {/* Results */}
+        <div style={{flex:1,overflow:"auto",padding:"16px 20px"}}>
+          {filtered.length===0&&(
+            <div style={{textAlign:"center",padding:"40px 0",color:c.tx3,...bd,fontSize:"0.85rem"}}>
+              No surnames found for "{surnameSearch}"
+            </div>
+          )}
+          {filtered.map((s,i)=>(
+            <div key={s.en} style={{
+              background:c.card,border:`1px solid ${c.bd}`,borderRadius:14,
+              padding:"14px 16px",marginBottom:10,animation:`rise 0.3s ${i*0.04}s ease both`,
+            }}>
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:6}}>
+                <div>
+                  <span style={{...hd,fontSize:"1.15rem",fontWeight:700,color:c.tx}}>{s.en}</span>
+                </div>
+                <div style={{...hd,fontSize:"1rem",color:c.acc,fontStyle:"italic",textAlign:"right"}}>{s.irish}</div>
+              </div>
+              <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:4}}>
+                <span style={{fontSize:"0.8rem"}}>✦</span>
+                <span style={{...bd,fontSize:"0.82rem",fontWeight:600,color:c.gold}}>{s.meaning}</span>
+              </div>
+              <div style={{...bd,fontSize:"0.72rem",color:c.tx3,fontStyle:"italic"}}>{s.origin}</div>
+            </div>
+          ))}
+          <div style={{height:20}}/>
         </div>
       </div>
     );
