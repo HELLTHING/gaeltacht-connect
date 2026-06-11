@@ -4039,7 +4039,7 @@ body{background:${c.bg}}
         <style>{css}</style>
         {/* Header */}
         <div style={{display:"flex",alignItems:"center",padding:"16px 20px",gap:12}}>
-          <button onClick={()=>setView("welcome")} style={{background:"none",border:"none",color:c.tx3,cursor:"pointer",fontSize:"1.2rem",padding:4,lineHeight:1}}>←</button>
+          <button onClick={()=>setView("home")} style={{background:"none",border:"none",color:c.tx3,cursor:"pointer",fontSize:"1.2rem",padding:4,lineHeight:1}}>←</button>
           <div>
             <div style={{...hd,fontSize:"1.1rem",fontWeight:800,color:c.tx}}>🍺 Mód an Tabhairne</div>
             <div style={{...bd,fontSize:"0.7rem",color:c.tx3}}>Pub Mode · Essential Irish phrases</div>
@@ -4103,7 +4103,7 @@ body{background:${c.bg}}
                 boxShadow:"0 4px 20px rgba(27,67,50,0.4)",
               }}>Next phrase →</button>
             ):(
-              <button onClick={()=>{haptic([20,40,20]);setView("welcome");}} style={{
+              <button onClick={()=>{haptic([20,40,20]);setView("home");}} style={{
                 flex:1,padding:"13px",background:"linear-gradient(135deg,#2D6A4F,#1B4332)",border:"none",
                 borderRadius:14,cursor:"pointer",color:"#fff",...bd,fontSize:"0.85rem",fontWeight:700,
               }}>Sláinte! 🍺 Done</button>
@@ -4132,7 +4132,7 @@ body{background:${c.bg}}
         {/* Header */}
         <div style={{background:"rgba(3,9,5,0.97)",borderBottom:`1px solid ${c.bd}`,padding:"16px 20px",flexShrink:0,position:"sticky",top:0,zIndex:10}}>
           <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:12}}>
-            <button onClick={()=>setView("welcome")} style={{background:"none",border:"none",color:c.tx3,cursor:"pointer",fontSize:"1.2rem",padding:4,lineHeight:1}}>←</button>
+            <button onClick={()=>setView("home")} style={{background:"none",border:"none",color:c.tx3,cursor:"pointer",fontSize:"1.2rem",padding:4,lineHeight:1}}>←</button>
             <div>
               <div style={{...hd,fontSize:"1.1rem",fontWeight:800,color:c.tx}}>Sloinnte · Surnames</div>
               <div style={{...bd,fontSize:"0.7rem",color:c.tx3}}>Irish meanings of family names</div>
@@ -4215,12 +4215,13 @@ body{background:${c.bg}}
 
       {/* ── TOP BAR ── */}
       <div style={{display:"flex",alignItems:"center",padding:"16px 20px 0",zIndex:10,flexShrink:0}}>
-        <button onClick={()=>setView("welcome")} style={{
+        <button onClick={()=>{haptic();setShowMenu(true);}} style={{
           background:"none",border:"none",cursor:"pointer",
-          display:"flex",alignItems:"center",gap:6,padding:0,
+          display:"flex",alignItems:"center",gap:7,padding:0,
         }}>
-          <span style={{fontSize:"1rem"}}>☘️</span>
+          <span style={{fontSize:"1.1rem"}}>☘️</span>
           <span style={{...hd,fontSize:"0.9rem",fontWeight:800,color:c.dark?"rgba(240,237,228,0.8)":c.tx,letterSpacing:"-0.01em"}}>Gaeltacht</span>
+          <span style={{...bd,fontSize:"0.65rem",color:c.dark?"rgba(200,150,62,0.5)":c.tx3,marginLeft:1}}>☰</span>
         </button>
         <div style={{marginLeft:"auto",display:"flex",alignItems:"center",gap:8}}>
           {st?.streak>=1&&(
@@ -4501,7 +4502,7 @@ body{background:${c.bg}}
           {e:"🟩",l:"Focail",active:false,a:()=>{haptic();setView("focail");}},
           {e:"🗺️",l:"Léarscáil",active:false,a:()=>{haptic();setPrevView("home");setView("map");}},
           {e:"📖",l:"Foclóir",active:false,a:()=>{haptic();setPrevView("home");setView("dict");}},
-          {e:"☰",l:"Clár",active:false,a:()=>{haptic();setView("welcome");}},
+          {e:"☰",l:"Clár",active:false,a:()=>{haptic();setShowMenu(true);}},
         ].map(({e,l,active,a},i)=>(
           <button key={i} onClick={a||undefined} style={{
             flex:1,padding:"10px 4px 10px",border:"none",
@@ -4554,7 +4555,7 @@ body{background:${c.bg}}
                       const user=await sbGetUser();
                       if(user){setAuthUser(user);const cloud=user.user_metadata?.progress;if(cloud&&st){const merged=mergeProgress(st,cloud);await save(merged);}else if(st){sbSyncProgress(st);}}
                       setShowAuth(false);setAuthEmail("");setAuthPwd("");
-                      if(view==="welcome"&&st){await save({...st,seenWelcome:true});setView("home");}
+                      if(view==="home"&&st){await save({...st});}
                     }
                   }} style={{width:"100%",padding:"14px",borderRadius:12,border:"none",
                     background:authLoading||!authEmail||authPwd.length<6?c.bd:c.acc,
@@ -4661,6 +4662,168 @@ body{background:${c.bg}}
             <span style={{...bd,fontSize:"0.8rem"}}>Suiteáil · Install app</span>
             <span style={{marginLeft:"auto",opacity:0.4}}>›</span>
           </button>
+        </div>
+      )}
+
+      {/* ── MAIN MENU OVERLAY ── */}
+      {showMenu&&(
+        <div onClick={e=>{if(e.target===e.currentTarget){setShowMenu(false);}}}
+          style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.65)",zIndex:200,display:"flex",flexDirection:"column",justifyContent:"flex-end",backdropFilter:"blur(4px)"}}>
+          <div style={{
+            background:"linear-gradient(160deg,#071208,#0d2018)",
+            border:"1px solid rgba(200,150,62,0.15)",
+            borderRadius:"24px 24px 0 0",
+            padding:"8px 0 40px",
+            maxHeight:"88vh",overflow:"auto",
+            boxShadow:"0 -8px 50px rgba(0,0,0,0.6)",
+            animation:"slide-up 0.3s ease",
+          }}>
+            {/* Handle */}
+            <div style={{display:"flex",justifyContent:"center",padding:"8px 0 16px"}}>
+              <div style={{width:36,height:4,borderRadius:2,background:"rgba(255,255,255,0.15)"}}/>
+            </div>
+
+            {/* Header with logo */}
+            <div style={{display:"flex",alignItems:"center",gap:12,padding:"0 20px 16px",borderBottom:"1px solid rgba(200,150,62,0.1)"}}>
+              <div style={{
+                width:44,height:44,borderRadius:"50%",
+                background:"radial-gradient(ellipse at 35% 35%,rgba(45,106,79,0.9),rgba(10,25,11,0.95))",
+                border:"1.5px solid rgba(200,150,62,0.4)",
+                display:"flex",alignItems:"center",justifyContent:"center",fontSize:"1.4rem",
+                flexShrink:0,
+              }}>☘️</div>
+              <div>
+                <div style={{...hd,fontSize:"1.1rem",fontWeight:800,color:"#F0EDE4"}}>Gaeltacht Connect</div>
+                <div style={{...bd,fontSize:"0.65rem",color:"rgba(200,150,62,0.6)",letterSpacing:"0.1em",textTransform:"uppercase"}}>An Ghaeilge Bheo</div>
+              </div>
+              <button onClick={()=>setShowMenu(false)} style={{marginLeft:"auto",background:"none",border:"none",color:"rgba(255,255,255,0.3)",fontSize:"1.4rem",cursor:"pointer",lineHeight:1,padding:4}}>✕</button>
+            </div>
+
+            {/* Progress row */}
+            <div style={{display:"flex",justifyContent:"space-around",padding:"14px 20px",borderBottom:"1px solid rgba(200,150,62,0.08)"}}>
+              <div style={{textAlign:"center"}}>
+                <div style={{fontSize:"1.2rem"}}>🔥</div>
+                <div style={{...bd,fontSize:"0.72rem",fontWeight:800,color:"#FF7A00",marginTop:2}}>{st?.streak||0}</div>
+                <div style={{...bd,fontSize:"0.6rem",color:"rgba(255,255,255,0.3)"}}>streak</div>
+              </div>
+              <div style={{textAlign:"center"}}>
+                <div style={{fontSize:"1.2rem"}}>📅</div>
+                <div style={{...bd,fontSize:"0.72rem",fontWeight:800,color:"rgba(240,237,228,0.8)",marginTop:2}}>{(st?.done||[]).length}/60</div>
+                <div style={{...bd,fontSize:"0.6rem",color:"rgba(255,255,255,0.3)"}}>days</div>
+              </div>
+              <div style={{textAlign:"center"}}>
+                <div style={{fontSize:"1.2rem"}}>⭐</div>
+                <div style={{...bd,fontSize:"0.72rem",fontWeight:800,color:"#D4983C",marginTop:2}}>L{Math.floor((st?.xp||0)/100)+1}</div>
+                <div style={{...bd,fontSize:"0.6rem",color:"rgba(255,255,255,0.3)"}}>level</div>
+              </div>
+              <div style={{textAlign:"center"}}>
+                <div style={{fontSize:"1.2rem"}}>✨</div>
+                <div style={{...bd,fontSize:"0.72rem",fontWeight:800,color:"rgba(240,237,228,0.8)",marginTop:2}}>{st?.xp||0}</div>
+                <div style={{...bd,fontSize:"0.6rem",color:"rgba(255,255,255,0.3)"}}>XP</div>
+              </div>
+            </div>
+
+            {/* Pub Mode featured */}
+            <div style={{padding:"12px 16px 4px"}}>
+              <button onClick={()=>{haptic([10,20,10]);setPubIdx(0);setPubFlipped(false);setShowMenu(false);setView("pub");}} style={{
+                width:"100%",padding:"13px 16px",
+                background:"linear-gradient(135deg,rgba(212,152,60,0.15),rgba(180,100,20,0.08))",
+                border:"1px solid rgba(212,152,60,0.3)",borderRadius:14,cursor:"pointer",
+                display:"flex",alignItems:"center",gap:12,
+              }}>
+                <span style={{fontSize:"1.5rem"}}>🍺</span>
+                <div style={{textAlign:"left"}}>
+                  <div style={{...hd,fontSize:"0.95rem",fontWeight:700,color:"#D4983C"}}>Mód an Tabhairne · Pub Mode</div>
+                  <div style={{...bd,fontSize:"0.65rem",color:"rgba(200,150,62,0.5)"}}>8 essential phrases for tonight</div>
+                </div>
+                <span style={{marginLeft:"auto",color:"rgba(212,152,60,0.5)",fontSize:"0.9rem"}}>→</span>
+              </button>
+            </div>
+
+            {/* Menu grid */}
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,padding:"8px 16px"}}>
+              {[
+                {e:"⚙️",l:"Socruithe",s:"Settings",a:()=>{setShowMenu(false);setView("settings");}},
+                {e:"👤",l:"Cuntas",s:"Account",a:()=>{setShowMenu(false);setShowAuth(true);}},
+                {e:"🏆",l:"Ceannairí",s:"Leaderboard",a:async()=>{
+                  setShowMenu(false);setShowLeaderboard(true);
+                  if(!leaderData){setLeaderLoading(true);const [rows,rank]=await Promise.all([sbLeaderboard(),authUser?.id?sbMyRank(authUser.id):Promise.resolve(null)]);setLeaderData(rows);setMyRankData(rank);setLeaderLoading(false);}
+                }},
+                {e:"🏷️",l:"Sloinnte",s:"Surnames",a:()=>{setShowMenu(false);setSurnameSearch("");setView("surnames");}},
+                {e:"🗺️",l:"Léarscáil",s:"Map",a:()=>{setShowMenu(false);setPrevView("home");setView("map");}},
+                {e:"📚",l:"Treoir",s:"Guide",a:()=>{setShowMenu(false);setPrevView("home");setView("guide");}},
+                {e:"📖",l:"Foclóir",s:"Dictionary",a:()=>{setShowMenu(false);setPrevView("home");setView("dict");}},
+                {e:"🎵",l:"Ceol",s:"Irish Music",a:()=>{setShowMenu(false);setView("ceol");}},
+              ].map(({e,l,s,a},i)=>(
+                <button key={i} onClick={a} style={{
+                  padding:"12px 10px",
+                  background:"rgba(255,255,255,0.03)",
+                  border:"1px solid rgba(200,150,62,0.12)",
+                  borderRadius:12,cursor:"pointer",
+                  display:"flex",alignItems:"center",gap:8,textAlign:"left",
+                }}>
+                  <span style={{fontSize:"1.1rem"}}>{e}</span>
+                  <div>
+                    <div style={{...bd,fontSize:"0.78rem",fontWeight:700,color:"rgba(240,237,228,0.85)"}}>{l}</div>
+                    <div style={{...bd,fontSize:"0.6rem",color:"rgba(200,150,62,0.45)"}}>{s}</div>
+                  </div>
+                </button>
+              ))}
+            </div>
+
+            {/* County + sign out */}
+            <div style={{padding:"8px 16px 0",display:"flex",flexDirection:"column",gap:8}}>
+              <button onClick={()=>{setShowCountyPicker(true);}} style={{
+                display:"flex",alignItems:"center",gap:8,
+                background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.08)",
+                borderRadius:12,padding:"10px 14px",cursor:"pointer",width:"100%",
+              }}>
+                <span style={{fontSize:"1rem"}}>🗺️</span>
+                <span style={{...bd,fontSize:"0.78rem",color:"rgba(240,237,228,0.6)"}}>
+                  {st?.county?`Co. ${st.county}`:"Select your county"}
+                </span>
+                <span style={{marginLeft:"auto",...bd,fontSize:"0.65rem",color:"rgba(200,150,62,0.4)"}}>✎</span>
+              </button>
+
+              {authUser&&(
+                <button onClick={async()=>{haptic();await sbSignOut();setAuthUser(null);setShowMenu(false);}} style={{
+                  background:"none",border:"none",cursor:"pointer",padding:"8px 14px",
+                  ...bd,fontSize:"0.72rem",color:"rgba(240,237,228,0.25)",textAlign:"left",
+                }}>Sign out · {authUser.email}</button>
+              )}
+
+              <div style={{...bd,fontSize:"0.6rem",color:"rgba(255,255,255,0.12)",textAlign:"center",padding:"6px 0",fontStyle:"italic"}}>
+                "Is fearr Gaeilge briste ná Béarla cliste" · v1.0
+              </div>
+            </div>
+          </div>
+
+          {/* County picker inside menu */}
+          {showCountyPicker&&(
+            <div onClick={e=>{if(e.target===e.currentTarget)setShowCountyPicker(false);}}
+              style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.5)",zIndex:300,display:"flex",flexDirection:"column",justifyContent:"flex-end"}}>
+              <div style={{background:"#0A190B",borderRadius:"24px 24px 0 0",padding:"20px 16px 40px",maxHeight:"70vh",overflow:"auto"}}>
+                <div style={{...hd,fontSize:"1.1rem",color:"#EDE9DF",marginBottom:4}}>Do Chontae · Your County</div>
+                <div style={{...bd,fontSize:"0.7rem",color:"rgba(240,237,228,0.4)",marginBottom:16}}>Personalise your experience</div>
+                {["Ulster","Leinster","Munster","Connacht"].map(prov=>(
+                  <div key={prov} style={{marginBottom:14}}>
+                    <div style={{...bd,fontSize:"0.6rem",color:"rgba(200,150,62,0.5)",letterSpacing:"0.12em",marginBottom:7,fontWeight:700}}>{prov.toUpperCase()}</div>
+                    <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
+                      {COUNTY_LIST.filter(co=>co.province===prov).map(co=>(
+                        <button key={co.en} onClick={async()=>{haptic([10,20]);await save({...st,county:co.en});setShowCountyPicker(false);}} style={{
+                          padding:"5px 12px",borderRadius:20,cursor:"pointer",
+                          background:st?.county===co.en?"#1B4332":"rgba(255,255,255,0.05)",
+                          border:`1px solid ${st?.county===co.en?"rgba(94,196,136,0.5)":"rgba(255,255,255,0.1)"}`,
+                          color:st?.county===co.en?"#5EC488":"rgba(240,237,228,0.55)",
+                          ...bd,fontSize:"0.76rem",
+                        }}>{co.en}</button>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>
