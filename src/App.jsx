@@ -1543,6 +1543,7 @@ export default function App() {
   const [showCountyPicker,setShowCountyPicker]=useState(false);
   const [surnameSearch,setSurnameSearch]=useState("");
   const [showMenu,setShowMenu]=useState(false);
+  const [welcomeTapped,setWelcomeTapped]=useState(false);
   const c = THEMES[theme]||THEMES.coill;
   const dk = c.dark; // keep dk as a convenience boolean for backward compat
 
@@ -1909,7 +1910,8 @@ export default function App() {
 @keyframes glow{0%,100%{box-shadow:4px 4px 0 ${c.ink}}50%{box-shadow:6px 6px 0 ${c.ink}}}
 @keyframes confetti-fall{from{transform:translateY(0) rotate(0deg);opacity:1}to{transform:translateY(110vh) rotate(720deg);opacity:0}}
 @keyframes shamrock-spin{0%{transform:scale(0) rotate(-30deg)}60%{transform:scale(1.2) rotate(8deg)}100%{transform:scale(1) rotate(0deg)}}
-@keyframes slide-up{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slide-up{from{opacity:0;transform:translateY(60px);filter:brightness(0.5)}to{opacity:1;transform:translateY(0);filter:brightness(1)}}
+@keyframes menuGoldEdge{0%{box-shadow:0 -8px 50px rgba(0,0,0,0.6),0 -2px 0 rgba(212,152,60,0.6)}60%{box-shadow:0 -8px 50px rgba(0,0,0,0.6),0 -2px 0 rgba(212,152,60,0.2)}100%{box-shadow:0 -8px 50px rgba(0,0,0,0.6),0 -2px 0 rgba(212,152,60,0)}}
 @keyframes pulse-ring{0%{transform:scale(1);opacity:0.6}100%{transform:scale(1.6);opacity:0}}
 @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-5px)}40%{transform:translateX(5px)}60%{transform:translateX(-3px)}80%{transform:translateX(3px)}}
 @keyframes correctPop{0%{transform:scale(1)}50%{transform:scale(1.04)}100%{transform:scale(1)}}
@@ -4034,246 +4036,156 @@ body{background:${c.bg}}
   // WELCOME SCREEN
   // ═══════════════════════════════
   if(view==="welcome"){
-  const goHome=async()=>{
-    haptic([10,20,10]);
+  const onTap=async()=>{
+    if(welcomeTapped)return;
+    haptic([8,20,8,20,30]);
+    setWelcomeTapped(true);
     await save({...st,seenWelcome:true});
-    setView("home");
+    setTimeout(()=>{setView("home");setShowMenu(true);setWelcomeTapped(false);},900);
   };
-  const isReturning=(st?.done||[]).length>0;
+  // 12 sparks at evenly distributed angles
+  const SPARKS=Array.from({length:12},(_,i)=>i*30);
   return(
-    <div className="af" style={{
+    <div onClick={onTap} style={{
       minHeight:"100vh",
-      background:"linear-gradient(160deg,#020704 0%,#071208 40%,#0a1a0c 70%,#040a05 100%)",
-      display:"flex",flexDirection:"column",overflow:"hidden",position:"relative",color:"#EDE9DF",
+      background:`linear-gradient(160deg,#020704 0%,#071208 45%,#0a1a0c 75%,#040a05 100%)`,
+      display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",
+      overflow:"hidden",position:"relative",color:"#EDE9DF",cursor:"pointer",userSelect:"none",
+      transition:"opacity 0.4s ease",
+      opacity:welcomeTapped?0:1,
     }}>
       <style>{css}{`
-        @keyframes wFadeUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
-        @keyframes wFloat{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-10px) rotate(2deg)}}
-        @keyframes wGlow{0%,100%{opacity:0.35;transform:scale(1)}50%{opacity:0.7;transform:scale(1.08)}}
-        @keyframes wRing{0%{transform:scale(0.8);opacity:0.7}100%{transform:scale(1.8);opacity:0}}
+        @keyframes wSpin{0%{transform:rotate(0deg) scale(0.4);opacity:0}60%{transform:rotate(380deg) scale(1.12);opacity:1}80%{transform:rotate(355deg) scale(0.97)}100%{transform:rotate(360deg) scale(1);opacity:1}}
+        @keyframes wRingOut{0%{transform:scale(0.85);opacity:0.8}100%{transform:scale(2.2);opacity:0}}
+        @keyframes wLogoFloat{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-8px) scale(1.03)}}
+        @keyframes wGlowPulse{0%,100%{opacity:0.25;transform:scale(1)}50%{opacity:0.55;transform:scale(1.12)}}
         @keyframes wShimmer{0%{background-position:200% center}100%{background-position:-200% center}}
-        @keyframes wSpin{0%{transform:rotate(0deg) scale(0.5);opacity:0}60%{transform:rotate(380deg) scale(1.15);opacity:1}80%{transform:rotate(355deg) scale(0.95)}100%{transform:rotate(360deg) scale(1);opacity:1}}
-        .w1{animation:wFadeUp 0.6s 0.3s ease both}
-        .w2{animation:wFadeUp 0.6s 0.5s ease both}
-        .w3{animation:wFadeUp 0.6s 0.7s ease both}
-        .w4{animation:wFadeUp 0.6s 0.85s ease both}
-        .w5{animation:wFadeUp 0.6s 1.0s ease both}
-        .w6{animation:wFadeUp 0.6s 1.15s ease both}
-        .w7{animation:wFadeUp 0.6s 1.3s ease both}
+        @keyframes wFadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+        @keyframes wTapHint{0%,100%{opacity:0.3}50%{opacity:0.75}}
+        @keyframes wLogoBurst{0%{transform:scale(1)}30%{transform:scale(1.22)}60%{transform:scale(0.92)}100%{transform:scale(1.05)}}
+        @keyframes wSparkFly{0%{transform:translateY(0) scale(1);opacity:1}100%{transform:translateY(-110px) scale(0.1);opacity:0}}
+        @keyframes wSparkStar{0%{transform:rotate(0deg) scale(0);opacity:0}20%{opacity:1;transform:rotate(180deg) scale(1)}100%{transform:rotate(720deg) scale(0);opacity:0}}
+        @keyframes wGoldFlash{0%{opacity:0}20%{opacity:0.35}100%{opacity:0}}
+        .wlogo{animation:wSpin 1.3s cubic-bezier(0.34,1.56,0.64,1) both,wLogoFloat 3s 1.8s ease-in-out infinite}
+        .wlogoburst{animation:wLogoBurst 0.5s ease both!important}
+        .wring1{animation:wRingOut 2.2s 1.4s ease-out infinite}
+        .wring2{animation:wRingOut 2.2s 1.9s ease-out infinite}
+        .wring3{animation:wRingOut 2.2s 2.4s ease-out infinite}
+        .wtitle{animation:wFadeUp 0.7s 0.8s ease both}
+        .wsub{animation:wFadeUp 0.6s 1.1s ease both}
+        .wtap{animation:wFadeUp 0.6s 1.6s ease both,wTapHint 1.8s 2.2s ease-in-out infinite}
       `}</style>
 
-      {/* Celtic diamond overlay */}
-      <div style={{position:"absolute",inset:0,pointerEvents:"none",opacity:0.7,
-        backgroundImage:`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='44'%3E%3Cpath d='M22 2 L42 22 L22 42 L2 22 Z' fill='none' stroke='rgba(200,150,62,0.06)' stroke-width='0.6'/%3E%3C/svg%3E")`,
-        backgroundSize:"44px 44px"}}/>
+      {/* Celtic diamond bg */}
+      <div style={{position:"absolute",inset:0,pointerEvents:"none",
+        backgroundImage:`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48'%3E%3Cpath d='M24 3 L45 24 L24 45 L3 24 Z' fill='none' stroke='rgba(200,150,62,0.055)' stroke-width='0.7'/%3E%3C/svg%3E")`,
+        backgroundSize:"48px 48px"}}/>
 
-      {/* Top ambient glow */}
-      <div style={{position:"absolute",width:"90%",height:"45%",
-        background:"radial-gradient(ellipse,rgba(200,150,62,0.1) 0%,transparent 68%)",
-        top:"-10%",left:"5%",pointerEvents:"none",animation:"wGlow 4s ease-in-out infinite"}}/>
+      {/* Gold flash on tap */}
+      {welcomeTapped&&(
+        <div style={{
+          position:"absolute",inset:0,
+          background:"radial-gradient(ellipse at 50% 42%,rgba(212,152,60,0.38) 0%,rgba(212,152,60,0.1) 40%,transparent 70%)",
+          animation:"wGoldFlash 0.9s ease both",pointerEvents:"none",zIndex:10,
+        }}/>
+      )}
 
-      {/* Bottom green glow */}
-      <div style={{position:"absolute",width:"60%",height:"30%",
-        background:"radial-gradient(ellipse,rgba(45,106,79,0.18) 0%,transparent 70%)",
-        bottom:0,left:"20%",pointerEvents:"none"}}/>
-
-      {/* Main content */}
-      <div style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",padding:"32px 24px 24px",position:"relative",zIndex:1,overflowY:"auto"}}>
-
-        {/* Shamrock + pulse rings */}
-        <div style={{position:"relative",marginBottom:22,marginTop:8}}>
-          <div style={{position:"absolute",inset:"-20px",borderRadius:"50%",border:"1px solid rgba(200,150,62,0.3)",animation:"wRing 2s 0.5s ease-out infinite"}}/>
-          <div style={{position:"absolute",inset:"-10px",borderRadius:"50%",border:"1px solid rgba(200,150,62,0.2)",animation:"wRing 2s 1s ease-out infinite"}}/>
-          <div style={{
-            width:88,height:88,borderRadius:"50%",
-            background:"radial-gradient(ellipse at 38% 35%,rgba(45,106,79,0.95) 0%,rgba(8,20,10,0.97) 65%)",
-            border:"2px solid rgba(200,150,62,0.5)",
-            display:"flex",alignItems:"center",justifyContent:"center",
-            fontSize:"3rem",
-            boxShadow:"0 12px 50px rgba(0,0,0,0.6),0 0 60px rgba(200,150,62,0.15)",
-            animation:"wSpin 1.2s cubic-bezier(0.34,1.56,0.64,1) both",
-          }}>☘️</div>
-        </div>
-
-        {/* Title */}
-        <div className="w1" style={{
-          fontFamily:"'Playfair Display',Georgia,serif",
-          fontSize:"2.8rem",fontWeight:900,
-          background:"linear-gradient(135deg,#F0EDE4 0%,#D4983C 50%,#F0EDE4 100%)",
-          backgroundSize:"200% auto",
-          WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",
-          letterSpacing:"-0.03em",lineHeight:1.05,
-          textAlign:"center",marginBottom:6,
-          animation:"wFadeUp 0.6s 0.3s ease both, wShimmer 4s 2s linear infinite",
-        }}>
-          Gaeltacht<br/>Connect
-        </div>
-
-        <div className="w2" style={{fontFamily:"'Lato',sans-serif",fontSize:"0.72rem",color:"rgba(200,150,62,0.75)",letterSpacing:"0.3em",textTransform:"uppercase",fontWeight:700,marginBottom:3}}>
-          An Ghaeilge Bheo
-        </div>
-        <div className="w2" style={{fontFamily:"'Lato',sans-serif",fontSize:"0.7rem",color:"rgba(240,237,228,0.32)",letterSpacing:"0.08em",marginBottom:28,fontStyle:"italic"}}>
-          The Living Irish
-        </div>
-
-        {/* Divider */}
-        <div className="w3" style={{display:"flex",alignItems:"center",gap:12,width:"100%",maxWidth:300,marginBottom:28}}>
-          <div style={{flex:1,height:"1px",background:"linear-gradient(90deg,transparent,rgba(200,150,62,0.4))"}}/>
-          <span style={{color:"rgba(200,150,62,0.6)",fontSize:"0.75rem",letterSpacing:"0.1em"}}>✦ ✦ ✦</span>
-          <div style={{flex:1,height:"1px",background:"linear-gradient(90deg,rgba(200,150,62,0.4),transparent)"}}/>
-        </div>
-
-        {/* If returning user: show progress pill */}
-        {isReturning&&(
-          <div className="w3" style={{
-            display:"flex",alignItems:"center",gap:10,
-            background:"rgba(212,152,60,0.08)",border:"1px solid rgba(212,152,60,0.25)",
-            borderRadius:20,padding:"6px 16px",marginBottom:20,
-          }}>
-            <span style={{fontSize:"0.9rem"}}>🔥</span>
-            <span style={{fontFamily:"'Lato',sans-serif",fontSize:"0.75rem",color:"rgba(212,152,60,0.9)",fontWeight:700}}>
-              {st?.streak||0} day streak · Lá {(st?.done||[]).length}/60 · L{Math.floor((st?.xp||0)/100)+1}
-            </span>
-          </div>
-        )}
-
-        {/* Main CTA */}
-        <div className="w4" style={{width:"100%",maxWidth:340,marginBottom:12}}>
-          <button onClick={goHome} style={{
-            width:"100%",padding:"17px 20px",border:"none",cursor:"pointer",
-            background:"linear-gradient(135deg,#2D6A4F 0%,#1B4332 60%,#2D6A4F 100%)",
-            backgroundSize:"200% auto",
-            borderRadius:16,
-            display:"flex",alignItems:"center",justifyContent:"space-between",
-            boxShadow:"0 8px 32px rgba(27,67,50,0.6),0 2px 8px rgba(0,0,0,0.3)",
-            animation:"breathe 2.5s 1.5s ease infinite",
-          }}>
-            <div style={{textAlign:"left"}}>
-              <div style={{fontFamily:"'Lato',sans-serif",fontSize:"1.05rem",fontWeight:800,color:"#fff",letterSpacing:"0.01em"}}>
-                {isReturning?"Lean ar aghaidh · Continue →":"Tosaigh · Begin your journey"}
-              </div>
-              <div style={{fontFamily:"'Lato',sans-serif",fontSize:"0.65rem",color:"rgba(255,255,255,0.5)",marginTop:2}}>
-                {isReturning?`Day ${Math.min((st?.done||[]).length+1,60)} is waiting`:"60 days · real Irish · no fluff"}
-              </div>
-            </div>
-            <span style={{fontSize:"1.6rem",opacity:0.7}}>▶</span>
-          </button>
-        </div>
-
-        {/* Mode grid */}
-        <div className="w5" style={{width:"100%",maxWidth:340,display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:12}}>
-          {[
-            {e:"🍺",l:"Pub Mode",s:"Mód an Tabhairne",a:()=>{haptic([10,20,10]);setPubIdx(0);setPubFlipped(false);save({...st,seenWelcome:true});setView("pub");}},
-            {e:"📖",l:"Dictionary",s:"Foclóir",a:()=>{haptic();save({...st,seenWelcome:true});setView("dict");}},
-            {e:"🗺️",l:"Map",s:"Léarscáil",a:()=>{haptic();save({...st,seenWelcome:true});setView("map");}},
-            {e:"🏷️",l:"Surnames",s:"Sloinnte",a:()=>{haptic();setSurnameSearch("");save({...st,seenWelcome:true});setView("surnames");}},
-          ].map(({e,l,s,a},i)=>(
-            <button key={i} onClick={a} style={{
-              padding:"12px 10px",
-              background:"rgba(255,255,255,0.03)",
-              border:"1px solid rgba(200,150,62,0.14)",
-              borderRadius:14,cursor:"pointer",
-              display:"flex",alignItems:"center",gap:8,textAlign:"left",
-              transition:"border-color 0.2s,background 0.2s",
+      {/* Gold sparks burst */}
+      {welcomeTapped&&(
+        <div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"center",pointerEvents:"none",zIndex:11}}>
+          {SPARKS.map((deg,i)=>(
+            <div key={i} style={{
+              position:"absolute",
+              transform:`rotate(${deg}deg)`,
+              width:2,height:2,
             }}>
-              <span style={{fontSize:"1.2rem"}}>{e}</span>
-              <div>
-                <div style={{fontFamily:"'Lato',sans-serif",fontSize:"0.8rem",fontWeight:700,color:"rgba(240,237,228,0.85)"}}>{l}</div>
-                <div style={{fontFamily:"'Lato',sans-serif",fontSize:"0.6rem",color:"rgba(200,150,62,0.5)"}}>{s}</div>
-              </div>
-            </button>
+              <div style={{
+                position:"absolute",
+                top:-55,left:-1,
+                width:i%3===0?6:i%3===1?4:3,
+                height:i%3===0?6:i%3===1?4:3,
+                borderRadius:i%4===0?"50%":"2px",
+                background:i%3===0?"#F0C040":i%3===1?"#D4983C":"#FFE08A",
+                boxShadow:`0 0 ${i%3===0?8:5}px ${i%3===0?"#F0C040":"#D4983C"}`,
+                animation:`wSparkFly 0.8s ${i*0.035}s cubic-bezier(0.2,0.8,0.4,1) both`,
+              }}/>
+            </div>
+          ))}
+          {/* Extra mini star sparks */}
+          {[0,45,90,135,180,225,270,315].map((deg,i)=>(
+            <div key={"s"+i} style={{position:"absolute",transform:`rotate(${deg}deg)`,width:0,height:0}}>
+              <div style={{
+                position:"absolute",top:-80,left:-2,
+                fontSize:"0.6rem",color:"#D4983C",
+                animation:`wSparkStar 0.7s ${0.05+i*0.04}s ease both`,
+                filter:"drop-shadow(0 0 4px #D4983C)",
+              }}>✦</div>
+            </div>
           ))}
         </div>
+      )}
 
-        {/* Bottom row: Settings + Account */}
-        <div className="w6" style={{width:"100%",maxWidth:340,display:"flex",gap:8,marginBottom:16}}>
-          <button onClick={()=>{haptic();save({...st,seenWelcome:true});setView("settings");}} style={{
-            flex:1,padding:"11px 12px",
-            background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.09)",
-            borderRadius:13,cursor:"pointer",display:"flex",alignItems:"center",gap:8,
-          }}>
-            <span style={{fontSize:"1.1rem"}}>⚙️</span>
-            <div style={{textAlign:"left"}}>
-              <div style={{fontFamily:"'Lato',sans-serif",fontSize:"0.78rem",fontWeight:700,color:"rgba(240,237,228,0.75)"}}>Socruithe</div>
-              <div style={{fontFamily:"'Lato',sans-serif",fontSize:"0.6rem",color:"rgba(255,255,255,0.3)"}}>Settings</div>
-            </div>
-          </button>
-          <button onClick={()=>{haptic();setShowAuth(true);}} style={{
-            flex:1,padding:"11px 12px",
-            background:authUser?"rgba(212,152,60,0.08)":"rgba(255,255,255,0.03)",
-            border:`1px solid ${authUser?"rgba(212,152,60,0.25)":"rgba(255,255,255,0.09)"}`,
-            borderRadius:13,cursor:"pointer",display:"flex",alignItems:"center",gap:8,
-          }}>
-            <span style={{fontSize:"1.1rem"}}>{authUser?"✅":"👤"}</span>
-            <div style={{textAlign:"left"}}>
-              <div style={{fontFamily:"'Lato',sans-serif",fontSize:"0.78rem",fontWeight:700,color:authUser?"#D4983C":"rgba(240,237,228,0.75)"}}>
-                {authUser?authUser.email?.split("@")[0]||"Cuntas":"Cuntas"}
-              </div>
-              <div style={{fontFamily:"'Lato',sans-serif",fontSize:"0.6rem",color:"rgba(255,255,255,0.3)"}}>
-                {authUser?"Signed in":"Login / Register"}
-              </div>
-            </div>
-          </button>
-        </div>
+      {/* Ambient glow */}
+      <div style={{position:"absolute",width:"70vw",height:"70vw",maxWidth:360,maxHeight:360,
+        background:"radial-gradient(ellipse,rgba(212,152,60,0.11) 0%,rgba(45,106,79,0.07) 45%,transparent 70%)",
+        borderRadius:"50%",animation:"wGlowPulse 3.5s ease-in-out infinite",pointerEvents:"none"}}/>
 
-        {/* Fine print */}
-        <div className="w7" style={{fontFamily:"'Lato',sans-serif",fontSize:"0.6rem",color:"rgba(240,237,228,0.18)",textAlign:"center",lineHeight:1.7,fontStyle:"italic"}}>
-          "Is fearr Gaeilge briste ná Béarla cliste"<br/>
-          v1.0 · Built in Ireland · gaeltachtconnect.com
-        </div>
+      {/* Logo + rings */}
+      <div style={{position:"relative",display:"flex",alignItems:"center",justifyContent:"center",marginBottom:32}}>
+        <div className="wring1" style={{position:"absolute",width:110,height:110,borderRadius:"50%",border:"1.5px solid rgba(212,152,60,0.5)",pointerEvents:"none"}}/>
+        <div className="wring2" style={{position:"absolute",width:110,height:110,borderRadius:"50%",border:"1px solid rgba(212,152,60,0.35)",pointerEvents:"none"}}/>
+        <div className="wring3" style={{position:"absolute",width:110,height:110,borderRadius:"50%",border:"0.5px solid rgba(212,152,60,0.2)",pointerEvents:"none"}}/>
+        <div className={welcomeTapped?"wlogoburst":"wlogo"} style={{
+          width:110,height:110,borderRadius:"50%",
+          background:"radial-gradient(ellipse at 38% 35%,rgba(45,106,79,0.97) 0%,rgba(6,14,8,0.99) 68%)",
+          border:"2px solid rgba(212,152,60,0.55)",
+          display:"flex",alignItems:"center",justifyContent:"center",
+          fontSize:"3.6rem",lineHeight:1,
+          boxShadow:welcomeTapped
+            ?"0 0 0 8px rgba(212,152,60,0.25),0 20px 80px rgba(0,0,0,0.8),0 0 120px rgba(212,152,60,0.5)"
+            :"0 16px 60px rgba(0,0,0,0.7),0 0 80px rgba(212,152,60,0.18),inset 0 1px 0 rgba(255,255,255,0.06)",
+          transition:"box-shadow 0.2s ease",
+        }}>☘️</div>
       </div>
 
-      {/* Auth modal on welcome screen */}
-      {showAuth&&(
-        <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.72)",zIndex:300,display:"flex",alignItems:"flex-end",justifyContent:"center"}}
-          onClick={e=>{if(e.target===e.currentTarget){setShowAuth(false);setAuthErr("");}}}>
-          <div style={{background:"#0A190B",border:"1px solid rgba(200,150,62,0.2)",borderRadius:"24px 24px 0 0",padding:"28px 24px 44px",width:"100%",maxWidth:480,animation:"slide-up 0.3s ease"}}>
-            {authUser?(
-              <div style={{textAlign:"center"}}>
-                <div style={{fontSize:"2rem",marginBottom:8}}>✅</div>
-                <div style={{fontFamily:"'Playfair Display',serif",fontSize:"1.2rem",color:"#D4983C",marginBottom:4}}>Signed in</div>
-                <div style={{fontFamily:"'Lato',sans-serif",fontSize:"0.8rem",color:"rgba(240,237,228,0.5)",marginBottom:20}}>{authUser.email}</div>
-                <button onClick={async()=>{await sbSignOut();setAuthUser(null);setShowAuth(false);}} style={{width:"100%",padding:"12px",background:"none",border:"1px solid rgba(255,255,255,0.1)",borderRadius:12,color:"rgba(240,237,228,0.4)",fontFamily:"'Lato',sans-serif",fontSize:"0.85rem",cursor:"pointer"}}>Sign out</button>
-              </div>
-            ):(
-              <>
-                <div style={{fontFamily:"'Playfair Display',serif",fontSize:"1.3rem",color:"#F0EDE4",marginBottom:4,textAlign:"center"}}>{authMode==="in"?"Fáilte ar ais":"Cláraigh"}</div>
-                <div style={{fontFamily:"'Lato',sans-serif",fontSize:"0.75rem",color:"rgba(240,237,228,0.4)",marginBottom:20,textAlign:"center"}}>{authMode==="in"?"Sign in to sync your progress":"Save your progress to the cloud"}</div>
-                <input type="email" placeholder="Email" value={authEmail} onChange={e=>setAuthEmail(e.target.value)}
-                  style={{width:"100%",padding:"12px 14px",borderRadius:10,border:"1px solid rgba(200,150,62,0.2)",background:"rgba(255,255,255,0.04)",color:"#EDE9DF",fontFamily:"'Lato',sans-serif",fontSize:"0.9rem",marginBottom:10,boxSizing:"border-box",outline:"none"}}/>
-                <input type="password" placeholder="Password (min 6 chars)" value={authPwd} onChange={e=>setAuthPwd(e.target.value)}
-                  style={{width:"100%",padding:"12px 14px",borderRadius:10,border:"1px solid rgba(200,150,62,0.2)",background:"rgba(255,255,255,0.04)",color:"#EDE9DF",fontFamily:"'Lato',sans-serif",fontSize:"0.9rem",marginBottom:authErr?"10px":"16px",boxSizing:"border-box",outline:"none"}}/>
-                {authErr&&<div style={{fontFamily:"'Lato',sans-serif",fontSize:"0.75rem",color:"#E05252",marginBottom:12}}>{authErr}</div>}
-                <button disabled={authLoading||!authEmail||authPwd.length<6} onClick={async()=>{
-                  setAuthLoading(true);setAuthErr("");
-                  const d=await sbAuth(authEmail,authPwd,authMode==="up");
-                  setAuthLoading(false);
-                  if(d.error){setAuthErr(d.error.message||"Something went wrong");}
-                  else{
-                    const user=await sbGetUser();
-                    if(user){
-                      setAuthUser(user);
-                      const cloud=user.user_metadata?.progress;
-                      if(cloud&&st){const merged=mergeProgress(st,cloud);await save({...merged,seenWelcome:true});}
-                      else if(st){await save({...st,seenWelcome:true});sbSyncProgress({...st,seenWelcome:true});}
-                    }
-                    setShowAuth(false);setAuthEmail("");setAuthPwd("");
-                  }
-                }} style={{
-                  width:"100%",padding:"14px",borderRadius:12,border:"none",
-                  background:authLoading||!authEmail||authPwd.length<6?"rgba(255,255,255,0.08)":"#D4983C",
-                  color:authLoading||!authEmail||authPwd.length<6?"rgba(255,255,255,0.3)":"#111",
-                  fontFamily:"'Lato',sans-serif",fontWeight:800,fontSize:"0.95rem",
-                  cursor:authLoading||!authEmail||authPwd.length<6?"not-allowed":"pointer",marginBottom:12,
-                }}>{authLoading?"...":(authMode==="in"?"Sínigh isteach · Sign In":"Cláraigh · Register")}</button>
-                <button onClick={()=>{setAuthMode(authMode==="in"?"up":"in");setAuthErr("");}} style={{width:"100%",padding:"10px",background:"none",border:"none",color:"rgba(240,237,228,0.35)",fontFamily:"'Lato',sans-serif",fontSize:"0.8rem",cursor:"pointer"}}>
-                  {authMode==="in"?"No account? Register →":"Have an account? Sign in →"}
-                </button>
-              </>
-            )}
-          </div>
-        </div>
-      )}
+      {/* Title */}
+      <div className="wtitle" style={{
+        fontFamily:"'Playfair Display',Georgia,serif",
+        fontSize:"2.6rem",fontWeight:900,
+        background:"linear-gradient(135deg,#F4F0E6 0%,#D4983C 45%,#F4F0E6 100%)",
+        backgroundSize:"200% auto",
+        WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",
+        letterSpacing:"-0.03em",lineHeight:1.06,
+        textAlign:"center",marginBottom:8,
+        animation:"wFadeUp 0.7s 0.8s ease both, wShimmer 5s 2.5s linear infinite",
+      }}>
+        Gaeltacht<br/>Connect
+      </div>
+
+      <div className="wsub" style={{
+        fontFamily:"'Lato',sans-serif",fontSize:"0.72rem",
+        color:"rgba(212,152,60,0.7)",letterSpacing:"0.32em",textTransform:"uppercase",fontWeight:700,
+        marginBottom:6,textAlign:"center",
+      }}>An Ghaeilge Bheo</div>
+      <div className="wsub" style={{
+        fontFamily:"'Lato',sans-serif",fontSize:"0.68rem",
+        color:"rgba(240,237,228,0.28)",letterSpacing:"0.06em",fontStyle:"italic",
+        textAlign:"center",marginBottom:48,
+      }}>The Living Irish</div>
+
+      {/* Tap hint */}
+      <div className="wtap" style={{
+        fontFamily:"'Lato',sans-serif",fontSize:"0.7rem",
+        color:"rgba(212,152,60,0.5)",letterSpacing:"0.2em",textTransform:"uppercase",
+        display:"flex",flexDirection:"column",alignItems:"center",gap:8,
+      }}>
+        <div style={{
+          width:36,height:36,border:"1.5px solid rgba(212,152,60,0.38)",borderRadius:"50%",
+          display:"flex",alignItems:"center",justifyContent:"center",fontSize:"1rem",
+          background:"rgba(212,152,60,0.05)",
+        }}>☝️</div>
+        Tap to enter
+      </div>
     </div>
   );
 }
@@ -4924,8 +4836,7 @@ body{background:${c.bg}}
             borderRadius:"24px 24px 0 0",
             padding:"8px 0 40px",
             maxHeight:"88vh",overflow:"auto",
-            boxShadow:"0 -8px 50px rgba(0,0,0,0.6)",
-            animation:"slide-up 0.3s ease",
+            animation:"slide-up 0.45s cubic-bezier(0.22,1,0.36,1),menuGoldEdge 1.2s ease both",
           }}>
             {/* Handle */}
             <div style={{display:"flex",justifyContent:"center",padding:"8px 0 16px"}}>
