@@ -1560,7 +1560,7 @@ export default function App() {
   },[]);
 
   useEffect(()=>{(async()=>{
-    const [s]=await Promise.all([loadS(),new Promise(r=>setTimeout(r,1700))]);
+    const [s]=await Promise.all([loadS()]);
     if(s){
       setSt(s);
       if(s.theme&&THEMES[s.theme])setTheme(s.theme);
@@ -1804,89 +1804,7 @@ export default function App() {
     setView("home");setSelDay(null);
   };
 
-  if(loading) return (
-    <div style={{
-      background:"linear-gradient(160deg,#050e07 0%,#0b1e10 40%,#060e08 100%)",
-      display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",
-      position:"fixed",inset:0,overflow:"hidden",
-    }}>
-      <style>{`
-        @keyframes shamrockIn{0%{transform:scale(0) rotate(-20deg);opacity:0}65%{transform:scale(1.2) rotate(6deg);opacity:1}100%{transform:scale(1) rotate(0deg);opacity:1}}
-        @keyframes fadeUpIn{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
-        @keyframes goldPulse{0%,100%{box-shadow:0 0 40px rgba(200,150,62,0.2),0 16px 60px rgba(0,0,0,0.6)}50%{box-shadow:0 0 80px rgba(200,150,62,0.45),0 16px 60px rgba(0,0,0,0.6)}}
-        @keyframes barFill{from{width:0}to{width:100%}}
-        @keyframes glowRing{0%,100%{opacity:0.15;transform:scale(1)}50%{opacity:0.35;transform:scale(1.05)}}
-        .sp-sh{animation:shamrockIn 1s cubic-bezier(0.34,1.56,0.64,1) both}
-        .sp-t1{animation:fadeUpIn 0.7s 0.6s ease both;opacity:0}
-        .sp-t2{animation:fadeUpIn 0.6s 0.9s ease both;opacity:0}
-        .sp-t3{animation:fadeUpIn 0.6s 1.05s ease both;opacity:0}
-        .sp-dv{animation:fadeUpIn 0.5s 1.2s ease both;opacity:0}
-        .sp-bar{animation:fadeUpIn 0.4s 1.35s ease both,barFill 0.9s 1.55s ease both;opacity:0;width:0}
-        body{background:#060d08}
-      `}</style>
-
-      {/* ambient glow */}
-      <div style={{position:"absolute",width:500,height:500,borderRadius:"50%",
-        background:"radial-gradient(ellipse,rgba(45,106,79,0.18) 0%,transparent 70%)",
-        top:"50%",left:"50%",transform:"translate(-50%,-60%)",pointerEvents:"none",
-        animation:"glowRing 3s ease-in-out infinite"}}/>
-
-      <div className="sp-sh" style={{
-        width:100,height:100,borderRadius:32,
-        background:"linear-gradient(145deg,#0E2A1C,#1B4332)",
-        border:"2px solid rgba(200,150,62,0.4)",
-        animation:"shamrockIn 1s cubic-bezier(0.34,1.56,0.64,1) both, goldPulse 2.5s 1s ease-in-out infinite",
-        display:"flex",alignItems:"center",justifyContent:"center",
-        fontSize:"3.2rem",marginBottom:32,
-        boxShadow:"0 20px 60px rgba(0,0,0,0.6)",
-      }}>☘️</div>
-
-      <div className="sp-t1" style={{
-        fontFamily:"'Playfair Display',Georgia,serif",
-        fontSize:"2.5rem",fontWeight:900,color:"#F0EDE4",
-        letterSpacing:"-0.03em",lineHeight:1,marginBottom:8,textAlign:"center",
-      }}>Gaeltacht Connect</div>
-
-      <div className="sp-t2" style={{
-        fontFamily:"'Lato',system-ui,sans-serif",
-        fontSize:"0.62rem",color:"rgba(200,150,62,0.85)",
-        letterSpacing:"0.28em",textTransform:"uppercase",fontWeight:700,
-        marginBottom:6,
-      }}>An Ghaeilge Bheo</div>
-
-      <div className="sp-t3" style={{
-        fontFamily:"'Lato',system-ui,sans-serif",
-        fontSize:"0.72rem",color:"rgba(240,237,228,0.4)",
-        letterSpacing:"0.04em",fontWeight:400,
-        marginBottom:36,textAlign:"center",
-      }}>The Living Irish</div>
-
-      <div className="sp-dv" style={{display:"flex",alignItems:"center",gap:12,width:220,marginBottom:24}}>
-        <div style={{flex:1,height:1,background:"linear-gradient(90deg,transparent,rgba(200,150,62,0.4))"}}/>
-        <div style={{color:"rgba(200,150,62,0.6)",fontSize:"0.7rem",letterSpacing:"0.1em"}}>✦</div>
-        <div style={{flex:1,height:1,background:"linear-gradient(90deg,rgba(200,150,62,0.4),transparent)"}}/>
-      </div>
-
-      {/* Word of the Day */}
-      {(()=>{const w=getWordOfDay(VOCAB,new Date());return(
-        <div className="sp-dv" style={{
-          background:"rgba(200,150,62,0.06)",border:"1px solid rgba(200,150,62,0.18)",
-          borderRadius:14,padding:"12px 20px",marginBottom:24,textAlign:"center",width:220,
-        }}>
-          <div style={{fontFamily:"'Lato',sans-serif",fontSize:"0.62rem",color:"rgba(200,150,62,0.6)",letterSpacing:"0.2em",textTransform:"uppercase",marginBottom:6}}>Focal an Lae</div>
-          <div style={{display:"flex",alignItems:"baseline",gap:8,justifyContent:"center",marginBottom:3}}>
-            <span style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:"1.3rem",fontWeight:700,color:"#D4983C",fontStyle:"italic"}}>{w.p}</span>
-            <span style={{fontFamily:"'Lato',sans-serif",fontSize:"0.65rem",color:"rgba(200,150,62,0.45)"}}>/{ w.pr}/</span>
-          </div>
-          <div style={{fontFamily:"'Lato',sans-serif",fontSize:"0.72rem",color:"rgba(240,237,228,0.55)"}}>{w.m}</div>
-        </div>
-      );})()}
-
-      <div style={{width:140,height:2,background:"rgba(255,255,255,0.06)",borderRadius:2,overflow:"hidden"}}>
-        <div className="sp-bar" style={{height:"100%",background:"linear-gradient(90deg,rgba(45,106,79,0.8),rgba(200,150,62,0.8))",borderRadius:2}}/>
-      </div>
-    </div>
-  );
+  if(loading) return <div style={{background:"#030905",position:"fixed",inset:0}}/>;
   if(!st)return null;
 
   const total=(st.done||[]).length;
