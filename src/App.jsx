@@ -1488,7 +1488,7 @@ const SURNAMES = [
 export default function App() {
   const [st,setSt]=useState(null);
   const [loading,setLoading]=useState(true);
-  const [view,setView]=useState("home");
+  const [view,setView]=useState("loading");
   const [selDay,setSelDay]=useState(null);
   const [celeb,setCeleb]=useState(null);
   const [theme,setTheme]=useState("coill");
@@ -1560,17 +1560,18 @@ export default function App() {
   },[]);
 
   useEffect(()=>{(async()=>{
-    const [s]=await Promise.all([loadS()]);
+    const s=await loadS();
     if(s){
       setSt(s);
       if(s.theme&&THEMES[s.theme])setTheme(s.theme);
-      if(!s.seenWelcome) setView("welcome");
     }
     else{
       const i={done:[],bonus:[],tasksDone:[],streak:0,best:0,theme:"coill",onboarded:true,started:new Date().toISOString(),dailyLog:{},county:null,notifEnabled:false,lastCompletedDate:null,shieldCount:1,shieldWeek:null,seenWelcome:false};
       await saveS(i);setSt(i);
     }
     setLoading(false);
+    setView("welcome");
+    setWelcomeTapped(false);
     // Fetch community count in background
     sbGetCount(todayKey()).then(n=>{if(n!==null)setCommunityCount(n);});
   })()},[]);
@@ -1804,7 +1805,7 @@ export default function App() {
     setView("home");setSelDay(null);
   };
 
-  if(loading) return <div style={{background:"#030905",position:"fixed",inset:0}}/>;
+  if(loading||view==="loading") return <div style={{background:"#030905",position:"fixed",inset:0}}/>;
   if(!st)return null;
 
   const total=(st.done||[]).length;
@@ -3963,14 +3964,12 @@ body{background:${c.bg}}
     haptic([8,20,8,20,30]);
     setWelcomeTapped(true);
   };
-  const goPlay=async()=>{
+  const goPlay=()=>{
     haptic([10,30,10]);
-    await save({...st,seenWelcome:true});
     setView("home");
   };
-  const goMode=async(v)=>{
+  const goMode=(v)=>{
     haptic([8,20]);
-    await save({...st,seenWelcome:true});
     if(v==="pub"){setPubIdx(0);setPubFlipped(false);}
     if(v==="surnames")setSurnameSearch("");
     setView(v);
@@ -4213,7 +4212,7 @@ body{background:${c.bg}}
 
           {/* Settings */}
           <div className="wm4" style={{width:"100%",marginBottom:20}}>
-            <button onClick={async()=>{haptic();await save({...st,seenWelcome:true});setView("settings");}} style={{
+            <button onClick={()=>{haptic();setView("settings");}} style={{
               width:"100%",padding:"12px 14px",
               background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.08)",
               borderRadius:13,cursor:"pointer",display:"flex",alignItems:"center",gap:10,
