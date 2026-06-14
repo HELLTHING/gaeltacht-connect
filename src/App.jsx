@@ -2510,8 +2510,6 @@ export default function App() {
 
   const doComplete=async(d)=>{
     if(!st||st.done.includes(d))return;
-    // Daily lock: one challenge per calendar day (first challenge exempt so new users aren't blocked)
-    if((st.done||[]).length>0&&st.lastCompletedDate===todayKey())return;
     const nd=[...st.done,d];const k=calcStreak(nd);
     await save({...st,done:nd,streak:k,best:Math.max(k,st.best||0),lastCompletedDate:todayKey()});
     setCeleb("day");
