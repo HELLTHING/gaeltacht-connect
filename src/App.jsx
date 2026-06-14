@@ -4080,7 +4080,21 @@ body{background:${c.bg}}
       {!welcomeTapped?(
         <div onClick={onSplashTap} style={{display:"flex",flexDirection:"column",alignItems:"center",cursor:"pointer",paddingBottom:40}}>
           {/* Logo */}
-          <div style={{marginBottom:26}}>
+          <div style={{position:"relative",display:"flex",alignItems:"center",justifyContent:"center",marginBottom:26}}>
+            {/* Triquetra — three-arc Celtic knot behind logo */}
+            <svg width="180" height="180" viewBox="-90 -90 180 180"
+              style={{position:"absolute",pointerEvents:"none",opacity:1}} aria-hidden="true">
+              {/* outer ring */}
+              <circle cx="0" cy="0" r="72" fill="none" stroke="rgba(212,152,60,0.10)" strokeWidth="0.5"/>
+              {/* triquetra arcs — three interlocked vesica piscis */}
+              <g fill="none" stroke="rgba(212,152,60,0.32)" strokeWidth="1.4" strokeLinecap="round">
+                <path d="M0,-52 C28,-28 28,28 0,28 C-28,28 -28,-28 0,-52Z"/>
+                <path d="M0,-52 C28,-28 28,28 0,28 C-28,28 -28,-28 0,-52Z" transform="rotate(120)"/>
+                <path d="M0,-52 C28,-28 28,28 0,28 C-28,28 -28,-28 0,-52Z" transform="rotate(240)"/>
+              </g>
+              {/* inner glow ring */}
+              <circle cx="0" cy="0" r="50" fill="none" stroke="rgba(212,152,60,0.07)" strokeWidth="0.5"/>
+            </svg>
             <div className="wlogo-splash" style={{
               width:88,height:88,borderRadius:"50%",
               background:"radial-gradient(ellipse at 38% 35%,rgba(45,106,79,0.97) 0%,rgba(6,14,8,0.99) 68%)",
@@ -4088,6 +4102,7 @@ body{background:${c.bg}}
               display:"flex",alignItems:"center",justifyContent:"center",
               fontSize:"2.8rem",lineHeight:1,
               boxShadow:"0 10px 36px rgba(0,0,0,0.55)",
+              position:"relative",zIndex:1,
             }}>☘️</div>
           </div>
           <div className="wtitle" style={{
@@ -4099,6 +4114,18 @@ body{background:${c.bg}}
           }}>Gaeltacht<br/>Connect</div>
           <div className="wsub" style={{fontFamily:"'Lato',sans-serif",fontSize:"0.68rem",color:"rgba(212,152,60,0.65)",letterSpacing:"0.28em",textTransform:"uppercase",fontWeight:700,marginBottom:4,textAlign:"center"}}>An Ghaeilge Bheo</div>
           <div className="wsub" style={{fontFamily:"'Lato',sans-serif",fontSize:"0.65rem",color:"rgba(240,237,228,0.25)",letterSpacing:"0.05em",fontStyle:"italic",textAlign:"center",marginBottom:44}}>The Living Irish</div>
+          {/* Celtic divider */}
+          <div style={{display:"flex",alignItems:"center",gap:10,width:"100%",maxWidth:220,marginBottom:28}}>
+            <div style={{flex:1,height:"0.5px",background:"linear-gradient(90deg,transparent,rgba(212,152,60,0.28))"}}/>
+            <svg width="24" height="24" viewBox="-12 -14 24 24" aria-hidden="true">
+              <g fill="none" stroke="rgba(212,152,60,0.55)" strokeWidth="1.1" strokeLinecap="round">
+                <path d="M0,-9 C5,-4 5,4 0,4 C-5,4 -5,-4 0,-9Z"/>
+                <path d="M0,-9 C5,-4 5,4 0,4 C-5,4 -5,-4 0,-9Z" transform="rotate(120)"/>
+                <path d="M0,-9 C5,-4 5,4 0,4 C-5,4 -5,-4 0,-9Z" transform="rotate(240)"/>
+              </g>
+            </svg>
+            <div style={{flex:1,height:"0.5px",background:"linear-gradient(90deg,rgba(212,152,60,0.28),transparent)"}}/>
+          </div>
           <div className="wtap" style={{fontFamily:"'Lato',sans-serif",fontSize:"0.7rem",color:"rgba(212,152,60,0.5)",letterSpacing:"0.2em",textTransform:"uppercase",display:"flex",flexDirection:"column",alignItems:"center",gap:8}}>
             <div style={{width:36,height:36,border:"1.5px solid rgba(212,152,60,0.38)",borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"1rem",background:"rgba(212,152,60,0.05)"}}>☝️</div>
             Tap to enter
@@ -4533,6 +4560,15 @@ body{background:${c.bg}}
           backgroundImage:`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='44'%3E%3Cpath d='M22 2 L42 22 L22 42 L2 22 Z' fill='none' stroke='rgba(200,150,62,0.055)' stroke-width='0.6'/%3E%3C/svg%3E")`,
           backgroundSize:"44px 44px",
         }}/>
+        {/* Celtic triquetra corner watermark */}
+        <svg width="48" height="48" viewBox="-24 -28 48 48"
+          style={{position:"absolute",top:10,right:10,opacity:0.14,pointerEvents:"none"}} aria-hidden="true">
+          <g fill="none" stroke="rgba(212,152,60,1)" strokeWidth="1.2" strokeLinecap="round">
+            <path d="M0,-16 C9,-8 9,8 0,8 C-9,8 -9,-8 0,-16Z"/>
+            <path d="M0,-16 C9,-8 9,8 0,8 C-9,8 -9,-8 0,-16Z" transform="rotate(120)"/>
+            <path d="M0,-16 C9,-8 9,8 0,8 C-9,8 -9,-8 0,-16Z" transform="rotate(240)"/>
+          </g>
+        </svg>
 
         {/* Slow breathing top glow */}
         <div style={{
