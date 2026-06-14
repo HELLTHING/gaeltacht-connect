@@ -1818,7 +1818,7 @@ function CelticMandala(){
   };
 
   return(
-    <div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"center",pointerEvents:"none",overflow:"hidden",zIndex:0}}>
+    <div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"center",pointerEvents:"none",overflow:"hidden",zIndex:0,opacity:0.38}}>
       <svg viewBox="-700 -700 1400 1400"
         style={{width:"155vmax",height:"155vmax",flexShrink:0,
           filter:"blur(0.4px)",
