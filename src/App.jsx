@@ -292,6 +292,59 @@ const GRAMMAR=[
   },
 ];
 
+const DIALOGUES=[
+  {id:1,title:"Ag an gCaifé",en:"At the Café",emoji:"☕",
+   chars:["Máire","Freastalaí"],
+   lines:[
+    {sp:0,irish:"Dia dhuit. An féidir liom ordú a dhéanamh?",en:"Hello. Can I place an order?"},
+    {sp:1,irish:"Dia is Muire dhuit! Cad ba mhaith leat?",en:"Hello! What would you like?"},
+    {sp:0,irish:"Tae agus toirtín, le do thoil.",en:"Tea and a scone, please."},
+    {sp:1,irish:"Ar mhaith leat bainne sa tae?",en:"Would you like milk in the tea?"},
+    {sp:0,irish:"Ba mhaith, go raibh maith agat.",en:"Yes please, thank you."},
+    {sp:1,irish:"Anseo duit. Trí euro, le do thoil.",en:"Here you go. Three euro, please."},
+  ]},
+  {id:2,title:"Ag an Stáisiún",en:"At the Station",emoji:"🚂",
+   chars:["Seán","Oifigeach"],
+   lines:[
+    {sp:0,irish:"Gabh mo leithscéal. Cá bhfuil ticéid á ndíol?",en:"Excuse me. Where are tickets sold?"},
+    {sp:1,irish:"Tá siad á ndíol ansin, ag an gcuntar.",en:"They are sold there, at the counter."},
+    {sp:0,irish:"Go raibh maith agat. Cathain a théann an traein chun Chorcaí?",en:"Thank you. When does the train go to Cork?"},
+    {sp:1,irish:"Ag a trí a chlog.",en:"At three o'clock."},
+    {sp:0,irish:"An bhfuil suíochán ar fáil?",en:"Is there a seat available?"},
+    {sp:1,irish:"Tá. Ticéad amháin?",en:"Yes. One ticket?"},
+  ]},
+  {id:3,title:"Ag Bualadh le Comharsa",en:"Meeting a Neighbour",emoji:"🏡",
+   chars:["Bríd","Tomás"],
+   lines:[
+    {sp:0,irish:"Haigh, a Thomáis! Conas atá tú inniu?",en:"Hi Tomás! How are you today?"},
+    {sp:1,irish:"Tá mé go maith, buíochas le Dia. Agus tú féin?",en:"I'm well, thank God. And yourself?"},
+    {sp:0,irish:"Tá mé tuirseach. D'oibrigh mé go crua inniu.",en:"I'm tired. I worked hard today."},
+    {sp:1,irish:"Is mór an trua sin. Ar mhaith leat cupán tae?",en:"What a pity. Would you like a cup of tea?"},
+    {sp:0,irish:"Ba mhaith liom sin, go raibh maith agat.",en:"I'd love that, thank you."},
+    {sp:1,irish:"Tar isteach. Tá an citeal ar siúl.",en:"Come in. The kettle is on."},
+  ]},
+  {id:4,title:"Sa Siopa",en:"In the Shop",emoji:"🛍️",
+   chars:["Caitlín","Diarmaid"],
+   lines:[
+    {sp:0,irish:"An bhfuil arán úr agaibh?",en:"Do you have fresh bread?"},
+    {sp:1,irish:"Tá. Cén sórt a theastaíonn uait?",en:"Yes. What kind do you want?"},
+    {sp:0,irish:"Arán donn, le do thoil. Cé mhéad atá air?",en:"Brown bread please. How much is it?"},
+    {sp:1,irish:"Dhá euro caoga.",en:"Two euro fifty."},
+    {sp:0,irish:"Seo dhuit. An bhfuil briseadh agat ar fiche euro?",en:"Here you are. Do you have change for twenty?"},
+    {sp:1,irish:"Tá. Seo do chúinseach.",en:"Yes. Here is your change."},
+  ]},
+  {id:5,title:"Ar an Teileafón",en:"On the Phone",emoji:"📱",
+   chars:["Aoife","Pádraig"],
+   lines:[
+    {sp:0,irish:"Haló? An tú Pádraig?",en:"Hello? Is that Pádraig?"},
+    {sp:1,irish:"Is mé! Cé atá ann?",en:"It is! Who's there?"},
+    {sp:0,irish:"Is mise Aoife. Conas atá tú?",en:"It's Aoife. How are you?"},
+    {sp:1,irish:"Go hiontach! Cad atá ar siúl agat?",en:"Brilliant! What are you up to?"},
+    {sp:0,irish:"Táim ag dul amach anocht. Ar mhaith leat teacht?",en:"I'm going out tonight. Would you like to come?"},
+    {sp:1,irish:"Ba bhreá liom! Cén t-am?",en:"I'd love to! What time?"},
+  ]},
+];
+
 const CATS = { greetings:"👋", review:"🔄", food:"☕", shopping:"🛍️", opinions:"💬", social:"🤝", directions:"🧭", vocabulary:"📚", culture:"🎭", immersion:"🔥", days:"📆", numbers:"🔢", months:"🗓️", colors:"🎨", family:"👨‍👩‍👧", animals:"🐾", phrases:"🗣️", body:"🫀", clothes:"👕", transport:"🚗", emotions:"💭", nature:"🌿", home:"🏡", verbs:"⚡", adjectives:"✨", weather:"🌦️", time:"⏰", places:"📍", sports:"🏃" };
 const WK = [
   { name: "Fáilte", en: "Greetings & Basics", start: 0, end: 7 },
@@ -1733,6 +1786,8 @@ export default function App() {
   const [lessonDone,setLessonDone]=useState(false);
   const [phrasesCat,setPhrasesCat]=useState(0);
   const [grammarOpen,setGrammarOpen]=useState(null);
+  const [comhraSel,setComhraSel]=useState(null);
+  const [comhraReveal,setComhraReveal]=useState([]);
   const c = THEMES[theme]||THEMES.coill;
   const dk = c.dark; // keep dk as a convenience boolean for backward compat
 
@@ -4459,6 +4514,7 @@ body{background:${c.bg}}
               {e:"📚",l:"Lessons",s:"Teagasc",v:"teagasc"},
               {e:"🗣️",l:"Phrases",s:"Nathanna",v:"nathanna"},
               {e:"📐",l:"Grammar",s:"Gramadach",v:"gramadach"},
+              {e:"💬",l:"Dialogues",s:"Comhrá",v:"comhra"},
               {e:"🍺",l:"Pub Mode",s:"Mód an Tabhairne",v:"pub"},
               {e:"📖",l:"Dictionary",s:"Foclóir",v:"dict"},
               {e:"🗺️",l:"Map",s:"Léarscáil",v:"map"},
@@ -4809,6 +4865,127 @@ body{background:${c.bg}}
                     </div>
                   </div>
                 )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+
+  // ═══════════════════════════════
+  // COMHRÁ — DIALOGUE LIST
+  // ═══════════════════════════════
+  if(view==="comhra"){
+    return(
+      <div style={{minHeight:"100vh",background:c.bg,color:c.tx,display:"flex",flexDirection:"column"}}>
+        <style>{css}</style>
+        <div style={{background:"rgba(3,9,5,0.97)",borderBottom:`1px solid ${c.bd}`,padding:"16px 20px",flexShrink:0,position:"sticky",top:0,zIndex:10}}>
+          <div style={{display:"flex",alignItems:"center",gap:12}}>
+            <button onClick={()=>setView("home")} style={{background:"none",border:"none",color:c.tx3,cursor:"pointer",fontSize:"1.2rem",padding:4,lineHeight:1}}>←</button>
+            <div>
+              <div style={{...hd,fontSize:"1.1rem",fontWeight:800,color:c.tx}}>Comhrá · Dialogues</div>
+              <div style={{...bd,fontSize:"0.7rem",color:c.tx3}}>Real Irish conversations</div>
+            </div>
+          </div>
+        </div>
+        <div style={{padding:"20px 16px",display:"flex",flexDirection:"column",gap:10,overflowY:"auto"}}>
+          {DIALOGUES.map((dlg,i)=>(
+            <button key={dlg.id} onClick={()=>{
+              haptic([8,20]);
+              setComhraSel(dlg);
+              setComhraReveal([]);
+              setView("comhra-play");
+            }} style={{
+              padding:"16px",
+              background:"rgba(200,150,62,0.05)",border:"1px solid rgba(200,150,62,0.15)",
+              borderRadius:16,cursor:"pointer",
+              display:"flex",alignItems:"center",gap:14,textAlign:"left",
+            }}>
+              <span style={{fontSize:"2rem",flexShrink:0}}>{dlg.emoji}</span>
+              <div style={{flex:1}}>
+                <div style={{...hd,fontSize:"0.95rem",fontWeight:700,color:c.tx,marginBottom:2}}>{dlg.title}</div>
+                <div style={{...bd,fontSize:"0.7rem",color:c.tx3,marginBottom:4}}>{dlg.en}</div>
+                <div style={{...bd,fontSize:"0.63rem",color:"rgba(212,152,60,0.5)"}}>
+                  {dlg.chars[0]} & {dlg.chars[1]} · {dlg.lines.length} líne
+                </div>
+              </div>
+              <span style={{color:c.tx3,fontSize:"1rem"}}>›</span>
+            </button>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  // ═══════════════════════════════
+  // COMHRÁ — DIALOGUE PLAYER
+  // ═══════════════════════════════
+  if(view==="comhra-play"&&comhraSel){
+    const toggleReveal=(idx)=>{
+      haptic([5]);
+      setComhraReveal(prev=>prev.includes(idx)?prev.filter(i=>i!==idx):[...prev,idx]);
+    };
+    const allRevealed=comhraReveal.length===comhraSel.lines.length;
+    const revealAll=()=>{
+      haptic([8,20]);
+      setComhraReveal(allRevealed?[]:comhraSel.lines.map((_,i)=>i));
+    };
+    const dlgIdx=DIALOGUES.findIndex(d=>d.id===comhraSel.id);
+    return(
+      <div style={{minHeight:"100vh",background:c.bg,color:c.tx,display:"flex",flexDirection:"column"}}>
+        <style>{css}</style>
+        {/* Header */}
+        <div style={{background:"rgba(3,9,5,0.97)",borderBottom:`1px solid ${c.bd}`,padding:"14px 20px",flexShrink:0,position:"sticky",top:0,zIndex:10}}>
+          <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:10}}>
+            <button onClick={()=>setView("comhra")} style={{background:"none",border:"none",color:c.tx3,cursor:"pointer",fontSize:"1.2rem",padding:4,lineHeight:1}}>←</button>
+            <div style={{flex:1}}>
+              <div style={{...hd,fontSize:"1rem",fontWeight:800,color:c.tx}}>{comhraSel.emoji} {comhraSel.title}</div>
+              <div style={{...bd,fontSize:"0.65rem",color:c.tx3}}>{comhraSel.chars[0]} & {comhraSel.chars[1]}</div>
+            </div>
+            {/* Prev/Next dialogue */}
+            <div style={{display:"flex",gap:4}}>
+              {dlgIdx>0&&<button onClick={()=>{haptic([6]);const d=DIALOGUES[dlgIdx-1];setComhraSel(d);setComhraReveal([]);}} style={{background:"rgba(255,255,255,0.06)",border:"none",cursor:"pointer",borderRadius:8,padding:"4px 10px",color:c.tx3,fontSize:"0.8rem"}}>‹</button>}
+              {dlgIdx<DIALOGUES.length-1&&<button onClick={()=>{haptic([6]);const d=DIALOGUES[dlgIdx+1];setComhraSel(d);setComhraReveal([]);}} style={{background:"rgba(255,255,255,0.06)",border:"none",cursor:"pointer",borderRadius:8,padding:"4px 10px",color:c.tx3,fontSize:"0.8rem"}}>›</button>}
+            </div>
+          </div>
+          <button onClick={revealAll} style={{
+            background:"rgba(212,152,60,0.08)",border:"1px solid rgba(212,152,60,0.2)",
+            borderRadius:20,padding:"5px 14px",cursor:"pointer",
+            ...bd,fontSize:"0.68rem",color:"rgba(212,152,60,0.8)",fontWeight:700,
+          }}>{allRevealed?"Folaigh aistriúcháin":"Taispeáin aistriúcháin"}</button>
+        </div>
+        {/* Chat bubbles */}
+        <div style={{flex:1,overflowY:"auto",padding:"16px",display:"flex",flexDirection:"column",gap:10}}>
+          <div style={{...bd,fontSize:"0.63rem",color:c.tx3,textAlign:"center",marginBottom:4}}>
+            Tap a line to reveal the translation · Brúigh líne le haghaidh aistriúcháin
+          </div>
+          {comhraSel.lines.map((line,idx)=>{
+            const isA=line.sp===0;
+            const revealed=comhraReveal.includes(idx);
+            return(
+              <div key={idx} style={{display:"flex",flexDirection:"column",alignItems:isA?"flex-start":"flex-end"}}>
+                <div style={{...bd,fontSize:"0.6rem",color:c.tx3,marginBottom:3,paddingLeft:isA?4:0,paddingRight:isA?0:4}}>
+                  {comhraSel.chars[line.sp]}
+                </div>
+                <button onClick={()=>toggleReveal(idx)} style={{
+                  maxWidth:"80%",padding:"11px 14px",borderRadius:isA?"4px 16px 16px 16px":"16px 4px 16px 16px",
+                  background:isA?"rgba(45,106,79,0.22)":"rgba(212,152,60,0.14)",
+                  border:`1px solid ${isA?"rgba(94,196,136,0.25)":"rgba(212,152,60,0.28)"}`,
+                  cursor:"pointer",textAlign:"left",
+                }}>
+                  <div style={{...hd,fontSize:"0.88rem",fontStyle:"italic",color:isA?"#6FCF97":"#D4983C",lineHeight:1.4}}>
+                    {line.irish}
+                  </div>
+                  {revealed&&(
+                    <div style={{...bd,fontSize:"0.72rem",color:c.tx3,marginTop:6,paddingTop:6,borderTop:`1px solid ${isA?"rgba(94,196,136,0.15)":"rgba(212,152,60,0.15)"}`}}>
+                      {line.en}
+                    </div>
+                  )}
+                  {!revealed&&(
+                    <div style={{...bd,fontSize:"0.6rem",color:c.tx3,marginTop:4,opacity:0.5}}>tap to reveal</div>
+                  )}
+                </button>
               </div>
             );
           })}
