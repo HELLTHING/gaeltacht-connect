@@ -1786,7 +1786,7 @@ const IrishTip = ({en}) => (
       fontStyle:"italic",marginLeft:7,verticalAlign:"middle",
       fontFamily:"'Lato',system-ui,sans-serif",fontWeight:400,
       letterSpacing:"0.01em",lineHeight:1,
-      pointerEvents:"none",userSelect:"none",
+      pointerEvents:"none",
     }}>{en}</span>
 );
 
@@ -2308,8 +2308,12 @@ export default function App() {
       await saveS(i);setSt(i);
     }
     setLoading(false);
-    setView("welcome");
-    setWelcomeTapped(false);
+    if(s?.seenWelcome){
+      setView("home");
+    } else {
+      setView("welcome");
+      setWelcomeTapped(false);
+    }
     // Fetch community count in background
     sbGetCount(todayKey()).then(n=>{if(n!==null)setCommunityCount(n);});
   })()},[]);
@@ -3512,7 +3516,7 @@ body{background:${c.bg}}
               {ch.day>1
                 ?<button onClick={()=>setSelDay(ch.day-1)} style={{background:"none",border:`1px solid ${c.bd}`,borderRadius:10,padding:"9px 16px",color:c.tx3,...bd,fontSize:"0.82rem",cursor:"pointer"}}>← Lá {ch.day-1}</button>
                 :<div/>}
-              {ch.day<30&&(
+              {ch.day<CH.length&&(
                 <button onClick={()=>setSelDay(ch.day+1)} style={{background:"none",border:`1px solid ${c.bd}`,borderRadius:10,padding:"9px 16px",color:c.tx3,...bd,fontSize:"0.82rem",cursor:"pointer"}}>Lá {ch.day+1} →</button>
               )}
             </div>
@@ -4734,7 +4738,7 @@ body{background:${c.bg}}
       minHeight:"100vh",
       background:"#030905",
       display:"flex",flexDirection:"column",alignItems:"center",
-      overflow:"hidden",position:"relative",color:"#EDE9DF",userSelect:"none",
+      overflow:"hidden",position:"relative",color:"#EDE9DF",
       justifyContent:welcomeTapped?"flex-start":"center",
     }}>
       <style>{css}{`
@@ -4848,7 +4852,7 @@ body{background:${c.bg}}
         </div>
       ):(
         /* ── PHASE 2: main menu ── */
-        <div className="wmenu" style={{width:"100%",maxWidth:430,display:"flex",flexDirection:"column",alignItems:"center",padding:"0 20px 40px",overflowY:"auto"}}>
+        <div className="wmenu" style={{width:"100%",maxWidth:430,display:"flex",flexDirection:"column",alignItems:"center",padding:"0 20px 40px",overflowY:"auto",position:"relative",zIndex:10}}>
 
           {/* Small logo header */}
           <div style={{display:"flex",flexDirection:"column",alignItems:"center",padding:"32px 0 24px"}}>
