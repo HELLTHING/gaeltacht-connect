@@ -1301,7 +1301,7 @@ const CELEB_PROV = [
 
 // Confetti component
 const Confetti = () => {
-  const pieces = Array.from({length:50},(_,i)=>({
+  const pieces = Array.from({length:30},(_,i)=>({
     id:i,
     left:Math.random()*100,
     delay:Math.random()*1.2,
@@ -1845,7 +1845,6 @@ export default function App() {
 @keyframes stamp{0%{transform:scale(2) rotate(-15deg);opacity:0}60%{transform:scale(0.9) rotate(3deg);opacity:1}100%{transform:scale(1) rotate(0deg);opacity:1}}
 @keyframes wiggle{0%,100%{transform:rotate(0deg)}25%{transform:rotate(-3deg)}75%{transform:rotate(3deg)}}
 @keyframes shimmer{0%,100%{opacity:0.3}50%{opacity:0.7}}
-@keyframes breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.02)}}
 @keyframes glow{0%,100%{box-shadow:4px 4px 0 ${c.ink}}50%{box-shadow:6px 6px 0 ${c.ink}}}
 @keyframes confetti-fall{from{transform:translateY(0) rotate(0deg);opacity:1}to{transform:translateY(110vh) rotate(720deg);opacity:0}}
 @keyframes shamrock-spin{0%{transform:scale(0) rotate(-30deg)}60%{transform:scale(1.2) rotate(8deg)}100%{transform:scale(1) rotate(0deg)}}
@@ -2286,7 +2285,6 @@ body{background:${c.bg}}
               color:"#fff",...bd,fontSize:"1rem",fontWeight:800,
               boxShadow:`0 6px 24px ${c.acc}50`,
               display:"flex",alignItems:"center",gap:8,marginBottom:10,
-              animation:"breathe 2.2s ease infinite",
             }}>
               <span style={{fontSize:"1.1rem"}}>↗</span> Share result
             </button>
@@ -2584,7 +2582,6 @@ body{background:${c.bg}}
                   border:"none",color:"#fff",...bd,fontSize:"1rem",fontWeight:800,cursor:"pointer",
                   display:"flex",alignItems:"center",justifyContent:"center",gap:8,
                   boxShadow:`0 6px 24px ${c.acc}50`,
-                  animation:"breathe 2.2s ease infinite",
                 }}>
                   <span style={{fontSize:"1.1rem"}}>↗</span> Share result
                 </button>
@@ -2720,7 +2717,7 @@ body{background:${c.bg}}
                     transition:"all 0.2s",
                   }}>
                     {speakLoading
-                      ?<><span style={{animation:"breathe 0.8s ease infinite"}}>⏳</span> Ag lódáil…</>
+                      ?<><span>⏳</span> Ag lódáil…</>
                       :speakError==="no-voice"
                       ?<>🔇 Níl guth Gaeilge · Tap to retry</>
                       :<><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M15.54 8.46a5 5 0 010 7.07" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round"/></svg>Éist le fuaim <span style={{opacity:0.55,fontSize:"0.75rem"}}>· Listen</span></>
@@ -3059,7 +3056,7 @@ body{background:${c.bg}}
           <>
             {/* Enhanced confetti with green, gold, white colors */}
             <div style={{position:"fixed",inset:0,pointerEvents:"none",zIndex:98,overflow:"hidden"}}>
-              {Array.from({length:70},(_,i)=>{
+              {Array.from({length:30},(_,i)=>{
                 const colors=["#2D6A4F","#40916C","#A67C2E","#D4A843","#C8963E","#ffffff","#B7E4C7","#F0D080","#6FCF97","#95D5B2"];
                 const left=Math.random()*100;
                 const delay=Math.random()*1.5;
