@@ -1787,57 +1787,127 @@ const SURNAMES = [
   {en:"Sheridan",irish:"Ó Sirideáin",meaning:"Searcher / Seeker",origin:"Cavan and Longford"},
 ];
 
-function CelticMandala({opacity=0.065}){
-  const ticks=[0,30,60,90,120,150,180,210,240,270,300,330];
-  const accents=[0,60,120,180,240,300];
-  const triPath=(r)=>{const c=Math.round(r*0.55);return `M0,-${r} C${c},-${c} ${c},${c} 0,${c} C-${c},${c} -${c},-${c} 0,-${r}Z`;};
+function CelticMandala(){
+  // Celtic knotwork helper — each arc is a vesica piscis loop
+  const K=(r)=>{const c=Math.round(r*0.55);return `M0,-${r} C${c},-${c} ${c},${c} 0,${c} C-${c},${c} -${c},-${c} 0,-${r}Z`;};
+  const G=(a)=>`rgba(212,152,60,${a})`;   // gold
+  const D=(a)=>`rgba(3,9,5,${a})`;         // dark gap
+  // Small accent triquetra at a translated position
+  const AccTri=({r,dist,sw=1,ga=0.09})=>{
+    const p=K(r);
+    return(
+      <g fill="none" strokeLinecap="round">
+        {[p,p,p].map((_,i)=><path key={i} d={p} transform={`rotate(${i*120})`} stroke={D(0.9)} strokeWidth={sw*3.5}/>)}
+        {[p,p,p].map((_,i)=><path key={i} d={p} transform={`rotate(${i*120})`} stroke={G(ga)} strokeWidth={sw}/>)}
+      </g>
+    );
+  };
+  // Two-group interlace: groupA under, groupB over
+  const Interlace=({angles,R,sw=2.5,ga=0.09})=>{
+    const p=K(R);
+    const half=Math.ceil(angles.length/2);
+    const gA=angles.slice(0,half), gB=angles.slice(half);
+    return(
+      <g fill="none" strokeLinecap="round">
+        {gA.map(r=><path key={r} d={p} transform={`rotate(${r})`} stroke={D(0.92)} strokeWidth={sw*3.6}/>)}
+        {gA.map(r=><path key={r} d={p} transform={`rotate(${r})`} stroke={G(ga)} strokeWidth={sw}/>)}
+        {gB.map(r=><path key={r} d={p} transform={`rotate(${r})`} stroke={D(0.92)} strokeWidth={sw*3.6}/>)}
+        {gB.map(r=><path key={r} d={p} transform={`rotate(${r})`} stroke={G(ga)} strokeWidth={sw}/>)}
+      </g>
+    );
+  };
+
   return(
     <div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"center",pointerEvents:"none",overflow:"hidden",zIndex:0}}>
-      <svg width="900" height="900" viewBox="-450 -450 900 900"
-        style={{opacity,filter:"blur(0.5px)",animation:"celtRot 80s linear infinite",transformBox:"fill-box",transformOrigin:"center"}}>
-        {/* Outer triple ring */}
-        <circle cx="0" cy="0" r="402" fill="none" stroke="rgba(212,152,60,1)" strokeWidth="1.2"/>
-        <circle cx="0" cy="0" r="393" fill="none" stroke="rgba(212,152,60,1)" strokeWidth="0.4" strokeDasharray="6 12"/>
-        <circle cx="0" cy="0" r="384" fill="none" stroke="rgba(212,152,60,1)" strokeWidth="0.7"/>
-        {/* 12 tick marks */}
-        {ticks.map(deg=>{
-          const rad=deg*Math.PI/180;
-          const x1=Math.round(386*Math.sin(rad)),y1=Math.round(-386*Math.cos(rad));
-          const x2=Math.round(404*Math.sin(rad)),y2=Math.round(-404*Math.cos(rad));
-          return <line key={deg} x1={x1} y1={y1} x2={x2} y2={y2} stroke="rgba(212,152,60,1)" strokeWidth={deg%90===0?1.8:0.8}/>;
+      <svg viewBox="-700 -700 1400 1400"
+        style={{width:"155vmax",height:"155vmax",flexShrink:0,
+          filter:"blur(0.4px)",
+          animation:"celtRot 90s linear infinite",
+          transformBox:"fill-box",transformOrigin:"center"}}>
+
+        {/* ── OUTER BORDER RINGS ── */}
+        <circle r="668" fill="none" stroke={G(0.08)} strokeWidth="1.6"/>
+        <circle r="654" fill="none" stroke={G(0.04)} strokeWidth="0.5" strokeDasharray="9 18"/>
+        <circle r="640" fill="none" stroke={G(0.07)} strokeWidth="0.9"/>
+
+        {/* 24 tick marks at 15° */}
+        {Array.from({length:24},(_,i)=>i*15).map(deg=>{
+          const rad=deg*Math.PI/180,r1=642,r2=670;
+          const x1=Math.round(r1*Math.sin(rad)),y1=Math.round(-r1*Math.cos(rad));
+          const x2=Math.round(r2*Math.sin(rad)),y2=Math.round(-r2*Math.cos(rad));
+          const isCard=deg%90===0,isMid=deg%30===0;
+          return<line key={deg} x1={x1} y1={y1} x2={x2} y2={y2}
+            stroke={G(isCard?0.13:isMid?0.09:0.05)}
+            strokeWidth={isCard?2.8:isMid?1.6:0.9}/>;
         })}
-        {/* Large 6-fold interlace — double triquetra */}
-        <g fill="none" stroke="rgba(212,152,60,1)" strokeWidth="2.5" strokeLinecap="round">
-          {[0,60,120,180,240,300].map(r=><path key={r} d={triPath(235)} transform={`rotate(${r})`}/>)}
-        </g>
-        {/* Mid ring */}
-        <circle cx="0" cy="0" r="240" fill="none" stroke="rgba(212,152,60,1)" strokeWidth="0.5" strokeDasharray="4 9"/>
-        {/* 6 small triquetras at outer ring */}
-        {accents.map(deg=>(
-          <g key={deg} transform={`rotate(${deg})`}>
-            <g transform="translate(0,-315)" fill="none" stroke="rgba(212,152,60,1)" strokeWidth="1" strokeLinecap="round">
-              <path d={triPath(22)}/><path d={triPath(22)} transform="rotate(120)"/><path d={triPath(22)} transform="rotate(240)"/>
-            </g>
+
+        {/* ── OUTER 8-FOLD KNOTWORK (overflows screen) ── */}
+        <Interlace angles={[0,45,90,135,180,225,270,315]} R={590} sw={3} ga={0.10}/>
+
+        {/* 8 jewel dots at arc tips */}
+        {[0,45,90,135,180,225,270,315].map(deg=>{
+          const rad=deg*Math.PI/180;
+          return<g key={deg}>
+            <circle cx={Math.round(590*Math.sin(rad))} cy={Math.round(-590*Math.cos(rad))} r="6" fill={D(0.9)} stroke={G(0.12)} strokeWidth="1.5"/>
+          </g>;
+        })}
+
+        {/* Mid-outer ring */}
+        <circle r="455" fill="none" stroke={G(0.05)} strokeWidth="0.8" strokeDasharray="6 12"/>
+
+        {/* 12 small triquetras around outer ring at R=490 */}
+        {Array.from({length:12},(_,i)=>i*30).map(deg=>(
+          <g key={deg} transform={`rotate(${deg}) translate(0,-490)`}>
+            <AccTri r={32} sw={1.3} ga={0.11}/>
           </g>
         ))}
-        {/* Inner 6-fold interlace */}
-        <g fill="none" stroke="rgba(212,152,60,1)" strokeWidth="1.5" strokeLinecap="round">
-          {[0,60,120,180,240,300].map(r=><path key={r} d={triPath(115)} transform={`rotate(${r})`}/>)}
-        </g>
+
+        {/* ── MIDDLE 6-FOLD KNOTWORK ── */}
+        <Interlace angles={[0,60,120,180,240,300]} R={360} sw={2.6} ga={0.09}/>
+
+        {/* Mid rings */}
+        <circle r="292" fill="none" stroke={G(0.07)} strokeWidth="1"/>
+        <circle r="278" fill="none" stroke={G(0.04)} strokeWidth="0.4" strokeDasharray="4 8"/>
+
+        {/* 6 medium triquetras at mid ring */}
+        {[0,60,120,180,240,300].map(deg=>(
+          <g key={deg} transform={`rotate(${deg}) translate(0,-325)`}>
+            <AccTri r={24} sw={1.1} ga={0.10}/>
+          </g>
+        ))}
+
+        {/* ── INNER 4-FOLD (Celtic Cross form) ── */}
+        <Interlace angles={[0,90,180,270]} R={200} sw={2.2} ga={0.10}/>
+        {/* 45° offset 4-fold — makes an 8-pointed star */}
+        <Interlace angles={[45,135,225,315]} R={200} sw={2.2} ga={0.08}/>
+
         {/* Inner rings */}
-        <circle cx="0" cy="0" r="122" fill="none" stroke="rgba(212,152,60,1)" strokeWidth="0.8"/>
-        <circle cx="0" cy="0" r="48" fill="none" stroke="rgba(212,152,60,1)" strokeWidth="0.5" strokeDasharray="2 5"/>
-        {/* 6 small triquetras at inner ring */}
-        {accents.map(deg=>(
-          <g key={deg} transform={`rotate(${deg})`}>
-            <g transform="translate(0,-160)" fill="none" stroke="rgba(212,152,60,1)" strokeWidth="0.8" strokeLinecap="round">
-              <path d={triPath(14)}/><path d={triPath(14)} transform="rotate(120)"/><path d={triPath(14)} transform="rotate(240)"/>
-            </g>
+        <circle r="165" fill="none" stroke={G(0.08)} strokeWidth="1"/>
+        <circle r="152" fill="none" stroke={G(0.04)} strokeWidth="0.4" strokeDasharray="3 6"/>
+
+        {/* 8 small triquetras at inner ring */}
+        {Array.from({length:8},(_,i)=>i*45).map(deg=>(
+          <g key={deg} transform={`rotate(${deg}) translate(0,-183)`}>
+            <AccTri r={18} sw={1} ga={0.11}/>
           </g>
         ))}
-        {/* Center */}
-        <circle cx="0" cy="0" r="16" fill="none" stroke="rgba(212,152,60,1)" strokeWidth="0.8"/>
-        <circle cx="0" cy="0" r="5" fill="rgba(212,152,60,0.6)"/>
+
+        {/* ── CORE TRIQUETRA (Book of Kells style) ── */}
+        <Interlace angles={[0,120,240]} R={105} sw={2} ga={0.12}/>
+
+        {/* ── TRISKELION CENTER (Newgrange spiral motif) ── */}
+        <circle r="58" fill="none" stroke={G(0.08)} strokeWidth="1"/>
+        <circle r="42" fill="none" stroke={G(0.06)} strokeWidth="0.5" strokeDasharray="2 4"/>
+        {/* Three curved spiral arms at 120° spacing */}
+        {[0,120,240].map(deg=>(
+          <g key={deg} transform={`rotate(${deg})`}>
+            <path d="M0,0 C8,-14 22,-18 30,-10 C38,-2 36,14 26,22 C16,30 -2,28 -12,18 C-22,8 -22,-10 -14,-22 C-6,-34 12,-38 26,-30"
+              fill="none" stroke={G(0.12)} strokeWidth="1.5" strokeLinecap="round"/>
+          </g>
+        ))}
+        {/* Center jewel */}
+        <circle r="8" fill={G(0.18)}/>
+        <circle r="14" fill="none" stroke={G(0.10)} strokeWidth="0.8"/>
       </svg>
     </div>
   );
@@ -4411,9 +4481,7 @@ body{background:${c.bg}}
         .wripple3{animation:wRipple 0.9s 0.3s ease-out forwards}
       `}</style>
 
-      {/* Rotating Celtic mandala — background */}
-      <CelticMandala opacity={0.07}/>
-      {/* Static Celtic diamond tile on top */}
+      {/* Static Celtic diamond tile */}
       <div style={{position:"absolute",inset:0,pointerEvents:"none",opacity:0.5,zIndex:1,
         backgroundImage:`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48'%3E%3Cpath d='M24 3 L45 24 L24 45 L3 24 Z' fill='none' stroke='rgba(200,150,62,0.07)' stroke-width='0.8'/%3E%3C/svg%3E")`,
         backgroundSize:"48px 48px"}}/>
