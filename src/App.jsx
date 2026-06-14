@@ -5858,6 +5858,32 @@ body{background:${c.bg}}
               </button>
             </div>
 
+            {/* Foghlaimigh section */}
+            <div style={{padding:"12px 16px 4px"}}>
+              <div style={{...bd,fontSize:"0.6rem",color:"rgba(212,152,60,0.4)",letterSpacing:"0.16em",textTransform:"uppercase",marginBottom:8}}>Foghlaimigh · Learn</div>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
+                {[
+                  {e:"🎓",l:"Teagasc",s:"Lessons",a:()=>{setShowMenu(false);setLessonSel(null);setLessonCard(0);setLessonDone(false);setView("teagasc");}},
+                  {e:"🗣️",l:"Nathanna",s:"Phrases",a:()=>{setShowMenu(false);setPhrasesCat(0);setView("nathanna");}},
+                  {e:"💬",l:"Comhrá",s:"Dialogues",a:()=>{setShowMenu(false);setComhraSel(null);setComhraReveal([]);setView("comhra");}},
+                  {e:"📐",l:"Gramadach",s:"Grammar",a:()=>{setShowMenu(false);setGrammarOpen(null);setView("gramadach");}},
+                  {e:"🏺",l:"Cultúr",s:"Culture",a:()=>{setShowMenu(false);setCulterOpen(null);setView("cultur");}},
+                ].map(({e,l,s,a},i)=>(
+                  <button key={i} onClick={a} style={{
+                    padding:"12px 10px",background:"rgba(212,152,60,0.06)",
+                    border:"1px solid rgba(212,152,60,0.18)",
+                    borderRadius:12,cursor:"pointer",display:"flex",alignItems:"center",gap:8,textAlign:"left",
+                  }}>
+                    <span style={{fontSize:"1.1rem"}}>{e}</span>
+                    <div>
+                      <div style={{...bd,fontSize:"0.78rem",fontWeight:700,color:"rgba(212,152,60,0.9)"}}>{l}</div>
+                      <div style={{...bd,fontSize:"0.6rem",color:"rgba(200,150,62,0.45)"}}>{s}</div>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+
             {/* Menu grid */}
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,padding:"8px 16px"}}>
               {[
