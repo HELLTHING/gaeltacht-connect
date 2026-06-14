@@ -110,11 +110,14 @@ const VOCAB = [
 
 const LESSONS=[
   {id:1,title:"Beannachtaí",en:"Greetings",emoji:"👋",cards:[
-    {irish:"Dia dhuit",pron:"dee-uh gwit",en:"Hello (to one person)"},
-    {irish:"Dia is Muire dhuit",pron:"dee-uh iss mwirr-uh gwit",en:"Hello back (reply)"},
+    {irish:"Dia dhuit",pron:"dee-uh gwit",en:"Hello (to one person)",note:"Literally: 'God be with you.' Irish greetings were never casual — they had standards."},
+    {irish:"Dia is Muire dhuit",pron:"dee-uh iss mwirr-uh gwit",en:"Hello back (the reply)"},
     {irish:"Conas atá tú?",pron:"kun-us uh-taw too",en:"How are you?"},
     {irish:"Tá mé go maith",pron:"taw may guh mah",en:"I am well"},
-    {irish:"Slán agat",pron:"slawn ug-ut",en:"Goodbye"},
+    {irish:"Tá mé go hiontach",pron:"taw may guh HUN-tukh",en:"I'm brilliant / fantastic"},
+    {irish:"Go raibh maith agat",pron:"guh rev mah ug-ut",en:"Thank you",note:"Literally: 'May there be goodness at you.' Irish thanks came with a blessing."},
+    {irish:"Slán agat",pron:"slawn ug-ut",en:"Goodbye (said to one staying)"},
+    {irish:"Slán leat",pron:"slawn lyat",en:"Goodbye (said to one leaving)",note:"These are two different goodbyes. Say the wrong one and you'll hear about it."},
   ]},
   {id:2,title:"Uimhreacha",en:"Numbers 1–10",emoji:"🔢",cards:[
     {irish:"A haon",pron:"ah hayn",en:"One"},
@@ -122,13 +125,21 @@ const LESSONS=[
     {irish:"A trí",pron:"ah tree",en:"Three"},
     {irish:"A ceathair",pron:"ah kah-her",en:"Four"},
     {irish:"A cúig",pron:"ah koo-ig",en:"Five"},
+    {irish:"A sé",pron:"ah shay",en:"Six"},
+    {irish:"A seacht",pron:"ah shokht",en:"Seven"},
+    {irish:"A hocht",pron:"ah hukht",en:"Eight"},
+    {irish:"A naoi",pron:"ah nee",en:"Nine"},
+    {irish:"A deich",pron:"ah deh",en:"Ten",note:"Congratulations — you can count to ten in Irish. After this, the numbers involve counting 'on twenty'. Ar mhaith leat eile? Want more?"},
   ]},
   {id:3,title:"Dathanna",en:"Colours",emoji:"🎨",cards:[
     {irish:"Dearg",pron:"dah-rug",en:"Red"},
-    {irish:"Glas",pron:"gloss",en:"Green"},
+    {irish:"Glas",pron:"gloss",en:"Green (of nature)",note:"'Glas' is the green of fields and trees. Ireland has so many greens they needed extra words."},
+    {irish:"Uaine",pron:"OO-in-yuh",en:"Green (vivid / artificial)"},
     {irish:"Gorm",pron:"gur-um",en:"Blue"},
     {irish:"Buí",pron:"bwee",en:"Yellow"},
     {irish:"Dubh",pron:"duv",en:"Black"},
+    {irish:"Bán",pron:"bawn",en:"White"},
+    {irish:"Donn",pron:"dun",en:"Brown"},
   ]},
   {id:4,title:"An Teaghlach",en:"Family",emoji:"👨‍👩‍👧",cards:[
     {irish:"Mamaí",pron:"mah-mee",en:"Mum"},
@@ -136,48 +147,69 @@ const LESSONS=[
     {irish:"Deartháir",pron:"djar-haw-ir",en:"Brother"},
     {irish:"Deirfiúr",pron:"djer-fyoor",en:"Sister"},
     {irish:"Seanmháthair",pron:"shan-vah-her",en:"Grandmother"},
+    {irish:"Seanathair",pron:"shan-ah-her",en:"Grandfather"},
+    {irish:"Uncail",pron:"UN-kil",en:"Uncle"},
+    {irish:"Aintín",pron:"AN-cheen",en:"Aunt",note:"In Ireland, any woman your mam's age is your aintín. Resistance is futile."},
   ]},
   {id:5,title:"Am & Laethanta",en:"Time & Days",emoji:"⏰",cards:[
     {irish:"Maidin",pron:"MAH-jeen",en:"Morning"},
     {irish:"Tráthnóna",pron:"traw-NOH-nuh",en:"Afternoon / Evening"},
     {irish:"Oíche",pron:"ee-huh",en:"Night"},
     {irish:"Inniu",pron:"in-yoo",en:"Today"},
-    {irish:"Amárach",pron:"uh-MAH-rukh",en:"Tomorrow"},
+    {irish:"Amárach",pron:"uh-MAH-rukh",en:"Tomorrow",note:"'Amárach' is also Ireland's only Irish-language newspaper. The future, in the language of the past."},
+    {irish:"Inné",pron:"in-AY",en:"Yesterday"},
+    {irish:"Anois",pron:"uh-NISH",en:"Now"},
+    {irish:"Arís",pron:"uh-REESH",en:"Again",note:"You will need this word. Arís. Arís. Arís."},
   ]},
   {id:6,title:"Bia & Deoch",en:"Food & Drink",emoji:"☕",cards:[
     {irish:"Arán",pron:"ah-rawn",en:"Bread"},
     {irish:"Uisce",pron:"ish-kuh",en:"Water"},
     {irish:"Bainne",pron:"bahn-yuh",en:"Milk"},
-    {irish:"Tae",pron:"tay",en:"Tea"},
+    {irish:"Tae",pron:"tay",en:"Tea",note:"The Irish solution to every problem. Broken leg? Tae. Existential dread? Tae. Learning Irish? Definitely tae."},
     {irish:"Caife",pron:"kah-fuh",en:"Coffee"},
+    {irish:"Prátaí",pron:"PRAW-tee",en:"Potatoes",note:"The word you came here for. There it is."},
+    {irish:"Im",pron:"im",en:"Butter"},
+    {irish:"Sicín",pron:"SHIH-keen",en:"Chicken"},
   ]},
   {id:7,title:"Áiteanna",en:"Places",emoji:"📍",cards:[
     {irish:"Teach",pron:"tyakh",en:"House"},
     {irish:"Scoil",pron:"skul",en:"School"},
     {irish:"Siopa",pron:"SHUP-uh",en:"Shop"},
     {irish:"Caifé",pron:"kah-FAY",en:"Café"},
-    {irish:"Teach tábhairne",pron:"tyakh TOW-irneh",en:"Pub"},
+    {irish:"Teach tábhairne",pron:"tyakh TOW-irneh",en:"Pub",note:"The cultural centre of the Irish universe. Also the only place where you're guaranteed to hear Irish spoken freely."},
+    {irish:"Eaglais",pron:"AG-lish",en:"Church"},
+    {irish:"Leabharlann",pron:"LOW-ur-lun",en:"Library"},
+    {irish:"Margadh",pron:"MAR-uh-guh",en:"Market"},
   ]},
   {id:8,title:"Ainmhithe",en:"Animals",emoji:"🐾",cards:[
     {irish:"Madra",pron:"MAH-druh",en:"Dog"},
     {irish:"Cat",pron:"kot",en:"Cat"},
     {irish:"Each",pron:"akh",en:"Horse"},
-    {irish:"Bó",pron:"boe",en:"Cow"},
+    {irish:"Bó",pron:"boe",en:"Cow",note:"Old Irish had over 60 words for cattle colour variations. The Irish took cows very seriously."},
     {irish:"Caora",pron:"KWEER-uh",en:"Sheep"},
+    {irish:"Muc",pron:"muk",en:"Pig"},
+    {irish:"Éan",pron:"ayn",en:"Bird"},
+    {irish:"Iasc",pron:"eesk",en:"Fish"},
   ]},
   {id:9,title:"Aimsir",en:"Weather",emoji:"🌦️",cards:[
     {irish:"Fuar",pron:"foo-ur",en:"Cold"},
     {irish:"Te",pron:"cheh",en:"Warm / Hot"},
-    {irish:"Báisteach",pron:"BAW-shtukh",en:"Rain"},
+    {irish:"Báisteach",pron:"BAW-shtukh",en:"Rain",note:"Ireland's default setting. 'Tá báisteach ann' is basically the national motto."},
     {irish:"Gaoth",pron:"gwee",en:"Wind"},
     {irish:"Grianmhar",pron:"GREE-un-vur",en:"Sunny"},
+    {irish:"Scamallach",pron:"SKAM-uh-lukh",en:"Cloudy"},
+    {irish:"Stoirm",pron:"SHTIR-im",en:"Storm"},
+    {irish:"Sneachta",pron:"NYAKH-tuh",en:"Snow",note:"Causes nationwide panic. Schools close. Bread vanishes from shops. It happened."},
   ]},
   {id:10,title:"Briathra",en:"Essential Verbs",emoji:"⚡",cards:[
-    {irish:"Tá",pron:"taw",en:"Am / Is / Are (state)"},
+    {irish:"Tá",pron:"taw",en:"Am / Is / Are (current state)"},
+    {irish:"Níl",pron:"neel",en:"Am not / Is not (negative Tá)",note:"Tá and Níl are a team. One for yes, one for no. Irish keeps it clean."},
     {irish:"Ith",pron:"ih",en:"Eat"},
     {irish:"Ól",pron:"ohl",en:"Drink"},
     {irish:"Téigh",pron:"tay",en:"Go"},
     {irish:"Bí",pron:"bee",en:"Be (habitual)"},
+    {irish:"Déan",pron:"dyan",en:"Do / Make"},
+    {irish:"Abair",pron:"AB-ir",en:"Say"},
   ]},
 ];
 
@@ -1755,6 +1787,62 @@ const SURNAMES = [
   {en:"Sheridan",irish:"Ó Sirideáin",meaning:"Searcher / Seeker",origin:"Cavan and Longford"},
 ];
 
+function CelticMandala({opacity=0.065}){
+  const ticks=[0,30,60,90,120,150,180,210,240,270,300,330];
+  const accents=[0,60,120,180,240,300];
+  const triPath=(r)=>{const c=Math.round(r*0.55);return `M0,-${r} C${c},-${c} ${c},${c} 0,${c} C-${c},${c} -${c},-${c} 0,-${r}Z`;};
+  return(
+    <div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"center",pointerEvents:"none",overflow:"hidden",zIndex:0}}>
+      <svg width="900" height="900" viewBox="-450 -450 900 900"
+        style={{opacity,filter:"blur(0.5px)",animation:"celtRot 80s linear infinite",transformBox:"fill-box",transformOrigin:"center"}}>
+        {/* Outer triple ring */}
+        <circle cx="0" cy="0" r="402" fill="none" stroke="rgba(212,152,60,1)" strokeWidth="1.2"/>
+        <circle cx="0" cy="0" r="393" fill="none" stroke="rgba(212,152,60,1)" strokeWidth="0.4" strokeDasharray="6 12"/>
+        <circle cx="0" cy="0" r="384" fill="none" stroke="rgba(212,152,60,1)" strokeWidth="0.7"/>
+        {/* 12 tick marks */}
+        {ticks.map(deg=>{
+          const rad=deg*Math.PI/180;
+          const x1=Math.round(386*Math.sin(rad)),y1=Math.round(-386*Math.cos(rad));
+          const x2=Math.round(404*Math.sin(rad)),y2=Math.round(-404*Math.cos(rad));
+          return <line key={deg} x1={x1} y1={y1} x2={x2} y2={y2} stroke="rgba(212,152,60,1)" strokeWidth={deg%90===0?1.8:0.8}/>;
+        })}
+        {/* Large 6-fold interlace — double triquetra */}
+        <g fill="none" stroke="rgba(212,152,60,1)" strokeWidth="2.5" strokeLinecap="round">
+          {[0,60,120,180,240,300].map(r=><path key={r} d={triPath(235)} transform={`rotate(${r})`}/>)}
+        </g>
+        {/* Mid ring */}
+        <circle cx="0" cy="0" r="240" fill="none" stroke="rgba(212,152,60,1)" strokeWidth="0.5" strokeDasharray="4 9"/>
+        {/* 6 small triquetras at outer ring */}
+        {accents.map(deg=>(
+          <g key={deg} transform={`rotate(${deg})`}>
+            <g transform="translate(0,-315)" fill="none" stroke="rgba(212,152,60,1)" strokeWidth="1" strokeLinecap="round">
+              <path d={triPath(22)}/><path d={triPath(22)} transform="rotate(120)"/><path d={triPath(22)} transform="rotate(240)"/>
+            </g>
+          </g>
+        ))}
+        {/* Inner 6-fold interlace */}
+        <g fill="none" stroke="rgba(212,152,60,1)" strokeWidth="1.5" strokeLinecap="round">
+          {[0,60,120,180,240,300].map(r=><path key={r} d={triPath(115)} transform={`rotate(${r})`}/>)}
+        </g>
+        {/* Inner rings */}
+        <circle cx="0" cy="0" r="122" fill="none" stroke="rgba(212,152,60,1)" strokeWidth="0.8"/>
+        <circle cx="0" cy="0" r="48" fill="none" stroke="rgba(212,152,60,1)" strokeWidth="0.5" strokeDasharray="2 5"/>
+        {/* 6 small triquetras at inner ring */}
+        {accents.map(deg=>(
+          <g key={deg} transform={`rotate(${deg})`}>
+            <g transform="translate(0,-160)" fill="none" stroke="rgba(212,152,60,1)" strokeWidth="0.8" strokeLinecap="round">
+              <path d={triPath(14)}/><path d={triPath(14)} transform="rotate(120)"/><path d={triPath(14)} transform="rotate(240)"/>
+            </g>
+          </g>
+        ))}
+        {/* Center */}
+        <circle cx="0" cy="0" r="16" fill="none" stroke="rgba(212,152,60,1)" strokeWidth="0.8"/>
+        <circle cx="0" cy="0" r="5" fill="rgba(212,152,60,0.6)"/>
+      </svg>
+    </div>
+  );
+}
+
 export default function App() {
   const [st,setSt]=useState(null);
   const [loading,setLoading]=useState(true);
@@ -2138,6 +2226,7 @@ export default function App() {
 @keyframes tilePop{0%{transform:scale(1)}50%{transform:scale(1.12)}100%{transform:scale(1)}}
 @keyframes tileShake{0%,100%{transform:translateX(0)}15%{transform:translateX(-6px)}35%{transform:translateX(6px)}55%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
 @keyframes slowGlow{0%,100%{opacity:0.55}50%{opacity:1}}
+@keyframes celtRot{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
 html{-webkit-font-smoothing:antialiased}
 button:active{opacity:0.85;transform:scale(0.98)!important}
 body{background:${c.bg}}
@@ -3172,25 +3261,6 @@ body{background:${c.bg}}
         )}
 
         {/* ── ACHIEVEMENT TOAST ── */}
-        {achToast&&(
-          <div style={{
-            position:"fixed",bottom:88,left:"50%",transform:"translateX(-50%)",
-            background:c.dark?"rgba(20,30,20,0.97)":"rgba(255,252,245,0.97)",
-            border:`1.5px solid ${c.acc}`,borderRadius:16,
-            padding:"12px 20px",zIndex:200,
-            display:"flex",alignItems:"center",gap:12,
-            boxShadow:"0 8px 32px rgba(0,0,0,0.35)",
-            animation:"slide-up 0.35s ease",
-            maxWidth:320,width:"90vw",
-          }}>
-            <div style={{fontSize:"2rem",lineHeight:1,flexShrink:0}}>{achToast.icon}</div>
-            <div>
-              <div style={{...bd,fontSize:"0.62rem",color:c.acc,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",marginBottom:1}}>Achievement unlocked</div>
-              <div style={{...hd,fontSize:"1rem",color:c.tx,fontWeight:800}}>{achToast.name}</div>
-              <div style={{...bd,fontSize:"0.72rem",color:c.tx3}}>{achToast.nameEn} · {achToast.desc}</div>
-            </div>
-          </div>
-        )}
 
         {/* ── LEADERBOARD MODAL ── */}
         {showLeaderboard&&(
@@ -4341,8 +4411,10 @@ body{background:${c.bg}}
         .wripple3{animation:wRipple 0.9s 0.3s ease-out forwards}
       `}</style>
 
-      {/* Static Celtic diamond bg */}
-      <div style={{position:"absolute",inset:0,pointerEvents:"none",opacity:0.5,
+      {/* Rotating Celtic mandala — background */}
+      <CelticMandala opacity={0.07}/>
+      {/* Static Celtic diamond tile on top */}
+      <div style={{position:"absolute",inset:0,pointerEvents:"none",opacity:0.5,zIndex:1,
         backgroundImage:`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48'%3E%3Cpath d='M24 3 L45 24 L24 45 L3 24 Z' fill='none' stroke='rgba(200,150,62,0.07)' stroke-width='0.8'/%3E%3C/svg%3E")`,
         backgroundSize:"48px 48px"}}/>
 
@@ -4770,6 +4842,12 @@ body{background:${c.bg}}
             </div>
             <div style={{height:"1px",background:"rgba(212,152,60,0.15)",margin:"0 auto 20px",width:"60%"}}/>
             <div style={{...bd,fontSize:"1rem",color:c.tx,fontWeight:600}}>{card.en}</div>
+            {card.note&&(
+              <div style={{marginTop:16,paddingTop:14,borderTop:"1px solid rgba(212,152,60,0.1)",display:"flex",gap:8,textAlign:"left"}}>
+                <span style={{fontSize:"0.85rem",flexShrink:0}}>🍀</span>
+                <div style={{...bd,fontSize:"0.7rem",color:"rgba(240,237,228,0.5)",lineHeight:1.55,fontStyle:"italic"}}>{card.note}</div>
+              </div>
+            )}
           </div>
           {/* Nav */}
           <div style={{display:"flex",gap:12,marginTop:28,width:"100%",maxWidth:360}}>
@@ -5312,9 +5390,11 @@ body{background:${c.bg}}
           : `radial-gradient(ellipse 100% 50% at 50% 0%, rgba(27,67,50,0.06) 0%, transparent 55%),
              linear-gradient(175deg, ${c.bg2||c.bg} 0%, ${c.bg} 100%)`,
       }}>
-        {/* Subtle diamond texture overlay — animated Celtic shimmer */}
+        {/* Rotating Celtic mandala background */}
+        {c.dark&&<CelticMandala opacity={0.055}/>}
+        {/* Subtle diamond texture overlay */}
         <div style={{
-          position:"absolute",inset:"-44px",pointerEvents:"none",opacity:c.dark?0.9:0.3,
+          position:"absolute",inset:"-44px",pointerEvents:"none",opacity:c.dark?0.9:0.3,zIndex:1,
           backgroundImage:`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='44'%3E%3Cpath d='M22 2 L42 22 L22 42 L2 22 Z' fill='none' stroke='rgba(200,150,62,0.055)' stroke-width='0.6'/%3E%3C/svg%3E")`,
           backgroundSize:"44px 44px",
         }}/>
@@ -5694,21 +5774,6 @@ body{background:${c.bg}}
       )}
 
       {/* ── ACHIEVEMENT TOAST ── */}
-      {achToast&&(
-        <div style={{position:"fixed",bottom:80,left:"50%",transform:"translateX(-50%)",
-          background:c.dark?"rgba(20,30,20,0.97)":"rgba(255,252,245,0.97)",
-          border:`1.5px solid ${c.acc}`,borderRadius:16,padding:"12px 20px",zIndex:200,
-          display:"flex",alignItems:"center",gap:12,
-          boxShadow:"0 8px 32px rgba(0,0,0,0.35)",animation:"slide-up 0.35s ease",
-          maxWidth:320,width:"90vw"}}>
-          <div style={{fontSize:"2rem",lineHeight:1,flexShrink:0}}>{achToast.icon}</div>
-          <div>
-            <div style={{...bd,fontSize:"0.62rem",color:c.acc,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",marginBottom:1}}>Achievement unlocked</div>
-            <div style={{...hd,fontSize:"1rem",color:c.tx,fontWeight:800}}>{achToast.name}</div>
-            <div style={{...bd,fontSize:"0.72rem",color:c.tx3}}>{achToast.nameEn} · {achToast.desc}</div>
-          </div>
-        </div>
-      )}
 
       {/* ── LEADERBOARD MODAL ── */}
       {showLeaderboard&&(
