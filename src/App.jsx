@@ -1544,6 +1544,8 @@ export default function App() {
   const [surnameSearch,setSurnameSearch]=useState("");
   const [showMenu,setShowMenu]=useState(false);
   const [welcomeTapped,setWelcomeTapped]=useState(false);
+  const [quizBravo,setQuizBravo]=useState(null); // current bravo/oops message
+  const [quizBravoVisible,setQuizBravoVisible]=useState(false); // controls fade animation
   const c = THEMES[theme]||THEMES.coill;
   const dk = c.dark; // keep dk as a convenience boolean for backward compat
 
@@ -1816,6 +1818,30 @@ export default function App() {
   const isLockedToday=!allDone&&total>0&&st?.lastCompletedDate===todayKey();
   const hoursUntilMidnight=(()=>{const now=new Date();const mid=new Date(now);mid.setHours(24,0,0,0);return Math.ceil((mid-now)/3600000);})();
 
+  // ── Personality computed values ──
+  const _hour = new Date().getHours();
+  const greeting = _hour < 12 ? "Maidin mhaith" : _hour < 18 ? "Tráthnóna maith" : "Oíche mhaith";
+  const greetingEn = _hour < 12 ? "Good morning" : _hour < 18 ? "Good afternoon" : "Good evening";
+  const streakMsg = st.streak===0 ? "Start your journey today →"
+    : st.streak===1 ? "You started! Keep going 🔥"
+    : st.streak<7 ? `${st.streak} days strong! Building the habit...`
+    : st.streak<14 ? `${st.streak} days! You're on fire! 🔥🔥`
+    : st.streak<30 ? `${st.streak} days — you're becoming fluent!`
+    : `${st.streak} days!! Tá tú iontach! (You're amazing!)`;
+  const QUOTES = [
+    {irish:"Is fearr Gaeilge briste ná Béarla cliste", en:"Better broken Irish than clever English"},
+    {irish:"Ní neart go cur le chéile", en:"There is no strength without unity"},
+    {irish:"Mol an óige agus tiocfaidh sí", en:"Praise the youth and they will flourish"},
+    {irish:"Is maith an scáthán súil carad", en:"A friend's eye is a good mirror"},
+    {irish:"Bíonn an rath i mbun na díograise", en:"Success is found in diligence"},
+    {irish:"An té a bhíonn siúlach, bíonn scéalach", en:"He who travels has stories"},
+    {irish:"Ná bris do loingeas ar do chuan féin", en:"Don't wreck your ship in your own harbor"},
+  ];
+  const dailyQuote = QUOTES[new Date().getDate() % QUOTES.length];
+  const MILESTONES = [3,7,14,21,30,60];
+  const MILESTONE_MSGS = {3:"The habit begins!",7:"One week! Seacht lá!",14:"Two weeks! Cosc ní chuirfear ort!",21:"Three weeks! Tá an Ghaeilge agat!",30:"A month! Míle buíochas!",60:"60 days! Tá tú líofa! You're fluent!"};
+  const justHitMilestone = MILESTONES.includes(st.streak) && st.lastCompletedDate === todayKey();
+
   const css=`
 *{margin:0;padding:0;box-sizing:border-box}
 @keyframes rise{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
@@ -1843,6 +1869,9 @@ export default function App() {
 @keyframes tileShake{0%,100%{transform:translateX(0)}15%{transform:translateX(-6px)}35%{transform:translateX(6px)}55%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
 @keyframes slowGlow{0%,100%{opacity:0.55}50%{opacity:1}}
 @keyframes driftUp{0%{transform:translateY(0)}100%{transform:translateY(-8px)}}
+@keyframes slideDown{from{opacity:0;transform:translateY(-24px)}to{opacity:1;transform:translateY(0)}}
+@keyframes goldSparkle{0%,100%{box-shadow:0 0 10px rgba(212,152,60,0.3),0 0 20px rgba(212,152,60,0.1)}50%{box-shadow:0 0 22px rgba(212,152,60,0.7),0 0 44px rgba(212,152,60,0.25)}}
+@keyframes bravoFadeUp{0%{opacity:0;transform:translateY(12px) scale(0.92)}20%{opacity:1;transform:translateY(0) scale(1)}80%{opacity:1;transform:translateY(-6px) scale(1)}100%{opacity:0;transform:translateY(-18px) scale(0.95)}}
 html{-webkit-font-smoothing:antialiased}
 button:active{opacity:0.85;transform:scale(0.98)!important}
 body{background:${c.bg}}
@@ -2412,7 +2441,7 @@ body{background:${c.bg}}
 
         {/* ── TOP BAR ── */}
         <div style={{display:"flex",alignItems:"center",padding:"14px 16px",gap:10,borderBottom:`1px solid ${c.bd}`,background:c.card}}>
-          <button onClick={()=>{setView(prevView||"home");setQuiz(null);setQuizDone(false);}}
+          <button onClick={()=>{setView(prevView||"home");setQuiz(null);setQuizDone(false);setQuizBravo(null);}}
             style={{background:"none",border:"none",cursor:"pointer",color:c.tx3,padding:"6px 4px",display:"flex",alignItems:"center",flexShrink:0}}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
           </button>
@@ -2464,8 +2493,28 @@ body{background:${c.bg}}
                 Cad is brí leis seo? · What does this mean?
               </div>
 
+              {/* Bravo/Oops popup — fixed overlay centered on screen */}
+              {quizBravo&&(
+                <div style={{
+                  position:"fixed",left:"50%",transform:"translateX(-50%)",
+                  top:"38%",
+                  zIndex:200,pointerEvents:"none",
+                  background:quizBravo.isCorrect
+                    ?`linear-gradient(135deg,${c.acc},${c.gold})`
+                    :`linear-gradient(135deg,rgba(99,102,241,0.25),rgba(99,102,241,0.1))`,
+                  border:`1.5px solid ${quizBravo.isCorrect?c.gold:"rgba(99,102,241,0.5)"}`,
+                  borderRadius:20,padding:"12px 24px",
+                  animation:"bravoFadeUp 1.5s ease forwards",
+                  whiteSpace:"nowrap",
+                  boxShadow:quizBravo.isCorrect?`0 4px 24px ${c.gold}60,0 2px 12px rgba(0,0,0,0.3)`:"0 2px 16px rgba(0,0,0,0.25)",
+                  backdropFilter:"blur(8px)",
+                }}>
+                  <span style={{...hd,fontSize:"1.1rem",fontWeight:800,color:"#fff"}}>{quizBravo.msg}</span>
+                </div>
+              )}
+
               {/* Options */}
-              <div style={{width:"100%",display:"flex",flexDirection:"column",gap:10}}>
+              <div style={{width:"100%",display:"flex",flexDirection:"column",gap:10,position:"relative"}}>
                 {q.opts.map((opt,i)=>{
                   const picked=quizPicked!==null;
                   const correct=opt===q.answer;
@@ -2477,8 +2526,21 @@ body{background:${c.bg}}
                   return(
                     <button key={i} onClick={()=>{
                       if(quizPicked!==null)return;
+                      const isCorrect=opt===q.answer;
                       setQuizPicked(opt);
-                      if(opt===q.answer){setQuizScore(s=>s+1);playSound('correct');haptic([15]);}else{playSound('wrong');haptic([40,30,40]);}
+                      if(isCorrect){
+                        setQuizScore(s=>s+1);playSound('correct');haptic([15]);
+                        const BRAVOS=["Ar fheabhas! ✨","Maith thú! 🌟","Go hiontach! 🍀","Togha! ⭐","Tá tú iontach! 🏆"];
+                        setQuizBravo({msg:BRAVOS[Math.floor(Math.random()*BRAVOS.length)],isCorrect:true});
+                        setQuizBravoVisible(true);
+                        setTimeout(()=>setQuizBravo(null),1500);
+                      }else{
+                        playSound('wrong');haptic([40,30,40]);
+                        const OOPS=["Ná bac leis! Try again 💪","Is cuma! No worries 🍀","Ar aghaidh leat! Keep going ⭐"];
+                        setQuizBravo({msg:OOPS[Math.floor(Math.random()*OOPS.length)],isCorrect:false});
+                        setQuizBravoVisible(true);
+                        setTimeout(()=>setQuizBravo(null),1500);
+                      }
                       setTimeout(()=>{
                         if(quizIdx+1<quiz.length){setQuizIdx(i=>i+1);setQuizPicked(null);}
                         else{
@@ -3028,9 +3090,24 @@ body{background:${c.bg}}
         {/* ── CELEBRATIONS ── */}
         {celeb==="day"&&(()=>{
           const prov=CELEB_PROV[(selDay||1)%CELEB_PROV.length];
+          const celebCh = selDay ? CH[selDay-1] : null;
+          const nextCelebDay = selDay && selDay < CH.length ? selDay+1 : null;
+          const nextCelebCh = nextCelebDay ? CH[nextCelebDay-1] : null;
           return(
           <>
-            <Confetti/>
+            {/* Enhanced confetti with green, gold, white colors */}
+            <div style={{position:"fixed",inset:0,pointerEvents:"none",zIndex:98,overflow:"hidden"}}>
+              {Array.from({length:70},(_,i)=>{
+                const colors=["#2D6A4F","#40916C","#A67C2E","#D4A843","#C8963E","#ffffff","#B7E4C7","#F0D080","#6FCF97","#95D5B2"];
+                const left=Math.random()*100;
+                const delay=Math.random()*1.5;
+                const dur=1.6+Math.random()*1.2;
+                const color=colors[Math.floor(Math.random()*colors.length)];
+                const size=5+Math.random()*9;
+                const round=Math.random()>0.4;
+                return <div key={i} style={{position:"absolute",left:`${left}%`,top:-20,width:size,height:size,borderRadius:round?"50%":2,background:color,animation:`confetti-fall ${dur}s ${delay}s ease-in forwards`}}/>;
+              })}
+            </div>
             <div onClick={()=>setCeleb(null)} style={{position:"fixed",inset:0,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",background:c.celebBg,zIndex:100,backdropFilter:"blur(10px)"}}>
 
               {/* Outer glow rings */}
@@ -3051,11 +3128,11 @@ body{background:${c.bg}}
                 }}/>
               ))}
 
-              <div style={{textAlign:"center",animation:"pop 0.7s cubic-bezier(0.34,1.56,0.64,1)",padding:"0 28px",position:"relative",zIndex:1,maxWidth:340}}>
+              <div style={{textAlign:"center",animation:"pop 0.7s cubic-bezier(0.34,1.56,0.64,1)",padding:"0 28px",position:"relative",zIndex:1,maxWidth:340,overflowY:"auto",maxHeight:"92vh"}}>
 
                 {/* Big shamrock with golden glow */}
                 <div style={{
-                  fontSize:"6.5rem",marginBottom:10,lineHeight:1,
+                  fontSize:"5.5rem",marginBottom:6,lineHeight:1,
                   animation:"shamrock-spin 0.9s cubic-bezier(0.34,1.56,0.64,1) both",
                   filter:`drop-shadow(0 0 24px ${c.gold}80)`,
                 }}>☘️</div>
@@ -3066,11 +3143,31 @@ body{background:${c.bg}}
                   Maith thú!<IrishTip en="Well done! / You're good!"/>
                 </div>
 
+                {/* Completed phrase — large gold with glow */}
+                {celebCh&&(
+                  <div style={{
+                    margin:"14px 0 6px",
+                    padding:"14px 18px",
+                    background:`linear-gradient(135deg,${c.gold}18,${c.gold}08)`,
+                    border:`1px solid ${c.gold}50`,
+                    borderRadius:16,
+                    boxShadow:`0 0 28px ${c.gold}30,inset 0 1px 0 ${c.gold}20`,
+                    animation:"goldGlow 2s ease-in-out infinite",
+                  }}>
+                    <div style={{...hd,fontSize:"2rem",fontWeight:900,color:c.gold,fontStyle:"italic",lineHeight:1.1,textShadow:`0 0 30px ${c.gold}60`}}>
+                      {celebCh.p}
+                    </div>
+                    <div style={{...bd,fontSize:"0.82rem",color:"rgba(255,255,255,0.6)",marginTop:6,letterSpacing:"0.02em"}}>
+                      {celebCh.m}
+                    </div>
+                  </div>
+                )}
+
                 {/* Day + streak row */}
-                <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:10,marginBottom:18,flexWrap:"wrap"}}>
+                <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:10,marginBottom:14,marginTop:14,flexWrap:"wrap"}}>
                   <div style={{background:"rgba(255,255,255,0.1)",border:"1px solid rgba(255,255,255,0.18)",borderRadius:22,padding:"7px 20px"}}>
                     <span style={{...hd,fontSize:"1.05rem",color:"#fff"}}>Lá {selDay}</span>
-                    <span style={{...bd,fontSize:"0.78rem",color:"rgba(255,255,255,0.45)",marginLeft:7}}>/ 30</span>
+                    <span style={{...bd,fontSize:"0.78rem",color:"rgba(255,255,255,0.45)",marginLeft:7}}>/ {CH.length}</span>
                   </div>
                   {st.streak>=2&&(
                     <div style={{background:`${c.gold}20`,border:`1px solid ${c.gold}40`,borderRadius:22,padding:"7px 16px"}}>
@@ -3087,7 +3184,7 @@ body{background:${c.bg}}
                   </div>
                 )}
 
-                {/* 30 days! */}
+                {/* All done! */}
                 {selDay===CH.length&&(
                   <div style={{background:`${c.gold}20`,border:`1px solid ${c.gold}50`,borderRadius:14,padding:"13px 20px",marginBottom:14}}>
                     <div style={{...hd,fontSize:"1.3rem",color:c.gold,display:"flex",alignItems:"center",gap:4}}>Tá Gaeilge agat! 🏆<IrishTip en="You have Irish!"/></div>
@@ -3095,12 +3192,25 @@ body{background:${c.bg}}
                   </div>
                 )}
 
+                {/* Tomorrow's tease */}
+                {nextCelebCh&&(
+                  <div style={{
+                    background:"rgba(255,255,255,0.05)",
+                    border:"1px solid rgba(255,255,255,0.1)",
+                    borderRadius:12,padding:"10px 16px",marginBottom:12,textAlign:"left",
+                  }}>
+                    <div style={{...bd,fontSize:"0.58rem",color:"rgba(255,255,255,0.35)",letterSpacing:"0.18em",textTransform:"uppercase",marginBottom:4}}>Tomorrow</div>
+                    <div style={{...hd,fontSize:"0.85rem",color:"rgba(255,255,255,0.7)"}}>Lá {nextCelebDay} — {nextCelebCh.e}</div>
+                    <div style={{...bd,fontSize:"0.7rem",color:"rgba(200,150,62,0.6)",marginTop:2,fontStyle:"italic"}}>{nextCelebCh.p}</div>
+                  </div>
+                )}
+
                 {/* Irish proverb */}
                 <div style={{
                   borderTop:"1px solid rgba(255,255,255,0.1)",
-                  paddingTop:16,marginTop:4,
+                  paddingTop:14,marginTop:4,
                 }}>
-                  <div style={{...hd,fontSize:"0.95rem",fontStyle:"italic",color:`${c.gold}DD`,lineHeight:1.4,marginBottom:5}}>
+                  <div style={{...hd,fontSize:"0.9rem",fontStyle:"italic",color:`${c.gold}DD`,lineHeight:1.4,marginBottom:5}}>
                     "{prov.ga}"
                   </div>
                   <div style={{...bd,fontSize:"0.62rem",color:"rgba(255,255,255,0.35)",letterSpacing:"0.04em"}}>
@@ -3108,7 +3218,7 @@ body{background:${c.bg}}
                   </div>
                 </div>
 
-                <div style={{...bd,fontSize:"0.65rem",color:"rgba(255,255,255,0.25)",marginTop:22,letterSpacing:"0.08em"}}>tap to continue</div>
+                <div style={{...bd,fontSize:"0.65rem",color:"rgba(255,255,255,0.25)",marginTop:18,letterSpacing:"0.08em"}}>tap to continue</div>
               </div>
             </div>
           </>
@@ -4514,11 +4624,12 @@ body{background:${c.bg}}
           : `radial-gradient(ellipse 100% 50% at 50% 0%, rgba(27,67,50,0.06) 0%, transparent 55%),
              linear-gradient(175deg, ${c.bg2||c.bg} 0%, ${c.bg} 100%)`,
       }}>
-        {/* Subtle diamond texture overlay */}
+        {/* Subtle diamond texture overlay — animated Celtic shimmer */}
         <div style={{
-          position:"absolute",inset:0,pointerEvents:"none",opacity:c.dark?1:0.4,
+          position:"absolute",inset:"-44px",pointerEvents:"none",opacity:c.dark?0.9:0.3,
           backgroundImage:`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='44'%3E%3Cpath d='M22 2 L42 22 L22 42 L2 22 Z' fill='none' stroke='rgba(200,150,62,0.055)' stroke-width='0.6'/%3E%3C/svg%3E")`,
           backgroundSize:"44px 44px",
+          animation:"driftUp 12s ease-in-out infinite alternate",
         }}/>
 
         {/* Slow breathing top glow */}
@@ -4531,6 +4642,38 @@ body{background:${c.bg}}
 
         {/* Content */}
         <div style={{flex:1,display:"flex",flexDirection:"column",padding:"18px 26px 20px",position:"relative",zIndex:1}}>
+
+        {/* ── MILESTONE BANNER ── */}
+        {justHitMilestone&&(
+          <div style={{
+            marginBottom:14,padding:"12px 16px",
+            background:`linear-gradient(135deg,${c.gold}22,${c.gold}0a)`,
+            border:`1.5px solid ${c.gold}60`,
+            borderRadius:14,
+            animation:"slideDown 0.5s cubic-bezier(0.34,1.56,0.64,1), goldSparkle 2s ease-in-out infinite",
+            display:"flex",alignItems:"center",gap:10,
+          }}>
+            <span style={{fontSize:"1.5rem",flexShrink:0}}>🏆</span>
+            <div>
+              <div style={{...hd,fontSize:"0.95rem",fontWeight:800,color:c.gold,lineHeight:1.2}}>
+                {st.streak} day streak!
+              </div>
+              <div style={{...bd,fontSize:"0.75rem",color:c.dark?"rgba(240,237,228,0.7)":c.tx2,marginTop:2}}>
+                {MILESTONE_MSGS[st.streak]}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ── TIME-AWARE GREETING ── */}
+        <div style={{marginBottom:14}}>
+          <div style={{...hd,fontSize:"1.35rem",fontWeight:800,color:c.dark?"rgba(240,237,228,0.92)":c.tx,lineHeight:1.1}}>
+            {greeting}
+          </div>
+          <div style={{...bd,fontSize:"0.72rem",color:c.dark?"rgba(200,150,62,0.55)":c.tx3,marginTop:3}}>
+            {greetingEn} · {streakMsg}
+          </div>
+        </div>
 
         {isLockedToday?(
           /* ── LOCKED STATE ── */
@@ -4721,19 +4864,33 @@ body{background:${c.bg}}
               ))}
             </div>
 
+            {/* Daily motivational quote */}
+            <div style={{
+              borderLeft:`3px solid ${c.gold}`,
+              paddingLeft:12,
+              marginBottom:2,
+            }}>
+              <div style={{...hd,fontSize:"0.78rem",fontStyle:"italic",color:c.dark?"rgba(200,150,62,0.75)":c.acc,lineHeight:1.4}}>
+                "{dailyQuote.irish}"
+              </div>
+              <div style={{...bd,fontSize:"0.6rem",color:c.tx3,marginTop:3}}>
+                {dailyQuote.en}
+              </div>
+            </div>
+
             {/* CTA */}
             <button onClick={()=>{haptic([10,20,10]);setPrevView("home");
               if(allDone){setView("map");}else{setSelDay(nextDay);setView("day");}
             }} style={{
-              width:"100%",padding:"17px",border:"none",cursor:"pointer",
+              width:"100%",padding:"17px",cursor:"pointer",
               background:missionLesson
                 ?(c.dark?"rgba(111,207,151,0.13)":"rgba(27,67,50,0.07)")
                 :"linear-gradient(135deg,#2D6A4F 0%,#1B4332 100%)",
               borderRadius:14,
               display:"flex",alignItems:"center",justifyContent:"center",gap:10,
-              animation:missionLesson?"none":"breathe 2.4s ease infinite",
-              boxShadow:missionLesson?"none":"0 4px 22px rgba(27,67,50,0.6)",
-              outline:missionLesson?`1px solid ${c.doneBd}`:"none",
+              animation:missionLesson?"none":"breathe 2.5s ease-in-out infinite",
+              boxShadow:missionLesson?"none":`0 4px 22px rgba(27,67,50,0.6), 0 0 0 1.5px ${c.gold}55`,
+              border:missionLesson?`1px solid ${c.doneBd}`:`1.5px solid ${c.gold}40`,
             }}>
               <span style={{...bd,fontSize:"1rem",fontWeight:800,letterSpacing:"0.01em",
                 color:missionLesson?c.doneTx:"#fff"}}>
