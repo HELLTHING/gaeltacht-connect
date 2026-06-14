@@ -4022,19 +4022,14 @@ body{background:${c.bg}}
 
   // ═══════════════════════════════
   // WELCOME SCREEN
-  // ═══════════════════════════════
   if(view==="welcome"){
   const isReturning=(st?.done||[]).length>0;
-  // Phase 1: tap → phase 2 menu
   const onSplashTap=()=>{
     if(welcomeTapped)return;
-    haptic([8,20,8,20,30]);
+    haptic([8,20,8]);
     setWelcomeTapped(true);
   };
-  const goPlay=()=>{
-    haptic([10,30,10]);
-    setView("home");
-  };
+  const goPlay=()=>{haptic([10,30,10]);setView("home");};
   const goMode=(v)=>{
     haptic([8,20]);
     if(v==="pub"){setPubIdx(0);setPubFlipped(false);}
@@ -4045,41 +4040,54 @@ body{background:${c.bg}}
   return(
     <div style={{
       minHeight:"100vh",
-      background:"linear-gradient(160deg,#020704 0%,#071208 45%,#0a1a0c 75%,#040a05 100%)",
+      background:"#030905",
       display:"flex",flexDirection:"column",alignItems:"center",
       overflow:"hidden",position:"relative",color:"#EDE9DF",userSelect:"none",
       justifyContent:welcomeTapped?"flex-start":"center",
-      transition:"justify-content 0.6s ease",
     }}>
       <style>{css}{`
-        @keyframes wSpin{0%{transform:rotate(0deg) scale(0.4);opacity:0}60%{transform:rotate(380deg) scale(1.1);opacity:1}80%{transform:rotate(357deg) scale(0.98)}100%{transform:rotate(360deg) scale(1);opacity:1}}
+        @keyframes wSpin{0%{transform:rotate(0deg) scale(0.35);opacity:0}65%{transform:rotate(375deg) scale(1.08);opacity:1}82%{transform:rotate(358deg) scale(0.97)}100%{transform:rotate(360deg) scale(1);opacity:1}}
         @keyframes wShimmer{0%{background-position:200% center}100%{background-position:-200% center}}
-        @keyframes wFadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
-        @keyframes wTapHint{0%,100%{opacity:0.28}50%{opacity:0.6}}
-        .wlogo-splash{animation:wSpin 1.1s cubic-bezier(0.34,1.56,0.64,1) both}
-        .wtitle{animation:wFadeUp 0.5s 0.7s ease both}
-        .wsub{animation:wFadeUp 0.5s 0.95s ease both}
-        .wtap{animation:wFadeUp 0.5s 1.3s ease both,wTapHint 2s 1.8s ease-in-out infinite}
-        .wmenu{animation:wFadeUp 0.3s ease both}
+        @keyframes wFadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+        @keyframes wFadeIn{from{opacity:0}to{opacity:1}}
+        @keyframes wTapHint{0%,100%{opacity:0.25}50%{opacity:0.55}}
+        @keyframes wRipple{0%{transform:scale(0.9);opacity:0.55}100%{transform:scale(8);opacity:0}}
+        .wlogo-splash{animation:wSpin 1s cubic-bezier(0.34,1.56,0.64,1) both}
+        .wtitle{animation:wFadeUp 0.45s 0.65s ease both}
+        .wsub{animation:wFadeUp 0.4s 0.88s ease both}
+        .wtap{animation:wFadeUp 0.4s 1.2s ease both,wTapHint 2.2s 1.8s ease-in-out infinite}
+        .wmenu{animation:wFadeIn 0.35s ease both}
+        .wripple1{animation:wRipple 0.9s 0s ease-out forwards}
+        .wripple2{animation:wRipple 0.9s 0.15s ease-out forwards}
+        .wripple3{animation:wRipple 0.9s 0.3s ease-out forwards}
       `}</style>
 
-      {/* Celtic diamond bg */}
-      <div style={{position:"absolute",inset:0,pointerEvents:"none",opacity:0.6,
-        backgroundImage:`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48'%3E%3Cpath d='M24 3 L45 24 L24 45 L3 24 Z' fill='none' stroke='rgba(200,150,62,0.06)' stroke-width='0.7'/%3E%3C/svg%3E")`,
+      {/* Static Celtic diamond bg */}
+      <div style={{position:"absolute",inset:0,pointerEvents:"none",opacity:0.5,
+        backgroundImage:`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48'%3E%3Cpath d='M24 3 L45 24 L24 45 L3 24 Z' fill='none' stroke='rgba(200,150,62,0.07)' stroke-width='0.8'/%3E%3C/svg%3E")`,
         backgroundSize:"48px 48px"}}/>
 
-      {/* ── PHASE 1: splash tap zone ── */}
+      {/* Celtic ripple rings — shown on tap, expand outward and dissolve */}
+      {welcomeTapped&&(
+        <div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"center",pointerEvents:"none",zIndex:5}}>
+          <div className="wripple1" style={{position:"absolute",width:88,height:88,borderRadius:"50%",border:"1.5px solid rgba(212,152,60,0.55)"}}/>
+          <div className="wripple2" style={{position:"absolute",width:88,height:88,borderRadius:"50%",border:"1px solid rgba(212,152,60,0.38)"}}/>
+          <div className="wripple3" style={{position:"absolute",width:88,height:88,borderRadius:"50%",border:"0.5px solid rgba(212,152,60,0.22)"}}/>
+        </div>
+      )}
+
+      {/* ── PHASE 1: splash ── */}
       {!welcomeTapped?(
         <div onClick={onSplashTap} style={{display:"flex",flexDirection:"column",alignItems:"center",cursor:"pointer",paddingBottom:40}}>
           {/* Logo */}
-          <div style={{marginBottom:28}}>
+          <div style={{marginBottom:26}}>
             <div className="wlogo-splash" style={{
               width:88,height:88,borderRadius:"50%",
               background:"radial-gradient(ellipse at 38% 35%,rgba(45,106,79,0.97) 0%,rgba(6,14,8,0.99) 68%)",
               border:"1.5px solid rgba(212,152,60,0.45)",
               display:"flex",alignItems:"center",justifyContent:"center",
               fontSize:"2.8rem",lineHeight:1,
-              boxShadow:"0 12px 40px rgba(0,0,0,0.6)",
+              boxShadow:"0 10px 36px rgba(0,0,0,0.55)",
             }}>☘️</div>
           </div>
           <div className="wtitle" style={{
