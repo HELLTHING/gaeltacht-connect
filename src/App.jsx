@@ -1818,7 +1818,7 @@ function CelticMandala(){
   };
 
   return(
-    <div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"center",pointerEvents:"none",overflow:"hidden",zIndex:0,opacity:0.38}}>
+    <div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"center",pointerEvents:"none",overflow:"hidden",zIndex:0,opacity:0.20}}>
       <svg viewBox="-700 -700 1400 1400"
         style={{width:"155vmax",height:"155vmax",flexShrink:0,
           filter:"blur(0.4px)",
@@ -2075,7 +2075,6 @@ export default function App() {
     if(st.dailyLog?.[k])return;
     const dl={...(st.dailyLog||{}),[k]:true};
     await save({...st,dailyLog:dl});
-    playSound('complete');
     haptic([30,50,30,50,80]);
     sbIncrement(k).then(()=>sbGetCount(k).then(n=>{if(n!==null)setCommunityCount(n);}));
   },[st,save]);
@@ -2209,7 +2208,6 @@ export default function App() {
     if((st.done||[]).length>0&&st.lastCompletedDate===todayKey())return;
     const nd=[...st.done,d];const k=calcStreak(nd);
     await save({...st,done:nd,streak:k,best:Math.max(k,st.best||0),lastCompletedDate:todayKey()});
-    playSound('complete');
     setCeleb("day");
     // Trigger quiz after completing weeks 1, 2, 3
     if([7,14,21].includes(d)){
@@ -2226,7 +2224,6 @@ export default function App() {
   const doBonus=async(d)=>{
     if(!st||st.bonus.includes(d))return;
     await save({...st,bonus:[...st.bonus,d]});
-    playSound('bonus');
     setCeleb("bonus");setTimeout(()=>setCeleb(null),1500);
   };
   const doTask=async(day,idx)=>{
@@ -3142,34 +3139,8 @@ body{background:${c.bg}}
                   <div style={{...hd,fontSize:"2.4rem",fontWeight:700,fontStyle:"italic",color:c.acc,lineHeight:1.2,marginBottom:6,textAlign:"center"}}>
                     {ch.p}
                   </div>
-                  <div style={{...bd,fontSize:"0.78rem",color:c.gold,opacity:0.7,letterSpacing:"0.04em",marginBottom:8,fontStyle:"italic"}}>{ch.m}</div>
+                  <div style={{...bd,fontSize:"0.78rem",color:"#E8A83E",opacity:1,letterSpacing:"0.04em",marginBottom:8,fontStyle:"italic",textShadow:"0 0 8px rgba(232,168,62,0.3)"}}>{ch.m}</div>
                   <div style={{...bd,fontSize:"0.84rem",color:c.tx3,letterSpacing:"0.06em",marginBottom:14,fontStyle:"italic"}}>/ {ch.pr} /</div>
-                  <button onClick={()=>speak(ch.p)} style={{
-                    background:speakError==="no-voice"?`rgba(180,70,0,0.08)`:c.phrase,
-                    border:`1px solid ${speakError==="no-voice"?`rgba(180,70,0,0.35)`:c.phraseBd}`,
-                    borderRadius:20,padding:"7px 18px",
-                    color:speakError==="no-voice"?`#B44600`:c.acc,
-                    ...bd,fontSize:"0.85rem",cursor:"pointer",
-                    display:"inline-flex",alignItems:"center",gap:7,marginBottom:speakError?6:10,
-                    transition:"all 0.2s",
-                  }}>
-                    {speakLoading
-                      ?<><span>⏳</span> Ag lódáil…</>
-                      :speakError==="no-voice"
-                      ?<>🔇 Níl guth Gaeilge · Tap to retry</>
-                      :<><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M15.54 8.46a5 5 0 010 7.07" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round"/></svg>Éist le fuaim <span style={{opacity:0.55,fontSize:"0.75rem"}}>· Listen</span></>
-                    }
-                  </button>
-                  {speakError==="no-voice"&&(
-                    <div style={{...bd,fontSize:"0.72rem",color:c.tx3,marginBottom:10,lineHeight:1.55,maxWidth:280,textAlign:"center"}}>
-                      Install an Irish voice: <strong style={{color:c.tx2}}>iOS</strong> Settings → Accessibility → Spoken Content → Voices → Irish · <strong style={{color:c.tx2}}>Android</strong> Settings → Text-to-speech → Add Irish
-                    </div>
-                  )}
-                  {speakError==="ok-accent"&&(
-                    <div style={{...bd,fontSize:"0.72rem",color:c.tx3,marginBottom:10,lineHeight:1.55,maxWidth:280,textAlign:"center",opacity:0.75}}>
-                      No native Irish voice — approximation only. For real pronunciation, install an Irish voice.
-                    </div>
-                  )}
                 </div>
 
                 {/* Challenge */}
@@ -3507,12 +3478,16 @@ body{background:${c.bg}}
 
               <div style={{textAlign:"center",animation:"pop 0.7s cubic-bezier(0.34,1.56,0.64,1)",padding:"0 28px",position:"relative",zIndex:1,maxWidth:340,overflowY:"auto",maxHeight:"92vh"}}>
 
-                {/* Big shamrock with golden glow */}
-                <div style={{
-                  fontSize:"5.5rem",marginBottom:6,lineHeight:1,
-                  animation:"shamrock-spin 0.9s cubic-bezier(0.34,1.56,0.64,1) both",
-                  filter:`drop-shadow(0 0 24px ${c.gold}80)`,
-                }}>☘️</div>
+                {/* Celtic triple-spiral motif */}
+                <svg width="64" height="64" viewBox="-32 -32 64 64" style={{marginBottom:10,animation:"pop 0.5s ease both",filter:`drop-shadow(0 0 10px ${c.gold}70)`}} aria-hidden="true">
+                  {[0,120,240].map(deg=>(
+                    <g key={deg} transform={`rotate(${deg})`}>
+                      <path d="M0,0 C6,-10 16,-13 22,-7 C28,-1 26,10 19,16 C12,22 -1,20 -9,13 C-17,6 -17,-7 -10,-16 C-3,-25 9,-28 19,-22"
+                        fill="none" stroke={c.gold} strokeWidth="2" strokeLinecap="round"/>
+                    </g>
+                  ))}
+                  <circle r="3.5" fill={c.gold}/>
+                </svg>
 
                 {/* Main headline */}
                 <div style={{...hd,fontSize:"3.2rem",fontWeight:900,color:"#fff",lineHeight:1,marginBottom:4,
@@ -3658,9 +3633,6 @@ body{background:${c.bg}}
                 <div style={{...bd,fontSize:"0.7rem",color:c.tx3}}>/{w.pr}/</div>
                 <div style={{...bd,fontSize:"0.82rem",color:c.tx2}}>{w.m}</div>
               </div>
-              <button onClick={()=>speak(w.p)} style={{background:c.cardAlt,border:`1px solid ${c.bd}`,borderRadius:8,width:34,height:34,flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",fontSize:"0.95rem",opacity:speakLoading?0.5:1}}>
-                {speakLoading?"⏳":speakError==="no-voice"?"🔇":"🔊"}
-              </button>
             </div>
           ))}
           {filtered.length===0&&<div style={{textAlign:"center",padding:"40px",...bd,color:c.tx3,fontStyle:"italic"}}>Níor aimsíodh aon rud — Nothing found</div>}
