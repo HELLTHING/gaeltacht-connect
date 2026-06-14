@@ -2308,7 +2308,7 @@ export default function App() {
       await saveS(i);setSt(i);
     }
     setLoading(false);
-    if(s?.seenWelcome){
+    if(s?.seenWelcome || (s?.done?.length>0)) {
       setView("home");
     } else {
       setView("welcome");
@@ -4725,9 +4725,14 @@ body{background:${c.bg}}
     haptic([8,20,8]);
     setWelcomeTapped(true);
   };
-  const goPlay=()=>{haptic([10,30,10]);setView("home");};
+  const goPlay=()=>{
+    haptic([10,30,10]);
+    if(st) save({...st,seenWelcome:true});
+    setView("home");
+  };
   const goMode=(v)=>{
     haptic([8,20]);
+    if(st) save({...st,seenWelcome:true});
     if(v==="pub"){setPubIdx(0);setPubFlipped(false);}
     if(v==="surnames")setSurnameSearch("");
     setView(v);
