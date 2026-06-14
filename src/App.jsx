@@ -345,6 +345,39 @@ const DIALOGUES=[
   ]},
 ];
 
+const CULTUR=[
+  {id:1,title:"Samhain",emoji:"🎃",
+   text:"Samhain (31 Deireadh Fómhair) is the oldest of the four Celtic festivals. The veil between the living and the dead was believed to be thinnest on this night. People lit bonfires and wore costumes to ward off wandering spirits. It is the direct ancestor of Halloween.",
+   word:"Samhain",wordEn:"Summer's End · Nov 1st",pron:"SOW-in"},
+  {id:2,title:"Imbolc",emoji:"🌱",
+   text:"Imbolc (1 Feabhra) marks the beginning of spring and is sacred to the goddess Bríd (Brigid). Straw crosses — Cros Bhríde — were woven and hung above doors for protection and good harvest. St Brigid's Day is still celebrated on February 1st across Ireland.",
+   word:"Imbolc",wordEn:"In the Belly (of the earth)",pron:"IM-ulk"},
+  {id:3,title:"Bealtaine",emoji:"🌸",
+   text:"Bealtaine (1 Bealtaine) welcomed summer. Cattle were driven between two great bonfires to purify them before the grazing season. People danced around the fires and gathered May flowers. The word 'bonfire' itself derives from 'bone fire', a Bealtaine tradition.",
+   word:"Bealtaine",wordEn:"Bright Fire · May 1st",pron:"BYAL-tin-uh"},
+  {id:4,title:"Lúnasa",emoji:"🌾",
+   text:"Lúnasa (1 Lúnasa) is named after the god Lugh, master of crafts and skills. It was a harvest festival — communities gathered on hilltops, traded goods, held athletic contests, and gave thanks for the first fruits of the earth. Croagh Patrick pilgrimages trace to Lúnasa.",
+   word:"Lúnasa",wordEn:"Festival of Lugh · August",pron:"LOO-nuh-suh"},
+  {id:5,title:"An Ghaeilge",emoji:"🗺️",
+   text:"Irish (Gaeilge) is one of the oldest written languages in Europe. The earliest texts date to the 4th century. At its peak, Irish was spoken across all of Ireland and parts of Scotland. Today around 1.8 million people have some knowledge of Irish; about 73,000 speak it daily.",
+   word:"Gaeilge",wordEn:"The Irish Language",pron:"GWAYLIGUH"},
+  {id:6,title:"Túath Dé",emoji:"⚡",
+   text:"The Tuatha Dé Danann ('People of the Goddess Danu') were the divine race of ancient Irish mythology. They arrived in Ireland on storm clouds and brought four magical treasures: the Spear of Lugh, the Sword of Nuada, the Cauldron of the Dagda, and the Stone of Fál.",
+   word:"Tuatha Dé Danann",wordEn:"People of the Goddess Danu",pron:"TOO-uh-huh day DAN-un"},
+  {id:7,title:"Ogham",emoji:"🪨",
+   text:"Ogham is Ireland's ancient script, carved on standing stones from the 4th to 6th centuries. It uses a series of notches and lines along a central stem. Over 400 Ogham stones survive across Ireland, Wales, and Scotland — mostly marking tribal territories or commemorating the dead.",
+   word:"Ogham",wordEn:"Ancient Irish Script",pron:"OH-um"},
+  {id:8,title:"Céilí",emoji:"💃",
+   text:"A céilí is a traditional Irish social gathering with folk music and dancing. Set dances like 'The Siege of Ennis' and 'The Walls of Limerick' are performed in groups. The céilí tradition was nearly lost in the 19th century but was revived by the Gaelic League in 1897.",
+   word:"Céilí",wordEn:"Social Gathering / Dance",pron:"KAY-lee"},
+  {id:9,title:"Uilleann Píoba",emoji:"🎶",
+   text:"The uilleann pipes are Ireland's unique bellows-blown bagpipes, far more complex than the Scottish pipes. The bag is inflated by a bellows worked by the elbow (uilleann = elbow), allowing the player to sing while playing. UNESCO added them to its intangible cultural heritage list in 2017.",
+   word:"Uilleann Píoba",wordEn:"Elbow Pipes",pron:"ILL-un PEE-buh"},
+  {id:10,title:"Seanachaí",emoji:"📖",
+   text:"The seanachaí (storyteller) was the keeper of community memory — genealogies, myths, histories, and folklore. Storytelling was considered a high art form; a master seanachaí could recite hundreds of tales from memory. The tradition lives on in modern Irish literature and song.",
+   word:"Seanachaí",wordEn:"Traditional Storyteller",pron:"SHAN-uh-khee"},
+];
+
 const CATS = { greetings:"👋", review:"🔄", food:"☕", shopping:"🛍️", opinions:"💬", social:"🤝", directions:"🧭", vocabulary:"📚", culture:"🎭", immersion:"🔥", days:"📆", numbers:"🔢", months:"🗓️", colors:"🎨", family:"👨‍👩‍👧", animals:"🐾", phrases:"🗣️", body:"🫀", clothes:"👕", transport:"🚗", emotions:"💭", nature:"🌿", home:"🏡", verbs:"⚡", adjectives:"✨", weather:"🌦️", time:"⏰", places:"📍", sports:"🏃" };
 const WK = [
   { name: "Fáilte", en: "Greetings & Basics", start: 0, end: 7 },
@@ -1788,6 +1821,7 @@ export default function App() {
   const [grammarOpen,setGrammarOpen]=useState(null);
   const [comhraSel,setComhraSel]=useState(null);
   const [comhraReveal,setComhraReveal]=useState([]);
+  const [culterOpen,setCulterOpen]=useState(null);
   const c = THEMES[theme]||THEMES.coill;
   const dk = c.dark; // keep dk as a convenience boolean for backward compat
 
@@ -4515,6 +4549,7 @@ body{background:${c.bg}}
               {e:"🗣️",l:"Phrases",s:"Nathanna",v:"nathanna"},
               {e:"📐",l:"Grammar",s:"Gramadach",v:"gramadach"},
               {e:"💬",l:"Dialogues",s:"Comhrá",v:"comhra"},
+              {e:"🏺",l:"Culture",s:"Cultúr",v:"cultur"},
               {e:"🍺",l:"Pub Mode",s:"Mód an Tabhairne",v:"pub"},
               {e:"📖",l:"Dictionary",s:"Foclóir",v:"dict"},
               {e:"🗺️",l:"Map",s:"Léarscáil",v:"map"},
@@ -4863,6 +4898,62 @@ body{background:${c.bg}}
                       <div style={{...bd,fontSize:"0.65rem",color:"#6FCF97",letterSpacing:"0.1em",textTransform:"uppercase",marginBottom:3}}>💡 Leid · Tip</div>
                       <div style={{...bd,fontSize:"0.74rem",color:"rgba(240,237,228,0.7)",lineHeight:1.55}}>{section.tip}</div>
                     </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+
+  // ═══════════════════════════════
+  // CULTÚR — CULTURE CARDS
+  // ═══════════════════════════════
+  if(view==="cultur"){
+    return(
+      <div style={{minHeight:"100vh",background:c.bg,color:c.tx,display:"flex",flexDirection:"column"}}>
+        <style>{css}</style>
+        <div style={{background:"rgba(3,9,5,0.97)",borderBottom:`1px solid ${c.bd}`,padding:"16px 20px",flexShrink:0,position:"sticky",top:0,zIndex:10}}>
+          <div style={{display:"flex",alignItems:"center",gap:12}}>
+            <button onClick={()=>setView("home")} style={{background:"none",border:"none",color:c.tx3,cursor:"pointer",fontSize:"1.2rem",padding:4,lineHeight:1}}>←</button>
+            <div>
+              <div style={{...hd,fontSize:"1.1rem",fontWeight:800,color:c.tx}}>Cultúr · Culture</div>
+              <div style={{...bd,fontSize:"0.7rem",color:c.tx3}}>Irish history, myth & tradition</div>
+            </div>
+          </div>
+        </div>
+        <div style={{flex:1,overflowY:"auto",padding:"16px",display:"flex",flexDirection:"column",gap:10}}>
+          {CULTUR.map(card=>{
+            const open=culterOpen===card.id;
+            return(
+              <div key={card.id} style={{
+                background:"rgba(200,150,62,0.05)",
+                border:`1px solid ${open?"rgba(212,152,60,0.35)":"rgba(200,150,62,0.12)"}`,
+                borderRadius:16,overflow:"hidden",
+              }}>
+                <button onClick={()=>{haptic([6]);setCulterOpen(open?null:card.id);}} style={{
+                  width:"100%",padding:"16px",background:"transparent",border:"none",cursor:"pointer",
+                  display:"flex",alignItems:"center",gap:12,textAlign:"left",
+                }}>
+                  <span style={{fontSize:"1.6rem",flexShrink:0}}>{card.emoji}</span>
+                  <div style={{flex:1}}>
+                    <div style={{...hd,fontSize:"0.95rem",fontWeight:700,color:c.tx}}>{card.title}</div>
+                    <div style={{...bd,fontSize:"0.62rem",color:"rgba(212,152,60,0.5)",marginTop:1}}>{card.wordEn}</div>
+                  </div>
+                  <span style={{...bd,fontSize:"0.8rem",color:c.tx3,transform:open?"rotate(180deg)":"none",transition:"transform 0.2s"}}>▾</span>
+                </button>
+                {open&&(
+                  <div style={{padding:"0 16px 18px"}}>
+                    {/* Pronunciation chip */}
+                    <div style={{display:"inline-flex",alignItems:"center",gap:6,
+                      background:"rgba(212,152,60,0.08)",border:"1px solid rgba(212,152,60,0.2)",
+                      borderRadius:20,padding:"4px 12px",marginBottom:12}}>
+                      <span style={{...hd,fontSize:"0.85rem",color:"#D4983C",fontStyle:"italic"}}>{card.word}</span>
+                      <span style={{...bd,fontSize:"0.62rem",color:"rgba(212,152,60,0.5)"}}>/{card.pron}/</span>
+                    </div>
+                    <div style={{...bd,fontSize:"0.8rem",color:"rgba(240,237,228,0.72)",lineHeight:1.75}}>{card.text}</div>
                   </div>
                 )}
               </div>
@@ -5486,6 +5577,31 @@ body{background:${c.bg}}
               </span>
               {!missionLesson&&<span style={{fontSize:"1rem",color:"rgba(255,255,255,0.5)"}}>→</span>}
             </button>
+
+            {/* ── FOGHLAIMIGH — quick-access tiles ── */}
+            <div style={{marginTop:18}}>
+              <div style={{...bd,fontSize:"0.62rem",color:"rgba(212,152,60,0.45)",letterSpacing:"0.18em",textTransform:"uppercase",marginBottom:10}}>
+                Foghlaimigh · Learn
+              </div>
+              <div style={{display:"flex",gap:7,overflowX:"auto",paddingBottom:2}}>
+                {[
+                  {e:"📚",l:"Teagasc",v:"teagasc"},
+                  {e:"🗣️",l:"Nathanna",v:"nathanna"},
+                  {e:"💬",l:"Comhrá",v:"comhra"},
+                  {e:"📐",l:"Gramadach",v:"gramadach"},
+                  {e:"🏺",l:"Cultúr",v:"cultur"},
+                ].map(({e,l,v})=>(
+                  <button key={v} onClick={()=>{haptic([8,16]);setView(v);}} style={{
+                    flexShrink:0,display:"flex",flexDirection:"column",alignItems:"center",gap:5,
+                    padding:"10px 12px",borderRadius:14,border:"1px solid rgba(200,150,62,0.15)",
+                    background:"rgba(200,150,62,0.05)",cursor:"pointer",minWidth:64,
+                  }}>
+                    <span style={{fontSize:"1.3rem"}}>{e}</span>
+                    <span style={{...bd,fontSize:"0.58rem",color:"rgba(212,152,60,0.65)",fontWeight:700,letterSpacing:"0.04em"}}>{l}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
           </>
         )}
