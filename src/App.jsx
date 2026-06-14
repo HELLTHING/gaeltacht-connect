@@ -4052,6 +4052,7 @@ body{background:${c.bg}}
         @keyframes wFadeIn{from{opacity:0}to{opacity:1}}
         @keyframes wTapHint{0%,100%{opacity:0.25}50%{opacity:0.55}}
         @keyframes wRipple{0%{transform:scale(0.9);opacity:0.55}100%{transform:scale(8);opacity:0}}
+        @keyframes celtRot{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
         .wlogo-splash{animation:wSpin 1s cubic-bezier(0.34,1.56,0.64,1) both}
         .wtitle{animation:wFadeUp 0.45s 0.65s ease both}
         .wsub{animation:wFadeUp 0.4s 0.88s ease both}
@@ -4081,19 +4082,41 @@ body{background:${c.bg}}
         <div onClick={onSplashTap} style={{display:"flex",flexDirection:"column",alignItems:"center",cursor:"pointer",paddingBottom:40}}>
           {/* Logo */}
           <div style={{position:"relative",display:"flex",alignItems:"center",justifyContent:"center",marginBottom:26}}>
-            {/* Triquetra — three-arc Celtic knot behind logo */}
-            <svg width="180" height="180" viewBox="-90 -90 180 180"
-              style={{position:"absolute",pointerEvents:"none",opacity:1}} aria-hidden="true">
-              {/* outer ring */}
-              <circle cx="0" cy="0" r="72" fill="none" stroke="rgba(212,152,60,0.10)" strokeWidth="0.5"/>
-              {/* triquetra arcs — three interlocked vesica piscis */}
-              <g fill="none" stroke="rgba(212,152,60,0.32)" strokeWidth="1.4" strokeLinecap="round">
-                <path d="M0,-52 C28,-28 28,28 0,28 C-28,28 -28,-28 0,-52Z"/>
-                <path d="M0,-52 C28,-28 28,28 0,28 C-28,28 -28,-28 0,-52Z" transform="rotate(120)"/>
-                <path d="M0,-52 C28,-28 28,28 0,28 C-28,28 -28,-28 0,-52Z" transform="rotate(240)"/>
+            {/* Triquetra — double-cord Celtic knot, slowly rotating */}
+            <svg width="210" height="210" viewBox="-105 -105 210 210"
+              style={{position:"absolute",pointerEvents:"none"}} aria-hidden="true">
+              <defs>
+                <filter id="wceltGlow" x="-35%" y="-35%" width="170%" height="170%">
+                  <feGaussianBlur in="SourceGraphic" stdDeviation="2.2" result="blur"/>
+                  <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+                </filter>
+              </defs>
+              <g style={{animation:"celtRot 90s linear infinite",transformBox:"fill-box",transformOrigin:"center"}}>
+                {/* Outer decorative rings */}
+                <circle cx="0" cy="0" r="96" fill="none" stroke="rgba(212,152,60,0.07)" strokeWidth="0.8"/>
+                <circle cx="0" cy="0" r="93" fill="none" stroke="rgba(212,152,60,0.04)" strokeWidth="0.4" strokeDasharray="3 7"/>
+                {/* Double-cord triquetra: dark outline creates the cord boundary */}
+                <g fill="none" stroke="rgba(3,9,5,0.98)" strokeWidth="6" strokeLinecap="round">
+                  <path d="M0,-62 C34,-34 34,34 0,34 C-34,34 -34,-34 0,-62Z"/>
+                  <path d="M0,-62 C34,-34 34,34 0,34 C-34,34 -34,-34 0,-62Z" transform="rotate(120)"/>
+                  <path d="M0,-62 C34,-34 34,34 0,34 C-34,34 -34,-34 0,-62Z" transform="rotate(240)"/>
+                </g>
+                {/* Gold cord on top — with soft glow */}
+                <g fill="none" stroke="rgba(212,152,60,0.48)" strokeWidth="2" strokeLinecap="round" filter="url(#wceltGlow)">
+                  <path d="M0,-62 C34,-34 34,34 0,34 C-34,34 -34,-34 0,-62Z"/>
+                  <path d="M0,-62 C34,-34 34,34 0,34 C-34,34 -34,-34 0,-62Z" transform="rotate(120)"/>
+                  <path d="M0,-62 C34,-34 34,34 0,34 C-34,34 -34,-34 0,-62Z" transform="rotate(240)"/>
+                </g>
+                {/* Jewel at each tip — (0,-62), (-53.7, 31), (53.7, 31) */}
+                <g stroke="rgba(3,9,5,0.95)" strokeWidth="1.2">
+                  <circle cx="0" cy="-62" r="3.2" fill="rgba(212,152,60,0.6)"/>
+                  <circle cx="-53.7" cy="31" r="3.2" fill="rgba(212,152,60,0.6)"/>
+                  <circle cx="53.7" cy="31" r="3.2" fill="rgba(212,152,60,0.6)"/>
+                </g>
+                {/* Inner dashed ring + center dot */}
+                <circle cx="0" cy="0" r="28" fill="none" stroke="rgba(212,152,60,0.11)" strokeWidth="0.7" strokeDasharray="2 5"/>
+                <circle cx="0" cy="0" r="1.8" fill="rgba(212,152,60,0.22)"/>
               </g>
-              {/* inner glow ring */}
-              <circle cx="0" cy="0" r="50" fill="none" stroke="rgba(212,152,60,0.07)" strokeWidth="0.5"/>
             </svg>
             <div className="wlogo-splash" style={{
               width:88,height:88,borderRadius:"50%",
@@ -4137,14 +4160,29 @@ body{background:${c.bg}}
 
           {/* Small logo header */}
           <div style={{display:"flex",flexDirection:"column",alignItems:"center",padding:"32px 0 24px"}}>
-            <div style={{
-              width:64,height:64,borderRadius:"50%",
-              background:"radial-gradient(ellipse at 38% 35%,rgba(45,106,79,0.97) 0%,rgba(6,14,8,0.99) 68%)",
-              border:"2px solid rgba(212,152,60,0.55)",
-              display:"flex",alignItems:"center",justifyContent:"center",fontSize:"2.1rem",
-              boxShadow:"0 8px 40px rgba(0,0,0,0.6),0 0 50px rgba(212,152,60,0.22)",
-              marginBottom:12,
-            }}>☘️</div>
+            <div style={{position:"relative",display:"flex",alignItems:"center",justifyContent:"center",marginBottom:12}}>
+              <svg width="120" height="120" viewBox="-60 -60 120 120"
+                style={{position:"absolute",pointerEvents:"none"}} aria-hidden="true">
+                <g fill="none" stroke="rgba(3,9,5,0.97)" strokeWidth="4" strokeLinecap="round">
+                  <path d="M0,-38 C21,-21 21,21 0,21 C-21,21 -21,-21 0,-38Z"/>
+                  <path d="M0,-38 C21,-21 21,21 0,21 C-21,21 -21,-21 0,-38Z" transform="rotate(120)"/>
+                  <path d="M0,-38 C21,-21 21,21 0,21 C-21,21 -21,-21 0,-38Z" transform="rotate(240)"/>
+                </g>
+                <g fill="none" stroke="rgba(212,152,60,0.35)" strokeWidth="1.3" strokeLinecap="round">
+                  <path d="M0,-38 C21,-21 21,21 0,21 C-21,21 -21,-21 0,-38Z"/>
+                  <path d="M0,-38 C21,-21 21,21 0,21 C-21,21 -21,-21 0,-38Z" transform="rotate(120)"/>
+                  <path d="M0,-38 C21,-21 21,21 0,21 C-21,21 -21,-21 0,-38Z" transform="rotate(240)"/>
+                </g>
+              </svg>
+              <div style={{
+                width:64,height:64,borderRadius:"50%",
+                background:"radial-gradient(ellipse at 38% 35%,rgba(45,106,79,0.97) 0%,rgba(6,14,8,0.99) 68%)",
+                border:"2px solid rgba(212,152,60,0.55)",
+                display:"flex",alignItems:"center",justifyContent:"center",fontSize:"2.1rem",
+                boxShadow:"0 8px 40px rgba(0,0,0,0.6),0 0 50px rgba(212,152,60,0.22)",
+                position:"relative",zIndex:1,
+              }}>☘️</div>
+            </div>
             <div style={{fontFamily:"'Playfair Display',serif",fontSize:"1.5rem",fontWeight:900,
               background:"linear-gradient(135deg,#F4F0E6 0%,#D4983C 45%,#F4F0E6 100%)",
               backgroundSize:"200% auto",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",
@@ -4560,13 +4598,18 @@ body{background:${c.bg}}
           backgroundImage:`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='44'%3E%3Cpath d='M22 2 L42 22 L22 42 L2 22 Z' fill='none' stroke='rgba(200,150,62,0.055)' stroke-width='0.6'/%3E%3C/svg%3E")`,
           backgroundSize:"44px 44px",
         }}/>
-        {/* Celtic triquetra corner watermark */}
-        <svg width="48" height="48" viewBox="-24 -28 48 48"
-          style={{position:"absolute",top:10,right:10,opacity:0.14,pointerEvents:"none"}} aria-hidden="true">
-          <g fill="none" stroke="rgba(212,152,60,1)" strokeWidth="1.2" strokeLinecap="round">
-            <path d="M0,-16 C9,-8 9,8 0,8 C-9,8 -9,-8 0,-16Z"/>
-            <path d="M0,-16 C9,-8 9,8 0,8 C-9,8 -9,-8 0,-16Z" transform="rotate(120)"/>
-            <path d="M0,-16 C9,-8 9,8 0,8 C-9,8 -9,-8 0,-16Z" transform="rotate(240)"/>
+        {/* Celtic triquetra corner watermark — double-cord */}
+        <svg width="62" height="62" viewBox="-31 -34 62 58"
+          style={{position:"absolute",top:8,right:8,opacity:0.16,pointerEvents:"none"}} aria-hidden="true">
+          <g fill="none" stroke="rgba(3,9,5,0.95)" strokeWidth="4" strokeLinecap="round">
+            <path d="M0,-18 C10,-9 10,9 0,9 C-10,9 -10,-9 0,-18Z"/>
+            <path d="M0,-18 C10,-9 10,9 0,9 C-10,9 -10,-9 0,-18Z" transform="rotate(120)"/>
+            <path d="M0,-18 C10,-9 10,9 0,9 C-10,9 -10,-9 0,-18Z" transform="rotate(240)"/>
+          </g>
+          <g fill="none" stroke="rgba(212,152,60,1)" strokeWidth="1.3" strokeLinecap="round">
+            <path d="M0,-18 C10,-9 10,9 0,9 C-10,9 -10,-9 0,-18Z"/>
+            <path d="M0,-18 C10,-9 10,9 0,9 C-10,9 -10,-9 0,-18Z" transform="rotate(120)"/>
+            <path d="M0,-18 C10,-9 10,9 0,9 C-10,9 -10,-9 0,-18Z" transform="rotate(240)"/>
           </g>
         </svg>
 
