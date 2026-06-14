@@ -108,6 +108,190 @@ const VOCAB = [
   {p:"Peil",pr:"pel",m:"Football / Soccer",cat:"sports"},{p:"Iomáint",pr:"UM-awnt",m:"Hurling",cat:"sports"},{p:"Snámh",pr:"snahv",m:"Swimming",cat:"sports"},{p:"Cluiche",pr:"KLIH-heh",m:"Game",cat:"sports"},{p:"Ceol",pr:"kyohl",m:"Music",cat:"sports"},{p:"Leabhar",pr:"LOW-ur",m:"Book",cat:"sports"},{p:"Scannán",pr:"SKOU-nawn",m:"Film / Movie",cat:"sports"},{p:"Cócaireacht",pr:"KOH-kir-ukht",m:"Cooking",cat:"sports"},{p:"Damhsa",pr:"DOW-suh",m:"Dancing",cat:"sports"},{p:"Péintéireacht",pr:"PAYN-cheer-ukht",m:"Painting",cat:"sports"},{p:"Cártaí",pr:"KAR-tee",m:"Cards",cat:"sports"},{p:"Camógaíocht",pr:"kam-OH-ghee-ukht",m:"Camogie",cat:"sports"},
 ];
 
+const LESSONS=[
+  {id:1,title:"Beannachtaí",en:"Greetings",emoji:"👋",cards:[
+    {irish:"Dia dhuit",pron:"dee-uh gwit",en:"Hello (to one person)"},
+    {irish:"Dia is Muire dhuit",pron:"dee-uh iss mwirr-uh gwit",en:"Hello back (reply)"},
+    {irish:"Conas atá tú?",pron:"kun-us uh-taw too",en:"How are you?"},
+    {irish:"Tá mé go maith",pron:"taw may guh mah",en:"I am well"},
+    {irish:"Slán agat",pron:"slawn ug-ut",en:"Goodbye"},
+  ]},
+  {id:2,title:"Uimhreacha",en:"Numbers 1–10",emoji:"🔢",cards:[
+    {irish:"A haon",pron:"ah hayn",en:"One"},
+    {irish:"A dó",pron:"ah doe",en:"Two"},
+    {irish:"A trí",pron:"ah tree",en:"Three"},
+    {irish:"A ceathair",pron:"ah kah-her",en:"Four"},
+    {irish:"A cúig",pron:"ah koo-ig",en:"Five"},
+  ]},
+  {id:3,title:"Dathanna",en:"Colours",emoji:"🎨",cards:[
+    {irish:"Dearg",pron:"dah-rug",en:"Red"},
+    {irish:"Glas",pron:"gloss",en:"Green"},
+    {irish:"Gorm",pron:"gur-um",en:"Blue"},
+    {irish:"Buí",pron:"bwee",en:"Yellow"},
+    {irish:"Dubh",pron:"duv",en:"Black"},
+  ]},
+  {id:4,title:"An Teaghlach",en:"Family",emoji:"👨‍👩‍👧",cards:[
+    {irish:"Mamaí",pron:"mah-mee",en:"Mum"},
+    {irish:"Dadaí",pron:"dah-dee",en:"Dad"},
+    {irish:"Deartháir",pron:"djar-haw-ir",en:"Brother"},
+    {irish:"Deirfiúr",pron:"djer-fyoor",en:"Sister"},
+    {irish:"Seanmháthair",pron:"shan-vah-her",en:"Grandmother"},
+  ]},
+  {id:5,title:"Am & Laethanta",en:"Time & Days",emoji:"⏰",cards:[
+    {irish:"Maidin",pron:"MAH-jeen",en:"Morning"},
+    {irish:"Tráthnóna",pron:"traw-NOH-nuh",en:"Afternoon / Evening"},
+    {irish:"Oíche",pron:"ee-huh",en:"Night"},
+    {irish:"Inniu",pron:"in-yoo",en:"Today"},
+    {irish:"Amárach",pron:"uh-MAH-rukh",en:"Tomorrow"},
+  ]},
+  {id:6,title:"Bia & Deoch",en:"Food & Drink",emoji:"☕",cards:[
+    {irish:"Arán",pron:"ah-rawn",en:"Bread"},
+    {irish:"Uisce",pron:"ish-kuh",en:"Water"},
+    {irish:"Bainne",pron:"bahn-yuh",en:"Milk"},
+    {irish:"Tae",pron:"tay",en:"Tea"},
+    {irish:"Caife",pron:"kah-fuh",en:"Coffee"},
+  ]},
+  {id:7,title:"Áiteanna",en:"Places",emoji:"📍",cards:[
+    {irish:"Teach",pron:"tyakh",en:"House"},
+    {irish:"Scoil",pron:"skul",en:"School"},
+    {irish:"Siopa",pron:"SHUP-uh",en:"Shop"},
+    {irish:"Caifé",pron:"kah-FAY",en:"Café"},
+    {irish:"Teach tábhairne",pron:"tyakh TOW-irneh",en:"Pub"},
+  ]},
+  {id:8,title:"Ainmhithe",en:"Animals",emoji:"🐾",cards:[
+    {irish:"Madra",pron:"MAH-druh",en:"Dog"},
+    {irish:"Cat",pron:"kot",en:"Cat"},
+    {irish:"Each",pron:"akh",en:"Horse"},
+    {irish:"Bó",pron:"boe",en:"Cow"},
+    {irish:"Caora",pron:"KWEER-uh",en:"Sheep"},
+  ]},
+  {id:9,title:"Aimsir",en:"Weather",emoji:"🌦️",cards:[
+    {irish:"Fuar",pron:"foo-ur",en:"Cold"},
+    {irish:"Te",pron:"cheh",en:"Warm / Hot"},
+    {irish:"Báisteach",pron:"BAW-shtukh",en:"Rain"},
+    {irish:"Gaoth",pron:"gwee",en:"Wind"},
+    {irish:"Grianmhar",pron:"GREE-un-vur",en:"Sunny"},
+  ]},
+  {id:10,title:"Briathra",en:"Essential Verbs",emoji:"⚡",cards:[
+    {irish:"Tá",pron:"taw",en:"Am / Is / Are (state)"},
+    {irish:"Ith",pron:"ih",en:"Eat"},
+    {irish:"Ól",pron:"ohl",en:"Drink"},
+    {irish:"Téigh",pron:"tay",en:"Go"},
+    {irish:"Bí",pron:"bee",en:"Be (habitual)"},
+  ]},
+];
+
+const PHRASES=[
+  {cat:"Sa Phub",catEn:"In the Pub",emoji:"🍺",items:[
+    {irish:"Pionta Guinness, le do thoil",pron:"pyun-tuh Guinness, le duh hull",en:"A pint of Guinness, please"},
+    {irish:"Cé mhéad?",pron:"kay vayd",en:"How much?"},
+    {irish:"Sláinte!",pron:"slawn-chuh",en:"Cheers!"},
+    {irish:"Mé chugat",pron:"may khug-ut",en:"I'll get this round"},
+    {irish:"Tá mé ag ól",pron:"taw may egg ohl",en:"I am drinking"},
+    {irish:"An bhfuil tú ag ól?",pron:"un will too egg ohl",en:"Are you drinking?"},
+    {irish:"Go raibh maith agat",pron:"guh rev mah ug-ut",en:"Thank you"},
+    {irish:"Oíche mhaith",pron:"ee-huh vah",en:"Good night"},
+  ]},
+  {cat:"Ag Siopadóireacht",catEn:"Shopping",emoji:"🛍️",items:[
+    {irish:"Cé mhéad atá air?",pron:"kay vayd uh-taw er",en:"How much is it?"},
+    {irish:"An bhfuil sé ar díol?",pron:"un will shay er jeel",en:"Is it on sale?"},
+    {irish:"Tá mé ag lorg...",pron:"taw may egg lur-ug",en:"I am looking for..."},
+    {irish:"Tá sé ró-dhaor",pron:"taw shay roh geer",en:"It's too expensive"},
+    {irish:"An féidir liom é seo a thrail?",pron:"un fay-jir lum ay shuh uh hrall",en:"Can I try this?"},
+    {irish:"Cárta creidmheasa",pron:"kawr-tuh krej-vah-suh",en:"Credit card"},
+    {irish:"An bhfuil mála agat?",pron:"un will maw-luh ug-ut",en:"Do you have a bag?"},
+    {irish:"Níl sé ceart go leor",pron:"neel shay kyart guh lore",en:"It's not quite right"},
+  ]},
+  {cat:"Ag Taisteal",catEn:"Travelling",emoji:"✈️",items:[
+    {irish:"Cá bhfuil...?",pron:"kaw will",en:"Where is...?"},
+    {irish:"Cathain a fhágann an bus?",pron:"kah-hin uh aw-gun un bus",en:"When does the bus leave?"},
+    {irish:"Ticéad amháin go...",pron:"chih-kayd uh-vawn guh",en:"One ticket to..."},
+    {irish:"An bhfuil sé i bhfad?",pron:"un will shay ih vod",en:"Is it far?"},
+    {irish:"Cén uair a thagann sé?",pron:"kayn oo-ir uh hug-un shay",en:"What time does it arrive?"},
+    {irish:"Gabh mo leithscéal",pron:"guv muh leh-shkale",en:"Excuse me"},
+    {irish:"Níl Gaeilge mhaith agam",pron:"neel gwayliguh vah ug-um",en:"My Irish isn't great"},
+    {irish:"An labhraíonn tú Béarla?",pron:"un low-reen too bay-rluh",en:"Do you speak English?"},
+  ]},
+  {cat:"Treoracha",catEn:"Directions",emoji:"🧭",items:[
+    {irish:"Ar dheis",pron:"er yesh",en:"On the right"},
+    {irish:"Ar chlé",pron:"er khlay",en:"On the left"},
+    {irish:"Díreach ar aghaidh",pron:"jeer-ukh er eye",en:"Straight ahead"},
+    {irish:"Cas ar dheis",pron:"koss er yesh",en:"Turn right"},
+    {irish:"Cas ar chlé",pron:"koss er khlay",en:"Turn left"},
+    {irish:"Ag an gcoirnéal",pron:"egg un gur-nayl",en:"At the corner"},
+    {irish:"Tóg an chéad chasadh",pron:"tohg un hayd khah-suh",en:"Take the first turn"},
+    {irish:"Tá sé gar",pron:"taw shay gar",en:"It's nearby"},
+  ]},
+  {cat:"Ag Bualadh le Daoine",catEn:"Meeting People",emoji:"🤝",items:[
+    {irish:"Cad is ainm duit?",pron:"kod iss an-im dit",en:"What's your name?"},
+    {irish:"Is mise...",pron:"iss mish-uh",en:"I am... (my name is)"},
+    {irish:"Cad as duit?",pron:"kod oss dit",en:"Where are you from?"},
+    {irish:"Is as Éirinn mé",pron:"iss oss ay-rinn may",en:"I'm from Ireland"},
+    {irish:"Tá áthas orm bualadh leat",pron:"taw aw-hus ur-um boo-luh lyat",en:"Nice to meet you"},
+    {irish:"An labhraíonn tú Gaeilge?",pron:"un low-reen too gwayliguh",en:"Do you speak Irish?"},
+    {irish:"Labhraím beagán",pron:"low-reem byuh-gawn",en:"I speak a little"},
+    {irish:"Cén aois tú?",pron:"kayn eesh too",en:"How old are you?"},
+  ]},
+];
+
+const GRAMMAR=[
+  {
+    id:"alt",title:"An tAlt",en:"The Article",emoji:"📌",
+    intro:"Irish has no indefinite article (no 'a' or 'an'). The definite article is 'an' (singular) and 'na' (plural).",
+    rules:[
+      {label:"Masculine noun",ex:"an fear","exEn":"the man"},
+      {label:"Feminine noun (lenition)","ex":"an bhean","exEn":"the woman"},
+      {label:"Plural","ex":"na fir","exEn":"the men"},
+      {label:"No article = indefinite","ex":"fear","exEn":"a man"},
+    ],
+    tip:"Before a vowel, 'an' becomes 'an t-' for masculine: an t-uisce (the water).",
+  },
+  {
+    id:"seim",title:"Séimhiú",en:"Lenition",emoji:"🌬️",
+    intro:"Lenition softens a consonant by adding 'h' after it. It is triggered by many words including mo, do, a (his).",
+    rules:[
+      {label:"mo (my)",ex:"cat → mo chat","exEn":"cat → my cat"},
+      {label:"do (your)",ex:"bróg → do bhróg","exEn":"shoe → your shoe"},
+      {label:"a (his)",ex:"hata → a hata","exEn":"hat → his hat (no change — h already)"},
+      {label:"go (to a place)",ex:"Gaillimh → go Gaillimh","exEn":"Galway → to Galway"},
+    ],
+    tip:"f, s + lenition become almost silent: 'fhear' sounds like 'ar', 'shiopa' sounds like 'hup-uh'.",
+  },
+  {
+    id:"uru",title:"Urú",en:"Eclipsis",emoji:"🌑",
+    intro:"Eclipsis adds a new consonant before the first letter, completely changing the opening sound.",
+    rules:[
+      {label:"b → mb",ex:"Baile → i mBaile","exEn":"town → in the town"},
+      {label:"c → gc",ex:"Corcaigh → i gCorcaigh","exEn":"Cork → in Cork"},
+      {label:"d → nd",ex:"doras → ar ndoras","exEn":"door → on our door"},
+      {label:"g → ng",ex:"Gaillimh → i nGaillimh","exEn":"Galway → in Galway"},
+    ],
+    tip:"Numbers 2–6 trigger eclipsis: dhá chat = two cats, trí gchat = three cats.",
+  },
+  {
+    id:"ta",title:"An Briathar Tá",en:"The Verb 'To Be'",emoji:"🔵",
+    intro:"Irish has two 'to be' verbs. Tá describes states (how something is right now). Is describes identity.",
+    rules:[
+      {label:"Tá mé",ex:"Tá mé fuar","exEn":"I am cold"},
+      {label:"Tá tú",ex:"Tá tú go maith","exEn":"You are well"},
+      {label:"Tá sé / sí",ex:"Tá sé fliuch","exEn":"It/He is wet"},
+      {label:"Níl (negative)",ex:"Níl mé tuirseach","exEn":"I am not tired"},
+    ],
+    tip:"Question form: An bhfuil tú...? (Are you...?) → Tá / Níl (Yes / No).",
+  },
+  {
+    id:"aid",title:"Aidiachtaí",en:"Adjectives",emoji:"✨",
+    intro:"In Irish, adjectives come AFTER the noun — the opposite of English word order.",
+    rules:[
+      {label:"Masc. noun",ex:"fear mór","exEn":"big man (lit: man big)"},
+      {label:"Fem. noun → lenition",ex:"bean bheag","exEn":"small woman"},
+      {label:"Plural → slender",ex:"fir mhóra","exEn":"big men"},
+      {label:"With 'an'",ex:"an lá breá","exEn":"the fine day"},
+    ],
+    tip:"Most adjectives lenite after feminine nouns: bean → bean mhaith (good woman).",
+  },
+];
+
 const CATS = { greetings:"👋", review:"🔄", food:"☕", shopping:"🛍️", opinions:"💬", social:"🤝", directions:"🧭", vocabulary:"📚", culture:"🎭", immersion:"🔥", days:"📆", numbers:"🔢", months:"🗓️", colors:"🎨", family:"👨‍👩‍👧", animals:"🐾", phrases:"🗣️", body:"🫀", clothes:"👕", transport:"🚗", emotions:"💭", nature:"🌿", home:"🏡", verbs:"⚡", adjectives:"✨", weather:"🌦️", time:"⏰", places:"📍", sports:"🏃" };
 const WK = [
   { name: "Fáilte", en: "Greetings & Basics", start: 0, end: 7 },
@@ -1544,6 +1728,11 @@ export default function App() {
   const [surnameSearch,setSurnameSearch]=useState("");
   const [showMenu,setShowMenu]=useState(false);
   const [welcomeTapped,setWelcomeTapped]=useState(false);
+  const [lessonSel,setLessonSel]=useState(null);
+  const [lessonCard,setLessonCard]=useState(0);
+  const [lessonDone,setLessonDone]=useState(false);
+  const [phrasesCat,setPhrasesCat]=useState(0);
+  const [grammarOpen,setGrammarOpen]=useState(null);
   const c = THEMES[theme]||THEMES.coill;
   const dk = c.dark; // keep dk as a convenience boolean for backward compat
 
@@ -1566,7 +1755,7 @@ export default function App() {
       if(s.theme&&THEMES[s.theme])setTheme(s.theme);
     }
     else{
-      const i={done:[],bonus:[],tasksDone:[],streak:0,best:0,theme:"coill",onboarded:true,started:new Date().toISOString(),dailyLog:{},county:null,notifEnabled:false,lastCompletedDate:null,shieldCount:1,shieldWeek:null,seenWelcome:false};
+      const i={done:[],bonus:[],tasksDone:[],streak:0,best:0,theme:"coill",onboarded:true,started:new Date().toISOString(),dailyLog:{},county:null,notifEnabled:false,lastCompletedDate:null,shieldCount:1,shieldWeek:null,seenWelcome:false,lessonsDone:[]};
       await saveS(i);setSt(i);
     }
     setLoading(false);
@@ -1801,7 +1990,7 @@ export default function App() {
   };
   const doReset=async()=>{
     if(!confirm("Reset all progress? Cannot undo."))return;
-    await save({done:[],bonus:[],tasksDone:[],streak:0,best:0,theme:"coill",onboarded:true,started:new Date().toISOString(),dailyLog:{},county:null,notifEnabled:false,lastCompletedDate:null,shieldCount:1,shieldWeek:null,seenWelcome:true});
+    await save({done:[],bonus:[],tasksDone:[],streak:0,best:0,theme:"coill",onboarded:true,started:new Date().toISOString(),dailyLog:{},county:null,notifEnabled:false,lastCompletedDate:null,shieldCount:1,shieldWeek:null,seenWelcome:true,lessonsDone:[]});
     setView("home");setSelDay(null);
   };
 
@@ -4267,6 +4456,9 @@ body{background:${c.bg}}
           {/* Mode grid */}
           <div className="" style={{width:"100%",display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:14}}>
             {[
+              {e:"📚",l:"Lessons",s:"Teagasc",v:"teagasc"},
+              {e:"🗣️",l:"Phrases",s:"Nathanna",v:"nathanna"},
+              {e:"📐",l:"Grammar",s:"Gramadach",v:"gramadach"},
               {e:"🍺",l:"Pub Mode",s:"Mód an Tabhairne",v:"pub"},
               {e:"📖",l:"Dictionary",s:"Foclóir",v:"dict"},
               {e:"🗺️",l:"Map",s:"Léarscáil",v:"map"},
@@ -4364,6 +4556,266 @@ body{background:${c.bg}}
     </div>
   );
 }
+
+  // ═══════════════════════════════
+  // TEAGASC — LESSONS LIST
+  // ═══════════════════════════════
+  if(view==="teagasc"){
+    const doneIds=st?.lessonsDone||[];
+    return(
+      <div style={{minHeight:"100vh",background:c.bg,color:c.tx,display:"flex",flexDirection:"column"}}>
+        <style>{css}</style>
+        <div style={{background:"rgba(3,9,5,0.97)",borderBottom:`1px solid ${c.bd}`,padding:"16px 20px",flexShrink:0,position:"sticky",top:0,zIndex:10}}>
+          <div style={{display:"flex",alignItems:"center",gap:12}}>
+            <button onClick={()=>setView("home")} style={{background:"none",border:"none",color:c.tx3,cursor:"pointer",fontSize:"1.2rem",padding:4,lineHeight:1}}>←</button>
+            <div>
+              <div style={{...hd,fontSize:"1.1rem",fontWeight:800,color:c.tx}}>Teagasc · Lessons</div>
+              <div style={{...bd,fontSize:"0.7rem",color:c.tx3}}>{doneIds.length}/{LESSONS.length} complete</div>
+            </div>
+          </div>
+        </div>
+        <div style={{padding:"20px 16px",display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,overflowY:"auto"}}>
+          {LESSONS.map((lesson,i)=>{
+            const done=doneIds.includes(lesson.id);
+            const locked=i>0&&!doneIds.includes(LESSONS[i-1].id);
+            return(
+              <button key={lesson.id} onClick={()=>{
+                if(locked)return;
+                haptic([8,20]);
+                setLessonSel(lesson);
+                setLessonCard(0);
+                setLessonDone(false);
+                setView("teagasc-lesson");
+              }} style={{
+                padding:"16px 12px",
+                background:done?"rgba(94,196,136,0.08)":locked?"rgba(255,255,255,0.02)":"rgba(212,152,60,0.06)",
+                border:`1px solid ${done?"rgba(94,196,136,0.3)":locked?"rgba(255,255,255,0.06)":"rgba(212,152,60,0.18)"}`,
+                borderRadius:16,cursor:locked?"default":"pointer",
+                display:"flex",flexDirection:"column",alignItems:"flex-start",gap:6,textAlign:"left",
+                opacity:locked?0.45:1,
+              }}>
+                <span style={{fontSize:"1.5rem"}}>{locked?"🔒":lesson.emoji}</span>
+                <div style={{...hd,fontSize:"0.85rem",fontWeight:700,color:done?"#6FCF97":c.tx,lineHeight:1.2}}>{lesson.title}</div>
+                <div style={{...bd,fontSize:"0.65rem",color:c.tx3}}>{lesson.en}</div>
+                {done&&<div style={{...bd,fontSize:"0.62rem",color:"#6FCF97",fontWeight:700}}>✓ Déanta</div>}
+                {!done&&!locked&&<div style={{...bd,fontSize:"0.62rem",color:"rgba(212,152,60,0.6)"}}>
+                  {lesson.cards.length} cards
+                </div>}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+
+  // ═══════════════════════════════
+  // TEAGASC — LESSON PLAYER
+  // ═══════════════════════════════
+  if(view==="teagasc-lesson"&&lessonSel){
+    const card=lessonSel.cards[lessonCard];
+    const total=lessonSel.cards.length;
+    const isLast=lessonCard===total-1;
+    const onNext=()=>{
+      haptic([8,20]);
+      if(isLast){
+        setLessonDone(true);
+        const prev=st?.lessonsDone||[];
+        if(!prev.includes(lessonSel.id)){
+          save({...st,lessonsDone:[...prev,lessonSel.id],xp:(st?.xp||0)+25});
+        }
+      } else {
+        setLessonCard(n=>n+1);
+      }
+    };
+    const onPrev=()=>{if(lessonCard>0){haptic([6]);setLessonCard(n=>n-1);}};
+    if(lessonDone) return(
+      <div style={{minHeight:"100vh",background:c.bg,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"32px 24px"}}>
+        <style>{css}</style>
+        <div style={{fontSize:"3rem",marginBottom:16}}>🏆</div>
+        <div style={{...hd,fontSize:"1.6rem",fontWeight:900,color:"#6FCF97",marginBottom:6,textAlign:"center"}}>Déanta!</div>
+        <div style={{...bd,fontSize:"0.85rem",color:c.tx3,marginBottom:4,textAlign:"center"}}>{lessonSel.title} · {lessonSel.en}</div>
+        <div style={{...bd,fontSize:"0.78rem",color:"rgba(212,152,60,0.8)",marginBottom:32}}>+25 XP</div>
+        <button onClick={()=>{haptic([10,30]);setView("teagasc");}} style={{
+          padding:"16px 40px",borderRadius:14,border:"none",cursor:"pointer",
+          background:"linear-gradient(135deg,#2D6A4F,#1B4332)",
+          ...bd,fontSize:"1rem",fontWeight:800,color:"#fff",
+        }}>← Ar ais go Teagasc</button>
+      </div>
+    );
+    return(
+      <div style={{minHeight:"100vh",background:c.bg,color:c.tx,display:"flex",flexDirection:"column"}}>
+        <style>{css}</style>
+        {/* Header */}
+        <div style={{background:"rgba(3,9,5,0.97)",borderBottom:`1px solid ${c.bd}`,padding:"14px 20px",flexShrink:0}}>
+          <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:12}}>
+            <button onClick={()=>setView("teagasc")} style={{background:"none",border:"none",color:c.tx3,cursor:"pointer",fontSize:"1.2rem",padding:4,lineHeight:1}}>←</button>
+            <div style={{...bd,fontSize:"0.75rem",color:c.tx3,fontWeight:700}}>{lessonSel.emoji} {lessonSel.title} · {lessonSel.en}</div>
+          </div>
+          {/* Progress dots */}
+          <div style={{display:"flex",gap:5}}>
+            {lessonSel.cards.map((_,i)=>(
+              <div key={i} style={{flex:1,height:3,borderRadius:4,
+                background:i<lessonCard?"#6FCF97":i===lessonCard?"rgba(212,152,60,0.8)":"rgba(255,255,255,0.1)"}}/>
+            ))}
+          </div>
+        </div>
+        {/* Card */}
+        <div style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"32px 24px"}}>
+          <div style={{
+            width:"100%",maxWidth:360,
+            background:"rgba(200,150,62,0.06)",border:"1px solid rgba(200,150,62,0.2)",
+            borderRadius:22,padding:"36px 28px",textAlign:"center",
+            boxShadow:"0 8px 40px rgba(0,0,0,0.35)",
+          }}>
+            <div style={{...bd,fontSize:"0.65rem",color:"rgba(212,152,60,0.5)",letterSpacing:"0.2em",textTransform:"uppercase",marginBottom:20}}>
+              Lá {lessonCard+1} as {total}
+            </div>
+            <div style={{...hd,fontSize:"clamp(2rem,9vw,2.8rem)",fontWeight:900,color:"#D4983C",fontStyle:"italic",lineHeight:1.1,marginBottom:14}}>
+              {card.irish}
+            </div>
+            <div style={{...bd,fontSize:"0.78rem",color:"rgba(212,152,60,0.55)",letterSpacing:"0.08em",marginBottom:20}}>
+              /{card.pron}/
+            </div>
+            <div style={{height:"1px",background:"rgba(212,152,60,0.15)",margin:"0 auto 20px",width:"60%"}}/>
+            <div style={{...bd,fontSize:"1rem",color:c.tx,fontWeight:600}}>{card.en}</div>
+          </div>
+          {/* Nav */}
+          <div style={{display:"flex",gap:12,marginTop:28,width:"100%",maxWidth:360}}>
+            <button onClick={onPrev} style={{
+              flex:1,padding:"14px",borderRadius:12,cursor:lessonCard>0?"pointer":"default",
+              background:"rgba(255,255,255,0.04)",border:`1px solid ${c.bd}`,
+              ...bd,fontSize:"0.85rem",color:lessonCard>0?c.tx:c.tx3,
+              opacity:lessonCard>0?1:0.3,
+            }}>← Ar ais</button>
+            <button onClick={onNext} style={{
+              flex:2,padding:"14px",borderRadius:12,border:"none",cursor:"pointer",
+              background:"linear-gradient(135deg,#2D6A4F,#1B4332)",
+              ...bd,fontSize:"0.85rem",fontWeight:800,color:"#fff",
+            }}>{isLast?"Críochnaigh ✓":"Ar aghaidh →"}</button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ═══════════════════════════════
+  // NATHANNA — PHRASES
+  // ═══════════════════════════════
+  if(view==="nathanna"){
+    const cat=PHRASES[phrasesCat];
+    return(
+      <div style={{minHeight:"100vh",background:c.bg,color:c.tx,display:"flex",flexDirection:"column"}}>
+        <style>{css}</style>
+        <div style={{background:"rgba(3,9,5,0.97)",borderBottom:`1px solid ${c.bd}`,padding:"16px 20px",flexShrink:0,position:"sticky",top:0,zIndex:10}}>
+          <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:14}}>
+            <button onClick={()=>setView("home")} style={{background:"none",border:"none",color:c.tx3,cursor:"pointer",fontSize:"1.2rem",padding:4,lineHeight:1}}>←</button>
+            <div>
+              <div style={{...hd,fontSize:"1.1rem",fontWeight:800,color:c.tx}}>Nathanna · Phrases</div>
+              <div style={{...bd,fontSize:"0.7rem",color:c.tx3}}>Everyday Irish by situation</div>
+            </div>
+          </div>
+          {/* Category tabs */}
+          <div style={{display:"flex",gap:6,overflowX:"auto",paddingBottom:2}}>
+            {PHRASES.map((p,i)=>(
+              <button key={i} onClick={()=>{haptic([6]);setPhrasesCat(i);}} style={{
+                flexShrink:0,padding:"6px 12px",borderRadius:20,border:"none",cursor:"pointer",
+                background:i===phrasesCat?"rgba(212,152,60,0.22)":"rgba(255,255,255,0.05)",
+                ...bd,fontSize:"0.7rem",fontWeight:i===phrasesCat?800:400,
+                color:i===phrasesCat?"rgba(212,152,60,0.95)":c.tx3,
+              }}>{p.emoji} {p.catEn}</button>
+            ))}
+          </div>
+        </div>
+        {/* Phrases list */}
+        <div style={{flex:1,overflowY:"auto",padding:"16px"}}>
+          <div style={{...bd,fontSize:"0.65rem",color:"rgba(212,152,60,0.5)",letterSpacing:"0.18em",textTransform:"uppercase",marginBottom:12}}>
+            {cat.emoji} {cat.cat} · {cat.catEn}
+          </div>
+          <div style={{display:"flex",flexDirection:"column",gap:8}}>
+            {cat.items.map((item,i)=>(
+              <div key={i} style={{
+                background:"rgba(200,150,62,0.05)",border:"1px solid rgba(200,150,62,0.14)",
+                borderRadius:14,padding:"14px 16px",
+              }}>
+                <div style={{...hd,fontSize:"1.1rem",fontWeight:700,color:"#D4983C",fontStyle:"italic",marginBottom:4}}>{item.irish}</div>
+                <div style={{...bd,fontSize:"0.65rem",color:"rgba(212,152,60,0.5)",letterSpacing:"0.06em",marginBottom:6}}>/{item.pron}/</div>
+                <div style={{...bd,fontSize:"0.8rem",color:c.tx2}}>{item.en}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ═══════════════════════════════
+  // GRAMADACH — GRAMMAR
+  // ═══════════════════════════════
+  if(view==="gramadach"){
+    return(
+      <div style={{minHeight:"100vh",background:c.bg,color:c.tx,display:"flex",flexDirection:"column"}}>
+        <style>{css}</style>
+        <div style={{background:"rgba(3,9,5,0.97)",borderBottom:`1px solid ${c.bd}`,padding:"16px 20px",flexShrink:0,position:"sticky",top:0,zIndex:10}}>
+          <div style={{display:"flex",alignItems:"center",gap:12}}>
+            <button onClick={()=>setView("home")} style={{background:"none",border:"none",color:c.tx3,cursor:"pointer",fontSize:"1.2rem",padding:4,lineHeight:1}}>←</button>
+            <div>
+              <div style={{...hd,fontSize:"1.1rem",fontWeight:800,color:c.tx}}>Gramadach · Grammar</div>
+              <div style={{...bd,fontSize:"0.7rem",color:c.tx3}}>Essential Irish grammar</div>
+            </div>
+          </div>
+        </div>
+        <div style={{flex:1,overflowY:"auto",padding:"16px",display:"flex",flexDirection:"column",gap:10}}>
+          {GRAMMAR.map(section=>{
+            const open=grammarOpen===section.id;
+            return(
+              <div key={section.id} style={{
+                background:"rgba(200,150,62,0.05)",border:`1px solid ${open?"rgba(212,152,60,0.35)":"rgba(200,150,62,0.12)"}`,
+                borderRadius:16,overflow:"hidden",
+              }}>
+                <button onClick={()=>{haptic([6]);setGrammarOpen(open?null:section.id);}} style={{
+                  width:"100%",padding:"16px",background:"transparent",border:"none",cursor:"pointer",
+                  display:"flex",alignItems:"center",gap:12,textAlign:"left",
+                }}>
+                  <span style={{fontSize:"1.4rem"}}>{section.emoji}</span>
+                  <div style={{flex:1}}>
+                    <div style={{...hd,fontSize:"0.95rem",fontWeight:700,color:c.tx}}>{section.title}</div>
+                    <div style={{...bd,fontSize:"0.65rem",color:c.tx3}}>{section.en}</div>
+                  </div>
+                  <span style={{...bd,fontSize:"0.8rem",color:c.tx3,transform:open?"rotate(180deg)":"none",transition:"transform 0.2s"}}>▾</span>
+                </button>
+                {open&&(
+                  <div style={{padding:"0 16px 18px"}}>
+                    <div style={{...bd,fontSize:"0.78rem",color:c.tx2,lineHeight:1.65,marginBottom:14}}>{section.intro}</div>
+                    <div style={{display:"flex",flexDirection:"column",gap:8}}>
+                      {section.rules.map((rule,i)=>(
+                        <div key={i} style={{
+                          background:"rgba(3,9,5,0.5)",borderRadius:10,padding:"10px 12px",
+                          borderLeft:"2px solid rgba(212,152,60,0.4)",
+                        }}>
+                          <div style={{...bd,fontSize:"0.62rem",color:"rgba(212,152,60,0.55)",letterSpacing:"0.1em",textTransform:"uppercase",marginBottom:4}}>{rule.label}</div>
+                          <div style={{...hd,fontSize:"0.95rem",color:"#D4983C",fontStyle:"italic",marginBottom:2}}>{rule.ex}</div>
+                          <div style={{...bd,fontSize:"0.72rem",color:c.tx3}}>{rule.exEn}</div>
+                        </div>
+                      ))}
+                    </div>
+                    <div style={{
+                      marginTop:12,padding:"10px 12px",
+                      background:"rgba(94,196,136,0.06)",border:"1px solid rgba(94,196,136,0.2)",
+                      borderRadius:10,
+                    }}>
+                      <div style={{...bd,fontSize:"0.65rem",color:"#6FCF97",letterSpacing:"0.1em",textTransform:"uppercase",marginBottom:3}}>💡 Leid · Tip</div>
+                      <div style={{...bd,fontSize:"0.74rem",color:"rgba(240,237,228,0.7)",lineHeight:1.55}}>{section.tip}</div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
 
   // ═══════════════════════════════
   // PUB MODE VIEW
